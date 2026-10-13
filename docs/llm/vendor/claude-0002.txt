@@ -4,46 +4,31 @@ Please review them
 
 If only a few files (under five or there about) need to change, give me the full path of the files that need to change and the FULL file 
 if there are a lot of files that need to change 
+    Delivery
+    Whole project as one tar.gz, unambiguous file placement
+    Any files to delete on updates called out explicitly
+    No bespoke sed/patch scripts — full files only for anything that changes
+    Docs updated alongside code changes
+    Low verbosity, no code comments
 
+here is the change I made 
 
 temporarily remove disable parallel
-
-
 [assembly: CollectionBehavior(DisableTestParallelization = true)]
-
 kushal@fedora:~/src/dotnet/HelloXUnit$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
-
 ==> Restore
 Restore complete (2.8s)
-
 Build succeeded in 2.9s
-
 ==> Build (Release, warnings are errors)
   Chaos.E2E net10.0 failed with 1 error(s) (2.3s)
     /home/kushal/src/dotnet/chaos-velixir-run/tests/Chaos.E2E/BrowserFixture.cs(3,31): error CS0619: 'CollectionBehaviorAttribute.DisableTestParallelization' is obsolete: 'Please set ParallelizationAttribute.Mode instead. This property will be removed in the next major version.'
   Chaos.Web net10.0 succeeded (4.7s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
   Chaos.Web.Tests net10.0 succeeded (0.7s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
-
 Build failed with 1 error(s) in 5.7s
-
 real	0m9.075s
 user	0m4.724s
 sys	0m1.185s
 kushal@fedora:~/src/dotnet/chaos-velixir-run$ 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

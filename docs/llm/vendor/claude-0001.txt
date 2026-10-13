@@ -1,5 +1,128 @@
 
 /
+dump.txt
+dump.txt
+TXT
+I have a new project in simple asp dotnet blazor server. 
+It runs on the free tier of a service called v elixir. 
+I have the dump.txt attached with this prompt. 
+Some ground rules: 
+no css or javascript frameworks 
+we write our own css and js 
+preferably scoped within the same component 
+be very mindful of performance as this needs to run on the free tier. 
+can you please write everything that is absolutely essential for the site to function? 
+
+an ephermal message board same as zen but with a twist -- every single message gets stored in the browser local storage as soon as the user gets this information AND when a new user connects, they send everything they have in their local storage back to the server. so every single message has a unique uuid v7 guid. the server takes a look at this list and checks against its own list. if the server has fifty items that are newer than what the client has sent, it does nothing with the list. and the client will dutifully add the items from the server to its local data so locally, the user will continue to see older data even though it is no longer present on the server. the server still only keeps the last fifty messages. you will have to come up with. it is probably better to use indexed db instead of local storage but I will let you decide the exact details. remember, no third party javascript libraries. if we need any javascript, we must write it ourselves. if the server has restarted and the client has something the server does not, the server accepts it as long as it fits in the fifty cap or if the items are newer than what the server has. we should also have a cap for local history so it doesn't bloat phones. implement a limit of 10k messages beyond which we start deleting the oldest messages as we add new ones. I don't expect us to hit this limit in practice but we are writing a good demo app and we want to make sure we teach people the right way to do things. the handshake order is the client sends the fifty most recent from its indexed db. the server breaks ties by keeping what it already has although I expect exact ties to be rare because we have uuidv7 which should be ordered. ALWAYS ALWAYS REJECT MESSAGES FROM THE FUTURE. The server clock is always correct. reconciliation from the client is up to the cap, newest first. Schema versioning for IndexedDB, so a later change doesn’t break existing users.
+a shared real time canvas, no need for anything fancy but users should be able to draw using their mouse on a computer or their finger or a stylus on their phone or tablet and everyone sees everything as soon as anyone draws anything. there is one reset button and anyone can press this at any time to clear the canvas. there is no save functionality, there is only one color -- black, and there is only one brush -- solid, and there is only one weight -- you get the idea. it is as simple as possible. Touch scrolling conflict (touch-action: none), palm rejection, and pointer capture. Coordinate system: normalized 0–1 coordinates so phones and desktops agree, plus a fixed aspect ratio and how to handle resizing and device pixel ratio. Late joiner state: a bounded in-memory stroke list, and a decision on whether it’s lost on restart. (decision: yes). Reset behavior with in-flight strokes (an epoch counter solves it).
+a page that explains what this website is all about and links to the github repository for this page. the repository will be public so you can assume that the website can link to the github repository. explain why this website exists and all the things it can do. also explain the what we do and how we do it. this page should also have an easy way for the user to clear the indexed db used in our message board without the user having to clear all the local data for the web application. when the user visits the message board again, the indexed db should be created and populated again fresh from the server
+remember no third party css js or any third party dependencies
+the project will be served at https://chaos.velixir.run/ 
+the code will live in public at https://github.com/kusl/chaos-velixir-run
+the license will be AGPL-v3  or later 
+we will have a FULL unit test suite with xunit v4
+and this is a good time as any to clarify dependencies 
+we want to minimize the number of third party dependencies 
+but we also want the absolute latest version of all nuget dependencies and all github actions versions possible 
+so xunit v4  and add a global.json 
+which opts into the microsoft testing platform 
+{
+    "test": {
+        "runner": "Microsoft.Testing.Platform"
+    }
+}
+
+also slnx for solution 
+also central package management 
+also use latest stable version of csharp version for dotnet 10 
+
+we have previously done something similar with zen-velixir-run 
+https://github.com/kusl/zen-velixir-run 
+which runs at zen.velixir.run 
+
+this project is much more ambitious
+in addition to the blazor server application 
+it will also have a full unit test as well as playwright testing suite 
+
+the playwright test suite will need to live in a podman environment 
+because my fedora linux is not directly supported by playwright 
+
+also it is critical that we carefully study the existing zen-velixir-run to make sure the application 
+deploys perfectly each time. 
+I have added a new repository secret to 
+https://github.com/kusl/chaos-velixir-run/settings/secrets/actions
+called 
+VELIXIR_API_KEY
+so that part is already in place 
+
+however, except for this one deployment action 
+all github actions must be as dumb as possible 
+with as much of the logic in shell scripts 
+so the core of these actions can be run locally 
+
+and never forget that our application does not have a guaranteed state to save somewhere, because we are still using a free tier, the application may restart at any time 
+so we must be resilient to this just like the original zen-velixir-run 
+
+another thing that sets us apart from zen is unlike zen which only has one page, we will have several components and several pages 
+
+we will be able to navigate between the pages 
+and we will make use of reusable components 
+
+we will use as little javascript as possible, in fact we will try to avoid it entirely where possible 
+we will also use the latest evergreen javascript features where possible 
+
+we will use the latest css features and we will never ever have vendor specific css code and we will never ever use shebang important in our css. if our website is ugly without important we will live with ugly website but we will NEVER EVER use important. also we will compartmentalize our css to our component specific css file where possible but we will also have a global variable file using css. remember, no pre processor no post processor no sass no scss none of that, only evergreen css as available in the current versions of modern browsers 
+
+in fact, absolutely NO legacy code, no legacy polyfill, no support for legacy browsers at all 
+however, we will use browser local storage, cookies, and all modern luxuries as afforded 
+
+remember, we will never require users to log in or authenticate in any way because we don't have a stateful backend that persists forever. 
+
+last but not the least, we will have an export.sh that exports all the code into a single dump.txt file just like we do now. this export.sh will live in a scripts folder unlike zen because this project unlike zen will have multiple shell scripts 
+all these scripts will have a single parent script when run which will build, run all the tests not just unit tests but also integration tests, run the export shell script that bundles everything together, etc
+
+we will NEVER EVER use any javascript or css library EVER in this application 
+users will be able to toggle light and dark mode and the application will keep track of user's choice in local storage. if no setting is found in local storage, the application will respect the user's choice in the browser settings or operating system settings. use blazor's .razor.css isolation for css where possible 
+avoid any cookies if at all possible, no cookies means no consent banner which is our goal. 
+
+the interactivity model is blazor server or blazor interactive. static SSR with interactive islands is perfect. about, theme toggle, and navigation should work with zero circuit. only /board and /canvas open a circuit. first party signalR is acceptable but remember everything should be built in don't assume we have any azure infrastructure. blazor.web.js is totally acceptable. and yes, handwritten js is acceptable, when I say no js I mean no third party js but I understand some js is unavoidable. where possible, small dependency free ES modules colocated with their components .razor.js is ideal. 
+
+consistent with the /docs folder where we will have /llm folder, we will also have a /adr folder inside docs which will house architectural decision records. anywhere I have been ambiguous, use your best judgment and record the adr. in our subsequent conversations, you will always keep these ADR up to date. be concise and to the point in the documentation. never write flowery language. 
+NEVER EVER EVER write code comments. 
+in fact, never, ever write comments at all. 
+markdown files such as readme.md are the exception but even these should be as concise and terse as possible.
+
+Rate limits and max connections per IP, message length, stroke point limits, and spam. Without any moderation, the About page should say plainly that content spreads to every client and can’t be recalled.
+
+Security headers and a strict CSP. With no third-party code, you can use default-src 'self' with no inline scripts, which is a nice property to demonstrate. Blazor’s own inline bits might need a nonce, so verify.
+
+Origin checking on the socket endpoint.
+
+Naming and layout: src/Chaos.Web, tests/Chaos.Web.Tests, tests/Chaos.E2E, scripts/.
+Directory.Build.props (nullable, warnings as errors, analyzers, deterministic builds), Directory.Packages.props, .editorconfig, and global.json pinning the SDK with rollForward.
+The AGPL notice: a LICENSE file, SPDX headers, and the AGPL network-use requirement means the site should visibly link to its source (the About page does this).
+Testing JS: how do we unit test the hand-written JS modules without a framework? Options are Playwright tests only, or Node’s built-in test runner, though that adds a Node dependency. Worth deciding. The js will be testable with both playwright as well as the latest version of vitest. Coverage tooling and whether the parent script enforces a threshold. there is no threshold but we do report coverage. 
+Playwright in Podman: pin the image version to the NuGet package version, run the app on the host or in a pod, and decide how the test container reaches the app (host networking vs. a pod). --> there should be exactly ONE place where playwright version is declared so if we need to upgrade to a newer version later, it only touches one file. 
+Script contract: exit codes, set -euo pipefail, idempotency, a --skip-e2e flag, and the parent script named something like scripts/run-all.sh.
+export.sh rules: what to exclude (bin, obj, binary files, the dump itself) and whether it should redact anything. it should exclude all of /docs/llm however it SHOULD include everything else in /docs including ADR. you can't edit what you can't read. no third party code should be included, no microsoft code should be included. 
+Dependabot or an equivalent for keeping “absolute latest” versions current. Without it, “latest” is only true on day one. it is ok for it to create pull requests but I might ignore them. 
+readme should clarify version this or later to avoid becoming stale. 
+Health endpoint, graceful shutdown, ServerGC off and ConcurrentGarbageCollection off for memory, response compression, and ReadyToRun or trimming decisions (check what v elixir actually supports). also check what zen actually does in the included dump 
+Logging kept minimal to avoid disk and CPU.
+Cold starts on a free tier: the client should show a “waking up the server” state and reconnect with backoff and jitter.
+we also need 
+A custom 404 page and a “disconnected” banner.
+Accessibility: keyboard use of the message board, aria-live for new messages, reduced motion, and a note that the canvas is inherently pointer-based.
+Theme toggle behavior before hydration to avoid a flash (this requires a tiny inline script or a CSP-compatible alternative), and color-scheme/light-dark() usage.
+Display details: timestamps (UUIDv7 gives you one for free), whether messages have a nickname (probably not), and how “older, no longer on the server” messages are shown differently from live ones. That visual distinction is the heart of the twist. messages do NOT have a nickname. old local messages will have a dotted border instead of solid border that the messages on the server do. 
+
+Delivery
+Whole project as one tar.gz, unambiguous file placement
+Any files to delete on updates called out explicitly
+No bespoke sed/patch scripts — full files only for anything that changes
+Docs updated alongside code changes
+Low verbosity, no code comments
+
 Ran 38 commands, read 8 pages, and 4 more tools
 I ran out of tool calls before writing any files, so there’s no tarball yet. Everything below is research and design that the next turn turns into the full project. The new repo is empty, so it’ll be a from-scratch build.
 
@@ -43,48 +166,6 @@ Build and test: no ReadyToRun and no trimming. WebSocket compression is off to s
 This container now has the .NET 10 SDK, Node and headless Chromium, so next turn I can build the app and test it in a real browser. The NuGet feed is blocked from here, so I can’t run the xunit or Playwright .NET suites myself; you’ll need to run run-all.sh before pushing.
 
 What’s the chaos app’s ID from velixir’s Deploys tab? Or would you rather add it as a VELIXIR_APP_ID repository variable, the way velixir’s docs do it?
-
-please continue 
-the project url is https://velixir.net/Projects/Details/a60b2670-9728-43a3-bba1-f998c76edee6 
-the app url is https://velixir.net/Apps/Details/e6f606e7-3aba-4b3a-85df-945eb931dc97 
-the project name is default 
-the app name is chaos 
-you may have to tweak the thing below because our project contains multiple projects 
-deploy as well as automated build and testing should happen after every push 
-name: Deploy to velixir
-
-on:
-  push:
-    branches: [main]
-
-permissions:
-  contents: read
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    # One deploy at a time: a push that lands mid-deploy waits for the one before it.
-    concurrency:
-      group: velixir-deploy
-      cancel-in-progress: false
-    steps:
-      - uses: actions/checkout@v7
-
-name: Install the velixir CLI
-shell: bash
-run: |
-  curl -fsSL https://velixir.net/install.sh | sh
-  echo "$HOME/.velixir/bin" >> "$GITHUB_PATH"
-
-name: Deploy
-env:
-  VELIXIR_API_KEY: ${{ secrets.VELIXIR_API_KEY }}
-run: |
-  if [ -z "$VELIXIR_API_KEY" ]; then
-    echo "::error::Add a repository secret named VELIXIR_API_KEY with a velixir API key that has Write permission (Settings > Secrets and variables > Actions)."
-    exit 1
-  fi
-  velixir deploy --app e6f606e7-3aba-4b3a-85df-945eb931dc97
 
 Listing remaining analyzer and build property settings.
 I’ll read the frontend-design skill first, then gather the remaining facts (xunit 4 packaging, coverage extension, Playwright image, AGPL text) in one pass.
@@ -174,6 +255,7 @@ After you push, turn on the HTTP health probe (path /health) under Scaling → R
 
 Chaos velixir run.tar
 GZ 
+
 
 
 
