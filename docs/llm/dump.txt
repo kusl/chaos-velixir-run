@@ -1,8 +1,8 @@
 ===============================================================================
 PROJECT EXPORT
-Generated (UTC): 2026-10-13 13:56:27
+Generated (UTC): 2026-10-13 14:02:22
 Project Path:    /home/kushal/src/dotnet/chaos-velixir-run
-Git Commit:      5d8213a69d4f630c10cd0c5e537c2d3d705c18ca
+Git Commit:      d56e79bfd10008787e0a418505750a307d82e403
 Git Branch:      main
 Git Dirty:       no
 .NET SDK:        10.0.112
@@ -635,10 +635,10 @@ Status: accepted
 
 ================================================================================
 FILE:     docs/adr/0007-realtime-delivery.md
-SIZE:     0.81 KB (831 bytes)
-LINES:    9
-SHA256:   d3fbdcd83be6cb1c4b02fac7042a8504491916b64c2b6960bf6386c0f41fc0ea
-MODIFIED: 2026-10-13 13:17:58 (UTC)
+SIZE:     0.98 KB (1002 bytes)
+LINES:    10
+SHA256:   a5dc7328ef8391f9c5e73701be62a7fdb09da11993d9468b161d87bb2a98c57c
+MODIFIED: 2026-10-13 14:01:45 (UTC)
 ================================================================================
 
 # 0007 Per-client outboxes over the circuit
@@ -647,6 +647,7 @@ Status: accepted
 
 - Transport is the Blazor circuit itself: JS calls `[JSInvokable]` methods, the server calls the module's `apply`. No separate SignalR hub and no extra JavaScript client.
 - Each island owns a bounded channel (`Outbox<T>`) drained by one pump that sends batches in order and waits for the browser to finish each batch. A full outbox, a failed call or a 20 s stall drops the subscriber.
+- The pump waits until the island's module has been attached. JavaScript can call `Join` before `attach` has returned to .NET, and an earlier send would fault the outbox.
 - Subscribing enqueues a snapshot under the same lock as updates, so nothing is missed or duplicated.
 - Board deltas carry `version` and `previous`; a gap triggers a fresh snapshot. Canvas updates carry an offset per stroke; a gap triggers a fresh snapshot.
 - The browser pings every 25 s and resubscribes when the server says it was dropped, and resubscribes after every reconnect.
@@ -1723,10 +1724,10 @@ if (typeof window !== 'undefined' && window.Blazor) {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/BoardIsland.razor
-SIZE:     4.07 KB (4164 bytes)
-LINES:    134
-SHA256:   3dcd8c8c04392c4203355a5d5263d303e266d1478e48441121e1fce5e01e3ba4
-MODIFIED: 2026-10-13 13:17:58 (UTC)
+SIZE:     4.29 KB (4389 bytes)
+LINES:    139
+SHA256:   5fd8e3574d06dc075a417ba444cc8d461615c3d0c198be73b8d4cfabd29d7322
+MODIFIED: 2026-10-13 14:01:17 (UTC)
 ================================================================================
 
 @implements IAsyncDisposable
@@ -1746,6 +1747,7 @@ MODIFIED: 2026-10-13 13:17:58 (UTC)
 </form>
 
 @code {
+    private readonly TaskCompletionSource _attached = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private DotNetObjectReference<BoardIsland>? _self;
     private IJSObjectReference? _module;
     private IJSObjectReference? _client;
@@ -1769,6 +1771,7 @@ MODIFIED: 2026-10-13 13:17:58 (UTC)
         _self = DotNetObjectReference.Create(this);
         _module = await JS.InvokeAsync<IJSObjectReference>("import", ModulePath.Of(Assets["Components/Islands/BoardIsland.razor.js"]));
         _client = await _module.InvokeAsync<IJSObjectReference>("attach", _self);
+        _attached.TrySetResult();
         _ready = true;
         StateHasChanged();
     }
@@ -1838,10 +1841,13 @@ MODIFIED: 2026-10-13 13:17:58 (UTC)
         }
     }
 
-    private Task SendAsync(IReadOnlyList<BoardUpdate> batch, CancellationToken cancellationToken) =>
-        InvokeAsync(() => _client is null
+    private async Task SendAsync(IReadOnlyList<BoardUpdate> batch, CancellationToken cancellationToken)
+    {
+        await _attached.Task.WaitAsync(cancellationToken);
+        await InvokeAsync(() => _client is null
             ? Task.FromException(new InvalidOperationException("The board module is not attached."))
             : _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask());
+    }
 
     private async Task StopAsync()
     {
@@ -2385,10 +2391,10 @@ export function attach(dotnet) {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/CanvasIsland.razor
-SIZE:     3.90 KB (3989 bytes)
-LINES:    128
-SHA256:   21050e20d5c7781df7026018f0478241274218354f69361f81461f6bcb5084c0
-MODIFIED: 2026-10-13 13:17:58 (UTC)
+SIZE:     4.12 KB (4214 bytes)
+LINES:    133
+SHA256:   6a8a7c8e06901a227437a99acbcb61eea6eef37a1e7a779df99fe303a7a8bfe9
+MODIFIED: 2026-10-13 14:01:02 (UTC)
 ================================================================================
 
 @implements IAsyncDisposable
@@ -2407,6 +2413,7 @@ MODIFIED: 2026-10-13 13:17:58 (UTC)
 
 @code {
     private ElementReference _canvas;
+    private readonly TaskCompletionSource _attached = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private DotNetObjectReference<CanvasIsland>? _self;
     private IJSObjectReference? _module;
     private IJSObjectReference? _client;
@@ -2429,6 +2436,7 @@ MODIFIED: 2026-10-13 13:17:58 (UTC)
         _self = DotNetObjectReference.Create(this);
         _module = await JS.InvokeAsync<IJSObjectReference>("import", ModulePath.Of(Assets["Components/Islands/CanvasIsland.razor.js"]));
         _client = await _module.InvokeAsync<IJSObjectReference>("attach", _canvas, _self);
+        _attached.TrySetResult();
         _ready = true;
         StateHasChanged();
     }
@@ -2488,10 +2496,13 @@ MODIFIED: 2026-10-13 13:17:58 (UTC)
         }
     }
 
-    private Task SendAsync(IReadOnlyList<CanvasUpdate> batch, CancellationToken cancellationToken) =>
-        InvokeAsync(() => _client is null
+    private async Task SendAsync(IReadOnlyList<CanvasUpdate> batch, CancellationToken cancellationToken)
+    {
+        await _attached.Task.WaitAsync(cancellationToken);
+        await InvokeAsync(() => _client is null
             ? Task.FromException(new InvalidOperationException("The canvas module is not attached."))
             : _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask());
+    }
 
     private async Task StopAsync()
     {
@@ -2968,10 +2979,10 @@ export function attach(canvas, dotnet) {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/SlotIsland.razor
-SIZE:     4.20 KB (4304 bytes)
-LINES:    137
-SHA256:   565f26e92efb895fca1b2f278125d360d53765c0172a1d258d602afb7af2f5dd
-MODIFIED: 2026-10-13 13:25:23 (UTC)
+SIZE:     4.42 KB (4529 bytes)
+LINES:    142
+SHA256:   96f7071a5f437fca0975fcc63daf3a186e4dcbb25d08352655ea06f3114e3259
+MODIFIED: 2026-10-13 14:01:34 (UTC)
 ================================================================================
 
 @implements IAsyncDisposable
@@ -3007,6 +3018,7 @@ MODIFIED: 2026-10-13 13:25:23 (UTC)
     private const int Bulbs = 18;
 
     private ElementReference _machine;
+    private readonly TaskCompletionSource _attached = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private DotNetObjectReference<SlotIsland>? _self;
     private IJSObjectReference? _module;
     private IJSObjectReference? _client;
@@ -3033,6 +3045,7 @@ MODIFIED: 2026-10-13 13:25:23 (UTC)
         _self = DotNetObjectReference.Create(this);
         _module = await JS.InvokeAsync<IJSObjectReference>("import", ModulePath.Of(Assets["Components/Islands/SlotIsland.razor.js"]));
         _client = await _module.InvokeAsync<IJSObjectReference>("attach", _machine, _self);
+        _attached.TrySetResult();
     }
 
     [JSInvokable]
@@ -3086,10 +3099,13 @@ MODIFIED: 2026-10-13 13:25:23 (UTC)
         _self?.Dispose();
     }
 
-    private Task SendAsync(IReadOnlyList<SlotUpdate> batch, CancellationToken cancellationToken) =>
-        InvokeAsync(() => _client is null
+    private async Task SendAsync(IReadOnlyList<SlotUpdate> batch, CancellationToken cancellationToken)
+    {
+        await _attached.Task.WaitAsync(cancellationToken);
+        await InvokeAsync(() => _client is null
             ? Task.FromException(new InvalidOperationException("The slot module is not attached."))
             : _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask());
+    }
 
     private async Task StopAsync()
     {
@@ -9606,9 +9622,9 @@ export default defineConfig({
 
 
 ===============================================================================
-EXPORT COMPLETED (UTC): 2026-10-13 13:56:29
+EXPORT COMPLETED (UTC): 2026-10-13 14:02:24
 Total Files Exported:   140
-Total Source Size:      0.24 MB (256729 bytes)
+Total Source Size:      0.25 MB (257575 bytes)
 Output File:            /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
 ===============================================================================
-DUMP SHA256 (of all lines above this one): e571cf09ef6f674878dfe9f343d82a5535dcb3b3cc250121698e6f4d41625518
+DUMP SHA256 (of all lines above this one): 6bfbb8b83c2c90e2385202122b1c3f1cd93baa2d4f6bbad2aef101c24f432483
