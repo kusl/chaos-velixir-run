@@ -15,6 +15,7 @@
 </form>
 
 @code {
+    private readonly TaskCompletionSource _attached = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private DotNetObjectReference<BoardIsland>? _self;
     private IJSObjectReference? _module;
     private IJSObjectReference? _client;
@@ -38,6 +39,7 @@
         _self = DotNetObjectReference.Create(this);
         _module = await JS.InvokeAsync<IJSObjectReference>("import", ModulePath.Of(Assets["Components/Islands/BoardIsland.razor.js"]));
         _client = await _module.InvokeAsync<IJSObjectReference>("attach", _self);
+        _attached.TrySetResult();
         _ready = true;
         StateHasChanged();
     }
@@ -107,10 +109,13 @@
         }
     }
 
-    private Task SendAsync(IReadOnlyList<BoardUpdate> batch, CancellationToken cancellationToken) =>
-        InvokeAsync(() => _client is null
+    private async Task SendAsync(IReadOnlyList<BoardUpdate> batch, CancellationToken cancellationToken)
+    {
+        await _attached.Task.WaitAsync(cancellationToken);
+        await InvokeAsync(() => _client is null
             ? Task.FromException(new InvalidOperationException("The board module is not attached."))
             : _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask());
+    }
 
     private async Task StopAsync()
     {

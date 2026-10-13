@@ -14,6 +14,7 @@
 
 @code {
     private ElementReference _canvas;
+    private readonly TaskCompletionSource _attached = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private DotNetObjectReference<CanvasIsland>? _self;
     private IJSObjectReference? _module;
     private IJSObjectReference? _client;
@@ -36,6 +37,7 @@
         _self = DotNetObjectReference.Create(this);
         _module = await JS.InvokeAsync<IJSObjectReference>("import", ModulePath.Of(Assets["Components/Islands/CanvasIsland.razor.js"]));
         _client = await _module.InvokeAsync<IJSObjectReference>("attach", _canvas, _self);
+        _attached.TrySetResult();
         _ready = true;
         StateHasChanged();
     }
@@ -95,10 +97,13 @@
         }
     }
 
-    private Task SendAsync(IReadOnlyList<CanvasUpdate> batch, CancellationToken cancellationToken) =>
-        InvokeAsync(() => _client is null
+    private async Task SendAsync(IReadOnlyList<CanvasUpdate> batch, CancellationToken cancellationToken)
+    {
+        await _attached.Task.WaitAsync(cancellationToken);
+        await InvokeAsync(() => _client is null
             ? Task.FromException(new InvalidOperationException("The canvas module is not attached."))
             : _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask());
+    }
 
     private async Task StopAsync()
     {

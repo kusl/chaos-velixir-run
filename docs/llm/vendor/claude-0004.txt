@@ -549,3 +549,652 @@ failed Chaos.E2E.CanvasTests.StrokesReachEveryoneAndResetClearsThem (5s 143ms)
 /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) failed with 1 error(s) (18s 298ms)
 Exit code: 2
 
+
+/
+Ran a command
+The compiler can’t tell that text is non-null in Hits, because the earlier Classify(text) call doesn’t carry the [NotNullWhen] guarantee back to the caller. The fix is to check IsValid(text) directly at the start of Hits.
+
+Only one file changes. The test projects build after Chaos.Web, so they haven’t been compiled yet. If they report anything, send it over.
+
+The execute bits were my fault: I rebuilt the files from the dump, which dropped the permissions, so the archive shipped the scripts without +x. Since you’ve already run chmod, nothing else is needed, and future archives will keep the bit.
+
+src/Chaos.Web/Slots/SlotRules.cs
+
+csharp
+using System.Diagnostics.CodeAnalysis;
+using System.Security.Cryptography;
+
+namespace Chaos.Web.Slots;
+
+internal static class SlotRules
+{
+    public const int Length = 5;
+    public const string Symbols = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    public static string Draw() => RandomNumberGenerator.GetString(Symbols, Length);
+
+    public static bool IsValid([NotNullWhen(true)] string? text)
+    {
+        if (text is null || text.Length != Length)
+        {
+            return false;
+        }
+
+        foreach (var c in text)
+        {
+            if (!char.IsAsciiDigit(c) && !char.IsAsciiLetterUpper(c))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static SlotWin Classify(string? text)
+    {
+        if (!IsValid(text))
+        {
+            return SlotWin.None;
+        }
+
+        var most = text.GroupBy(c => c).Max(group => group.Count());
+        if (most >= 5)
+        {
+            return SlotWin.FiveOfAKind;
+        }
+
+        if (most == 4)
+        {
+            return SlotWin.FourOfAKind;
+        }
+
+        if (most == 3)
+        {
+            return SlotWin.ThreeOfAKind;
+        }
+
+        if (IsOrdered(text, 1))
+        {
+            return SlotWin.StraightUp;
+        }
+
+        return IsOrdered(text, -1) ? SlotWin.StraightDown : SlotWin.None;
+    }
+
+    public static bool[] Hits(string? text)
+    {
+        var hits = new bool[Length];
+        if (!IsValid(text))
+        {
+            return hits;
+        }
+
+        var win = Classify(text);
+        if (win is SlotWin.None)
+        {
+            return hits;
+        }
+
+        if (win is SlotWin.StraightUp or SlotWin.StraightDown)
+        {
+            Array.Fill(hits, true);
+            return hits;
+        }
+
+        var top = text.GroupBy(c => c).MaxBy(group => group.Count())!.Key;
+        for (var i = 0; i < Length; i++)
+        {
+            hits[i] = text[i] == top;
+        }
+
+        return hits;
+    }
+
+    public static string Label(SlotWin win) => win switch
+    {
+        SlotWin.ThreeOfAKind => "Three of a kind",
+        SlotWin.FourOfAKind => "Four of a kind",
+        SlotWin.FiveOfAKind => "Five of a kind",
+        SlotWin.StraightUp => "Straight up",
+        SlotWin.StraightDown => "Straight down",
+        _ => "",
+    };
+
+    public static char Above(char symbol) => Symbols[(Symbols.IndexOf(symbol, StringComparison.Ordinal) + 1) % Symbols.Length];
+
+    public static char Below(char symbol) => Symbols[(Symbols.IndexOf(symbol, StringComparison.Ordinal) + Symbols.Length - 1) % Symbols.Length];
+
+    private static bool IsOrdered(string text, int direction)
+    {
+        for (var i = 1; i < text.Length; i++)
+        {
+            if ((text[i] - text[i - 1]) * direction <= 0)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+An end to end test failed. 
+I have updated the project terminal.txt and dump.txt 
+
+==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.63.0-noble
+  Determining projects to restore...
+  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 341 ms).
+  Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web -> /tmp/app/
+Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+failed Chaos.E2E.CanvasTests.StrokesReachEveryoneAndResetClearsThem (5s 143ms)
+  from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Microsoft.Playwright.PlaywrightException : Locator expected to be visible
+  Error: element(s) not found 
+  Call log:
+    - Expect "ToBeVisibleAsync" Locator("canvas.paper[data-ready]") with timeout 5000ms
+    - waiting for Locator("canvas.paper[data-ready]")
+  Aria snapshot:
+  - banner:
+    - link "chaos":
+      - /url: ""
+    - navigation "Main":
+      - link "Board":
+        - /url: board
+      - link "Canvas":
+        - /url: canvas
+      - link "Slots":
+        - /url: slots
+      - link "About":
+        - /url: about
+    - button "Dark theme"
+  - main:
+    - heading "Canvas" [level=1]
+    - paragraph: One black pen and one shared page. Every stroke shows up for everyone while it is being drawn. Reset clears the page for everyone, and so does a server restart.
+    - img "Shared drawing canvas. Drawing needs a mouse, a finger or a stylus."
+    - button "Reset canvas"
+    - status
+    - paragraph: "Drawing needs a pointer: a mouse, a finger or a stylus. There is no way to draw with a keyboard, but the reset button works from one."
+  - contentinfo:
+    - link "Source code":
+      - /url: https://github.com/kusl/chaos-velixir-run
+    - text: AGPL-3.0-or-later
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, FrameExpectOptions expectOptions, Object expected, String message, String title) in /_/src/Playwright/Core/AssertionsBase.cs:95
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, ExpectedTextValue[] expectedText, Object expected, String message, String title, FrameExpectOptions options) in /_/src/Playwright/Core/AssertionsBase.cs:69
+    at Chaos.E2E.CanvasTests.OpenCanvasAsync(IBrowserContext context) in /work/tests/Chaos.E2E/CanvasTests.cs:55
+    at Chaos.E2E.CanvasTests.StrokesReachEveryoneAndResetClearsThem() in /work/tests/Chaos.E2E/CanvasTests.cs:29
+    at Chaos.E2E.CanvasTests.StrokesReachEveryoneAndResetClearsThem() in /work/tests/Chaos.E2E/CanvasTests.cs:47
+    at Chaos.E2E.CanvasTests.StrokesReachEveryoneAndResetClearsThem() in /work/tests/Chaos.E2E/CanvasTests.cs:47
+    --- End of stack trace from previous location ---
+/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) failed with 1 error(s) (18s 298ms)
+Exit code: 2
+
+Ran 4 commands
+The canvas never got its first snapshot, and this was also the cause of the original 30-second canvas failure. The readiness check I added only made it fail sooner.
+
+The canvas script asks the server to start sending updates (Join) during attach, before attach has returned to .NET. The server queued the snapshot right away, but at that moment it didn’t yet have the handle to the browser script. The send failed and the update channel stopped, so nothing arrived until the 25-second ping re-joined.
+
+The board and slots didn’t hit this only because they read local history before joining, which gives attach time to return.
+
+The fix is on the server: each island now waits until its script is attached before sending anything. All three islands get it so the next new island doesn’t repeat the problem.
+
+src/Chaos.Web/Components/Islands/CanvasIsland.razor
+
+razor
+@implements IAsyncDisposable
+@inject CanvasService Canvas
+@inject IJSRuntime JS
+@inject ILogger<CanvasIsland> Logger
+
+<div class="stage">
+    <canvas @ref="_canvas" class="paper" width="1024" height="1024" role="img"
+            aria-label="Shared drawing canvas. Drawing needs a mouse, a finger or a stylus."></canvas>
+</div>
+<div class="tools">
+    <button type="button" @onclick="Reset" disabled="@(!_ready)">Reset canvas</button>
+    <output class="status">@_status</output>
+</div>
+
+@code {
+    private ElementReference _canvas;
+    private readonly TaskCompletionSource _attached = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private DotNetObjectReference<CanvasIsland>? _self;
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _client;
+    private Outbox<CanvasUpdate>? _outbox;
+    private Subscriber? _subscriber;
+    private CanvasSession? _session;
+    private string? _status;
+    private bool _ready;
+
+    [Parameter, EditorRequired]
+    public string Client { get; set; } = ClientAddress.Unknown;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        _self = DotNetObjectReference.Create(this);
+        _module = await JS.InvokeAsync<IJSObjectReference>("import", ModulePath.Of(Assets["Components/Islands/CanvasIsland.razor.js"]));
+        _client = await _module.InvokeAsync<IJSObjectReference>("attach", _canvas, _self);
+        _attached.TrySetResult();
+        _ready = true;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public async Task Join()
+    {
+        await StopAsync();
+        var outbox = new Outbox<CanvasUpdate>(256, 64, TimeSpan.FromSeconds(20), SendAsync, Logger);
+        _outbox = outbox;
+        _subscriber = new Subscriber(outbox);
+        _session = Canvas.OpenSession(_subscriber);
+        Canvas.Subscribe(_subscriber);
+    }
+
+    [JSInvokable]
+    public int Draw(int stroke, int epoch, int[] points, bool end)
+    {
+        if (_session is null || points is null)
+        {
+            return (int)DrawResult.Invalid;
+        }
+
+        var result = Canvas.Draw(_session, epoch, stroke, points, end);
+        SetStatus(result switch
+        {
+            DrawResult.TooFast => "Slow down a little.",
+            DrawResult.Full => "The canvas is full. Reset it to keep drawing.",
+            DrawResult.TooLong => "That stroke got too long, so it ended.",
+            _ => null,
+        });
+        return (int)result;
+    }
+
+    [JSInvokable]
+    public bool Ping() => _subscriber is not null && _outbox is { IsFaulted: false } && Canvas.IsSubscribed(_subscriber);
+
+    public async ValueTask DisposeAsync()
+    {
+        await StopAsync();
+        await JsCleanup.DisposeAsync(_client, "dispose");
+        await JsCleanup.DisposeAsync(_module, null);
+        _self?.Dispose();
+    }
+
+    private void Reset()
+    {
+        _status = Canvas.Reset(Client) is ResetResult.TooFast ? "It was just reset. Try again in a second." : null;
+    }
+
+    private void SetStatus(string? status)
+    {
+        if (status != _status)
+        {
+            _status = status;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SendAsync(IReadOnlyList<CanvasUpdate> batch, CancellationToken cancellationToken)
+    {
+        await _attached.Task.WaitAsync(cancellationToken);
+        await InvokeAsync(() => _client is null
+            ? Task.FromException(new InvalidOperationException("The canvas module is not attached."))
+            : _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask());
+    }
+
+    private async Task StopAsync()
+    {
+        if (_session is not null)
+        {
+            Canvas.Abandon(_session);
+            _session = null;
+        }
+
+        if (_subscriber is not null)
+        {
+            Canvas.Unsubscribe(_subscriber);
+            _subscriber = null;
+        }
+
+        if (_outbox is not null)
+        {
+            await _outbox.DisposeAsync();
+            _outbox = null;
+        }
+    }
+
+    private sealed class Subscriber(Outbox<CanvasUpdate> outbox) : ICanvasSubscriber
+    {
+        public bool Deliver(CanvasUpdate update) => outbox.TryPost(update);
+    }
+}
+src/Chaos.Web/Components/Islands/BoardIsland.razor
+
+razor
+@implements IAsyncDisposable
+@inject BoardService Board
+@inject IJSRuntime JS
+@inject ILogger<BoardIsland> Logger
+
+<form class="compose" @onsubmit="Send">
+    <label class="visually-hidden" for="compose-text">Message</label>
+    <textarea id="compose-text" @bind="_draft" maxlength="@MessageText.MaxLength" rows="3" required
+              placeholder="Write something everyone here will see" disabled="@(!_ready)"></textarea>
+    <div class="actions">
+        <output class="status" for="compose-text">@_status</output>
+        <span class="hint">Ctrl+Enter sends</span>
+        <button type="submit" disabled="@(!_ready)">Send</button>
+    </div>
+</form>
+
+@code {
+    private readonly TaskCompletionSource _attached = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private DotNetObjectReference<BoardIsland>? _self;
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _client;
+    private Outbox<BoardUpdate>? _outbox;
+    private Subscriber? _subscriber;
+    private string? _draft;
+    private string? _status;
+    private bool _ready;
+    private int _offered;
+
+    [Parameter, EditorRequired]
+    public string Client { get; set; } = ClientAddress.Unknown;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        _self = DotNetObjectReference.Create(this);
+        _module = await JS.InvokeAsync<IJSObjectReference>("import", ModulePath.Of(Assets["Components/Islands/BoardIsland.razor.js"]));
+        _client = await _module.InvokeAsync<IJSObjectReference>("attach", _self);
+        _attached.TrySetResult();
+        _ready = true;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public int Offer(string[] ids, string[] texts)
+    {
+        if (ids is null || texts is null || ids.Length != texts.Length)
+        {
+            return 0;
+        }
+
+        var count = Math.Min(BoardService.MaxOffers - _offered, ids.Length);
+        if (count <= 0)
+        {
+            return 0;
+        }
+
+        _offered += count;
+        var offered = new List<BoardMessage>(count);
+        for (var i = 0; i < count; i++)
+        {
+            if (Guid.TryParseExact(ids[i], "D", out var id) && texts[i] is { } text)
+            {
+                offered.Add(new BoardMessage(id, text));
+            }
+        }
+
+        return Board.Offer(offered);
+    }
+
+    [JSInvokable]
+    public async Task Join()
+    {
+        await StopAsync();
+        var outbox = new Outbox<BoardUpdate>(64, 16, TimeSpan.FromSeconds(20), SendAsync, Logger);
+        _outbox = outbox;
+        _subscriber = new Subscriber(outbox);
+        Board.Subscribe(_subscriber);
+    }
+
+    [JSInvokable]
+    public bool Ping() => _subscriber is not null && _outbox is { IsFaulted: false } && Board.IsSubscribed(_subscriber);
+
+    public async ValueTask DisposeAsync()
+    {
+        await StopAsync();
+        await JsCleanup.DisposeAsync(_client, "dispose");
+        await JsCleanup.DisposeAsync(_module, null);
+        _self?.Dispose();
+    }
+
+    private void Send()
+    {
+        var result = Board.Post(_draft, Client);
+        _status = result switch
+        {
+            PostResult.Empty => "Type a message first.",
+            PostResult.TooFast => "Slow down. You can post again in a moment.",
+            PostResult.Repeat => "That message was just posted.",
+            _ => null,
+        };
+
+        if (result is PostResult.Accepted)
+        {
+            _draft = null;
+        }
+    }
+
+    private async Task SendAsync(IReadOnlyList<BoardUpdate> batch, CancellationToken cancellationToken)
+    {
+        await _attached.Task.WaitAsync(cancellationToken);
+        await InvokeAsync(() => _client is null
+            ? Task.FromException(new InvalidOperationException("The board module is not attached."))
+            : _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask());
+    }
+
+    private async Task StopAsync()
+    {
+        if (_subscriber is not null)
+        {
+            Board.Unsubscribe(_subscriber);
+            _subscriber = null;
+        }
+
+        if (_outbox is not null)
+        {
+            await _outbox.DisposeAsync();
+            _outbox = null;
+        }
+    }
+
+    private sealed class Subscriber(Outbox<BoardUpdate> outbox) : IBoardSubscriber
+    {
+        public bool Deliver(BoardUpdate update) => outbox.TryPost(update);
+    }
+}
+src/Chaos.Web/Components/Islands/SlotIsland.razor
+
+razor
+@implements IAsyncDisposable
+@inject SlotService Slots
+@inject IJSRuntime JS
+@inject ILogger<SlotIsland> Logger
+
+<section @ref="_machine" class="machine" aria-labelledby="machine-title" data-initial="@_face">
+    <h2 id="machine-title" class="visually-hidden">Slot machine</h2>
+    <div class="lights" aria-hidden="true">
+        @for (var i = 0; i < Bulbs; i++)
+        {
+            <span></span>
+        }
+    </div>
+    <div class="window" aria-hidden="true">
+        @foreach (var symbol in _face)
+        {
+            <div class="reel"><div class="strip"><span>@SlotRules.Above(symbol)</span><span>@symbol</span><span>@SlotRules.Below(symbol)</span></div></div>
+        }
+        <div class="payline"></div>
+    </div>
+    <p class="verdict" aria-hidden="true"></p>
+    <div class="controls">
+        <button type="button" class="spin" disabled>Spin</button>
+        <button type="button" class="auto" aria-pressed="false" hidden>Auto spin</button>
+    </div>
+    <output class="status"></output>
+    <p class="progress"></p>
+</section>
+
+@code {
+    private const int Bulbs = 18;
+
+    private ElementReference _machine;
+    private readonly TaskCompletionSource _attached = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private DotNetObjectReference<SlotIsland>? _self;
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _client;
+    private Outbox<SlotUpdate>? _outbox;
+    private Subscriber? _subscriber;
+    private string _face = "CHAOS";
+    private int _offered;
+
+    [Parameter, EditorRequired]
+    public string Client { get; set; } = ClientAddress.Unknown;
+
+    [Parameter]
+    public string? Face { get; set; }
+
+    protected override void OnParametersSet() => _face = SlotRules.IsValid(Face) ? Face : "CHAOS";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        _self = DotNetObjectReference.Create(this);
+        _module = await JS.InvokeAsync<IJSObjectReference>("import", ModulePath.Of(Assets["Components/Islands/SlotIsland.razor.js"]));
+        _client = await _module.InvokeAsync<IJSObjectReference>("attach", _machine, _self);
+        _attached.TrySetResult();
+    }
+
+    [JSInvokable]
+    public int Offer(string[] ids, string[] texts)
+    {
+        if (ids is null || texts is null || ids.Length != texts.Length)
+        {
+            return 0;
+        }
+
+        var count = Math.Min(SlotService.MaxOffers - _offered, ids.Length);
+        if (count <= 0)
+        {
+            return 0;
+        }
+
+        _offered += count;
+        var offered = new List<BoardMessage>(count);
+        for (var i = 0; i < count; i++)
+        {
+            if (Guid.TryParseExact(ids[i], "D", out var id) && texts[i] is { } text)
+            {
+                offered.Add(new BoardMessage(id, text));
+            }
+        }
+
+        return Slots.Offer(offered);
+    }
+
+    [JSInvokable]
+    public async Task Join()
+    {
+        await StopAsync();
+        var outbox = new Outbox<SlotUpdate>(64, 16, TimeSpan.FromSeconds(20), SendAsync, Logger);
+        _outbox = outbox;
+        _subscriber = new Subscriber(outbox);
+        Slots.Subscribe(_subscriber);
+    }
+
+    [JSInvokable]
+    public string Press() => Slots.Press(Client).Reply;
+
+    [JSInvokable]
+    public bool Ping() => _subscriber is not null && _outbox is { IsFaulted: false } && Slots.IsSubscribed(_subscriber);
+
+    public async ValueTask DisposeAsync()
+    {
+        await StopAsync();
+        await JsCleanup.DisposeAsync(_client, "dispose");
+        await JsCleanup.DisposeAsync(_module, null);
+        _self?.Dispose();
+    }
+
+    private async Task SendAsync(IReadOnlyList<SlotUpdate> batch, CancellationToken cancellationToken)
+    {
+        await _attached.Task.WaitAsync(cancellationToken);
+        await InvokeAsync(() => _client is null
+            ? Task.FromException(new InvalidOperationException("The slot module is not attached."))
+            : _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask());
+    }
+
+    private async Task StopAsync()
+    {
+        if (_subscriber is not null)
+        {
+            Slots.Unsubscribe(_subscriber);
+            _subscriber = null;
+        }
+
+        if (_outbox is not null)
+        {
+            await _outbox.DisposeAsync();
+            _outbox = null;
+        }
+    }
+
+    private sealed class Subscriber(Outbox<SlotUpdate> outbox) : ISlotSubscriber
+    {
+        public bool Deliver(SlotUpdate update) => outbox.TryPost(update);
+    }
+}
+docs/adr/0007-realtime-delivery.md
+
+markdown
+# 0007 Per-client outboxes over the circuit
+
+Status: accepted
+
+- Transport is the Blazor circuit itself: JS calls `[JSInvokable]` methods, the server calls the module's `apply`. No separate SignalR hub and no extra JavaScript client.
+- Each island owns a bounded channel (`Outbox<T>`) drained by one pump that sends batches in order and waits for the browser to finish each batch. A full outbox, a failed call or a 20 s stall drops the subscriber.
+- The pump waits until the island's module has been attached. JavaScript can call `Join` before `attach` has returned to .NET, and an earlier send would fault the outbox.
+- Subscribing enqueues a snapshot under the same lock as updates, so nothing is missed or duplicated.
+- Board deltas carry `version` and `previous`; a gap triggers a fresh snapshot. Canvas updates carry an offset per stroke; a gap triggers a fresh snapshot.
+- The browser pings every 25 s and resubscribes when the server says it was dropped, and resubscribes after every reconnect.
+
+
+
+Claude is AI and can make mistakes. Please double-check responses.
+
+
+
+
+Claude finished the response
+
+21
+22
+
+
+
+
+
+
+
+
+
+
+
+
