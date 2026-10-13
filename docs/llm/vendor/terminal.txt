@@ -135,4 +135,215 @@ Total source size: 0.18 MB across 123 files
 real	0m1.765s
 user	0m0.924s
 sys	0m1.182s
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
+
+==> Restore
+Restore complete (0.6s)
+
+Build succeeded in 0.7s
+
+==> Build (Release, warnings are errors)
+  Chaos.E2E net10.0 succeeded (2.6s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
+  Chaos.Web net10.0 succeeded (4.0s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web.Tests net10.0 succeeded (0.5s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
+
+Build succeeded in 4.8s
+
+==> Unit and integration tests
+Running tests from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
+tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 049ms)
+
+  In process file artifacts produced:
+    - artifacts/test-results/unit/coverage.cobertura.xml
+
+Test run summary: Passed!
+  total: 93
+  failed: 0
+  succeeded: 93
+  skipped: 0
+  duration: 1s 887ms
+.NET line coverage: 78.4%
+
+==> JavaScript unit tests
+
+added 49 packages in 467ms
+
+ RUN  v5.0.4 /home/kushal/src/dotnet/chaos-velixir-run/tests/js
+      Coverage enabled with v8
+
+ ✓ app.test.js (8 tests) 3ms
+ ✓ canvas.test.js (14 tests) 5ms
+ ✓ board.test.js (10 tests) 5ms
+
+ Test Files  3 passed (3)
+      Tests  32 passed (32)
+   Start at  04:35:52
+   Duration  173ms (transform 52%, worker 22%, import 18%, tests 8%)
+
+ % Coverage report from v8
+------------------------|---------|----------|---------|---------|-------------------
+File                    | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+------------------------|---------|----------|---------|---------|-------------------
+All files               |      15 |    19.62 |   14.49 |   15.26 |                   
+ Components             |   16.04 |    30.61 |   18.75 |   16.25 |                   
+  App.razor.js          |   16.04 |    30.61 |   18.75 |   16.25 | 27-146,150        
+ Components/Islands     |   14.98 |    17.45 |   13.93 |   15.26 |                   
+  BoardIsland.razor.js  |   13.26 |       18 |      12 |   13.81 | 36,74-458         
+  CanvasIsland.razor.js |   17.08 |    16.96 |   17.02 |   16.94 | 83-391            
+ wwwroot                |       0 |        0 |     100 |       0 |                   
+  theme-init.js         |       0 |        0 |     100 |       0 | 2-8               
+------------------------|---------|----------|---------|---------|-------------------
+
+==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.63.0-noble
+  Determining projects to restore...
+  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 348 ms).
+  Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web -> /tmp/app/
+Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) passed (5s 497ms)
+
+Test run summary: Passed!
+  total: 9
+  failed: 0
+  succeeded: 9
+  skipped: 0
+  duration: 5s 634ms
+Starting project export...
+Project Path: /home/kushal/src/dotnet/chaos-velixir-run
+Output File:  /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
+Listing files via git...
+Found 123 files to export
+Processing (1/123): .editorconfig
+Processing (2/123): .gitattributes
+Processing (3/123): .github/dependabot.yml
+Processing (4/123): .github/workflows/ci.yml
+Processing (5/123): .github/workflows/velixir.yml
+Processing (6/123): .gitignore
+Processing (7/123): Directory.Build.props
+Processing (8/123): Directory.Packages.props
+Processing (9/123): README.md
+Processing (10/123): REUSE.toml
+Processing (11/123): chaos-velixir-run.slnx
+Processing (12/123): docs/adr/0001-record-decisions.md
+Processing (13/123): docs/adr/0002-rendering-model.md
+Processing (14/123): docs/adr/0003-deploy-only-the-web-project.md
+Processing (15/123): docs/adr/0004-message-ids-and-reconciliation.md
+Processing (16/123): docs/adr/0005-local-history.md
+Processing (17/123): docs/adr/0006-canvas-protocol.md
+Processing (18/123): docs/adr/0007-realtime-delivery.md
+Processing (19/123): docs/adr/0008-abuse-limits.md
+Processing (20/123): docs/adr/0009-security-headers.md
+Processing (21/123): docs/adr/0010-no-cookies.md
+Processing (22/123): docs/adr/0011-theme.md
+Processing (23/123): docs/adr/0012-reconnect-and-cold-start.md
+Processing (24/123): docs/adr/0013-runtime-footprint.md
+Processing (25/123): docs/adr/0014-testing.md
+Processing (26/123): docs/adr/0015-dependencies.md
+Processing (27/123): docs/adr/0016-licensing.md
+Processing (28/123): docs/adr/0017-scripts-and-ci.md
+Processing (29/123): docs/adr/0018-export.md
+Processing (30/123): docs/adr/README.md
+Processing (31/123): global.json
+Processing (32/123): scripts/build.sh
+Processing (33/123): scripts/e2e-container.sh
+Processing (34/123): scripts/export.sh
+Processing (35/123): scripts/lib.sh
+Processing (36/123): scripts/run-all.sh
+Processing (37/123): scripts/test-e2e.sh
+Processing (38/123): scripts/test-js.sh
+Processing (39/123): scripts/test-unit.sh
+Processing (40/123): src/Chaos.Web/Chaos.Web.csproj
+Processing (41/123): src/Chaos.Web/Components/App.razor
+Processing (42/123): src/Chaos.Web/Components/App.razor.js
+Processing (43/123): src/Chaos.Web/Components/Islands/BoardIsland.razor
+Processing (44/123): src/Chaos.Web/Components/Islands/BoardIsland.razor.css
+Processing (45/123): src/Chaos.Web/Components/Islands/BoardIsland.razor.js
+Processing (46/123): src/Chaos.Web/Components/Islands/CanvasIsland.razor
+Processing (47/123): src/Chaos.Web/Components/Islands/CanvasIsland.razor.css
+Processing (48/123): src/Chaos.Web/Components/Islands/CanvasIsland.razor.js
+Processing (49/123): src/Chaos.Web/Components/Layout/MainLayout.razor
+Processing (50/123): src/Chaos.Web/Components/Layout/MainLayout.razor.css
+Processing (51/123): src/Chaos.Web/Components/Layout/ReconnectBanner.razor
+Processing (52/123): src/Chaos.Web/Components/Layout/ReconnectBanner.razor.css
+Processing (53/123): src/Chaos.Web/Components/Layout/ThemeToggle.razor
+Processing (54/123): src/Chaos.Web/Components/Layout/ThemeToggle.razor.css
+Processing (55/123): src/Chaos.Web/Components/Pages/About.razor
+Processing (56/123): src/Chaos.Web/Components/Pages/About.razor.css
+Processing (57/123): src/Chaos.Web/Components/Pages/BoardPage.razor
+Processing (58/123): src/Chaos.Web/Components/Pages/BoardPage.razor.css
+Processing (59/123): src/Chaos.Web/Components/Pages/CanvasPage.razor
+Processing (60/123): src/Chaos.Web/Components/Pages/CanvasPage.razor.css
+Processing (61/123): src/Chaos.Web/Components/Pages/Error.razor
+Processing (62/123): src/Chaos.Web/Components/Pages/Error.razor.css
+Processing (63/123): src/Chaos.Web/Components/Pages/Home.razor
+Processing (64/123): src/Chaos.Web/Components/Pages/Home.razor.css
+Processing (65/123): src/Chaos.Web/Components/Pages/NotFound.razor
+Processing (66/123): src/Chaos.Web/Components/Routes.razor
+Processing (67/123): src/Chaos.Web/Components/_Imports.razor
+Processing (68/123): src/Chaos.Web/Drawing/CanvasService.cs
+Processing (69/123): src/Chaos.Web/Drawing/CanvasSession.cs
+Processing (70/123): src/Chaos.Web/Drawing/CanvasUpdate.cs
+Processing (71/123): src/Chaos.Web/Drawing/DrawResult.cs
+Processing (72/123): src/Chaos.Web/Drawing/ICanvasSubscriber.cs
+Processing (73/123): src/Chaos.Web/Drawing/ResetResult.cs
+Processing (74/123): src/Chaos.Web/Drawing/Stroke.cs
+Processing (75/123): src/Chaos.Web/Infrastructure/ChaosOptions.cs
+Processing (76/123): src/Chaos.Web/Infrastructure/ClientAddress.cs
+Processing (77/123): src/Chaos.Web/Infrastructure/ConnectionTracker.cs
+Processing (78/123): src/Chaos.Web/Infrastructure/CookielessAntiforgery.cs
+Processing (79/123): src/Chaos.Web/Infrastructure/HubGuard.cs
+Processing (80/123): src/Chaos.Web/Infrastructure/JsCleanup.cs
+Processing (81/123): src/Chaos.Web/Infrastructure/KeyedTokenBuckets.cs
+Processing (82/123): src/Chaos.Web/Infrastructure/ModulePath.cs
+Processing (83/123): src/Chaos.Web/Infrastructure/OriginPolicy.cs
+Processing (84/123): src/Chaos.Web/Infrastructure/Outbox.cs
+Processing (85/123): src/Chaos.Web/Infrastructure/RequestLimits.cs
+Processing (86/123): src/Chaos.Web/Infrastructure/SecurityHeaders.cs
+Processing (87/123): src/Chaos.Web/Infrastructure/TokenBucket.cs
+Processing (88/123): src/Chaos.Web/Messages/BoardMessage.cs
+Processing (89/123): src/Chaos.Web/Messages/BoardService.cs
+Processing (90/123): src/Chaos.Web/Messages/BoardUpdate.cs
+Processing (91/123): src/Chaos.Web/Messages/IBoardSubscriber.cs
+Processing (92/123): src/Chaos.Web/Messages/MessageFormat.cs
+Processing (93/123): src/Chaos.Web/Messages/MessageText.cs
+Processing (94/123): src/Chaos.Web/Messages/PostResult.cs
+Processing (95/123): src/Chaos.Web/Messages/Uuid7.cs
+Processing (96/123): src/Chaos.Web/Program.cs
+Processing (97/123): src/Chaos.Web/Properties/launchSettings.json
+Processing (98/123): src/Chaos.Web/appsettings.Development.json
+Processing (99/123): src/Chaos.Web/appsettings.json
+Processing (100/123): src/Chaos.Web/wwwroot/app.css
+Processing (101/123): src/Chaos.Web/wwwroot/favicon.svg
+Processing (102/123): src/Chaos.Web/wwwroot/theme-init.js
+Processing (103/123): tests/Chaos.E2E/BoardTests.cs
+Processing (104/123): tests/Chaos.E2E/BrowserFixture.cs
+Processing (105/123): tests/Chaos.E2E/CanvasTests.cs
+Processing (106/123): tests/Chaos.E2E/Chaos.E2E.csproj
+Processing (107/123): tests/Chaos.E2E/SiteTests.cs
+Processing (108/123): tests/Chaos.Web.Tests/BoardServiceTests.cs
+Processing (109/123): tests/Chaos.Web.Tests/CanvasServiceTests.cs
+Processing (110/123): tests/Chaos.Web.Tests/Chaos.Web.Tests.csproj
+Processing (111/123): tests/Chaos.Web.Tests/HttpPipelineTests.cs
+Processing (112/123): tests/Chaos.Web.Tests/InfrastructureTests.cs
+Processing (113/123): tests/Chaos.Web.Tests/MessageFormatTests.cs
+Processing (114/123): tests/Chaos.Web.Tests/MessageTextTests.cs
+Processing (115/123): tests/Chaos.Web.Tests/OutboxTests.cs
+Processing (116/123): tests/Chaos.Web.Tests/TestSupport.cs
+Processing (117/123): tests/Chaos.Web.Tests/Uuid7Tests.cs
+Processing (118/123): tests/Directory.Build.props
+Processing (119/123): tests/js/app.test.js
+Processing (120/123): tests/js/board.test.js
+Processing (121/123): tests/js/canvas.test.js
+Processing (122/123): tests/js/package.json
+Processing (123/123): tests/js/vitest.config.mjs
+
+Export completed successfully!
+Output file: /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
+Total source size: 0.18 MB across 123 files
+
+==> All steps passed
+
+real	0m23.587s
+user	0m7.299s
+sys	0m2.647s
 kushal@fedora:~/src/dotnet/chaos-velixir-run$ 
