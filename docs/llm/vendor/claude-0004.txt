@@ -548,3 +548,4 @@ failed Chaos.E2E.CanvasTests.StrokesReachEveryoneAndResetClearsThem (5s 143ms)
     --- End of stack trace from previous location ---
 /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) failed with 1 error(s) (18s 298ms)
 Exit code: 2
+
