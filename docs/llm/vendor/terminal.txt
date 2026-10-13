@@ -377,4 +377,176 @@ Total source size: 0.24 MB across 140 files
 real	0m1.985s
 user	0m1.043s
 sys	0m1.362s
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
+
+==> Restore
+Restore complete (0.5s)
+
+Build succeeded in 0.6s
+
+==> Build (Release, warnings are errors)
+  Chaos.E2E net10.0 succeeded (0.1s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
+  Chaos.Web net10.0 succeeded (0.7s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web.Tests net10.0 succeeded (0.2s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
+
+Build succeeded in 1.3s
+
+==> Unit and integration tests
+Running tests from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
+tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 099ms)
+
+  In process file artifacts produced:
+    - artifacts/test-results/unit/coverage.cobertura.xml
+
+Test run summary: Passed!
+  total: 125
+  failed: 0
+  succeeded: 125
+  skipped: 0
+  duration: 1s 908ms
+.NET line coverage: 78.8%
+
+==> JavaScript unit tests
+
+added 49 packages in 479ms
+
+ RUN  v5.0.4 /home/kushal/src/dotnet/chaos-velixir-run/tests/js
+      Coverage enabled with v8
+
+ ✓ canvas.test.js (14 tests) 5ms
+ ✓ app.test.js (8 tests) 3ms
+ ✓ board.test.js (10 tests) 6ms
+ ✓ slots.test.js (19 tests) 6ms
+
+ Test Files  4 passed (4)
+      Tests  51 passed (51)
+   Start at  09:59:31
+   Duration  195ms (transform 52%, worker 22%, import 17%, tests 8%)
+
+ % Coverage report from v8
+------------------------|---------|----------|---------|---------|-------------------
+File                    | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+------------------------|---------|----------|---------|---------|-------------------
+All files               |   15.24 |     21.3 |   17.67 |   15.29 |                   
+ Components             |   15.47 |    30.61 |   17.64 |   15.85 |                   
+  App.razor.js          |   15.47 |    30.61 |   17.64 |   15.85 | 27-153,157        
+ Components/Islands     |    15.3 |    20.39 |   17.67 |   15.32 |                   
+  BoardIsland.razor.js  |   13.42 |    17.64 |   11.84 |   14.07 | 38,76-459         
+  CanvasIsland.razor.js |   17.01 |    16.96 |   17.39 |   16.87 | 83-392            
+  SlotIsland.razor.js   |   15.65 |    23.83 |   23.68 |   15.27 | 15,51,142-661     
+ wwwroot                |       0 |        0 |     100 |       0 |                   
+  theme-init.js         |       0 |        0 |     100 |       0 | 2-8               
+------------------------|---------|----------|---------|---------|-------------------
+
+==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.63.0-noble
+  Determining projects to restore...
+  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 498 ms).
+  Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web -> /tmp/app/
+Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+failed Chaos.E2E.CanvasTests.StrokesReachEveryoneAndResetClearsThem (5s 146ms)
+  from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Microsoft.Playwright.PlaywrightException : Locator expected to be visible
+  Error: element(s) not found 
+  Call log:
+    - Expect "ToBeVisibleAsync" Locator("canvas.paper[data-ready]") with timeout 5000ms
+    - waiting for Locator("canvas.paper[data-ready]")
+  Aria snapshot:
+  - banner:
+    - link "chaos":
+      - /url: ""
+    - navigation "Main":
+      - link "Board":
+        - /url: board
+      - link "Canvas":
+        - /url: canvas
+      - link "Slots":
+        - /url: slots
+      - link "About":
+        - /url: about
+    - button "Dark theme"
+  - main:
+    - heading "Canvas" [level=1]
+    - paragraph: One black pen and one shared page. Every stroke shows up for everyone while it is being drawn. Reset clears the page for everyone, and so does a server restart.
+    - img "Shared drawing canvas. Drawing needs a mouse, a finger or a stylus."
+    - button "Reset canvas"
+    - status
+    - paragraph: "Drawing needs a pointer: a mouse, a finger or a stylus. There is no way to draw with a keyboard, but the reset button works from one."
+  - contentinfo:
+    - link "Source code":
+      - /url: https://github.com/kusl/chaos-velixir-run
+    - text: AGPL-3.0-or-later
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, FrameExpectOptions expectOptions, Object expected, String message, String title) in /_/src/Playwright/Core/AssertionsBase.cs:95
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, ExpectedTextValue[] expectedText, Object expected, String message, String title, FrameExpectOptions options) in /_/src/Playwright/Core/AssertionsBase.cs:69
+    at Chaos.E2E.CanvasTests.OpenCanvasAsync(IBrowserContext context) in /work/tests/Chaos.E2E/CanvasTests.cs:55
+    at Chaos.E2E.CanvasTests.StrokesReachEveryoneAndResetClearsThem() in /work/tests/Chaos.E2E/CanvasTests.cs:29
+    at Chaos.E2E.CanvasTests.StrokesReachEveryoneAndResetClearsThem() in /work/tests/Chaos.E2E/CanvasTests.cs:47
+    at Chaos.E2E.CanvasTests.StrokesReachEveryoneAndResetClearsThem() in /work/tests/Chaos.E2E/CanvasTests.cs:47
+    --- End of stack trace from previous location ---
+/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) failed with 1 error(s) (18s 573ms)
+Exit code: 2
+
+Test run summary: Failed!
+  total: 11
+  failed: 1
+  succeeded: 10
+  skipped: 0
+  duration: 18s 732ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
+
+==> Last 50 lines of the app log
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
+      Sending file. Request path: '_framework/blazor.web.9hsif5t8mt.js'. Physical path: '/tmp/app/wwwroot/_framework/blazor.web.js.br'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5080/Chaos.Web.ibggqi5jv8.styles.css - 200 3359 text/css 0.1651ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5080/Components/App.jo229i2r4h.razor.js - 200 1298 text/javascript 0.0892ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5080/theme-init.txzesam2x6.js - 200 129 text/javascript 0.2332ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5080/app.6yx7hxyzaq.css - 200 766 text/css 0.2075ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5080/_framework/blazor.web.9hsif5t8mt.js - 200 47578 text/javascript 0.1367ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:5080/_blazor/initializers - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5080/_blazor/initializers - 200 - application/json;+charset=utf-8 0.2169ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:5080/_blazor/negotiate?negotiateVersion=1 - - 0
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:5080/_blazor/negotiate?negotiateVersion=1 - 200 - application/json 0.2296ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:5080/_blazor?id=SLYRDoTRl4sYtQfISTPh7A - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/CanvasIsland.tm0fb3asrv.razor.js - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
+      Sending file. Request path: 'Components/Islands/CanvasIsland.tm0fb3asrv.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/CanvasIsland.razor.js.br'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/CanvasIsland.tm0fb3asrv.razor.js - 200 2593 text/javascript 0.2286ms
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5080/_blazor?id=SLYRDoTRl4sYtQfISTPh7A - 101 - - 5047.1328ms
+
+real	0m32.338s
+user	0m6.326s
+sys	0m1.518s
 kushal@fedora:~/src/dotnet/chaos-velixir-run$ 
