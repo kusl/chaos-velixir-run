@@ -61,8 +61,13 @@ internal static class SlotRules
 
     public static bool[] Hits(string? text)
     {
-        var win = Classify(text);
         var hits = new bool[Length];
+        if (!IsValid(text))
+        {
+            return hits;
+        }
+
+        var win = Classify(text);
         if (win is SlotWin.None)
         {
             return hits;
