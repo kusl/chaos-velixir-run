@@ -1,0 +1,40 @@
+@page "/board"
+@inject BoardService Board
+@inject TimeProvider Time
+
+<PageTitle>Chaos board</PageTitle>
+
+<h1>Board</h1>
+<p class="lede">Say something. The server keeps the newest @Board.Capacity messages and this browser keeps what it has seen. A dotted border marks a message the server has already forgotten.</p>
+
+<BoardIsland Client="@_client" @rendermode="InteractiveServer" />
+
+<section class="feed" data-permanent="board-feed" aria-labelledby="feed-title">
+    <h2 id="feed-title" class="visually-hidden">Messages</h2>
+    <p id="board-empty" class="empty" hidden="@(_messages.Count > 0)">No messages yet. Write the first one.</p>
+    <ol id="board-feed" class="messages">
+        @foreach (var message in _messages)
+        {
+            <li @key="message.Id" class="msg" data-id="@message.Id"><time datetime="@MessageFormat.Iso(message.Id)">@MessageFormat.Label(message.Id, _now)</time><p>@message.Text</p></li>
+        }
+    </ol>
+    <button type="button" id="board-older" class="older" hidden>Show older messages</button>
+</section>
+
+<p id="board-announcer" class="visually-hidden" aria-live="polite"></p>
+
+@code {
+    private IReadOnlyList<BoardMessage> _messages = [];
+    private DateTimeOffset _now;
+    private string _client = ClientAddress.Unknown;
+
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _messages = Board.Messages;
+        _now = Time.GetUtcNow();
+        _client = ClientAddress.Key(HttpContext?.Connection.RemoteIpAddress);
+    }
+}

@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Chaos.Web/Chaos.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Chaos.Web.Tests/Chaos.Web.Tests.csproj" />
+    <Project Path="tests/Chaos.E2E/Chaos.E2E.csproj" />
+  </Folder>
+</Solution>

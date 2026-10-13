@@ -1,0 +1,128 @@
+@implements IAsyncDisposable
+@inject CanvasService Canvas
+@inject IJSRuntime JS
+@inject ILogger<CanvasIsland> Logger
+
+<div class="stage">
+    <canvas @ref="_canvas" class="paper" width="1024" height="1024" role="img"
+            aria-label="Shared drawing canvas. Drawing needs a mouse, a finger or a stylus."></canvas>
+</div>
+<div class="tools">
+    <button type="button" @onclick="Reset" disabled="@(!_ready)">Reset canvas</button>
+    <output class="status">@_status</output>
+</div>
+
+@code {
+    private ElementReference _canvas;
+    private DotNetObjectReference<CanvasIsland>? _self;
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _client;
+    private Outbox<CanvasUpdate>? _outbox;
+    private Subscriber? _subscriber;
+    private CanvasSession? _session;
+    private string? _status;
+    private bool _ready;
+
+    [Parameter, EditorRequired]
+    public string Client { get; set; } = ClientAddress.Unknown;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        _self = DotNetObjectReference.Create(this);
+        _module = await JS.InvokeAsync<IJSObjectReference>("import", ModulePath.Of(Assets["Components/Islands/CanvasIsland.razor.js"]));
+        _client = await _module.InvokeAsync<IJSObjectReference>("attach", _canvas, _self);
+        _ready = true;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public async Task Join()
+    {
+        await StopAsync();
+        var outbox = new Outbox<CanvasUpdate>(256, 64, TimeSpan.FromSeconds(20), SendAsync, Logger);
+        _outbox = outbox;
+        _subscriber = new Subscriber(outbox);
+        _session = Canvas.OpenSession(_subscriber);
+        Canvas.Subscribe(_subscriber);
+    }
+
+    [JSInvokable]
+    public int Draw(int stroke, int epoch, int[] points, bool end)
+    {
+        if (_session is null || points is null)
+        {
+            return (int)DrawResult.Invalid;
+        }
+
+        var result = Canvas.Draw(_session, epoch, stroke, points, end);
+        SetStatus(result switch
+        {
+            DrawResult.TooFast => "Slow down a little.",
+            DrawResult.Full => "The canvas is full. Reset it to keep drawing.",
+            DrawResult.TooLong => "That stroke got too long, so it ended.",
+            _ => null,
+        });
+        return (int)result;
+    }
+
+    [JSInvokable]
+    public bool Ping() => _subscriber is not null && _outbox is { IsFaulted: false } && Canvas.IsSubscribed(_subscriber);
+
+    public async ValueTask DisposeAsync()
+    {
+        await StopAsync();
+        await JsCleanup.DisposeAsync(_client, "dispose");
+        await JsCleanup.DisposeAsync(_module, null);
+        _self?.Dispose();
+    }
+
+    private void Reset()
+    {
+        _status = Canvas.Reset(Client) is ResetResult.TooFast ? "It was just reset. Try again in a second." : null;
+    }
+
+    private void SetStatus(string? status)
+    {
+        if (status != _status)
+        {
+            _status = status;
+            StateHasChanged();
+        }
+    }
+
+    private Task SendAsync(IReadOnlyList<CanvasUpdate> batch, CancellationToken cancellationToken) =>
+        InvokeAsync(() => _client is null
+            ? Task.FromException(new InvalidOperationException("The canvas module is not attached."))
+            : _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask());
+
+    private async Task StopAsync()
+    {
+        if (_session is not null)
+        {
+            Canvas.Abandon(_session);
+            _session = null;
+        }
+
+        if (_subscriber is not null)
+        {
+            Canvas.Unsubscribe(_subscriber);
+            _subscriber = null;
+        }
+
+        if (_outbox is not null)
+        {
+            await _outbox.DisposeAsync();
+            _outbox = null;
+        }
+    }
+
+    private sealed class Subscriber(Outbox<CanvasUpdate> outbox) : ICanvasSubscriber
+    {
+        public bool Deliver(CanvasUpdate update) => outbox.TryPost(update);
+    }
+}

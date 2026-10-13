@@ -1,0 +1,21 @@
+@page "/Error"
+@using System.Diagnostics
+
+<PageTitle>Error</PageTitle>
+
+<h1 class="danger">Something went wrong</h1>
+<p>The server hit an error while building this page. Reload to try again.</p>
+
+@if (!string.IsNullOrEmpty(_requestId))
+{
+    <p><strong>Request ID:</strong> <code>@_requestId</code></p>
+}
+
+@code {
+    private string? _requestId;
+
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    protected override void OnInitialized() => _requestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+}

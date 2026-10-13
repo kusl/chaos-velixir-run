@@ -1,0 +1,118 @@
+:root {
+    color-scheme: light dark;
+    --bg: light-dark(#fcfcfd, #0e1626);
+    --grid: light-dark(#2b4c7e14, #adc4ff12);
+    --fg: light-dark(#1c1d21, #e6e9f2);
+    --muted: light-dark(#5b5f6d, #a1aac0);
+    --surface: light-dark(#eef0f7, #16213a);
+    --line: light-dark(#1c1d2126, #e6e9f22b);
+    --ink: light-dark(#2f3bc7, #a3acff);
+    --on-ink: light-dark(#ffffff, #0e1626);
+    --link: light-dark(#2f3bc7, #b7beff);
+    --danger: light-dark(#b3261e, #ffb4ab);
+    --paper: #ffffff;
+    --radius: .375rem;
+    --measure: 44rem;
+}
+
+:root[data-theme="light"] {
+    color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-block-size: 100dvh;
+    margin: 0;
+    color: var(--fg);
+    background-color: var(--bg);
+    background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 1.5rem 1.5rem;
+    font: 1rem/1.55 system-ui, sans-serif;
+}
+
+a {
+    color: var(--link);
+    text-underline-offset: .18em;
+}
+
+button,
+input,
+textarea {
+    color: inherit;
+    font: inherit;
+}
+
+button {
+    padding: .5rem 1.1rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    color: var(--on-ink);
+    background: var(--ink);
+    font-weight: 650;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: .5;
+    cursor: default;
+}
+
+:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+}
+
+h1 {
+    margin: .5rem 0;
+    font-size: clamp(1.75rem, 1.2rem + 2.4vw, 2.6rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -.02em;
+    text-wrap: balance;
+}
+
+h1:focus {
+    outline: none;
+}
+
+h2 {
+    margin: 2rem 0 .5rem;
+    font-size: 1.15rem;
+    font-weight: 750;
+}
+
+p {
+    text-wrap: pretty;
+}
+
+.lede {
+    max-inline-size: 38rem;
+    margin: 0 0 1.5rem;
+    color: var(--muted);
+    font-size: 1.075rem;
+}
+
+.visually-hidden {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+}

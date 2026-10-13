@@ -1,0 +1,12 @@
+{
+  "name": "chaos-velixir-run-js-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "5.0.4",
+    "vitest": "5.0.4"
+  }
+}

@@ -1,0 +1,19 @@
+@page "/canvas"
+
+<PageTitle>Chaos canvas</PageTitle>
+
+<h1>Canvas</h1>
+<p class="lede">One black pen and one shared page. Every stroke shows up for everyone while it is being drawn. Reset clears the page for everyone, and so does a server restart.</p>
+
+<CanvasIsland Client="@_client" @rendermode="InteractiveServer" />
+
+<p class="note">Drawing needs a pointer: a mouse, a finger or a stylus. There is no way to draw with a keyboard, but the reset button works from one.</p>
+
+@code {
+    private string _client = ClientAddress.Unknown;
+
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    protected override void OnInitialized() => _client = ClientAddress.Key(HttpContext?.Connection.RemoteIpAddress);
+}

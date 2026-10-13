@@ -1,0 +1,37 @@
+dl {
+    margin: 0;
+}
+
+dt {
+    margin-block-start: 1rem;
+    font-weight: 750;
+}
+
+dd {
+    margin: .25rem 0 0;
+}
+
+ul {
+    padding-inline-start: 1.25rem;
+}
+
+li + li {
+    margin-block-start: .5rem;
+}
+
+.warning {
+    padding: .75rem 1rem;
+    border-inline-start: 4px solid var(--danger);
+    background: var(--surface);
+}
+
+.clear {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem 1rem;
+}
+
+output {
+    color: var(--muted);
+}

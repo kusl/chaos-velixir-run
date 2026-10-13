@@ -1,0 +1,39 @@
+.entries {
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+    border-block-start: 2px solid var(--fg);
+}
+
+.entries a {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    align-items: baseline;
+    gap: .25rem 1rem;
+    padding: 1.1rem .25rem;
+    border-block-end: 1px solid var(--line);
+    color: var(--fg);
+    text-decoration: none;
+}
+
+.entries strong {
+    color: var(--ink);
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -.02em;
+}
+
+.entries span {
+    color: var(--muted);
+}
+
+.entries a:hover strong {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+}
+
+@media (width < 30rem) {
+    .entries a {
+        grid-template-columns: 1fr;
+    }
+}

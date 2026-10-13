@@ -1,0 +1,37 @@
+.compose {
+    display: grid;
+    gap: .5rem;
+    margin-block-end: 1.5rem;
+}
+
+textarea {
+    inline-size: 100%;
+    min-block-size: 5.5rem;
+    padding: .65rem .8rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg);
+    resize: vertical;
+}
+
+textarea:disabled {
+    opacity: .7;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem 1rem;
+}
+
+.status {
+    flex: 1;
+    color: var(--danger);
+    font-size: .875rem;
+}
+
+.hint {
+    color: var(--muted);
+    font-size: .8rem;
+}

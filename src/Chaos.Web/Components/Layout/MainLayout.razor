@@ -1,0 +1,28 @@
+@inherits LayoutComponentBase
+
+<header class="site-header">
+    <a class="brand" href="">chaos</a>
+    <nav aria-label="Main">
+        <NavLink href="board">Board</NavLink>
+        <NavLink href="canvas">Canvas</NavLink>
+        <NavLink href="about">About</NavLink>
+    </nav>
+    <ThemeToggle />
+</header>
+
+<main>
+    @Body
+</main>
+
+<footer class="site-footer">
+    <a href="https://github.com/kusl/chaos-velixir-run">Source code</a>
+    <span>AGPL-3.0-or-later</span>
+</footer>
+
+<ReconnectBanner />
+
+<div id="blazor-error-ui" data-nosnippet>
+    Something went wrong on this page.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss" aria-label="Dismiss">✕</span>
+</div>

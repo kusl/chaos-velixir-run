@@ -1,0 +1,17 @@
+bin/
+obj/
+artifacts/
+node_modules/
+TestResults/
+coverage/
+.velixir/
+.vs/
+.vscode/
+.idea/
+*.user
+*.swp
+*.binlog
+.DS_Store
+.env
+.env.*
+*.tar.gz

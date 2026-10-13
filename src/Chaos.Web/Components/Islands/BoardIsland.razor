@@ -1,0 +1,134 @@
+@implements IAsyncDisposable
+@inject BoardService Board
+@inject IJSRuntime JS
+@inject ILogger<BoardIsland> Logger
+
+<form class="compose" @onsubmit="Send">
+    <label class="visually-hidden" for="compose-text">Message</label>
+    <textarea id="compose-text" @bind="_draft" maxlength="@MessageText.MaxLength" rows="3" required
+              placeholder="Write something everyone here will see" disabled="@(!_ready)"></textarea>
+    <div class="actions">
+        <output class="status" for="compose-text">@_status</output>
+        <span class="hint">Ctrl+Enter sends</span>
+        <button type="submit" disabled="@(!_ready)">Send</button>
+    </div>
+</form>
+
+@code {
+    private DotNetObjectReference<BoardIsland>? _self;
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _client;
+    private Outbox<BoardUpdate>? _outbox;
+    private Subscriber? _subscriber;
+    private string? _draft;
+    private string? _status;
+    private bool _ready;
+    private int _offered;
+
+    [Parameter, EditorRequired]
+    public string Client { get; set; } = ClientAddress.Unknown;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        _self = DotNetObjectReference.Create(this);
+        _module = await JS.InvokeAsync<IJSObjectReference>("import", ModulePath.Of(Assets["Components/Islands/BoardIsland.razor.js"]));
+        _client = await _module.InvokeAsync<IJSObjectReference>("attach", _self);
+        _ready = true;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public int Offer(string[] ids, string[] texts)
+    {
+        if (ids is null || texts is null || ids.Length != texts.Length)
+        {
+            return 0;
+        }
+
+        var count = Math.Min(BoardService.MaxOffers - _offered, ids.Length);
+        if (count <= 0)
+        {
+            return 0;
+        }
+
+        _offered += count;
+        var offered = new List<BoardMessage>(count);
+        for (var i = 0; i < count; i++)
+        {
+            if (Guid.TryParseExact(ids[i], "D", out var id) && texts[i] is { } text)
+            {
+                offered.Add(new BoardMessage(id, text));
+            }
+        }
+
+        return Board.Offer(offered);
+    }
+
+    [JSInvokable]
+    public async Task Join()
+    {
+        await StopAsync();
+        var outbox = new Outbox<BoardUpdate>(64, 16, TimeSpan.FromSeconds(20), SendAsync, Logger);
+        _outbox = outbox;
+        _subscriber = new Subscriber(outbox);
+        Board.Subscribe(_subscriber);
+    }
+
+    [JSInvokable]
+    public bool Ping() => _subscriber is not null && _outbox is { IsFaulted: false } && Board.IsSubscribed(_subscriber);
+
+    public async ValueTask DisposeAsync()
+    {
+        await StopAsync();
+        await JsCleanup.DisposeAsync(_client, "dispose");
+        await JsCleanup.DisposeAsync(_module, null);
+        _self?.Dispose();
+    }
+
+    private void Send()
+    {
+        var result = Board.Post(_draft, Client);
+        _status = result switch
+        {
+            PostResult.Empty => "Type a message first.",
+            PostResult.TooFast => "Slow down. You can post again in a moment.",
+            PostResult.Repeat => "That message was just posted.",
+            _ => null,
+        };
+
+        if (result is PostResult.Accepted)
+        {
+            _draft = null;
+        }
+    }
+
+    private Task SendAsync(IReadOnlyList<BoardUpdate> batch, CancellationToken cancellationToken) =>
+        InvokeAsync(() => _client is null
+            ? Task.FromException(new InvalidOperationException("The board module is not attached."))
+            : _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask());
+
+    private async Task StopAsync()
+    {
+        if (_subscriber is not null)
+        {
+            Board.Unsubscribe(_subscriber);
+            _subscriber = null;
+        }
+
+        if (_outbox is not null)
+        {
+            await _outbox.DisposeAsync();
+            _outbox = null;
+        }
+    }
+
+    private sealed class Subscriber(Outbox<BoardUpdate> outbox) : IBoardSubscriber
+    {
+        public bool Deliver(BoardUpdate update) => outbox.TryPost(update);
+    }
+}

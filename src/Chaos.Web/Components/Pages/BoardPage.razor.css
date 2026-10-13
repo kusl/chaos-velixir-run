@@ -1,0 +1,64 @@
+.feed {
+    display: grid;
+    gap: 1rem;
+}
+
+.messages {
+    display: grid;
+    gap: .6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.messages ::deep .msg {
+    padding: .5rem .8rem .6rem;
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    background: var(--bg);
+    content-visibility: auto;
+    contain-intrinsic-size: auto 4.5rem;
+}
+
+.messages ::deep .msg.archived {
+    border-style: dotted;
+    border-color: var(--muted);
+    color: var(--muted);
+}
+
+.messages ::deep time {
+    display: block;
+    color: var(--muted);
+    font-size: .75rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.messages ::deep p {
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.empty {
+    margin: 0;
+    color: var(--muted);
+}
+
+.older {
+    justify-self: center;
+    border-color: var(--line);
+    color: var(--fg);
+    background: var(--surface);
+}
+
+@keyframes arrive {
+    from {
+        background: color-mix(in oklab, var(--ink) 20%, var(--bg));
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .messages ::deep .msg.fresh {
+        animation: arrive .9s ease-out;
+    }
+}

@@ -1,0 +1,40 @@
+@page "/about"
+
+<PageTitle>About chaos</PageTitle>
+
+<h1>About</h1>
+<p class="lede">Chaos is a small public experiment: a message board and a drawing canvas that anyone can use, with no accounts and nothing kept for long.</p>
+
+<h2>Why it exists</h2>
+<p>To show how much a plain Blazor Server app can do on a free hosting plan with a quarter of a CPU and 256 MB of memory, with no database, no cookies and no third-party code. The HTML, the CSS and the small amount of JavaScript are all written by hand.</p>
+
+<h2>What you can do</h2>
+<dl>
+    <dt><a href="board">Board</a></dt>
+    <dd>Post a message of up to 500 characters. Everyone on the board sees it at once. The server keeps the newest 50. This browser keeps up to 10,000 on your device, so you still see messages after the server has forgotten them. Those have a dotted border.</dd>
+    <dt><a href="canvas">Canvas</a></dt>
+    <dd>Draw with a mouse, a finger or a stylus. Everyone sees each stroke as it is drawn. Anyone can reset the page for everyone, and a server restart clears it too.</dd>
+</dl>
+
+<h2>How it works</h2>
+<ul>
+    <li>Pages are rendered on the server and arrive as plain HTML. Only the board and the canvas open a live connection, over a WebSocket.</li>
+    <li>Every message gets a UUIDv7 from the server clock, so its ID also records when it was posted. Messages that claim to come from the future are rejected.</li>
+    <li>The server can restart at any time and then remembers nothing. When you open the board, your browser offers its 50 newest messages back, and the server keeps the ones that fit among its newest 50.</li>
+    <li>The canvas sends strokes in small batches of points measured from 0 to 1 across a square page, so phones and desktops draw the same picture. Each reset starts a new round, and strokes still in flight from the old one are dropped.</li>
+    <li>A strict Content Security Policy only allows scripts, styles and connections from this site. There are no inline scripts.</li>
+</ul>
+
+<h2>Before you post</h2>
+<p class="warning">Anything you post or draw goes to every connected browser at once and is stored on their devices. It can't be edited, deleted or recalled. Nothing is moderated. Don't share anything private.</p>
+
+<h2>Your data</h2>
+<p>There are no accounts, no cookies and no tracking. Your theme choice is kept in this browser's local storage. Board messages are kept in this browser's IndexedDB, up to 10,000 of them, with the oldest removed first.</p>
+<p class="clear">
+    <button type="button" data-clear-history="clear-status">Clear local message history</button>
+    <output id="clear-status"></output>
+</p>
+<p>This removes only the board history on this device. The next time you open the board, it fills up again from the server.</p>
+
+<h2>Source code</h2>
+<p>The code is on <a href="https://github.com/kusl/chaos-velixir-run">GitHub</a> under the GNU Affero General Public License, version 3 or later. If you run a modified copy for other people, you have to offer them its source too.</p>

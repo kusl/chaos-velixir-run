@@ -1,0 +1,31 @@
+.stage {
+    inline-size: min(100%, 70dvh);
+    margin-inline: auto;
+}
+
+.paper {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    aspect-ratio: 1;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--paper);
+    touch-action: none;
+    user-select: none;
+    cursor: crosshair;
+}
+
+.tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem 1rem;
+    margin-block: .75rem;
+}
+
+.status {
+    color: var(--danger);
+    font-size: .875rem;
+}

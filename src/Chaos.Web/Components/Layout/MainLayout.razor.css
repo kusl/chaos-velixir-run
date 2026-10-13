@@ -1,0 +1,78 @@
+.site-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem 1rem;
+    padding: .75rem 1rem;
+    border-block-end: 1px solid var(--line);
+    background: var(--bg);
+}
+
+.brand {
+    margin-inline-end: auto;
+    color: var(--fg);
+    font-size: 1.4rem;
+    font-weight: 850;
+    letter-spacing: -.035em;
+    text-decoration: none;
+}
+
+nav {
+    display: flex;
+    gap: .25rem;
+}
+
+nav ::deep a {
+    padding: .3rem .65rem;
+    border-radius: var(--radius);
+    color: var(--fg);
+    text-decoration: none;
+}
+
+nav ::deep a:hover {
+    background: var(--surface);
+}
+
+nav ::deep a.active {
+    color: var(--ink);
+    background: var(--surface);
+    font-weight: 650;
+}
+
+main {
+    flex: 1;
+    inline-size: 100%;
+    max-inline-size: var(--measure);
+    margin-inline: auto;
+    padding: 1.25rem 1rem 3rem;
+}
+
+.site-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .25rem 1rem;
+    padding: 1rem;
+    border-block-start: 1px solid var(--line);
+    color: var(--muted);
+    background: var(--bg);
+    font-size: .875rem;
+}
+
+#blazor-error-ui {
+    display: none;
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 20;
+    padding: .75rem 2.75rem .75rem 1rem;
+    color: var(--fg);
+    background: var(--surface);
+    border-block-start: 2px solid var(--danger);
+}
+
+#blazor-error-ui .dismiss {
+    position: absolute;
+    inset-block-start: .6rem;
+    inset-inline-end: 1rem;
+    cursor: pointer;
+}
