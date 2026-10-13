@@ -1,161 +1,102 @@
-kushal@fedora:~/src/dotnet/HelloXUnit$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
 scripts/run-all.sh: line 23: /home/kushal/src/dotnet/chaos-velixir-run/scripts/build.sh: Permission denied
 
-real	0m0.005s
-user	0m0.002s
-sys	0m0.003s
-kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/export.sh
-Starting project export...
-Project Path: /home/kushal/src/dotnet/chaos-velixir-run
-Output File:  /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
-Listing files via git...
-Found 140 files to export
-Processing (1/140): .editorconfig
-Processing (2/140): .gitattributes
-Processing (3/140): .github/dependabot.yml
-Processing (4/140): .github/workflows/ci.yml
-Processing (5/140): .github/workflows/velixir.yml
-Processing (6/140): .gitignore
-Processing (7/140): Directory.Build.props
-Processing (8/140): Directory.Packages.props
-Processing (9/140): README.md
-Processing (10/140): REUSE.toml
-Processing (11/140): chaos-velixir-run.slnx
-Processing (12/140): docs/adr/0001-record-decisions.md
-Processing (13/140): docs/adr/0002-rendering-model.md
-Processing (14/140): docs/adr/0003-deploy-only-the-web-project.md
-Processing (15/140): docs/adr/0004-message-ids-and-reconciliation.md
-Processing (16/140): docs/adr/0005-local-history.md
-Processing (17/140): docs/adr/0006-canvas-protocol.md
-Processing (18/140): docs/adr/0007-realtime-delivery.md
-Processing (19/140): docs/adr/0008-abuse-limits.md
-Processing (20/140): docs/adr/0009-security-headers.md
-Processing (21/140): docs/adr/0010-no-cookies.md
-Processing (22/140): docs/adr/0011-theme.md
-Processing (23/140): docs/adr/0012-reconnect-and-cold-start.md
-Processing (24/140): docs/adr/0013-runtime-footprint.md
-Processing (25/140): docs/adr/0014-testing.md
-Processing (26/140): docs/adr/0015-dependencies.md
-Processing (27/140): docs/adr/0016-licensing.md
-Processing (28/140): docs/adr/0017-scripts-and-ci.md
-Processing (29/140): docs/adr/0018-export.md
-Processing (30/140): docs/adr/0019-slots.md
-Processing (31/140): docs/adr/README.md
-Processing (32/140): global.json
-Processing (33/140): scripts/build.sh
-Processing (34/140): scripts/e2e-container.sh
-Processing (35/140): scripts/export.sh
-Processing (36/140): scripts/lib.sh
-Processing (37/140): scripts/run-all.sh
-Processing (38/140): scripts/test-e2e.sh
-Processing (39/140): scripts/test-js.sh
-Processing (40/140): scripts/test-unit.sh
-Processing (41/140): src/Chaos.Web/Chaos.Web.csproj
-Processing (42/140): src/Chaos.Web/Components/App.razor
-Processing (43/140): src/Chaos.Web/Components/App.razor.js
-Processing (44/140): src/Chaos.Web/Components/Islands/BoardIsland.razor
-Processing (45/140): src/Chaos.Web/Components/Islands/BoardIsland.razor.css
-Processing (46/140): src/Chaos.Web/Components/Islands/BoardIsland.razor.js
-Processing (47/140): src/Chaos.Web/Components/Islands/CanvasIsland.razor
-Processing (48/140): src/Chaos.Web/Components/Islands/CanvasIsland.razor.css
-Processing (49/140): src/Chaos.Web/Components/Islands/CanvasIsland.razor.js
-Processing (50/140): src/Chaos.Web/Components/Islands/SlotIsland.razor
-Processing (51/140): src/Chaos.Web/Components/Islands/SlotIsland.razor.css
-Processing (52/140): src/Chaos.Web/Components/Islands/SlotIsland.razor.js
-Processing (53/140): src/Chaos.Web/Components/Layout/MainLayout.razor
-Processing (54/140): src/Chaos.Web/Components/Layout/MainLayout.razor.css
-Processing (55/140): src/Chaos.Web/Components/Layout/ReconnectBanner.razor
-Processing (56/140): src/Chaos.Web/Components/Layout/ReconnectBanner.razor.css
-Processing (57/140): src/Chaos.Web/Components/Layout/ThemeToggle.razor
-Processing (58/140): src/Chaos.Web/Components/Layout/ThemeToggle.razor.css
-Processing (59/140): src/Chaos.Web/Components/Pages/About.razor
-Processing (60/140): src/Chaos.Web/Components/Pages/About.razor.css
-Processing (61/140): src/Chaos.Web/Components/Pages/BoardPage.razor
-Processing (62/140): src/Chaos.Web/Components/Pages/BoardPage.razor.css
-Processing (63/140): src/Chaos.Web/Components/Pages/CanvasPage.razor
-Processing (64/140): src/Chaos.Web/Components/Pages/CanvasPage.razor.css
-Processing (65/140): src/Chaos.Web/Components/Pages/Error.razor
-Processing (66/140): src/Chaos.Web/Components/Pages/Error.razor.css
-Processing (67/140): src/Chaos.Web/Components/Pages/Home.razor
-Processing (68/140): src/Chaos.Web/Components/Pages/Home.razor.css
-Processing (69/140): src/Chaos.Web/Components/Pages/NotFound.razor
-Processing (70/140): src/Chaos.Web/Components/Pages/SlotsPage.razor
-Processing (71/140): src/Chaos.Web/Components/Pages/SlotsPage.razor.css
-Processing (72/140): src/Chaos.Web/Components/Routes.razor
-Processing (73/140): src/Chaos.Web/Components/_Imports.razor
-Processing (74/140): src/Chaos.Web/Drawing/CanvasService.cs
-Processing (75/140): src/Chaos.Web/Drawing/CanvasSession.cs
-Processing (76/140): src/Chaos.Web/Drawing/CanvasUpdate.cs
-Processing (77/140): src/Chaos.Web/Drawing/DrawResult.cs
-Processing (78/140): src/Chaos.Web/Drawing/ICanvasSubscriber.cs
-Processing (79/140): src/Chaos.Web/Drawing/ResetResult.cs
-Processing (80/140): src/Chaos.Web/Drawing/Stroke.cs
-Processing (81/140): src/Chaos.Web/Infrastructure/ChaosOptions.cs
-Processing (82/140): src/Chaos.Web/Infrastructure/ClientAddress.cs
-Processing (83/140): src/Chaos.Web/Infrastructure/ConnectionTracker.cs
-Processing (84/140): src/Chaos.Web/Infrastructure/CookielessAntiforgery.cs
-Processing (85/140): src/Chaos.Web/Infrastructure/HubGuard.cs
-Processing (86/140): src/Chaos.Web/Infrastructure/JsCleanup.cs
-Processing (87/140): src/Chaos.Web/Infrastructure/KeyedTokenBuckets.cs
-Processing (88/140): src/Chaos.Web/Infrastructure/ModulePath.cs
-Processing (89/140): src/Chaos.Web/Infrastructure/OriginPolicy.cs
-Processing (90/140): src/Chaos.Web/Infrastructure/Outbox.cs
-Processing (91/140): src/Chaos.Web/Infrastructure/RequestLimits.cs
-Processing (92/140): src/Chaos.Web/Infrastructure/SecurityHeaders.cs
-Processing (93/140): src/Chaos.Web/Infrastructure/TokenBucket.cs
-Processing (94/140): src/Chaos.Web/Messages/BoardMessage.cs
-Processing (95/140): src/Chaos.Web/Messages/BoardService.cs
-Processing (96/140): src/Chaos.Web/Messages/BoardUpdate.cs
-Processing (97/140): src/Chaos.Web/Messages/IBoardSubscriber.cs
-Processing (98/140): src/Chaos.Web/Messages/MessageFormat.cs
-Processing (99/140): src/Chaos.Web/Messages/MessageText.cs
-Processing (100/140): src/Chaos.Web/Messages/MessageWindow.cs
-Processing (101/140): src/Chaos.Web/Messages/PostResult.cs
-Processing (102/140): src/Chaos.Web/Messages/Uuid7.cs
-Processing (103/140): src/Chaos.Web/Program.cs
-Processing (104/140): src/Chaos.Web/Properties/launchSettings.json
-Processing (105/140): src/Chaos.Web/Slots/ISlotSubscriber.cs
-Processing (106/140): src/Chaos.Web/Slots/SlotPress.cs
-Processing (107/140): src/Chaos.Web/Slots/SlotRules.cs
-Processing (108/140): src/Chaos.Web/Slots/SlotService.cs
-Processing (109/140): src/Chaos.Web/Slots/SlotUpdate.cs
-Processing (110/140): src/Chaos.Web/Slots/SlotWin.cs
-Processing (111/140): src/Chaos.Web/appsettings.Development.json
-Processing (112/140): src/Chaos.Web/appsettings.json
-Processing (113/140): src/Chaos.Web/wwwroot/app.css
-Processing (114/140): src/Chaos.Web/wwwroot/favicon.svg
-Processing (115/140): src/Chaos.Web/wwwroot/theme-init.js
-Processing (116/140): tests/Chaos.E2E/BoardTests.cs
-Processing (117/140): tests/Chaos.E2E/BrowserFixture.cs
-Processing (118/140): tests/Chaos.E2E/CanvasTests.cs
-Processing (119/140): tests/Chaos.E2E/Chaos.E2E.csproj
-Processing (120/140): tests/Chaos.E2E/SiteTests.cs
-Processing (121/140): tests/Chaos.E2E/SlotTests.cs
-Processing (122/140): tests/Chaos.Web.Tests/BoardServiceTests.cs
-Processing (123/140): tests/Chaos.Web.Tests/CanvasServiceTests.cs
-Processing (124/140): tests/Chaos.Web.Tests/Chaos.Web.Tests.csproj
-Processing (125/140): tests/Chaos.Web.Tests/HttpPipelineTests.cs
-Processing (126/140): tests/Chaos.Web.Tests/InfrastructureTests.cs
-Processing (127/140): tests/Chaos.Web.Tests/MessageFormatTests.cs
-Processing (128/140): tests/Chaos.Web.Tests/MessageTextTests.cs
-Processing (129/140): tests/Chaos.Web.Tests/OutboxTests.cs
-Processing (130/140): tests/Chaos.Web.Tests/SlotRulesTests.cs
-Processing (131/140): tests/Chaos.Web.Tests/SlotServiceTests.cs
-Processing (132/140): tests/Chaos.Web.Tests/TestSupport.cs
-Processing (133/140): tests/Chaos.Web.Tests/Uuid7Tests.cs
-Processing (134/140): tests/Directory.Build.props
-Processing (135/140): tests/js/app.test.js
-Processing (136/140): tests/js/board.test.js
-Processing (137/140): tests/js/canvas.test.js
-Processing (138/140): tests/js/package.json
-Processing (139/140): tests/js/slots.test.js
-Processing (140/140): tests/js/vitest.config.mjs
+real	0m0.004s
+user	0m0.001s
+sys	0m0.004s
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/build.sh 
 
-Export completed successfully!
-Output file: /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
-Total source size: 0.24 MB across 140 files
+==> Restore
+Restore complete (0.6s)
 
-real	0m1.970s
-user	0m0.982s
-sys	0m1.389s
+Build succeeded in 0.7s
+
+==> Build (Release, warnings are errors)
+  Chaos.E2E net10.0 succeeded (2.7s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
+  Chaos.Web net10.0 failed with 1 error(s) (3.9s)
+    /home/kushal/src/dotnet/chaos-velixir-run/src/Chaos.Web/Slots/SlotRules.cs(77,19): error CS8604: Possible null reference argument for parameter 'source' in 'IEnumerable<IGrouping<char, char>> Enumerable.GroupBy<char, char>(IEnumerable<char> source, Func<char, char> keySelector)'.
+
+Build failed with 1 error(s) in 4.3s
+
+real	0m5.324s
+user	0m2.305s
+sys	0m0.435s
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ ls -lah scripts/
+total 36K
+drwxr-xr-x. 1 kushal kushal  164 Oct 13 09:46 .
+drwxr-xr-x. 1 kushal kushal  360 Oct 13 09:46 ..
+-rw-r--r--. 1 kushal kushal  283 Oct 13 09:17 build.sh
+-rw-r--r--. 1 kushal kushal 1.5K Oct 13 09:31 e2e-container.sh
+-rw-r--r--. 1 kushal kushal 7.7K Oct 13 09:17 export.sh
+-rw-r--r--. 1 kushal kushal 1.1K Oct 13 09:17 lib.sh
+-rw-r--r--. 1 kushal kushal  753 Oct 13 09:17 run-all.sh
+-rw-r--r--. 1 kushal kushal  587 Oct 13 09:17 test-e2e.sh
+-rw-r--r--. 1 kushal kushal  206 Oct 13 09:17 test-js.sh
+-rw-r--r--. 1 kushal kushal  719 Oct 13 09:17 test-unit.sh
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ chmod +x scripts/*.sh
 kushal@fedora:~/src/dotnet/chaos-velixir-run$ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
