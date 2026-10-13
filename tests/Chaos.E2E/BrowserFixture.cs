@@ -1,6 +1,5 @@
 using Microsoft.Playwright;
 
-[assembly: CollectionBehavior(DisableTestParallelization = true)]
 
 namespace Chaos.E2E;
 
