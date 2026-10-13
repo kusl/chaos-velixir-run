@@ -206,6 +206,7 @@ class CanvasClient {
             this.strokes.set(`r${stroke.id}`, [...stroke.points]);
         }
         this.redraw();
+        this.canvas.dataset.ready = '';
     }
 
     clear(epoch) {
@@ -385,8 +386,8 @@ class CanvasClient {
 
 export function attach(canvas, dotnet) {
     const client = new CanvasClient(canvas, dotnet, window);
+    client.start();
     return {
-        start: () => client.start(),
         apply: updates => client.apply(updates),
         dispose: () => client.dispose(),
     };

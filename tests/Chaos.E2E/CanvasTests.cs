@@ -52,6 +52,7 @@ public sealed class CanvasTests(BrowserFixture browser) : IClassFixture<BrowserF
         var page = await context.NewPageAsync();
         await page.GotoAsync("/canvas");
         await Expect(page.GetByRole(AriaRole.Button, new() { Name = "Reset canvas" })).ToBeEnabledAsync();
+        await Expect(page.Locator("canvas.paper[data-ready]")).ToBeVisibleAsync();
         return page;
     }
 }

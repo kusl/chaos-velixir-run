@@ -1,6 +1,7 @@
 using Chaos.Web.Drawing;
 using Chaos.Web.Infrastructure;
 using Chaos.Web.Messages;
+using Chaos.Web.Slots;
 using Microsoft.Extensions.Options;
 
 namespace Chaos.Web.Tests;
@@ -38,6 +39,21 @@ internal sealed class BoardRecorder(bool accept = true) : IBoardSubscriber
     public List<BoardUpdate> Updates { get; } = [];
 
     public bool Deliver(BoardUpdate update)
+    {
+        if (accept)
+        {
+            Updates.Add(update);
+        }
+
+        return accept;
+    }
+}
+
+internal sealed class SlotRecorder(bool accept = true) : ISlotSubscriber
+{
+    public List<SlotUpdate> Updates { get; } = [];
+
+    public bool Deliver(SlotUpdate update)
     {
         if (accept)
         {

@@ -15,9 +15,12 @@ Defaults live in `ChaosOptions` and can be overridden with `Chaos__*` environmen
 | Stroke points per circuit | 4,000 burst, 1,500 per second |
 | Points per batch / stroke / canvas | 256 / 2,048 / 20,000 |
 | Resets | 1 s global cooldown, 2 burst per client |
+| Slot presses | one spin at a time (4 s), 3 burst, 1 every 2 s per client |
+| Slot results kept | 50 |
 
 - A client is its IP after `X-Forwarded-For`, or its /64 for IPv6.
-- The hub (`/_blazor`) only accepts WebSocket connections, so connection counts are real. Clients behind proxies that block WebSockets cannot use the board or canvas.
+- The hub (`/_blazor`) only accepts WebSocket connections, so connection counts are real. Clients behind proxies that block WebSockets cannot use the board, canvas or slots.
 - The total cap protects the 256 MB container: zen ran out of memory near 100 circuits.
 - In-circuit limits use a `TimeProvider` token bucket so tests are deterministic. HTTP limits use ASP.NET Core's rate limiter.
+- A press during a spin is refused before the per-client bucket, so waiting players are not penalized.
 - There is no moderation. The About page says plainly that content spreads to every client and cannot be recalled.

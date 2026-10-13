@@ -1,0 +1,57 @@
+@page "/slots"
+@inject SlotService Slots
+@inject TimeProvider Time
+
+<PageTitle>Chaos slots</PageTitle>
+
+<h1>Slots</h1>
+<p class="lede">One shared machine and one big button. Whoever presses first spins for everyone, and nobody can press again until the reels stop. Three or more of a kind, or five in a row up or down, is a winner. Nothing is at stake.</p>
+
+<SlotIsland Client="@_client" Face="@_face" @rendermode="InteractiveServer" />
+
+<section class="feed" data-permanent="slots-feed" aria-labelledby="spins-title">
+    <h2 id="spins-title">Results</h2>
+    <p id="slots-empty" class="empty" hidden="@(_results.Count > 0)">No spins yet. Press the button.</p>
+    <ol id="slots-feed" class="spins">
+        @foreach (var result in _results)
+        {
+            var win = SlotRules.Classify(result.Text);
+            var hits = SlotRules.Hits(result.Text);
+            <li @key="result.Id" class="@(win is SlotWin.None ? "msg" : "msg win")" data-id="@result.Id">
+                <time datetime="@MessageFormat.Iso(result.Id)">@MessageFormat.Label(result.Id, _now)</time>
+                <p class="symbols">
+                    @for (var i = 0; i < result.Text.Length; i++)
+                    {
+                        <span class="@(hits[i] ? "hit" : null)">@result.Text[i]</span>
+                    }
+                </p>
+                @if (win is not SlotWin.None)
+                {
+                    <p class="tags"><strong class="badge">@SlotRules.Label(win)</strong></p>
+                }
+            </li>
+        }
+    </ol>
+    <button type="button" id="slots-older" class="older" hidden>Show older results</button>
+</section>
+
+<p id="slots-announcer" class="visually-hidden" aria-live="polite"></p>
+
+@code {
+    private IReadOnlyList<BoardMessage> _results = [];
+    private DateTimeOffset _now;
+    private string _client = ClientAddress.Unknown;
+    private string? _face;
+
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var spinning = Slots.Spinning?.Id;
+        _results = [.. Slots.Messages.Where(result => result.Id != spinning)];
+        _face = _results.Count > 0 ? _results[0].Text : null;
+        _now = Time.GetUtcNow();
+        _client = ClientAddress.Key(HttpContext?.Connection.RemoteIpAddress);
+    }
+}

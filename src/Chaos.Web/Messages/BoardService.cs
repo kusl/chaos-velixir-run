@@ -125,44 +125,24 @@ internal sealed class BoardService
         }
     }
 
-    private bool IsAcceptable(BoardMessage message, DateTimeOffset now)
-    {
-        if (message is null || !Uuid7.IsValid(message.Id))
-        {
-            return false;
-        }
-
-        var at = Uuid7.Timestamp(message.Id);
-        return at <= now && at < StartedAt && MessageText.IsNormalized(message.Text);
-    }
+    private bool IsAcceptable(BoardMessage message, DateTimeOffset now) =>
+        message is not null
+        && MessageWindow.IsRestorable(message.Id, now, StartedAt)
+        && MessageText.IsNormalized(message.Text);
 
     private int Merge(IReadOnlyCollection<BoardMessage> candidates)
     {
-        var current = _messages;
-        var known = new HashSet<Guid>(current.Length);
-        foreach (var message in current)
-        {
-            known.Add(message.Id);
-        }
-
-        var next = current
-            .Concat(candidates.Where(message => !known.Contains(message.Id)).DistinctBy(message => message.Id))
-            .OrderByDescending(message => message.Id)
-            .Take(Capacity)
-            .ToArray();
-        var added = next.Where(message => !known.Contains(message.Id)).ToArray();
-        if (added.Length == 0)
+        var change = MessageWindow.Merge(_messages, candidates, Capacity);
+        if (change is null)
         {
             return 0;
         }
 
-        var kept = next.Select(message => message.Id).ToHashSet();
-        var removed = current.Where(message => !kept.Contains(message.Id)).Select(message => message.Id).ToArray();
         var previous = _version;
         _version++;
-        Volatile.Write(ref _messages, next);
-        Broadcast(BoardUpdate.Delta(_version, previous, added, removed));
-        return added.Length;
+        Volatile.Write(ref _messages, change.Next);
+        Broadcast(BoardUpdate.Delta(_version, previous, change.Added, change.Removed));
+        return change.Added.Length;
     }
 
     private void Broadcast(BoardUpdate update)

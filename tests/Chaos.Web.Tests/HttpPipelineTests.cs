@@ -1,6 +1,7 @@
 using System.Net;
 using Chaos.Web.Infrastructure;
 using Chaos.Web.Messages;
+using Chaos.Web.Slots;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +27,7 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
     [InlineData("/", "Chaos")]
     [InlineData("/board", "Chaos board")]
     [InlineData("/canvas", "Chaos canvas")]
+    [InlineData("/slots", "Chaos slots")]
     [InlineData("/about", "About chaos")]
     public async Task PagesRenderWithoutSettingCookies(string path, string title)
     {
@@ -43,6 +45,18 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
         Assert.Equal(PostResult.Accepted, factory.Services.GetRequiredService<BoardService>().Post(text, "integration"));
         using var client = CreateClient();
         Assert.Contains(text, await client.GetStringAsync("/board", Cancellation));
+    }
+
+    [Fact]
+    public async Task SlotsPageRendersSettledResults()
+    {
+        var slots = factory.Services.GetRequiredService<SlotService>();
+        var press = slots.Press($"integration {Guid.NewGuid():N}");
+        Assert.Equal(PressResult.Accepted, press.Result);
+        using var client = CreateClient();
+        var html = await client.GetStringAsync("/slots", Cancellation);
+        Assert.Contains("id=\"slots-feed\"", html, StringComparison.Ordinal);
+        Assert.DoesNotContain($"data-id=\"{press.Id}\"", html, StringComparison.Ordinal);
     }
 
     [Fact]

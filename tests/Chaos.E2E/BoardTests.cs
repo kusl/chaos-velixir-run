@@ -96,8 +96,8 @@ public sealed partial class BoardTests(BrowserFixture browser) : IClassFixture<B
         await PostAsync(page, $"to be cleared {Guid.NewGuid():N}");
 
         await page.GotoAsync("/about");
-        await page.GetByRole(AriaRole.Button, new() { Name = "Clear local message history" }).ClickAsync();
-        await Expect(page.Locator("#clear-status")).ToHaveTextAsync("Local message history cleared.");
+        await page.GetByRole(AriaRole.Button, new() { Name = "Clear local history" }).ClickAsync();
+        await Expect(page.Locator("#clear-status")).ToHaveTextAsync("Local history cleared.");
 
         var names = await page.EvaluateAsync<string[]>("async () => (await indexedDB.databases()).map(d => d.name)");
         Assert.DoesNotContain("chaos-board", names);

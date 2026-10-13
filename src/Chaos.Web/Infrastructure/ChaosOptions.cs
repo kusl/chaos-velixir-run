@@ -32,6 +32,14 @@ internal sealed class ChaosOptions
 
     public double ResetsPerSecond { get; set; } = 0.2;
 
+    public int SlotCapacity { get; set; } = 50;
+
+    public double PressBurst { get; set; } = 3;
+
+    public double PressesPerSecond { get; set; } = 0.5;
+
+    public int SpinMilliseconds { get; set; } = 4000;
+
     public bool IsValid() =>
         MaxConnectionsPerClient > 0
         && MaxConnections >= MaxConnectionsPerClient
@@ -44,5 +52,9 @@ internal sealed class ChaosOptions
         && StrokePointBurst >= CanvasService.MaxBatchPoints
         && StrokePointsPerSecond > 0
         && ResetBurst >= 1
-        && ResetsPerSecond > 0;
+        && ResetsPerSecond > 0
+        && SlotCapacity > 0
+        && PressBurst >= 1
+        && PressesPerSecond > 0
+        && SpinMilliseconds is >= 1000 and <= 15000;
 }

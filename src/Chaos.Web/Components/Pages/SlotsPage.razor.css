@@ -1,0 +1,144 @@
+.feed {
+    display: grid;
+    gap: 1rem;
+}
+
+.feed h2 {
+    margin: 0;
+}
+
+.spins {
+    display: grid;
+    gap: .6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.spins ::deep .msg {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: .3rem 1rem;
+    padding: .55rem .8rem .65rem;
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    background: var(--bg);
+    content-visibility: auto;
+    contain-intrinsic-size: auto 4.5rem;
+}
+
+.spins ::deep time {
+    grid-column: 1 / -1;
+    color: var(--muted);
+    font-size: .75rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.spins ::deep .symbols {
+    display: flex;
+    gap: .2rem;
+    margin: 0;
+    font: 800 1.3rem/1 ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+}
+
+.spins ::deep .symbols span {
+    display: grid;
+    place-items: center;
+    inline-size: 1.6em;
+    block-size: 1.6em;
+    border-radius: .3rem;
+    background: var(--surface);
+}
+
+.spins ::deep .symbols .hit {
+    color: var(--on-gold);
+    background: var(--gold);
+}
+
+.spins ::deep .tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: .4rem;
+    margin: 0;
+}
+
+.spins ::deep .badge {
+    padding: .15rem .65rem;
+    border-radius: 999px;
+    color: var(--on-gold);
+    background: var(--gold);
+    font-size: .75rem;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.spins ::deep .badge::before {
+    content: "★ ";
+}
+
+.spins ::deep .yours {
+    padding: .1rem .55rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: .75rem;
+}
+
+.spins ::deep .msg.win {
+    border-width: 3px;
+    border-color: var(--gold);
+    background: color-mix(in oklab, var(--gold) 10%, var(--bg));
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--gold) 22%, transparent);
+}
+
+.spins ::deep .msg.archived {
+    border-style: dotted;
+    border-color: var(--muted);
+    color: var(--muted);
+}
+
+.spins ::deep .msg.win.archived {
+    border-color: var(--gold);
+}
+
+.empty {
+    margin: 0;
+    color: var(--muted);
+}
+
+.older {
+    justify-self: center;
+    border-color: var(--line);
+    color: var(--fg);
+    background: var(--surface);
+}
+
+@keyframes arrive {
+    from {
+        background: color-mix(in oklab, var(--ink) 20%, var(--bg));
+    }
+}
+
+@keyframes jackpot {
+    0%,
+    100% {
+        box-shadow: 0 0 0 3px color-mix(in oklab, var(--gold) 22%, transparent);
+    }
+
+    50% {
+        box-shadow: 0 0 0 7px color-mix(in oklab, var(--gold) 45%, transparent);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .spins ::deep .msg.fresh {
+        animation: arrive .9s ease-out;
+    }
+
+    .spins ::deep .msg.win.fresh {
+        animation: jackpot .6s ease-in-out 3;
+    }
+}

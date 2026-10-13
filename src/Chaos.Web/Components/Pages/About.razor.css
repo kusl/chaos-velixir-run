@@ -35,3 +35,8 @@ li + li {
 output {
     color: var(--muted);
 }
+
+code {
+    font-family: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+    letter-spacing: .05em;
+}

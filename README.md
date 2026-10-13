@@ -1,9 +1,10 @@
 # chaos-velixir-run
 
-A message board and a shared drawing canvas that everyone sees live and nobody keeps. Blazor Server on .NET 10, on the [velixir](https://velixir.net) free plan (0.25 vCPU, 256 MB). Live at https://chaos.velixir.run/.
+A message board, a shared drawing canvas and a shared slot machine that everyone sees live and nobody keeps. Blazor Server on .NET 10, on the [velixir](https://velixir.net) free plan (0.25 vCPU, 256 MB). Live at https://chaos.velixir.run/.
 
 - Board: the server keeps the newest 50 messages; each browser keeps up to 10,000 in IndexedDB and offers its newest 50 back after a server restart. Dotted border means the server no longer has it.
 - Canvas: one black pen on a shared square page, live for everyone, one reset button, lost on restart.
+- Slots: one shared machine. A press draws five symbols (A–Z, 0–9) on the server and locks the button for everyone until the reels stop. Three of a kind or a five-symbol straight wins. Results are kept like board messages. Ten successful presses unlock auto spin.
 - No third-party code, no cookies, no accounts. Strict CSP with no inline scripts.
 
 ## Requirements

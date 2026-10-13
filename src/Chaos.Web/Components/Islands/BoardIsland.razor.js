@@ -11,6 +11,8 @@ export const migrations = [
     db => db.createObjectStore(STORE, { keyPath: 'id' }),
 ];
 
+export const SCHEMA = Object.freeze({ name: DB_NAME, version: DB_VERSION, store: STORE, migrations, cap: LOCAL_CAP });
+
 export function upgrade(db, oldVersion, newVersion = DB_VERSION, steps = migrations) {
     for (let version = oldVersion; version < newVersion; version += 1) {
         steps[version](db);
@@ -85,19 +87,19 @@ function finished(transaction) {
     });
 }
 
-export function deleteHistory(factory) {
+export function deleteDatabase(factory, name) {
     return new Promise((resolve, reject) => {
-        const request = factory.deleteDatabase(DB_NAME);
+        const request = factory.deleteDatabase(name);
         request.onsuccess = () => resolve('deleted');
         request.onerror = () => reject(request.error);
         request.onblocked = () => resolve('blocked');
     });
 }
 
-export function openDatabase(factory, onClose = () => {}, allowReset = true) {
+export function openDatabase(factory, schema = SCHEMA, onClose = () => {}, allowReset = true) {
     return new Promise((resolve, reject) => {
-        const request = factory.open(DB_NAME, DB_VERSION);
-        request.onupgradeneeded = event => upgrade(request.result, event.oldVersion, event.newVersion ?? DB_VERSION);
+        const request = factory.open(schema.name, schema.version);
+        request.onupgradeneeded = event => upgrade(request.result, event.oldVersion, event.newVersion ?? schema.version, schema.migrations);
         request.onsuccess = () => {
             const db = request.result;
             db.onversionchange = () => {
@@ -110,8 +112,8 @@ export function openDatabase(factory, onClose = () => {}, allowReset = true) {
         request.onerror = event => {
             if (allowReset && request.error?.name === 'VersionError') {
                 event.preventDefault();
-                deleteHistory(factory)
-                    .then(() => openDatabase(factory, onClose, false))
+                deleteDatabase(factory, schema.name)
+                    .then(() => openDatabase(factory, schema, onClose, false))
                     .then(resolve, reject);
                 return;
             }
@@ -120,9 +122,10 @@ export function openDatabase(factory, onClose = () => {}, allowReset = true) {
     });
 }
 
-class LocalHistory {
-    constructor(factory) {
+export class LocalHistory {
+    constructor(factory, schema = SCHEMA) {
         this.factory = factory ?? null;
+        this.schema = schema;
         this.db = null;
         this.opening = null;
     }
@@ -134,7 +137,7 @@ class LocalHistory {
         if (!this.factory) {
             return Promise.resolve(null);
         }
-        this.opening ??= openDatabase(this.factory, () => {
+        this.opening ??= openDatabase(this.factory, this.schema, () => {
             this.db = null;
         })
             .then(db => {
@@ -155,7 +158,7 @@ class LocalHistory {
         if (!db) {
             return [];
         }
-        const store = db.transaction(STORE, 'readonly').objectStore(STORE);
+        const store = db.transaction(this.schema.store, 'readonly').objectStore(this.schema.store);
         const items = [];
         await new Promise((resolve, reject) => {
             const request = store.openCursor(null, 'prev');
@@ -179,7 +182,7 @@ class LocalHistory {
             return { items: [], last: before, done: true };
         }
         const range = before ? IDBKeyRange.upperBound(before, true) : null;
-        const store = db.transaction(STORE, 'readonly').objectStore(STORE);
+        const store = db.transaction(this.schema.store, 'readonly').objectStore(this.schema.store);
         const items = [];
         let last = before;
         let done = true;
@@ -212,13 +215,13 @@ class LocalHistory {
         if (!db || messages.length === 0) {
             return;
         }
-        const transaction = db.transaction(STORE, 'readwrite');
+        const transaction = db.transaction(this.schema.store, 'readwrite');
         const done = finished(transaction);
-        const store = transaction.objectStore(STORE);
+        const store = transaction.objectStore(this.schema.store);
         for (const message of messages) {
-            store.put({ id: message.id, text: message.text });
+            store.put(message);
         }
-        const excess = excessOf(await settle(store.count()));
+        const excess = excessOf(await settle(store.count()), this.schema.cap);
         if (excess > 0) {
             const keys = await settle(store.getAllKeys(null, excess));
             store.delete(IDBKeyRange.upperBound(keys[keys.length - 1]));
@@ -327,7 +330,7 @@ class BoardClient {
         this.version = update.version;
         this.live = new Map(update.added.map(message => [message.id, message]));
         try {
-            await this.history.save(update.added);
+            await this.history.save(update.added.map(message => ({ id: message.id, text: message.text })));
         } catch {
         }
         let archive = { items: [], last: null, done: true };
@@ -359,7 +362,7 @@ class BoardClient {
         this.updateEmpty();
         this.announce(fresh);
         try {
-            await this.history.save(update.added);
+            await this.history.save(update.added.map(message => ({ id: message.id, text: message.text })));
         } catch {
         }
     }
@@ -450,10 +453,8 @@ class BoardClient {
 
 export function attach(dotnet) {
     const client = new BoardClient(dotnet, document, window);
+    client.start();
     return {
-        start: () => {
-            client.start();
-        },
         apply: updates => client.apply(updates),
         dispose: () => client.dispose(),
     };

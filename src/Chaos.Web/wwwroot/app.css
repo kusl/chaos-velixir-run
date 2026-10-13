@@ -10,6 +10,8 @@
     --on-ink: light-dark(#ffffff, #0e1626);
     --link: light-dark(#2f3bc7, #b7beff);
     --danger: light-dark(#b3261e, #ffb4ab);
+    --gold: light-dark(#8f6100, #ffc93c);
+    --on-gold: light-dark(#ffffff, #1c1d21);
     --paper: #ffffff;
     --radius: .375rem;
     --measure: 44rem;

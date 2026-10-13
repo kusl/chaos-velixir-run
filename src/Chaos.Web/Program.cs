@@ -3,6 +3,7 @@ using Chaos.Web.Components;
 using Chaos.Web.Drawing;
 using Chaos.Web.Infrastructure;
 using Chaos.Web.Messages;
+using Chaos.Web.Slots;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -44,6 +45,7 @@ builder.Services.AddSingleton<IAntiforgery>(new CookielessAntiforgery());
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<BoardService>();
 builder.Services.AddSingleton<CanvasService>();
+builder.Services.AddSingleton<SlotService>();
 builder.Services.AddSingleton<ConnectionTracker>();
 builder.Services.AddHealthChecks();
 

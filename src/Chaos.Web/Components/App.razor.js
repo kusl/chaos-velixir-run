@@ -85,16 +85,23 @@ export function boot(win) {
         const output = doc.getElementById(button.dataset.clearHistory);
         button.disabled = true;
         try {
-            const { deleteHistory } = await import('./Islands/BoardIsland.razor.js');
-            const outcome = await deleteHistory(win.indexedDB);
+            const [{ DB_NAME: BOARD_DB, deleteDatabase }, { DB_NAME: SLOTS_DB, PRESS_KEY }] = await Promise.all([
+                import('./Islands/BoardIsland.razor.js'),
+                import('./Islands/SlotIsland.razor.js'),
+            ]);
+            const outcomes = await Promise.all([BOARD_DB, SLOTS_DB].map(name => deleteDatabase(win.indexedDB, name)));
+            try {
+                win.localStorage.removeItem(PRESS_KEY);
+            } catch {
+            }
             if (output) {
-                output.textContent = outcome === 'blocked'
-                    ? 'Close any other board tabs to finish clearing.'
-                    : 'Local message history cleared.';
+                output.textContent = outcomes.includes('blocked')
+                    ? 'Close any other board or slots tabs to finish clearing.'
+                    : 'Local history cleared.';
             }
         } catch {
             if (output) {
-                output.textContent = 'Could not clear the local message history.';
+                output.textContent = 'Could not clear the local history.';
             }
         } finally {
             button.disabled = false;

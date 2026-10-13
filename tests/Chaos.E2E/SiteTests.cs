@@ -21,7 +21,7 @@ public sealed partial class SiteTests(BrowserFixture browser) : IClassFixture<Br
         };
         page.PageError += (_, error) => errors.Add(error);
 
-        foreach (var path in new[] { "/", "/about", "/board", "/canvas" })
+        foreach (var path in new[] { "/", "/about", "/board", "/slots", "/canvas" })
         {
             await page.GotoAsync(path);
         }
