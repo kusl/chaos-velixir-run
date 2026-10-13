@@ -1,10 +1,10 @@
 ===============================================================================
 PROJECT EXPORT
-Generated (UTC): 2026-10-13 13:47:38
+Generated (UTC): 2026-10-13 13:56:27
 Project Path:    /home/kushal/src/dotnet/chaos-velixir-run
-Git Commit:      3bb79590fd69a6824d116bdf582bb483e4bae73e
+Git Commit:      5d8213a69d4f630c10cd0c5e537c2d3d705c18ca
 Git Branch:      main
-Git Dirty:       yes (uncommitted changes are included below)
+Git Dirty:       no
 .NET SDK:        10.0.112
 Files Exported:  140
 ===============================================================================
@@ -6780,10 +6780,10 @@ internal sealed record SlotPress(PressResult Result, Guid Id)
 
 ================================================================================
 FILE:     src/Chaos.Web/Slots/SlotRules.cs
-SIZE:     2.71 KB (2777 bytes)
-LINES:    112
-SHA256:   e9cbebfc7b36fad3db1e7247b867372a981bc987d66b7f6af065e7646ed9f8dc
-MODIFIED: 2026-10-13 13:25:02 (UTC)
+SIZE:     2.78 KB (2851 bytes)
+LINES:    117
+SHA256:   efc55ee838b508bd9e97039f665d9c729f3e96f3f28d233b8f5726d4cfa7a9ee
+MODIFIED: 2026-10-13 13:54:24 (UTC)
 ================================================================================
 
 using System.Diagnostics.CodeAnalysis;
@@ -6849,8 +6849,13 @@ internal static class SlotRules
 
     public static bool[] Hits(string? text)
     {
-        var win = Classify(text);
         var hits = new bool[Length];
+        if (!IsValid(text))
+        {
+            return hits;
+        }
+
+        var win = Classify(text);
         if (win is SlotWin.None)
         {
             return hits;
@@ -9601,9 +9606,9 @@ export default defineConfig({
 
 
 ===============================================================================
-EXPORT COMPLETED (UTC): 2026-10-13 13:47:39
+EXPORT COMPLETED (UTC): 2026-10-13 13:56:29
 Total Files Exported:   140
-Total Source Size:      0.24 MB (256655 bytes)
+Total Source Size:      0.24 MB (256729 bytes)
 Output File:            /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
 ===============================================================================
-DUMP SHA256 (of all lines above this one): 7a469a4e1ac6c20c06263a4fc146efd1337e2ef81b00d93c7e572e5900f92d43
+DUMP SHA256 (of all lines above this one): e571cf09ef6f674878dfe9f343d82a5535dcb3b3cc250121698e6f4d41625518
