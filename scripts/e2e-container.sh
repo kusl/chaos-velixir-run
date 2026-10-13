@@ -47,5 +47,13 @@ if [ "$ready" != true ]; then
     exit 1
 fi
 
+status=0
 CHAOS_BASE_URL="http://127.0.0.1:$port/" \
-    dotnet test --project tests/Chaos.E2E --configuration Release --results-directory /out/results
+    dotnet test --project tests/Chaos.E2E --configuration Release --results-directory /out/results || status=$?
+
+if [ "$status" -ne 0 ]; then
+    printf '\n==> Last 50 lines of the app log\n' >&2
+    tail -n 50 /out/app.log >&2
+fi
+
+exit "$status"

@@ -10,7 +10,12 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Options;
 
-var builder = WebApplication.CreateBuilder(args);
+var publishedWebRoot = Path.Combine(AppContext.BaseDirectory, "wwwroot");
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    WebRootPath = Directory.Exists(publishedWebRoot) ? publishedWebRoot : null,
+});
 
 builder.WebHost.ConfigureKestrel(kestrel =>
 {
@@ -81,6 +86,7 @@ if (!app.Environment.IsDevelopment())
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseResponseCompression();
 app.UseRateLimiter();
+app.UseWebSockets();
 app.UseHubGuard();
 app.UseAntiforgery();
 
