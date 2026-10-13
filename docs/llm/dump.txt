@@ -1,8 +1,8 @@
 ===============================================================================
 PROJECT EXPORT
-Generated (UTC): 2026-10-13 08:18:28
+Generated (UTC): 2026-10-13 08:35:22
 Project Path:    /home/kushal/src/dotnet/chaos-velixir-run
-Git Commit:      aa801d62bd0422645957c54cf58941c22b5c2e30
+Git Commit:      2fb63815d3545910e6537bdee14067dd188814de
 Git Branch:      main
 Git Dirty:       no
 .NET SDK:        10.0.112
@@ -616,10 +616,10 @@ Status: accepted
 
 ================================================================================
 FILE:     docs/adr/0007-realtime-delivery.md
-SIZE:     0.81 KB (831 bytes)
-LINES:    9
-SHA256:   d3fbdcd83be6cb1c4b02fac7042a8504491916b64c2b6960bf6386c0f41fc0ea
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+SIZE:     1.12 KB (1146 bytes)
+LINES:    11
+SHA256:   eb2ec7183f9b375a4ed8789b2e2c5cd271b088ccb6ec3b9bcad14bd074b5c38a
+MODIFIED: 2026-10-13 08:34:46 (UTC)
 ================================================================================
 
 # 0007 Per-client outboxes over the circuit
@@ -628,6 +628,8 @@ Status: accepted
 
 - Transport is the Blazor circuit itself: JS calls `[JSInvokable]` methods, the server calls the module's `apply`. No separate SignalR hub and no extra JavaScript client.
 - Each island owns a bounded channel (`Outbox<T>`) drained by one pump that sends batches in order and waits for the browser to finish each batch. A full outbox, a failed call or a 20 s stall drops the subscriber.
+- `attach` only wires up the module; the island calls `start` once it holds the module reference, so the first snapshot never races it. Before this, the first send could fail and nothing arrived until the 25 s ping.
+- The canvas shows a loading overlay and keeps reset disabled until its first snapshot is applied.
 - Subscribing enqueues a snapshot under the same lock as updates, so nothing is missed or duplicated.
 - Board deltas carry `version` and `previous`; a gap triggers a fresh snapshot. Canvas updates carry an offset per stroke; a gap triggers a fresh snapshot.
 - The browser pings every 25 s and resubscribes when the server says it was dropped, and resubscribes after every reconnect.
@@ -1668,10 +1670,10 @@ if (typeof window !== 'undefined' && window.Blazor) {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/BoardIsland.razor
-SIZE:     4.07 KB (4164 bytes)
-LINES:    134
-SHA256:   3dcd8c8c04392c4203355a5d5263d303e266d1478e48441121e1fce5e01e3ba4
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+SIZE:     4.11 KB (4212 bytes)
+LINES:    135
+SHA256:   176541fa91e97d1b90188124e7a4c42bbf1aba3e8654b3b48bacb1ed982cc736
+MODIFIED: 2026-10-13 08:34:17 (UTC)
 ================================================================================
 
 @implements IAsyncDisposable
@@ -1716,6 +1718,7 @@ MODIFIED: 2026-10-13 01:32:31 (UTC)
         _client = await _module.InvokeAsync<IJSObjectReference>("attach", _self);
         _ready = true;
         StateHasChanged();
+        await _client.InvokeVoidAsync("start");
     }
 
     [JSInvokable]
@@ -1859,10 +1862,10 @@ textarea:disabled {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/BoardIsland.razor.js
-SIZE:     13.94 KB (14276 bytes)
-LINES:    458
-SHA256:   2cfbb65500b238ae3b84019c2112b7b275abc675dd1dff8aed2402203130cc85
-MODIFIED: 2026-10-13 01:33:43 (UTC)
+SIZE:     13.98 KB (14318 bytes)
+LINES:    460
+SHA256:   1c2478935b03535336a2ac82313b50a63debe03d850445501c454b0cb6f267d6
+MODIFIED: 2026-10-13 08:34:30 (UTC)
 ================================================================================
 
 export const DB_NAME = 'chaos-board';
@@ -2317,8 +2320,10 @@ class BoardClient {
 
 export function attach(dotnet) {
     const client = new BoardClient(dotnet, document, window);
-    client.start();
     return {
+        start: () => {
+            client.start();
+        },
         apply: updates => client.apply(updates),
         dispose: () => client.dispose(),
     };
@@ -2327,10 +2332,10 @@ export function attach(dotnet) {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/CanvasIsland.razor
-SIZE:     3.90 KB (3989 bytes)
-LINES:    128
-SHA256:   21050e20d5c7781df7026018f0478241274218354f69361f81461f6bcb5084c0
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+SIZE:     4.25 KB (4352 bytes)
+LINES:    142
+SHA256:   1107b0a7ec898ecaf2deeb44b4f7c857f97e93403c1a566ad482b4a106bf26cb
+MODIFIED: 2026-10-13 08:33:38 (UTC)
 ================================================================================
 
 @implements IAsyncDisposable
@@ -2338,9 +2343,13 @@ MODIFIED: 2026-10-13 01:32:31 (UTC)
 @inject IJSRuntime JS
 @inject ILogger<CanvasIsland> Logger
 
-<div class="stage">
+<div class="stage" aria-busy="@(_ready ? "false" : "true")">
     <canvas @ref="_canvas" class="paper" width="1024" height="1024" role="img"
             aria-label="Shared drawing canvas. Drawing needs a mouse, a finger or a stylus."></canvas>
+    @if (!_ready)
+    {
+        <p class="loading" role="status">Loading the drawing…</p>
+    }
 </div>
 <div class="tools">
     <button type="button" @onclick="Reset" disabled="@(!_ready)">Reset canvas</button>
@@ -2371,8 +2380,7 @@ MODIFIED: 2026-10-13 01:32:31 (UTC)
         _self = DotNetObjectReference.Create(this);
         _module = await JS.InvokeAsync<IJSObjectReference>("import", ModulePath.Of(Assets["Components/Islands/CanvasIsland.razor.js"]));
         _client = await _module.InvokeAsync<IJSObjectReference>("attach", _canvas, _self);
-        _ready = true;
-        StateHasChanged();
+        await _client.InvokeVoidAsync("start");
     }
 
     [JSInvokable]
@@ -2431,9 +2439,20 @@ MODIFIED: 2026-10-13 01:32:31 (UTC)
     }
 
     private Task SendAsync(IReadOnlyList<CanvasUpdate> batch, CancellationToken cancellationToken) =>
-        InvokeAsync(() => _client is null
-            ? Task.FromException(new InvalidOperationException("The canvas module is not attached."))
-            : _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask());
+        InvokeAsync(async () =>
+        {
+            if (_client is null)
+            {
+                throw new InvalidOperationException("The canvas module is not attached.");
+            }
+
+            await _client.InvokeVoidAsync("apply", cancellationToken, batch);
+            if (!_ready && batch.Any(update => update.Kind == "snapshot"))
+            {
+                _ready = true;
+                StateHasChanged();
+            }
+        });
 
     private async Task StopAsync()
     {
@@ -2465,13 +2484,14 @@ MODIFIED: 2026-10-13 01:32:31 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/CanvasIsland.razor.css
-SIZE:     0.54 KB (554 bytes)
-LINES:    31
-SHA256:   152545ac9e59a3ea2976846ad6091e0555441a2623d551a248c7117b05deb59a
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+SIZE:     1.23 KB (1259 bytes)
+LINES:    71
+SHA256:   99bf4a23c0cdf01e47e51fc323da6ed14789fdeaeb24cee50fe2f4fb541f05ed
+MODIFIED: 2026-10-13 08:33:52 (UTC)
 ================================================================================
 
 .stage {
+    position: relative;
     inline-size: min(100%, 70dvh);
     margin-inline: auto;
 }
@@ -2487,6 +2507,45 @@ MODIFIED: 2026-10-13 01:32:31 (UTC)
     touch-action: none;
     user-select: none;
     cursor: crosshair;
+}
+
+.stage[aria-busy="true"] .paper {
+    cursor: progress;
+}
+
+.loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    margin: 0;
+    color: #5b5f6d;
+    font-size: .875rem;
+    pointer-events: none;
+}
+
+.loading::before {
+    content: "";
+    inline-size: 1rem;
+    block-size: 1rem;
+    border: 2px solid currentColor;
+    border-inline-end-color: transparent;
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .loading::before {
+        animation: none;
+    }
 }
 
 .tools {
@@ -2506,10 +2565,10 @@ MODIFIED: 2026-10-13 01:32:31 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/CanvasIsland.razor.js
-SIZE:     11.14 KB (11409 bytes)
+SIZE:     11.16 KB (11426 bytes)
 LINES:    393
-SHA256:   68a99506fab5135108a99cc4074007abd504bcfb2ff7aa198a0105d5ce188ff7
-MODIFIED: 2026-10-13 01:33:43 (UTC)
+SHA256:   c81dc54627f51587aa2dce45cc0e9849da35356cf7762086221da4d24e1bcb2d
+MODIFIED: 2026-10-13 08:34:02 (UTC)
 ================================================================================
 
 export const RESOLUTION = 4095;
@@ -2899,8 +2958,8 @@ class CanvasClient {
 
 export function attach(canvas, dotnet) {
     const client = new CanvasClient(canvas, dotnet, window);
-    client.start();
     return {
+        start: () => client.start(),
         apply: updates => client.apply(updates),
         dispose: () => client.dispose(),
     };
@@ -7235,9 +7294,9 @@ export default defineConfig({
 
 
 ===============================================================================
-EXPORT COMPLETED (UTC): 2026-10-13 08:18:29
+EXPORT COMPLETED (UTC): 2026-10-13 08:35:24
 Total Files Exported:   123
-Total Source Size:      0.18 MB (187489 bytes)
+Total Source Size:      0.18 MB (188979 bytes)
 Output File:            /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
 ===============================================================================
-DUMP SHA256 (of all lines above this one): 19e0a70e5620167034ee3e4ee2c5688924ecf2f9a4dc2759d71d04c61b357298
+DUMP SHA256 (of all lines above this one): c56d18a8a84c5a88a00479a4f49233e5c13d4020706d62864dddd39b6580a488
