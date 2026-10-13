@@ -1,12 +1,12 @@
 ===============================================================================
 PROJECT EXPORT
-Generated (UTC): 2026-10-13 08:36:05
+Generated (UTC): 2026-10-13 13:47:38
 Project Path:    /home/kushal/src/dotnet/chaos-velixir-run
-Git Commit:      cd8baaa3714b5150e11a364ae1fbb711fca184e8
+Git Commit:      3bb79590fd69a6824d116bdf582bb483e4bae73e
 Git Branch:      main
-Git Dirty:       no
+Git Dirty:       yes (uncommitted changes are included below)
 .NET SDK:        10.0.112
-Files Exported:  123
+Files Exported:  140
 ===============================================================================
 
 DIRECTORY STRUCTURE (exported files only):
@@ -46,6 +46,7 @@ DIRECTORY STRUCTURE (exported files only):
             0016-licensing.md
             0017-scripts-and-ci.md
             0018-export.md
+            0019-slots.md
             README.md
     global.json
     scripts/
@@ -70,6 +71,9 @@ DIRECTORY STRUCTURE (exported files only):
                     CanvasIsland.razor
                     CanvasIsland.razor.css
                     CanvasIsland.razor.js
+                    SlotIsland.razor
+                    SlotIsland.razor.css
+                    SlotIsland.razor.js
                 Layout/
                     MainLayout.razor
                     MainLayout.razor.css
@@ -89,6 +93,8 @@ DIRECTORY STRUCTURE (exported files only):
                     Home.razor
                     Home.razor.css
                     NotFound.razor
+                    SlotsPage.razor
+                    SlotsPage.razor.css
                 Routes.razor
                 _Imports.razor
             Drawing/
@@ -120,11 +126,19 @@ DIRECTORY STRUCTURE (exported files only):
                 IBoardSubscriber.cs
                 MessageFormat.cs
                 MessageText.cs
+                MessageWindow.cs
                 PostResult.cs
                 Uuid7.cs
             Program.cs
             Properties/
                 launchSettings.json
+            Slots/
+                ISlotSubscriber.cs
+                SlotPress.cs
+                SlotRules.cs
+                SlotService.cs
+                SlotUpdate.cs
+                SlotWin.cs
             appsettings.Development.json
             appsettings.json
             wwwroot/
@@ -138,6 +152,7 @@ DIRECTORY STRUCTURE (exported files only):
             CanvasTests.cs
             Chaos.E2E.csproj
             SiteTests.cs
+            SlotTests.cs
         Chaos.Web.Tests/
             BoardServiceTests.cs
             CanvasServiceTests.cs
@@ -147,6 +162,8 @@ DIRECTORY STRUCTURE (exported files only):
             MessageFormatTests.cs
             MessageTextTests.cs
             OutboxTests.cs
+            SlotRulesTests.cs
+            SlotServiceTests.cs
             TestSupport.cs
             Uuid7Tests.cs
         Directory.Build.props
@@ -155,6 +172,7 @@ DIRECTORY STRUCTURE (exported files only):
             board.test.js
             canvas.test.js
             package.json
+            slots.test.js
             vitest.config.mjs
 
 
@@ -166,7 +184,7 @@ FILE:     .editorconfig
 SIZE:     0.57 KB (586 bytes)
 LINES:    23
 SHA256:   627b26d0d5e5300432e4ae76604e746156211c296813dcf42e78539e17d61da3
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 root = true
@@ -199,7 +217,7 @@ FILE:     .gitattributes
 SIZE:     0.04 KB (36 bytes)
 LINES:    2
 SHA256:   41c9067849395f502c4057e2f2c6cd3535457c33df7491a406335f7596989371
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 * text=auto eol=lf
@@ -211,7 +229,7 @@ FILE:     .github/dependabot.yml
 SIZE:     0.42 KB (431 bytes)
 LINES:    23
 SHA256:   6b340ba9b0fd39f042661a9e106c833a403b8ad126390023ed10bebd6a8ba23c
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 version: 2
@@ -244,7 +262,7 @@ FILE:     .github/workflows/ci.yml
 SIZE:     0.62 KB (637 bytes)
 LINES:    36
 SHA256:   952e40b1876480e8a26ed18d54035ccb72bb61b6849cfa3cbd2561d1daf68399
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 name: CI
@@ -290,7 +308,7 @@ FILE:     .github/workflows/velixir.yml
 SIZE:     0.89 KB (912 bytes)
 LINES:    34
 SHA256:   6a21f27f1e7db2896a831324083c36cc9fa03b1d5acb99b2f07967625036eded
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 name: Deploy to velixir
@@ -334,7 +352,7 @@ FILE:     .gitignore
 SIZE:     0.14 KB (142 bytes)
 LINES:    17
 SHA256:   1304a4b55c6a3c69cceae452bffd21abb6d53088c3bfa085395d792d622ea7b3
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 bin/
@@ -361,7 +379,7 @@ FILE:     Directory.Build.props
 SIZE:     0.58 KB (590 bytes)
 LINES:    16
 SHA256:   d7fec52a417fa7346e11a6b323a45624a42896aea1a2285bda90f8122e7cc013
-MODIFIED: 2026-10-13 01:57:41 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 <Project>
@@ -387,7 +405,7 @@ FILE:     Directory.Packages.props
 SIZE:     0.46 KB (470 bytes)
 LINES:    14
 SHA256:   ca31fe52cccfa9221de5dacdbdf11bd4a55a20aa930ee5c6debdd2708482dbf4
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 <Project>
@@ -408,18 +426,19 @@ MODIFIED: 2026-10-13 01:53:30 (UTC)
 
 ================================================================================
 FILE:     README.md
-SIZE:     1.96 KB (2011 bytes)
-LINES:    43
-SHA256:   15656f8516604230ba4368971aa5cfb7d3d74c4d184f3a036b81fb12220028b5
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+SIZE:     2.25 KB (2302 bytes)
+LINES:    44
+SHA256:   d77bc7792aa7c4daaa2e0e97f895b066ac5b2dc83934997d992031445738551a
+MODIFIED: 2026-10-13 13:31:52 (UTC)
 ================================================================================
 
 # chaos-velixir-run
 
-A message board and a shared drawing canvas that everyone sees live and nobody keeps. Blazor Server on .NET 10, on the [velixir](https://velixir.net) free plan (0.25 vCPU, 256 MB). Live at https://chaos.velixir.run/.
+A message board, a shared drawing canvas and a shared slot machine that everyone sees live and nobody keeps. Blazor Server on .NET 10, on the [velixir](https://velixir.net) free plan (0.25 vCPU, 256 MB). Live at https://chaos.velixir.run/.
 
 - Board: the server keeps the newest 50 messages; each browser keeps up to 10,000 in IndexedDB and offers its newest 50 back after a server restart. Dotted border means the server no longer has it.
 - Canvas: one black pen on a shared square page, live for everyone, one reset button, lost on restart.
+- Slots: one shared machine. A press draws five symbols (A–Z, 0–9) on the server and locks the button for everyone until the reels stop. Three of a kind or a five-symbol straight wins. Results are kept like board messages. Ten successful presses unlock auto spin.
 - No third-party code, no cookies, no accounts. Strict CSP with no inline scripts.
 
 ## Requirements
@@ -464,7 +483,7 @@ FILE:     REUSE.toml
 SIZE:     0.17 KB (175 bytes)
 LINES:    7
 SHA256:   40077ff82577a91e00ea1d964375653c22b4af93ca209e79a2786162f0eb0e6a
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 version = 1
@@ -481,7 +500,7 @@ FILE:     chaos-velixir-run.slnx
 SIZE:     0.27 KB (275 bytes)
 LINES:    9
 SHA256:   2f50a150df24277eab7904f79e997b51a20c35ce736e758fb48c28e4afda3e30
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 <Solution>
@@ -500,7 +519,7 @@ FILE:     docs/adr/0001-record-decisions.md
 SIZE:     0.24 KB (249 bytes)
 LINES:    5
 SHA256:   c9676eb849b047f1e8176a632c747d051cd86967eeb5d7d5859950f6d21a01ba
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 # 0001 Record decisions as ADRs
@@ -512,20 +531,20 @@ Decisions that were ambiguous in the brief, or that trade one property for anoth
 
 ================================================================================
 FILE:     docs/adr/0002-rendering-model.md
-SIZE:     0.82 KB (836 bytes)
+SIZE:     0.93 KB (954 bytes)
 LINES:    9
-SHA256:   dd24cd3115a8eaeb8656baf8c86d209c6924c96f699db95c888829497cfa8e0a
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+SHA256:   6f1dfbcf2ced28774bb14dbf059e1ae1a9c293aa35e1c219919661bb1bbf26ef
+MODIFIED: 2026-10-13 13:31:52 (UTC)
 ================================================================================
 
-# 0002 Static SSR with two interactive islands
+# 0002 Static SSR with interactive islands
 
 Status: accepted
 
 - Every page is static server-side rendering. Navigation uses Blazor enhanced navigation and needs no circuit.
-- `/board` and `/canvas` each host one `InteractiveServer` island (`BoardIsland`, `CanvasIsland`). Only they open a circuit. Blazor closes the circuit when no island remains on the page.
-- The board feed is rendered by the static page and then owned by the island's JavaScript module. It is marked `data-permanent` so enhanced navigation does not overwrite it. Up to 10,000 local messages never enter a server render tree.
-- The compose form and the reset button are Blazor-rendered. Drawing and IndexedDB are JavaScript.
+- `/board`, `/canvas` and `/slots` each host one `InteractiveServer` island (`BoardIsland`, `CanvasIsland`, `SlotIsland`). Only they open a circuit. Blazor closes the circuit when no island remains on the page.
+- The board and slots feeds are rendered by the static page and then owned by the island's JavaScript module. It is marked `data-permanent` so enhanced navigation does not overwrite it. Up to 10,000 local messages never enter a server render tree.
+- The compose form and the reset button are Blazor-rendered. Drawing, IndexedDB and the slot machine controls are JavaScript; `SlotIsland` renders its markup once and never re-renders.
 - No bUnit: components are thin; logic lives in services tested directly, and the pages are covered by integration and Playwright tests.
 
 
@@ -534,7 +553,7 @@ FILE:     docs/adr/0003-deploy-only-the-web-project.md
 SIZE:     1.22 KB (1251 bytes)
 LINES:    11
 SHA256:   67986b4f46897c04989b6667a2b2caabf2f5eef0e1fe8c76fcd0d015606f8d7f
-MODIFIED: 2026-10-13 02:31:14 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 # 0003 Deploy only the web project
@@ -555,7 +574,7 @@ FILE:     docs/adr/0004-message-ids-and-reconciliation.md
 SIZE:     1.20 KB (1229 bytes)
 LINES:    10
 SHA256:   d7f19b03e910e15052950c9d70d4a3bb70c83b55136e634eebb8e9004db6ed06
-MODIFIED: 2026-10-13 02:00:17 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 # 0004 UUIDv7 ids and handshake rules
@@ -572,23 +591,23 @@ Status: accepted
 
 ================================================================================
 FILE:     docs/adr/0005-local-history.md
-SIZE:     0.96 KB (986 bytes)
+SIZE:     1.12 KB (1144 bytes)
 LINES:    12
-SHA256:   d0afd84c81deae1e9a8a02ca0dc263b0b53febdc7b1c2807500846d44f154631
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+SHA256:   c55ead916484a5f0741f24110a5b06d87fa2d9b6bc31c65ae1c30f3c4926e666
+MODIFIED: 2026-10-13 13:31:52 (UTC)
 ================================================================================
 
 # 0005 IndexedDB local history
 
 Status: accepted
 
-- Database `chaos-board`, store `messages`, key path `id`, values `{ id, text }`.
+- Database `chaos-board`, store `messages`, key path `id`, values `{ id, text }`. Slots use `chaos-slots`, store `spins`, values `{ id, text, mine }`, through the same `LocalHistory` exported by `BoardIsland.razor.js`.
 - Schema changes are numbered migrations in `BoardIsland.razor.js`; `onupgradeneeded` runs every step from the stored version. A database from a newer schema (`VersionError`) is deleted and recreated, since the server can refill it.
 - Other tabs close their connection on `versionchange`, so upgrades and deletes are not blocked for long.
 - Cap: 10,000 messages. After each write, the oldest are deleted with one key-range delete.
 - The feed shows the server window plus 100 archived messages, with a button for 100 more. Items use `content-visibility: auto`.
 - Live messages have a solid border, messages the server no longer has a dotted one.
-- The About page deletes the database without touching other site data. The next visit to the board recreates it from the server snapshot.
+- The About page deletes both databases and the slot press count without touching the theme. The next visit to the board recreates it from the server snapshot.
 - If IndexedDB is unavailable the board still works, without history.
 
 
@@ -597,7 +616,7 @@ FILE:     docs/adr/0006-canvas-protocol.md
 SIZE:     1.17 KB (1196 bytes)
 LINES:    12
 SHA256:   9acc6306a58767e68ef62f31ded72618a69c81e14b18ddda33aef26304e05657
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 # 0006 Canvas coordinates, epochs and storage
@@ -616,10 +635,10 @@ Status: accepted
 
 ================================================================================
 FILE:     docs/adr/0007-realtime-delivery.md
-SIZE:     1.12 KB (1146 bytes)
-LINES:    11
-SHA256:   eb2ec7183f9b375a4ed8789b2e2c5cd271b088ccb6ec3b9bcad14bd074b5c38a
-MODIFIED: 2026-10-13 08:34:46 (UTC)
+SIZE:     0.81 KB (831 bytes)
+LINES:    9
+SHA256:   d3fbdcd83be6cb1c4b02fac7042a8504491916b64c2b6960bf6386c0f41fc0ea
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 # 0007 Per-client outboxes over the circuit
@@ -628,8 +647,6 @@ Status: accepted
 
 - Transport is the Blazor circuit itself: JS calls `[JSInvokable]` methods, the server calls the module's `apply`. No separate SignalR hub and no extra JavaScript client.
 - Each island owns a bounded channel (`Outbox<T>`) drained by one pump that sends batches in order and waits for the browser to finish each batch. A full outbox, a failed call or a 20 s stall drops the subscriber.
-- `attach` only wires up the module; the island calls `start` once it holds the module reference, so the first snapshot never races it. Before this, the first send could fail and nothing arrived until the 25 s ping.
-- The canvas shows a loading overlay and keeps reset disabled until its first snapshot is applied.
 - Subscribing enqueues a snapshot under the same lock as updates, so nothing is missed or duplicated.
 - Board deltas carry `version` and `previous`; a gap triggers a fresh snapshot. Canvas updates carry an offset per stroke; a gap triggers a fresh snapshot.
 - The browser pings every 25 s and resubscribes when the server says it was dropped, and resubscribes after every reconnect.
@@ -637,10 +654,10 @@ Status: accepted
 
 ================================================================================
 FILE:     docs/adr/0008-abuse-limits.md
-SIZE:     1.19 KB (1222 bytes)
-LINES:    23
-SHA256:   c34515059782856f275b068684a0fc600fba7871355833951aef9b8c1d03c261
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+SIZE:     1.40 KB (1436 bytes)
+LINES:    26
+SHA256:   9179e66e3f293e9a9589ce57bac874fe70f99b3d43fb71ec1b6bbdfbbf6bd78e
+MODIFIED: 2026-10-13 13:32:03 (UTC)
 ================================================================================
 
 # 0008 Rate and connection limits
@@ -660,11 +677,14 @@ Defaults live in `ChaosOptions` and can be overridden with `Chaos__*` environmen
 | Stroke points per circuit | 4,000 burst, 1,500 per second |
 | Points per batch / stroke / canvas | 256 / 2,048 / 20,000 |
 | Resets | 1 s global cooldown, 2 burst per client |
+| Slot presses | one spin at a time (4 s), 3 burst, 1 every 2 s per client |
+| Slot results kept | 50 |
 
 - A client is its IP after `X-Forwarded-For`, or its /64 for IPv6.
-- The hub (`/_blazor`) only accepts WebSocket connections, so connection counts are real. Clients behind proxies that block WebSockets cannot use the board or canvas.
+- The hub (`/_blazor`) only accepts WebSocket connections, so connection counts are real. Clients behind proxies that block WebSockets cannot use the board, canvas or slots.
 - The total cap protects the 256 MB container: zen ran out of memory near 100 circuits.
 - In-circuit limits use a `TimeProvider` token bucket so tests are deterministic. HTTP limits use ASP.NET Core's rate limiter.
+- A press during a spin is refused before the per-client bucket, so waiting players are not penalized.
 - There is no moderation. The About page says plainly that content spreads to every client and cannot be recalled.
 
 
@@ -673,7 +693,7 @@ FILE:     docs/adr/0009-security-headers.md
 SIZE:     1.07 KB (1091 bytes)
 LINES:    10
 SHA256:   e92c6b0620f979f45866d5b1a60054dac4065e90d8c0cee278422952cb3da2ef
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 # 0009 Security headers, CSP, origin check
@@ -693,7 +713,7 @@ FILE:     docs/adr/0010-no-cookies.md
 SIZE:     0.40 KB (414 bytes)
 LINES:    5
 SHA256:   fb06ac2a3a103d90105360d32480212d4b33c33dd43b3142eab8ee12b745c7a6
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 # 0010 No cookies
@@ -708,7 +728,7 @@ FILE:     docs/adr/0011-theme.md
 SIZE:     0.61 KB (623 bytes)
 LINES:    8
 SHA256:   b450c1dbcde8c28fbd73558e395d81c05aaf24333002c17bfed92c799710c768
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 # 0011 Theme without a flash
@@ -726,7 +746,7 @@ FILE:     docs/adr/0012-reconnect-and-cold-start.md
 SIZE:     0.72 KB (735 bytes)
 LINES:    9
 SHA256:   6ec4a7165c7e01a9b6200650cfff103d464a4dc597b019fcf5c1de8bc2acd5f5
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 # 0012 Reconnect, backoff, cold start
@@ -745,7 +765,7 @@ FILE:     docs/adr/0013-runtime-footprint.md
 SIZE:     0.82 KB (840 bytes)
 LINES:    12
 SHA256:   1686f56d06b35458ad96d91248c108573da51f126ca4b1bcc3e1b21f6731a0e5
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 # 0013 Memory and CPU settings
@@ -764,10 +784,10 @@ Status: accepted
 
 ================================================================================
 FILE:     docs/adr/0014-testing.md
-SIZE:     1.31 KB (1341 bytes)
+SIZE:     1.32 KB (1355 bytes)
 LINES:    10
-SHA256:   748393417c959a2406706b34037deedb61ad8c250992bbc008dcdf383b58b008
-MODIFIED: 2026-10-13 02:31:26 (UTC)
+SHA256:   b0e1683f207010bc112369af43d114910df6a9e4db07df52156bc9832d109245
+MODIFIED: 2026-10-13 13:32:03 (UTC)
 ================================================================================
 
 # 0014 Test strategy
@@ -777,7 +797,7 @@ Status: accepted
 - .NET: xUnit v3 (package `xunit.v3` 4.x) on Microsoft Testing Platform v2, enabled for `dotnet test` in `global.json`. Unit tests cover services and helpers; integration tests use `WebApplicationFactory` for pages, headers, cookies, the hub guard and compression.
 - JavaScript: Vitest in Node tests the pure exports of each module. DOM, IndexedDB, canvas and WebSocket behaviour is covered by Playwright, so no DOM library is installed.
 - End to end: Playwright .NET in `mcr.microsoft.com/playwright/dotnet:v<version>-noble`, which ships the .NET 10 SDK and browsers. The version comes from `Directory.Packages.props` only. The app is published and run inside the same container on localhost, in Production mode with relaxed limits. It is started from the source copy, not its publish folder, like velixir starts it. The app log is printed when tests fail and kept in `artifacts/e2e/app.log`.
-- End-to-end tests run serially (`[assembly: Parallelization(Mode = ParallelMode.None)]`) because they share one server's board and canvas. `CollectionBehavior.DisableTestParallelization` is obsolete in xUnit v3 4.x.
+- End-to-end tests run serially (`[assembly: Parallelization(Mode = ParallelMode.None)]`) because they share one server's board, canvas and slot machine. `CollectionBehavior.DisableTestParallelization` is obsolete in xUnit v3 4.x.
 - Coverage is reported (Cobertura for .NET and JavaScript) with no threshold.
 - Test projects use the default analyzer set; the app uses the recommended set. Warnings are errors everywhere.
 
@@ -787,7 +807,7 @@ FILE:     docs/adr/0015-dependencies.md
 SIZE:     0.70 KB (717 bytes)
 LINES:    9
 SHA256:   162c55ad0b00bb6c2504bf002b175dff86f3b8949d6b453efa35217c7d794b27
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 # 0015 Dependencies and versions
@@ -806,7 +826,7 @@ FILE:     docs/adr/0016-licensing.md
 SIZE:     0.38 KB (384 bytes)
 LINES:    7
 SHA256:   d423e677f3ff2a2b52c7b875b22da2363ace3d28f2c632593da0c608cf9b93f2
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 # 0016 AGPL and REUSE
@@ -823,7 +843,7 @@ FILE:     docs/adr/0017-scripts-and-ci.md
 SIZE:     0.73 KB (744 bytes)
 LINES:    8
 SHA256:   3d123d4089fb76dd4dafdeadf886a9111b0e3831536c4cce49807eb733c3ee80
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 # 0017 Scripts and CI
@@ -841,7 +861,7 @@ FILE:     docs/adr/0018-export.md
 SIZE:     0.55 KB (563 bytes)
 LINES:    8
 SHA256:   49912261d8e4abd56520ef62bf4604e31d68b34c98b65d038fe9afbb6f953893
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 # 0018 Export dump rules
@@ -855,11 +875,33 @@ Status: accepted
 
 
 ================================================================================
+FILE:     docs/adr/0019-slots.md
+SIZE:     1.61 KB (1652 bytes)
+LINES:    12
+SHA256:   fba4d575a594c743461c5b968b6aaf241cff53bee42b3c618dead63854add712
+MODIFIED: 2026-10-13 13:31:52 (UTC)
+================================================================================
+
+# 0019 Shared slot machine
+
+Status: accepted
+
+- `/slots` hosts `SlotIsland`. Results are `{ id, text }` like board messages: UUIDv7 from the server clock, five symbols from `0-9A-Z`, newest 50 kept, same offer, merge and delta rules (`MessageWindow`).
+- The server draws the result with `RandomNumberGenerator` when it accepts a press, then refuses every press until `SpinMilliseconds` (default 4,000) has passed. Busy presses are checked before the per-client bucket.
+- The accepting delta and late-joiner snapshots carry `spin: { id, remaining }`. Clients animate for `remaining` ms from receipt, then add the result to the feed. Because receipt is later than the server clock, a client's button only re-enables after the server lock has expired.
+- A spin that arrives while an older animation runs finishes the older one at once.
+- Winners: three or more of one symbol anywhere, or five strictly ascending or descending in ASCII order (digits before letters). About 1 in 50. Rules exist in `SlotRules.cs` and `SlotIsland.razor.js`; both are tested with the same cases.
+- No identity. `Press` returns the new id, `busy` or `slow` to the caller only. The browser marks its own results as `mine` in IndexedDB.
+- Successful presses are counted in `localStorage` (`chaos-slots-presses`). At 10 the auto spin toggle appears; it presses 200–1,000 ms after each settle, pauses while the tab is hidden, and is off on every page load.
+- Reels are DOM strips moved with the Web Animations API by percentage of their own height, so no layout reads. Reduced motion swaps symbols without movement. Nothing uses inline style attributes, so the CSP is unchanged.
+
+
+================================================================================
 FILE:     docs/adr/README.md
-SIZE:     1.18 KB (1208 bytes)
-LINES:    22
-SHA256:   f59c31527ebf495cd35ba779933e61f2dc01969cc37cce5bbe34a84953bf0957
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+SIZE:     1.22 KB (1252 bytes)
+LINES:    23
+SHA256:   0fced0b6251403a336830c99c9fa06b19299bfb403ca3ffac7c852db6af2ffe8
+MODIFIED: 2026-10-13 13:31:52 (UTC)
 ================================================================================
 
 # Architecture decision records
@@ -867,7 +909,7 @@ MODIFIED: 2026-10-13 01:55:22 (UTC)
 | ADR | Decision |
 | --- | --- |
 | [0001](0001-record-decisions.md) | Record decisions as ADRs |
-| [0002](0002-rendering-model.md) | Static SSR with two interactive islands |
+| [0002](0002-rendering-model.md) | Static SSR with interactive islands |
 | [0003](0003-deploy-only-the-web-project.md) | Deploy only `src/Chaos.Web` |
 | [0004](0004-message-ids-and-reconciliation.md) | UUIDv7 ids and handshake rules |
 | [0005](0005-local-history.md) | IndexedDB local history |
@@ -884,6 +926,7 @@ MODIFIED: 2026-10-13 01:55:22 (UTC)
 | [0016](0016-licensing.md) | AGPL and REUSE |
 | [0017](0017-scripts-and-ci.md) | Scripts and CI |
 | [0018](0018-export.md) | Export dump rules |
+| [0019](0019-slots.md) | Shared slot machine |
 
 
 ================================================================================
@@ -891,7 +934,7 @@ FILE:     global.json
 SIZE:     0.17 KB (171 bytes)
 LINES:    10
 SHA256:   15fc2962d00bbb3febae9ddb01301f0723ebb743e1cfcd57af3d1fdd3fb640bb
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 {
@@ -911,7 +954,7 @@ FILE:     scripts/build.sh
 SIZE:     0.28 KB (283 bytes)
 LINES:    11
 SHA256:   c1ad3fda175baf5d6ee6b3ba180d52f77d1cdb7f54b2c4a34ebc9d22c9534772
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 #!/usr/bin/env bash
@@ -929,10 +972,10 @@ dotnet build chaos-velixir-run.slnx --configuration Release --no-restore
 
 ================================================================================
 FILE:     scripts/e2e-container.sh
-SIZE:     1.40 KB (1435 bytes)
-LINES:    59
-SHA256:   0e08367d9131ffeb886203f76ec30452be9806281afd457ccdacf87d599827b8
-MODIFIED: 2026-10-13 02:31:02 (UTC)
+SIZE:     1.49 KB (1522 bytes)
+LINES:    62
+SHA256:   773bb455ab0f802853ebf05f1a6f67e2d72cfa9408ae3353474ae0dd1613ee6a
+MODIFIED: 2026-10-13 13:31:25 (UTC)
 ================================================================================
 
 #!/usr/bin/env bash
@@ -962,6 +1005,9 @@ Chaos__PostBurst=1000 \
 Chaos__PostsPerSecond=1000 \
 Chaos__ResetBurst=1000 \
 Chaos__ResetsPerSecond=1000 \
+Chaos__PressBurst=1000 \
+Chaos__PressesPerSecond=1000 \
+Chaos__SpinMilliseconds=1500 \
 Chaos__MaxConnectionsPerClient=50 \
 Chaos__RequestBurst=100000 \
 Chaos__RequestsPerSecond=100000 \
@@ -1001,7 +1047,7 @@ FILE:     scripts/export.sh
 SIZE:     7.64 KB (7821 bytes)
 LINES:    260
 SHA256:   9ddae0823b8a703504ac990ee70959878d47992bbedee74dd009991d0018e0cd
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 #!/usr/bin/env bash
@@ -1271,7 +1317,7 @@ FILE:     scripts/lib.sh
 SIZE:     1.04 KB (1068 bytes)
 LINES:    40
 SHA256:   f933975e8513633d3f2ed2caa359e34484403f790dcdb377a5421a39a43505a4
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -1321,7 +1367,7 @@ FILE:     scripts/run-all.sh
 SIZE:     0.74 KB (753 bytes)
 LINES:    35
 SHA256:   01198f7bbe13f82c4060edffeb38b78e0b6b7d23c460841f697fa1d8b01e5470
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 #!/usr/bin/env bash
@@ -1366,7 +1412,7 @@ FILE:     scripts/test-e2e.sh
 SIZE:     0.57 KB (587 bytes)
 LINES:    22
 SHA256:   2036cc25ca44289718a7f58ce3168bcdd099641a5f2a1a2e719b1b48633dfc73
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 #!/usr/bin/env bash
@@ -1398,7 +1444,7 @@ FILE:     scripts/test-js.sh
 SIZE:     0.20 KB (206 bytes)
 LINES:    9
 SHA256:   b9b54022e6a468f6f62ce197bdb930e2e15914f8bdc6991a895847376904f162
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 #!/usr/bin/env bash
@@ -1417,7 +1463,7 @@ FILE:     scripts/test-unit.sh
 SIZE:     0.70 KB (719 bytes)
 LINES:    20
 SHA256:   43773dafa4be84a7da1fbd3abb510b4aea6364e51d28115c3f5e85b786100d80
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 #!/usr/bin/env bash
@@ -1447,7 +1493,7 @@ FILE:     src/Chaos.Web/Chaos.Web.csproj
 SIZE:     0.82 KB (843 bytes)
 LINES:    22
 SHA256:   3e6389cf238fae5bfc8738469c12eaa3253c06778b84ad354b92d5b247a4d0a7
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 <Project Sdk="Microsoft.NET.Sdk.Web">
@@ -1476,10 +1522,10 @@ MODIFIED: 2026-10-13 01:28:42 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/App.razor
-SIZE:     0.80 KB (818 bytes)
+SIZE:     0.81 KB (834 bytes)
 LINES:    23
-SHA256:   e74c2c0c727bc5ce58ca35d86f2e3b04a62adacdd9951a42f0d40e663b3a903f
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+SHA256:   b1d93c5f49d6ddba4980b3fe3c45cd3208b6c824e4c8ba98a5a2368cbeb6e020
+MODIFIED: 2026-10-13 13:28:40 (UTC)
 ================================================================================
 
 <!DOCTYPE html>
@@ -1489,7 +1535,7 @@ MODIFIED: 2026-10-13 01:32:31 (UTC)
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <meta name="description" content="A message board and a drawing canvas that everyone shares and nobody keeps." />
+    <meta name="description" content="A message board, a drawing canvas and a slot machine that everyone shares and nobody keeps." />
     <base href="/" />
     <script src="@Assets["theme-init.js"]"></script>
     <link rel="stylesheet" href="@Assets["app.css"]" />
@@ -1509,10 +1555,10 @@ MODIFIED: 2026-10-13 01:32:31 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/App.razor.js
-SIZE:     4.54 KB (4650 bytes)
-LINES:    151
-SHA256:   c3eddd4dbab1aff18e74d645803f62878e673a17a15668a57f1ac03c202e9df1
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+SIZE:     4.86 KB (4974 bytes)
+LINES:    158
+SHA256:   ed747132c2da29ec97fbc8dcbadce6495d4de839fbb2b70a00915c7a95afc3c4
+MODIFIED: 2026-10-13 13:27:01 (UTC)
 ================================================================================
 
 export const THEME_KEY = 'chaos-theme';
@@ -1602,16 +1648,23 @@ export function boot(win) {
         const output = doc.getElementById(button.dataset.clearHistory);
         button.disabled = true;
         try {
-            const { deleteHistory } = await import('./Islands/BoardIsland.razor.js');
-            const outcome = await deleteHistory(win.indexedDB);
+            const [{ DB_NAME: BOARD_DB, deleteDatabase }, { DB_NAME: SLOTS_DB, PRESS_KEY }] = await Promise.all([
+                import('./Islands/BoardIsland.razor.js'),
+                import('./Islands/SlotIsland.razor.js'),
+            ]);
+            const outcomes = await Promise.all([BOARD_DB, SLOTS_DB].map(name => deleteDatabase(win.indexedDB, name)));
+            try {
+                win.localStorage.removeItem(PRESS_KEY);
+            } catch {
+            }
             if (output) {
-                output.textContent = outcome === 'blocked'
-                    ? 'Close any other board tabs to finish clearing.'
-                    : 'Local message history cleared.';
+                output.textContent = outcomes.includes('blocked')
+                    ? 'Close any other board or slots tabs to finish clearing.'
+                    : 'Local history cleared.';
             }
         } catch {
             if (output) {
-                output.textContent = 'Could not clear the local message history.';
+                output.textContent = 'Could not clear the local history.';
             }
         } finally {
             button.disabled = false;
@@ -1670,10 +1723,10 @@ if (typeof window !== 'undefined' && window.Blazor) {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/BoardIsland.razor
-SIZE:     4.11 KB (4212 bytes)
-LINES:    135
-SHA256:   176541fa91e97d1b90188124e7a4c42bbf1aba3e8654b3b48bacb1ed982cc736
-MODIFIED: 2026-10-13 08:34:17 (UTC)
+SIZE:     4.07 KB (4164 bytes)
+LINES:    134
+SHA256:   3dcd8c8c04392c4203355a5d5263d303e266d1478e48441121e1fce5e01e3ba4
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 @implements IAsyncDisposable
@@ -1718,7 +1771,6 @@ MODIFIED: 2026-10-13 08:34:17 (UTC)
         _client = await _module.InvokeAsync<IJSObjectReference>("attach", _self);
         _ready = true;
         StateHasChanged();
-        await _client.InvokeVoidAsync("start");
     }
 
     [JSInvokable]
@@ -1818,7 +1870,7 @@ FILE:     src/Chaos.Web/Components/Islands/BoardIsland.razor.css
 SIZE:     0.55 KB (562 bytes)
 LINES:    37
 SHA256:   b08f4912bf11ee6cc01f77c31fb407397692a01823ea04d6e61882508222897b
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 .compose {
@@ -1862,10 +1914,10 @@ textarea:disabled {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/BoardIsland.razor.js
-SIZE:     13.98 KB (14318 bytes)
-LINES:    460
-SHA256:   1c2478935b03535336a2ac82313b50a63debe03d850445501c454b0cb6f267d6
-MODIFIED: 2026-10-13 08:34:30 (UTC)
+SIZE:     14.36 KB (14709 bytes)
+LINES:    461
+SHA256:   9a53981fd2b121a7079f237b6a25481cbd29703409130c9286f5e77a220c0db0
+MODIFIED: 2026-10-13 13:27:01 (UTC)
 ================================================================================
 
 export const DB_NAME = 'chaos-board';
@@ -1880,6 +1932,8 @@ export const PING_MS = 25000;
 export const migrations = [
     db => db.createObjectStore(STORE, { keyPath: 'id' }),
 ];
+
+export const SCHEMA = Object.freeze({ name: DB_NAME, version: DB_VERSION, store: STORE, migrations, cap: LOCAL_CAP });
 
 export function upgrade(db, oldVersion, newVersion = DB_VERSION, steps = migrations) {
     for (let version = oldVersion; version < newVersion; version += 1) {
@@ -1955,19 +2009,19 @@ function finished(transaction) {
     });
 }
 
-export function deleteHistory(factory) {
+export function deleteDatabase(factory, name) {
     return new Promise((resolve, reject) => {
-        const request = factory.deleteDatabase(DB_NAME);
+        const request = factory.deleteDatabase(name);
         request.onsuccess = () => resolve('deleted');
         request.onerror = () => reject(request.error);
         request.onblocked = () => resolve('blocked');
     });
 }
 
-export function openDatabase(factory, onClose = () => {}, allowReset = true) {
+export function openDatabase(factory, schema = SCHEMA, onClose = () => {}, allowReset = true) {
     return new Promise((resolve, reject) => {
-        const request = factory.open(DB_NAME, DB_VERSION);
-        request.onupgradeneeded = event => upgrade(request.result, event.oldVersion, event.newVersion ?? DB_VERSION);
+        const request = factory.open(schema.name, schema.version);
+        request.onupgradeneeded = event => upgrade(request.result, event.oldVersion, event.newVersion ?? schema.version, schema.migrations);
         request.onsuccess = () => {
             const db = request.result;
             db.onversionchange = () => {
@@ -1980,8 +2034,8 @@ export function openDatabase(factory, onClose = () => {}, allowReset = true) {
         request.onerror = event => {
             if (allowReset && request.error?.name === 'VersionError') {
                 event.preventDefault();
-                deleteHistory(factory)
-                    .then(() => openDatabase(factory, onClose, false))
+                deleteDatabase(factory, schema.name)
+                    .then(() => openDatabase(factory, schema, onClose, false))
                     .then(resolve, reject);
                 return;
             }
@@ -1990,9 +2044,10 @@ export function openDatabase(factory, onClose = () => {}, allowReset = true) {
     });
 }
 
-class LocalHistory {
-    constructor(factory) {
+export class LocalHistory {
+    constructor(factory, schema = SCHEMA) {
         this.factory = factory ?? null;
+        this.schema = schema;
         this.db = null;
         this.opening = null;
     }
@@ -2004,7 +2059,7 @@ class LocalHistory {
         if (!this.factory) {
             return Promise.resolve(null);
         }
-        this.opening ??= openDatabase(this.factory, () => {
+        this.opening ??= openDatabase(this.factory, this.schema, () => {
             this.db = null;
         })
             .then(db => {
@@ -2025,7 +2080,7 @@ class LocalHistory {
         if (!db) {
             return [];
         }
-        const store = db.transaction(STORE, 'readonly').objectStore(STORE);
+        const store = db.transaction(this.schema.store, 'readonly').objectStore(this.schema.store);
         const items = [];
         await new Promise((resolve, reject) => {
             const request = store.openCursor(null, 'prev');
@@ -2049,7 +2104,7 @@ class LocalHistory {
             return { items: [], last: before, done: true };
         }
         const range = before ? IDBKeyRange.upperBound(before, true) : null;
-        const store = db.transaction(STORE, 'readonly').objectStore(STORE);
+        const store = db.transaction(this.schema.store, 'readonly').objectStore(this.schema.store);
         const items = [];
         let last = before;
         let done = true;
@@ -2082,13 +2137,13 @@ class LocalHistory {
         if (!db || messages.length === 0) {
             return;
         }
-        const transaction = db.transaction(STORE, 'readwrite');
+        const transaction = db.transaction(this.schema.store, 'readwrite');
         const done = finished(transaction);
-        const store = transaction.objectStore(STORE);
+        const store = transaction.objectStore(this.schema.store);
         for (const message of messages) {
-            store.put({ id: message.id, text: message.text });
+            store.put(message);
         }
-        const excess = excessOf(await settle(store.count()));
+        const excess = excessOf(await settle(store.count()), this.schema.cap);
         if (excess > 0) {
             const keys = await settle(store.getAllKeys(null, excess));
             store.delete(IDBKeyRange.upperBound(keys[keys.length - 1]));
@@ -2197,7 +2252,7 @@ class BoardClient {
         this.version = update.version;
         this.live = new Map(update.added.map(message => [message.id, message]));
         try {
-            await this.history.save(update.added);
+            await this.history.save(update.added.map(message => ({ id: message.id, text: message.text })));
         } catch {
         }
         let archive = { items: [], last: null, done: true };
@@ -2229,7 +2284,7 @@ class BoardClient {
         this.updateEmpty();
         this.announce(fresh);
         try {
-            await this.history.save(update.added);
+            await this.history.save(update.added.map(message => ({ id: message.id, text: message.text })));
         } catch {
         }
     }
@@ -2320,10 +2375,8 @@ class BoardClient {
 
 export function attach(dotnet) {
     const client = new BoardClient(dotnet, document, window);
+    client.start();
     return {
-        start: () => {
-            client.start();
-        },
         apply: updates => client.apply(updates),
         dispose: () => client.dispose(),
     };
@@ -2332,10 +2385,10 @@ export function attach(dotnet) {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/CanvasIsland.razor
-SIZE:     4.25 KB (4352 bytes)
-LINES:    142
-SHA256:   1107b0a7ec898ecaf2deeb44b4f7c857f97e93403c1a566ad482b4a106bf26cb
-MODIFIED: 2026-10-13 08:33:38 (UTC)
+SIZE:     3.90 KB (3989 bytes)
+LINES:    128
+SHA256:   21050e20d5c7781df7026018f0478241274218354f69361f81461f6bcb5084c0
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 @implements IAsyncDisposable
@@ -2343,13 +2396,9 @@ MODIFIED: 2026-10-13 08:33:38 (UTC)
 @inject IJSRuntime JS
 @inject ILogger<CanvasIsland> Logger
 
-<div class="stage" aria-busy="@(_ready ? "false" : "true")">
+<div class="stage">
     <canvas @ref="_canvas" class="paper" width="1024" height="1024" role="img"
             aria-label="Shared drawing canvas. Drawing needs a mouse, a finger or a stylus."></canvas>
-    @if (!_ready)
-    {
-        <p class="loading" role="status">Loading the drawing…</p>
-    }
 </div>
 <div class="tools">
     <button type="button" @onclick="Reset" disabled="@(!_ready)">Reset canvas</button>
@@ -2380,7 +2429,8 @@ MODIFIED: 2026-10-13 08:33:38 (UTC)
         _self = DotNetObjectReference.Create(this);
         _module = await JS.InvokeAsync<IJSObjectReference>("import", ModulePath.Of(Assets["Components/Islands/CanvasIsland.razor.js"]));
         _client = await _module.InvokeAsync<IJSObjectReference>("attach", _canvas, _self);
-        await _client.InvokeVoidAsync("start");
+        _ready = true;
+        StateHasChanged();
     }
 
     [JSInvokable]
@@ -2439,20 +2489,9 @@ MODIFIED: 2026-10-13 08:33:38 (UTC)
     }
 
     private Task SendAsync(IReadOnlyList<CanvasUpdate> batch, CancellationToken cancellationToken) =>
-        InvokeAsync(async () =>
-        {
-            if (_client is null)
-            {
-                throw new InvalidOperationException("The canvas module is not attached.");
-            }
-
-            await _client.InvokeVoidAsync("apply", cancellationToken, batch);
-            if (!_ready && batch.Any(update => update.Kind == "snapshot"))
-            {
-                _ready = true;
-                StateHasChanged();
-            }
-        });
+        InvokeAsync(() => _client is null
+            ? Task.FromException(new InvalidOperationException("The canvas module is not attached."))
+            : _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask());
 
     private async Task StopAsync()
     {
@@ -2484,14 +2523,13 @@ MODIFIED: 2026-10-13 08:33:38 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/CanvasIsland.razor.css
-SIZE:     1.23 KB (1259 bytes)
-LINES:    71
-SHA256:   99bf4a23c0cdf01e47e51fc323da6ed14789fdeaeb24cee50fe2f4fb541f05ed
-MODIFIED: 2026-10-13 08:33:52 (UTC)
+SIZE:     0.54 KB (554 bytes)
+LINES:    31
+SHA256:   152545ac9e59a3ea2976846ad6091e0555441a2623d551a248c7117b05deb59a
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 .stage {
-    position: relative;
     inline-size: min(100%, 70dvh);
     margin-inline: auto;
 }
@@ -2507,45 +2545,6 @@ MODIFIED: 2026-10-13 08:33:52 (UTC)
     touch-action: none;
     user-select: none;
     cursor: crosshair;
-}
-
-.stage[aria-busy="true"] .paper {
-    cursor: progress;
-}
-
-.loading {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: .5rem;
-    margin: 0;
-    color: #5b5f6d;
-    font-size: .875rem;
-    pointer-events: none;
-}
-
-.loading::before {
-    content: "";
-    inline-size: 1rem;
-    block-size: 1rem;
-    border: 2px solid currentColor;
-    border-inline-end-color: transparent;
-    border-radius: 50%;
-    animation: spin .8s linear infinite;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(1turn);
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .loading::before {
-        animation: none;
-    }
 }
 
 .tools {
@@ -2565,10 +2564,10 @@ MODIFIED: 2026-10-13 08:33:52 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/CanvasIsland.razor.js
-SIZE:     11.16 KB (11426 bytes)
-LINES:    393
-SHA256:   c81dc54627f51587aa2dce45cc0e9849da35356cf7762086221da4d24e1bcb2d
-MODIFIED: 2026-10-13 08:34:02 (UTC)
+SIZE:     11.18 KB (11449 bytes)
+LINES:    394
+SHA256:   0bd8bec04e2d0183ec70fc949b5b489ce69c7cef38f7c2db82020cbd1f2bbc40
+MODIFIED: 2026-10-13 13:28:40 (UTC)
 ================================================================================
 
 export const RESOLUTION = 4095;
@@ -2779,6 +2778,7 @@ class CanvasClient {
             this.strokes.set(`r${stroke.id}`, [...stroke.points]);
         }
         this.redraw();
+        this.canvas.dataset.ready = '';
     }
 
     clear(epoch) {
@@ -2958,8 +2958,1131 @@ class CanvasClient {
 
 export function attach(canvas, dotnet) {
     const client = new CanvasClient(canvas, dotnet, window);
+    client.start();
     return {
-        start: () => client.start(),
+        apply: updates => client.apply(updates),
+        dispose: () => client.dispose(),
+    };
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Components/Islands/SlotIsland.razor
+SIZE:     4.20 KB (4304 bytes)
+LINES:    137
+SHA256:   565f26e92efb895fca1b2f278125d360d53765c0172a1d258d602afb7af2f5dd
+MODIFIED: 2026-10-13 13:25:23 (UTC)
+================================================================================
+
+@implements IAsyncDisposable
+@inject SlotService Slots
+@inject IJSRuntime JS
+@inject ILogger<SlotIsland> Logger
+
+<section @ref="_machine" class="machine" aria-labelledby="machine-title" data-initial="@_face">
+    <h2 id="machine-title" class="visually-hidden">Slot machine</h2>
+    <div class="lights" aria-hidden="true">
+        @for (var i = 0; i < Bulbs; i++)
+        {
+            <span></span>
+        }
+    </div>
+    <div class="window" aria-hidden="true">
+        @foreach (var symbol in _face)
+        {
+            <div class="reel"><div class="strip"><span>@SlotRules.Above(symbol)</span><span>@symbol</span><span>@SlotRules.Below(symbol)</span></div></div>
+        }
+        <div class="payline"></div>
+    </div>
+    <p class="verdict" aria-hidden="true"></p>
+    <div class="controls">
+        <button type="button" class="spin" disabled>Spin</button>
+        <button type="button" class="auto" aria-pressed="false" hidden>Auto spin</button>
+    </div>
+    <output class="status"></output>
+    <p class="progress"></p>
+</section>
+
+@code {
+    private const int Bulbs = 18;
+
+    private ElementReference _machine;
+    private DotNetObjectReference<SlotIsland>? _self;
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _client;
+    private Outbox<SlotUpdate>? _outbox;
+    private Subscriber? _subscriber;
+    private string _face = "CHAOS";
+    private int _offered;
+
+    [Parameter, EditorRequired]
+    public string Client { get; set; } = ClientAddress.Unknown;
+
+    [Parameter]
+    public string? Face { get; set; }
+
+    protected override void OnParametersSet() => _face = SlotRules.IsValid(Face) ? Face : "CHAOS";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        _self = DotNetObjectReference.Create(this);
+        _module = await JS.InvokeAsync<IJSObjectReference>("import", ModulePath.Of(Assets["Components/Islands/SlotIsland.razor.js"]));
+        _client = await _module.InvokeAsync<IJSObjectReference>("attach", _machine, _self);
+    }
+
+    [JSInvokable]
+    public int Offer(string[] ids, string[] texts)
+    {
+        if (ids is null || texts is null || ids.Length != texts.Length)
+        {
+            return 0;
+        }
+
+        var count = Math.Min(SlotService.MaxOffers - _offered, ids.Length);
+        if (count <= 0)
+        {
+            return 0;
+        }
+
+        _offered += count;
+        var offered = new List<BoardMessage>(count);
+        for (var i = 0; i < count; i++)
+        {
+            if (Guid.TryParseExact(ids[i], "D", out var id) && texts[i] is { } text)
+            {
+                offered.Add(new BoardMessage(id, text));
+            }
+        }
+
+        return Slots.Offer(offered);
+    }
+
+    [JSInvokable]
+    public async Task Join()
+    {
+        await StopAsync();
+        var outbox = new Outbox<SlotUpdate>(64, 16, TimeSpan.FromSeconds(20), SendAsync, Logger);
+        _outbox = outbox;
+        _subscriber = new Subscriber(outbox);
+        Slots.Subscribe(_subscriber);
+    }
+
+    [JSInvokable]
+    public string Press() => Slots.Press(Client).Reply;
+
+    [JSInvokable]
+    public bool Ping() => _subscriber is not null && _outbox is { IsFaulted: false } && Slots.IsSubscribed(_subscriber);
+
+    public async ValueTask DisposeAsync()
+    {
+        await StopAsync();
+        await JsCleanup.DisposeAsync(_client, "dispose");
+        await JsCleanup.DisposeAsync(_module, null);
+        _self?.Dispose();
+    }
+
+    private Task SendAsync(IReadOnlyList<SlotUpdate> batch, CancellationToken cancellationToken) =>
+        InvokeAsync(() => _client is null
+            ? Task.FromException(new InvalidOperationException("The slot module is not attached."))
+            : _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask());
+
+    private async Task StopAsync()
+    {
+        if (_subscriber is not null)
+        {
+            Slots.Unsubscribe(_subscriber);
+            _subscriber = null;
+        }
+
+        if (_outbox is not null)
+        {
+            await _outbox.DisposeAsync();
+            _outbox = null;
+        }
+    }
+
+    private sealed class Subscriber(Outbox<SlotUpdate> outbox) : ISlotSubscriber
+    {
+        public bool Deliver(SlotUpdate update) => outbox.TryPost(update);
+    }
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Components/Islands/SlotIsland.razor.css
+SIZE:     5.96 KB (6105 bytes)
+LINES:    293
+SHA256:   7554b54c87800b564bde923cbec09a6a8fb38c005ef1a71f447d5ccd4c6b7c36
+MODIFIED: 2026-10-13 13:28:16 (UTC)
+================================================================================
+
+.machine {
+    --cell: clamp(2.9rem, 13vw, 4.4rem);
+    --lamp: #ffc93c;
+    --bulb: #4a4f7c;
+    --cabinet: light-dark(#262c66, #161b40);
+    --cabinet-edge: light-dark(#151940, #0a0d24);
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+    inline-size: min(100%, 34rem);
+    margin: 0 auto 2rem;
+    padding: 1.1rem 1.1rem 1.4rem;
+    border: 3px solid var(--lamp);
+    border-radius: 1.5rem 1.5rem 1rem 1rem;
+    color: #f4f1e8;
+    background:
+        radial-gradient(120% 60% at 50% 0%, #ffffff1f, transparent 60%),
+        linear-gradient(180deg, var(--cabinet), var(--cabinet-edge));
+    box-shadow:
+        inset 0 2px 0 #ffffff26,
+        inset 0 -6px 0 #00000040,
+        0 1.25rem 2.5rem -1rem #0008;
+}
+
+.lights {
+    display: flex;
+    justify-content: space-between;
+    inline-size: 100%;
+    padding-inline: .25rem;
+}
+
+.lights span {
+    inline-size: .7rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--bulb);
+    box-shadow: inset 0 -2px 0 #0004;
+}
+
+.machine.win .lights span {
+    background: var(--lamp);
+    box-shadow: 0 0 .6rem var(--lamp);
+}
+
+.window {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: .45rem;
+    inline-size: 100%;
+    padding: .55rem;
+    border-radius: 1rem;
+    background: #070914;
+    box-shadow:
+        inset 0 0 0 2px #000,
+        inset 0 .4rem 1rem #000c,
+        0 0 0 4px #ffffff14;
+}
+
+.reel {
+    position: relative;
+    block-size: calc(var(--cell) * 3);
+    overflow: hidden;
+    border-radius: .5rem;
+    background: linear-gradient(90deg, #d6d0bf, #fffdf6 28%, #fffdf6 72%, #d6d0bf);
+}
+
+.reel::before {
+    content: "";
+    position: absolute;
+    inset: var(--cell) 0;
+    z-index: 0;
+    opacity: 0;
+    background: color-mix(in oklab, var(--lamp) 45%, transparent);
+    transition: opacity .3s;
+}
+
+.reel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(180deg, #000b 0%, #0000 30%, #0000 70%, #000b 100%);
+}
+
+.strip {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    will-change: transform;
+}
+
+.strip ::deep span {
+    display: grid;
+    place-items: center;
+    block-size: var(--cell);
+    color: #1c1d21;
+    font: 900 calc(var(--cell) * .6)/1 ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+}
+
+.reel.blur .strip {
+    filter: blur(1.4px);
+}
+
+.machine.win .reel.hit {
+    box-shadow: inset 0 0 0 3px var(--lamp), 0 0 1.1rem var(--lamp);
+}
+
+.machine.win .reel.hit::before {
+    opacity: 1;
+}
+
+.payline {
+    position: absolute;
+    inset-inline: .2rem;
+    inset-block-start: 50%;
+    z-index: 3;
+    block-size: 2px;
+    translate: 0 -50%;
+    pointer-events: none;
+    background: #ff5a4ecc;
+    box-shadow: 0 0 .5rem #ff5a4e;
+}
+
+.machine.win .payline {
+    background: var(--lamp);
+    box-shadow: 0 0 .9rem var(--lamp);
+}
+
+.verdict {
+    min-block-size: 2.4rem;
+    margin: 0;
+    color: var(--lamp);
+    font-size: clamp(1.3rem, 1rem + 2vw, 1.9rem);
+    font-weight: 900;
+    line-height: 1.2;
+    letter-spacing: .08em;
+    text-align: center;
+    text-transform: uppercase;
+    text-shadow: 0 0 1rem #ffb300aa;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem 1.5rem;
+    padding-block-end: .6rem;
+}
+
+.spin {
+    inline-size: 8rem;
+    aspect-ratio: 1;
+    padding: 0;
+    border: 4px solid #ffd8d3;
+    border-radius: 50%;
+    color: #fff;
+    background: radial-gradient(circle at 35% 30%, #ff8f84, #e03a2f 50%, #9b1c15 100%);
+    font-size: 1.6rem;
+    font-weight: 900;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    text-shadow: 0 2px 0 #0005;
+    box-shadow: 0 .55rem 0 #6b120d, 0 .9rem 1.6rem #000a;
+    transition: translate .08s, box-shadow .08s, filter .2s;
+}
+
+.spin:not(:disabled):hover {
+    filter: brightness(1.08);
+}
+
+.spin:not(:disabled):active {
+    translate: 0 .4rem;
+    box-shadow: 0 .15rem 0 #6b120d, 0 .4rem .8rem #000a;
+}
+
+.spin:disabled {
+    opacity: 1;
+    filter: grayscale(.85) brightness(.7);
+    translate: 0 .3rem;
+    box-shadow: 0 .25rem 0 #2a2a2a, 0 .5rem 1rem #0008;
+}
+
+.auto {
+    border: 2px solid var(--lamp);
+    border-radius: 999px;
+    color: var(--lamp);
+    background: transparent;
+}
+
+.auto[aria-pressed="true"] {
+    color: #1c1d21;
+    background: var(--lamp);
+    box-shadow: 0 0 1rem var(--lamp);
+}
+
+.status {
+    min-block-size: 1.4em;
+    color: #ffe2a8;
+    font-size: .9rem;
+    text-align: center;
+}
+
+.progress {
+    margin: 0;
+    color: #c9cbe0;
+    font-size: .8rem;
+    text-align: center;
+}
+
+@keyframes chase {
+    0% {
+        background: var(--lamp);
+        box-shadow: 0 0 .6rem var(--lamp);
+    }
+
+    50% {
+        background: var(--bulb);
+        box-shadow: inset 0 -2px 0 #0004;
+    }
+}
+
+@keyframes jackpot {
+    0% {
+        background: var(--lamp);
+        box-shadow: 0 0 .8rem var(--lamp);
+    }
+
+    50% {
+        background: #ff5a4e;
+        box-shadow: 0 0 .8rem #ff5a4e;
+    }
+}
+
+@keyframes thunk {
+    40% {
+        translate: 0 .2rem;
+    }
+}
+
+@keyframes pop {
+    from {
+        opacity: 0;
+        scale: .4;
+    }
+}
+
+@keyframes beckon {
+    50% {
+        box-shadow: 0 .55rem 0 #6b120d, 0 .9rem 1.6rem #000a, 0 0 0 .55rem #ff5a4e40;
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .lights span {
+        animation: chase 1.6s steps(1) infinite;
+    }
+
+    .lights span:nth-child(even) {
+        animation-delay: -.8s;
+    }
+
+    .machine.spinning .lights span {
+        animation-duration: .36s;
+    }
+
+    .machine.spinning .lights span:nth-child(even) {
+        animation-delay: -.18s;
+    }
+
+    .machine.win .lights span {
+        animation: jackpot .5s steps(1) infinite;
+    }
+
+    .machine.win .lights span:nth-child(even) {
+        animation-delay: -.25s;
+    }
+
+    .reel.stopped {
+        animation: thunk .22s ease-out;
+    }
+
+    .machine.win .verdict {
+        animation: pop .5s cubic-bezier(.2, 1.6, .4, 1);
+    }
+
+    .spin:not(:disabled) {
+        animation: beckon 2.4s ease-in-out infinite;
+    }
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Components/Islands/SlotIsland.razor.js
+SIZE:     21.58 KB (22103 bytes)
+LINES:    663
+SHA256:   ad9b5fb41a0f349b28d1c0ca9e197aa370d1a7fd626e4af1664eac5db93d5570
+MODIFIED: 2026-10-13 13:26:55 (UTC)
+================================================================================
+
+import { LocalHistory, OFFER_LIMIT, PAGE_SIZE, chunkOffers, isoOf, labelOf, needsResync, newestFirst } from './BoardIsland.razor.js';
+
+export const DB_NAME = 'chaos-slots';
+export const DB_VERSION = 1;
+export const STORE = 'spins';
+export const LOCAL_CAP = 10000;
+export const PING_MS = 25000;
+export const PRESS_KEY = 'chaos-slots-presses';
+export const AUTO_UNLOCK = 10;
+export const SYMBOLS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+export const LENGTH = 5;
+export const SYMBOL_MS = 55;
+
+export const migrations = [
+    db => db.createObjectStore(STORE, { keyPath: 'id' }),
+];
+
+export const SCHEMA = Object.freeze({ name: DB_NAME, version: DB_VERSION, store: STORE, migrations, cap: LOCAL_CAP });
+
+export const LABELS = Object.freeze({
+    three: 'Three of a kind',
+    four: 'Four of a kind',
+    five: 'Five of a kind',
+    up: 'Straight up',
+    down: 'Straight down',
+});
+
+export function isValid(text) {
+    return typeof text === 'string' && /^[0-9A-Z]{5}$/.test(text);
+}
+
+function tally(text) {
+    const counts = new Map();
+    for (const symbol of text) {
+        counts.set(symbol, (counts.get(symbol) ?? 0) + 1);
+    }
+    return counts;
+}
+
+function ordered(text, direction) {
+    for (let index = 1; index < text.length; index += 1) {
+        if ((text.charCodeAt(index) - text.charCodeAt(index - 1)) * direction <= 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+export function classify(text) {
+    if (!isValid(text)) {
+        return 'none';
+    }
+    const most = Math.max(...tally(text).values());
+    if (most >= 5) {
+        return 'five';
+    }
+    if (most === 4) {
+        return 'four';
+    }
+    if (most === 3) {
+        return 'three';
+    }
+    if (ordered(text, 1)) {
+        return 'up';
+    }
+    return ordered(text, -1) ? 'down' : 'none';
+}
+
+export function hits(text) {
+    const win = classify(text);
+    if (win === 'none') {
+        return Array(LENGTH).fill(false);
+    }
+    if (win === 'up' || win === 'down') {
+        return Array(LENGTH).fill(true);
+    }
+    const [top] = [...tally(text)].reduce((best, entry) => (entry[1] > best[1] ? entry : best));
+    return [...text].map(symbol => symbol === top);
+}
+
+export function above(symbol) {
+    return SYMBOLS[(SYMBOLS.indexOf(symbol) + 1) % SYMBOLS.length];
+}
+
+export function below(symbol) {
+    return SYMBOLS[(SYMBOLS.indexOf(symbol) + SYMBOLS.length - 1) % SYMBOLS.length];
+}
+
+export function stopTimes(duration, reels = LENGTH) {
+    return Array.from({ length: reels }, (_, index) => Math.round(duration * (0.42 + 0.11 * index)));
+}
+
+export function stripFor(current, target, spins, random = Math.random) {
+    const filler = Array.from({ length: Math.max(0, spins) }, () => SYMBOLS[Math.floor(random() * SYMBOLS.length)]);
+    return [above(target), target, below(target), ...filler, above(current), current, below(current)];
+}
+
+export function spinFrames(cells) {
+    const step = 100 / cells;
+    const start = -(cells - 3) * step;
+    return [
+        { transform: `translateY(${start}%)`, easing: 'ease-in' },
+        { transform: `translateY(${start - step * 0.35}%)`, offset: 0.07, easing: 'cubic-bezier(.32,0,.18,1)' },
+        { transform: `translateY(${step * 0.3}%)`, offset: 0.92, easing: 'ease-out' },
+        { transform: 'translateY(0%)' },
+    ];
+}
+
+export function readPresses(storage) {
+    try {
+        const value = Number.parseInt(storage?.getItem(PRESS_KEY) ?? '0', 10);
+        return Number.isFinite(value) && value > 0 ? value : 0;
+    } catch {
+        return 0;
+    }
+}
+
+export function autoDelay(random = Math.random) {
+    return 200 + Math.round(random() * 800);
+}
+
+export function parseReply(reply) {
+    if (reply === 'busy' || reply === 'slow') {
+        return { kind: reply, id: null };
+    }
+    if (typeof reply === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(reply)) {
+        return { kind: 'accepted', id: reply };
+    }
+    return { kind: 'error', id: null };
+}
+
+export function progressText(presses, unlock = AUTO_UNLOCK) {
+    if (presses >= unlock) {
+        return `${presses} successful presses from this browser.`;
+    }
+    const left = unlock - presses;
+    return `${left} more successful ${left === 1 ? 'press unlocks' : 'presses unlock'} auto spin.`;
+}
+
+class SlotClient {
+    constructor(machine, dotnet, doc, win) {
+        this.machine = machine;
+        this.dotnet = dotnet;
+        this.doc = doc;
+        this.win = win;
+        this.history = new LocalHistory(win.indexedDB, SCHEMA);
+        this.reels = [...machine.querySelectorAll('.reel')];
+        this.strips = this.reels.map(reel => reel.querySelector('.strip'));
+        this.spinButton = machine.querySelector('.spin');
+        this.autoButton = machine.querySelector('.auto');
+        this.status = machine.querySelector('.status');
+        this.verdict = machine.querySelector('.verdict');
+        this.progress = machine.querySelector('.progress');
+        this.feed = doc.getElementById('slots-feed');
+        this.empty = doc.getElementById('slots-empty');
+        this.older = doc.getElementById('slots-older');
+        this.announcer = doc.getElementById('slots-announcer');
+        this.faces = [...(isValid(machine.dataset.initial) ? machine.dataset.initial : 'CHAOS')];
+        this.motion = win.matchMedia('(prefers-reduced-motion: reduce)');
+        this.presses = readPresses(win.localStorage);
+        this.version = -1;
+        this.live = new Map();
+        this.shown = new Map();
+        this.mine = new Set();
+        this.cursor = null;
+        this.spin = null;
+        this.ready = false;
+        this.pressing = false;
+        this.auto = false;
+        this.autoTimer = 0;
+        this.joining = null;
+        this.timer = 0;
+        this.disposed = false;
+        this.onSpin = () => this.press(true);
+        this.onAuto = () => this.toggleAuto();
+        this.onOlder = () => this.loadOlder();
+        this.onReconnected = () => this.join();
+        this.onVisibility = () => this.scheduleAuto();
+    }
+
+    async start() {
+        this.spinButton?.addEventListener('click', this.onSpin);
+        this.autoButton?.addEventListener('click', this.onAuto);
+        this.older?.addEventListener('click', this.onOlder);
+        this.win.addEventListener('chaos:reconnected', this.onReconnected);
+        this.doc.addEventListener('visibilitychange', this.onVisibility);
+        this.timer = this.win.setInterval(() => this.ping(), PING_MS);
+        this.updateControls();
+        try {
+            await this.offer();
+        } catch {
+        }
+        await this.join();
+    }
+
+    async offer() {
+        const local = await this.history.newest(OFFER_LIMIT * 2);
+        for (const record of local) {
+            if (record.mine) {
+                this.mine.add(record.id);
+            }
+        }
+        for (const chunk of chunkOffers(local)) {
+            if (this.disposed) {
+                return;
+            }
+            await this.dotnet.invokeMethodAsync('Offer', chunk.map(record => record.id), chunk.map(record => record.text));
+        }
+    }
+
+    join() {
+        if (this.disposed) {
+            return Promise.resolve();
+        }
+        this.version = -1;
+        this.joining ??= this.dotnet.invokeMethodAsync('Join')
+            .catch(() => {})
+            .finally(() => {
+                this.joining = null;
+            });
+        return this.joining;
+    }
+
+    async ping() {
+        if (this.disposed || this.joining) {
+            return;
+        }
+        try {
+            if (!(await this.dotnet.invokeMethodAsync('Ping'))) {
+                await this.join();
+            }
+        } catch {
+        }
+    }
+
+    async apply(updates) {
+        for (const update of updates) {
+            if (this.disposed) {
+                return;
+            }
+            if (update.kind === 'snapshot') {
+                await this.snapshot(update);
+            } else if (update.kind === 'delta' && this.version >= 0) {
+                if (needsResync(this.version, update)) {
+                    this.join();
+                    return;
+                }
+                await this.delta(update);
+            }
+        }
+    }
+
+    record(message) {
+        return { id: message.id, text: message.text, mine: this.mine.has(message.id) };
+    }
+
+    async save(messages) {
+        try {
+            await this.history.save(messages.map(message => this.record(message)));
+        } catch {
+        }
+    }
+
+    async snapshot(update) {
+        this.version = update.version;
+        this.live = new Map(update.added.map(message => [message.id, message]));
+        const spinning = update.spin && this.live.has(update.spin.id) ? update.spin : null;
+        if (this.spin && this.spin.message.id !== spinning?.id) {
+            this.finish(true);
+        }
+        const settled = update.added.filter(message => message.id !== spinning?.id);
+        await this.save(settled);
+        let archive = { items: [], last: null, done: true };
+        try {
+            archive = await this.history.page(null, PAGE_SIZE, this.live);
+        } catch {
+        }
+        this.cursor = archive.last;
+        this.render([...settled, ...archive.items].sort(newestFirst), archive.done);
+        if (spinning && !this.spin) {
+            this.begin(this.live.get(spinning.id), spinning.remaining);
+        } else if (!this.spin && settled.length > 0) {
+            this.show(settled.sort(newestFirst)[0].text);
+        }
+        if (!this.ready) {
+            this.ready = true;
+            this.machine.dataset.ready = '';
+        }
+        this.updateControls();
+        this.scheduleAuto();
+    }
+
+    async delta(update) {
+        this.version = update.version;
+        for (const id of update.removed) {
+            this.live.delete(id);
+            this.shown.get(id)?.classList.add('archived');
+        }
+        const settled = [];
+        let spinning = null;
+        for (const message of update.added) {
+            this.live.set(message.id, message);
+            if (update.spin && message.id === update.spin.id) {
+                spinning = message;
+                continue;
+            }
+            const existing = this.shown.get(message.id);
+            if (existing) {
+                existing.classList.remove('archived');
+            } else {
+                this.insert(message, true);
+            }
+            settled.push(message);
+        }
+        this.updateEmpty();
+        if (spinning) {
+            this.begin(spinning, update.spin.remaining);
+        }
+        await this.save(settled);
+    }
+
+    reducedMotion() {
+        return this.motion.matches || typeof this.strips[0]?.animate !== 'function';
+    }
+
+    begin(message, remaining) {
+        if (this.spin) {
+            this.finish(true);
+        }
+        this.win.clearTimeout(this.autoTimer);
+        this.autoTimer = 0;
+        const duration = Math.max(0, Math.round(remaining));
+        const spin = { message, timers: [], animations: [] };
+        this.spin = spin;
+        this.machine.classList.remove('win');
+        this.machine.classList.add('spinning');
+        this.verdict.textContent = '';
+        for (const reel of this.reels) {
+            reel.classList.remove('hit', 'stopped');
+        }
+        const stops = stopTimes(duration);
+        const reduced = this.reducedMotion();
+        stops.forEach((stop, index) => {
+            const target = message.text[index];
+            if (!reduced && stop > 0) {
+                this.roll(spin, index, target, stop);
+            }
+            spin.timers.push(this.win.setTimeout(() => this.stop(spin, index, target), stop));
+        });
+        spin.timers.push(this.win.setTimeout(() => this.finish(false), duration));
+        this.updateControls();
+    }
+
+    roll(spin, index, target, time) {
+        const strip = this.strips[index];
+        const reel = this.reels[index];
+        const symbols = stripFor(this.faces[index], target, Math.max(4, Math.round(time / SYMBOL_MS)));
+        this.fill(strip, symbols);
+        spin.animations.push(strip.animate(spinFrames(symbols.length), { duration: time, fill: 'forwards' }));
+        reel.classList.add('blur');
+        spin.timers.push(this.win.setTimeout(() => reel.classList.remove('blur'), Math.round(time * 0.72)));
+    }
+
+    stop(spin, index, target) {
+        if (this.spin !== spin) {
+            return;
+        }
+        const reel = this.reels[index];
+        reel.classList.remove('blur', 'stopped');
+        this.setFace(index, target);
+        for (const animation of spin.animations) {
+            if (animation.effect?.target === this.strips[index]) {
+                animation.cancel();
+            }
+        }
+        void reel.offsetWidth;
+        reel.classList.add('stopped');
+    }
+
+    finish(instant) {
+        const spin = this.spin;
+        if (!spin) {
+            return;
+        }
+        this.spin = null;
+        for (const timer of spin.timers) {
+            this.win.clearTimeout(timer);
+        }
+        for (const animation of spin.animations) {
+            animation.cancel();
+        }
+        const text = spin.message.text;
+        this.show(text);
+        this.machine.classList.remove('spinning');
+        const win = classify(text);
+        const marks = hits(text);
+        this.reels.forEach((reel, index) => reel.classList.toggle('hit', marks[index]));
+        this.machine.classList.toggle('win', win !== 'none');
+        this.verdict.textContent = LABELS[win] ?? '';
+        this.land(spin.message, !instant);
+        this.updateControls();
+        this.scheduleAuto();
+    }
+
+    land(message, fresh) {
+        if (!this.shown.has(message.id)) {
+            this.insert(message, fresh);
+        }
+        this.updateEmpty();
+        this.announce(message);
+        this.save([message]);
+    }
+
+    show(text) {
+        [...text].forEach((symbol, index) => this.setFace(index, symbol));
+        for (const reel of this.reels) {
+            reel.classList.remove('blur', 'hit');
+        }
+    }
+
+    setFace(index, symbol) {
+        this.faces[index] = symbol;
+        this.fill(this.strips[index], [above(symbol), symbol, below(symbol)]);
+    }
+
+    fill(strip, symbols) {
+        const fragment = this.doc.createDocumentFragment();
+        for (const symbol of symbols) {
+            const cell = this.doc.createElement('span');
+            cell.textContent = symbol;
+            fragment.append(cell);
+        }
+        strip.replaceChildren(fragment);
+    }
+
+    async press(manual) {
+        if (!this.ready || this.spin || this.pressing || this.disposed) {
+            return;
+        }
+        this.pressing = true;
+        this.updateControls();
+        let reply = { kind: 'error', id: null };
+        try {
+            reply = parseReply(await this.dotnet.invokeMethodAsync('Press'));
+        } catch {
+        }
+        this.pressing = false;
+        if (this.disposed) {
+            return;
+        }
+        if (reply.kind === 'accepted') {
+            this.markMine(reply.id);
+            this.presses += 1;
+            try {
+                this.win.localStorage.setItem(PRESS_KEY, String(this.presses));
+            } catch {
+            }
+            this.setStatus('Your press worked. This spin is yours.');
+        } else if (reply.kind === 'busy') {
+            this.setStatus(manual ? 'Someone else pressed first. Wait for the reels to stop.' : '');
+        } else if (reply.kind === 'slow') {
+            this.setStatus('Slow down a little.');
+        } else {
+            this.setStatus('Could not reach the server.');
+        }
+        this.updateControls();
+        this.scheduleAuto();
+    }
+
+    markMine(id) {
+        this.mine.add(id);
+        const existing = this.shown.get(id);
+        const message = this.live.get(id);
+        if (existing && message) {
+            const element = this.item(message, existing.classList.contains('fresh'));
+            existing.replaceWith(element);
+            this.shown.set(id, element);
+            this.save([message]);
+        }
+    }
+
+    toggleAuto() {
+        if (this.presses < AUTO_UNLOCK) {
+            return;
+        }
+        this.auto = !this.auto;
+        this.setStatus(this.auto ? 'Auto spin is on. It pauses while this tab is hidden.' : 'Auto spin is off.');
+        this.updateControls();
+        this.scheduleAuto();
+    }
+
+    scheduleAuto() {
+        this.win.clearTimeout(this.autoTimer);
+        this.autoTimer = 0;
+        if (!this.auto || !this.ready || this.spin || this.pressing || this.disposed || this.doc.visibilityState !== 'visible') {
+            return;
+        }
+        this.autoTimer = this.win.setTimeout(() => {
+            this.autoTimer = 0;
+            this.press(false);
+        }, autoDelay());
+    }
+
+    updateControls() {
+        if (this.spinButton) {
+            this.spinButton.disabled = !this.ready || this.spin !== null || this.pressing;
+        }
+        if (this.autoButton) {
+            this.autoButton.hidden = this.presses < AUTO_UNLOCK;
+            this.autoButton.setAttribute('aria-pressed', String(this.auto));
+        }
+        if (this.progress) {
+            this.progress.textContent = progressText(this.presses);
+        }
+    }
+
+    setStatus(text) {
+        if (this.status) {
+            this.status.textContent = text;
+        }
+    }
+
+    async loadOlder() {
+        if (!this.older) {
+            return;
+        }
+        this.older.disabled = true;
+        try {
+            const archive = await this.history.page(this.cursor, PAGE_SIZE, this.live);
+            this.cursor = archive.last ?? this.cursor;
+            for (const record of archive.items) {
+                if (record.mine) {
+                    this.mine.add(record.id);
+                }
+                if (!this.shown.has(record.id)) {
+                    this.insert(record, false);
+                }
+            }
+            this.older.hidden = archive.done;
+        } catch {
+            this.older.hidden = true;
+        } finally {
+            this.older.disabled = false;
+        }
+    }
+
+    item(message, fresh) {
+        const win = classify(message.text);
+        const marks = hits(message.text);
+        const mine = this.mine.has(message.id) || message.mine === true;
+        const element = this.doc.createElement('li');
+        element.className = 'msg';
+        element.classList.toggle('win', win !== 'none');
+        element.classList.toggle('mine', mine);
+        element.classList.toggle('archived', !this.live.has(message.id));
+        element.classList.toggle('fresh', fresh);
+        element.dataset.id = message.id;
+        const time = this.doc.createElement('time');
+        time.dateTime = isoOf(message.id);
+        time.textContent = labelOf(message.id);
+        const symbols = this.doc.createElement('p');
+        symbols.className = 'symbols';
+        [...message.text].forEach((symbol, index) => {
+            const cell = this.doc.createElement('span');
+            cell.textContent = symbol;
+            if (marks[index]) {
+                cell.className = 'hit';
+            }
+            symbols.append(cell);
+        });
+        element.append(time, symbols);
+        if (win !== 'none' || mine) {
+            const tags = this.doc.createElement('p');
+            tags.className = 'tags';
+            if (win !== 'none') {
+                const badge = this.doc.createElement('strong');
+                badge.className = 'badge';
+                badge.textContent = LABELS[win];
+                tags.append(badge);
+            }
+            if (mine) {
+                const yours = this.doc.createElement('span');
+                yours.className = 'yours';
+                yours.textContent = 'Your press';
+                tags.append(yours);
+            }
+            element.append(tags);
+        }
+        return element;
+    }
+
+    insert(message, fresh) {
+        const element = this.item(message, fresh);
+        let next = this.feed.firstElementChild;
+        while (next && next.dataset.id > message.id) {
+            next = next.nextElementSibling;
+        }
+        this.feed.insertBefore(element, next);
+        this.shown.set(message.id, element);
+    }
+
+    render(messages, done) {
+        this.shown.clear();
+        const fragment = this.doc.createDocumentFragment();
+        for (const message of messages) {
+            if (message.mine) {
+                this.mine.add(message.id);
+            }
+            const element = this.item(message, false);
+            this.shown.set(message.id, element);
+            fragment.append(element);
+        }
+        this.feed.replaceChildren(fragment);
+        if (this.older) {
+            this.older.hidden = done;
+        }
+        this.updateEmpty();
+    }
+
+    announce(message) {
+        if (!this.announcer) {
+            return;
+        }
+        const win = classify(message.text);
+        const spelled = [...message.text].join(' ');
+        this.announcer.textContent = win === 'none' ? `Result: ${spelled}.` : `Winner! ${spelled}. ${LABELS[win]}.`;
+    }
+
+    updateEmpty() {
+        if (this.empty) {
+            this.empty.hidden = this.shown.size > 0;
+        }
+    }
+
+    dispose() {
+        this.disposed = true;
+        this.win.clearInterval(this.timer);
+        this.win.clearTimeout(this.autoTimer);
+        if (this.spin) {
+            for (const timer of this.spin.timers) {
+                this.win.clearTimeout(timer);
+            }
+            for (const animation of this.spin.animations) {
+                animation.cancel();
+            }
+            this.spin = null;
+        }
+        this.spinButton?.removeEventListener('click', this.onSpin);
+        this.autoButton?.removeEventListener('click', this.onAuto);
+        this.older?.removeEventListener('click', this.onOlder);
+        this.win.removeEventListener('chaos:reconnected', this.onReconnected);
+        this.doc.removeEventListener('visibilitychange', this.onVisibility);
+    }
+}
+
+export function attach(machine, dotnet) {
+    const client = new SlotClient(machine, dotnet, document, window);
+    client.start();
+    return {
         apply: updates => client.apply(updates),
         dispose: () => client.dispose(),
     };
@@ -2968,10 +4091,10 @@ export function attach(canvas, dotnet) {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Layout/MainLayout.razor
-SIZE:     0.67 KB (691 bytes)
-LINES:    28
-SHA256:   28b963dd9929a0abc42d0e7787b5c913e52a3e840c9618fdabdfae341131eb6a
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+SIZE:     0.72 KB (737 bytes)
+LINES:    29
+SHA256:   ca6d02d96d3e59a26459a0807325d7f3a92401d6cf85a89501e843cba6bab216
+MODIFIED: 2026-10-13 13:28:40 (UTC)
 ================================================================================
 
 @inherits LayoutComponentBase
@@ -2981,6 +4104,7 @@ MODIFIED: 2026-10-13 01:32:31 (UTC)
     <nav aria-label="Main">
         <NavLink href="board">Board</NavLink>
         <NavLink href="canvas">Canvas</NavLink>
+        <NavLink href="slots">Slots</NavLink>
         <NavLink href="about">About</NavLink>
     </nav>
     <ThemeToggle />
@@ -3009,7 +4133,7 @@ FILE:     src/Chaos.Web/Components/Layout/MainLayout.razor.css
 SIZE:     1.43 KB (1465 bytes)
 LINES:    78
 SHA256:   86b5f6d2d61cbf092485ca0b8126cebf313510072b4e613270c915ac6fa0d435
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 .site-header {
@@ -3097,7 +4221,7 @@ FILE:     src/Chaos.Web/Components/Layout/ReconnectBanner.razor
 SIZE:     0.75 KB (765 bytes)
 LINES:    8
 SHA256:   fca081eabd6d68679415f6ac53ed96fc1cb70e40707b29cedb4b8041ec88f86a
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 <div id="components-reconnect-modal" class="reconnect" role="status" data-nosnippet>
@@ -3115,7 +4239,7 @@ FILE:     src/Chaos.Web/Components/Layout/ReconnectBanner.razor.css
 SIZE:     1.19 KB (1220 bytes)
 LINES:    55
 SHA256:   f88444796cafdc80fc51e055b93015b4a20dd986043719255e3c09b2c460c980
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 .reconnect {
@@ -3180,7 +4304,7 @@ FILE:     src/Chaos.Web/Components/Layout/ThemeToggle.razor
 SIZE:     0.23 KB (237 bytes)
 LINES:    4
 SHA256:   6766530e3cb6a3c9ae9ecf33f1b1bff6d47aa7a09bd48eb281bbe2ac34763c96
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 <button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false" title="Switch between light and dark">
@@ -3194,7 +4318,7 @@ FILE:     src/Chaos.Web/Components/Layout/ThemeToggle.razor.css
 SIZE:     0.45 KB (460 bytes)
 LINES:    23
 SHA256:   d18fee1428fba9577c5ae70d65539e33e7a89a080d07fbb020fd680cad47eeec
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 .theme-toggle {
@@ -3224,10 +4348,10 @@ MODIFIED: 2026-10-13 01:32:31 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Pages/About.razor
-SIZE:     2.95 KB (3017 bytes)
-LINES:    40
-SHA256:   de0f84f6e416c2ab1b582eab120a7b6ee5c81f61b50b8841c9e386a4f71d3c8d
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+SIZE:     4.81 KB (4930 bytes)
+LINES:    52
+SHA256:   e36a64c1e3b08c0bae6ff0517bb6ce691386a901e7b54fef20823f6d3b59be4b
+MODIFIED: 2026-10-13 13:28:47 (UTC)
 ================================================================================
 
 @page "/about"
@@ -3235,7 +4359,7 @@ MODIFIED: 2026-10-13 01:32:31 (UTC)
 <PageTitle>About chaos</PageTitle>
 
 <h1>About</h1>
-<p class="lede">Chaos is a small public experiment: a message board and a drawing canvas that anyone can use, with no accounts and nothing kept for long.</p>
+<p class="lede">Chaos is a small public experiment: a message board, a drawing canvas and a slot machine that anyone can use, with no accounts and nothing kept for long.</p>
 
 <h2>Why it exists</h2>
 <p>To show how much a plain Blazor Server app can do on a free hosting plan with a quarter of a CPU and 256 MB of memory, with no database, no cookies and no third-party code. The HTML, the CSS and the small amount of JavaScript are all written by hand.</p>
@@ -3246,14 +4370,26 @@ MODIFIED: 2026-10-13 01:32:31 (UTC)
     <dd>Post a message of up to 500 characters. Everyone on the board sees it at once. The server keeps the newest 50. This browser keeps up to 10,000 on your device, so you still see messages after the server has forgotten them. Those have a dotted border.</dd>
     <dt><a href="canvas">Canvas</a></dt>
     <dd>Draw with a mouse, a finger or a stylus. Everyone sees each stroke as it is drawn. Anyone can reset the page for everyone, and a server restart clears it too.</dd>
+    <dt><a href="slots">Slots</a></dt>
+    <dd>Press the button and the shared machine spins for everyone watching. Nobody can press again until the reels stop, and then whoever presses first goes next. Nobody knows who pressed, but you are told whether your own press worked. After ten successful presses from this browser you get an auto spin button that presses for you each time the reels stop. No money or prizes are involved; it is just for fun.</dd>
 </dl>
+
+<h2>Winners</h2>
+<p>Each spin is five symbols, each one of the letters A to Z or the digits 0 to 9. A spin is a winner if:</p>
+<ul>
+    <li><strong>Three, four or five of a kind:</strong> the same symbol appears at least three times, anywhere. <code>7Q7A7</code> wins.</li>
+    <li><strong>Straight up or down:</strong> all five symbols climb or all five fall, with no repeats, in the order 0 to 9 and then A to Z. <code>13AKZ</code> and <code>ZKA80</code> win; <code>ZK8A0</code> does not.</li>
+</ul>
+<p>Winners have a gold border and a star badge in the results, and their winning symbols are highlighted. About one spin in fifty wins.</p>
 
 <h2>How it works</h2>
 <ul>
-    <li>Pages are rendered on the server and arrive as plain HTML. Only the board and the canvas open a live connection, over a WebSocket.</li>
-    <li>Every message gets a UUIDv7 from the server clock, so its ID also records when it was posted. Messages that claim to come from the future are rejected.</li>
-    <li>The server can restart at any time and then remembers nothing. When you open the board, your browser offers its 50 newest messages back, and the server keeps the ones that fit among its newest 50.</li>
+    <li>Pages are rendered on the server and arrive as plain HTML. Only the board, the canvas and the slot machine open a live connection, over a WebSocket.</li>
+    <li>Every message and every spin gets a UUIDv7 from the server clock, so its ID also records when it happened. Anything that claims to come from the future is rejected.</li>
+    <li>The server can restart at any time and then remembers nothing. When you open the board or the slots, your browser offers its 50 newest entries back, and the server keeps the ones that fit among its newest 50.</li>
     <li>The canvas sends strokes in small batches of points measured from 0 to 1 across a square page, so phones and desktops draw the same picture. Each reset starts a new round, and strokes still in flight from the old one are dropped.</li>
+    <li>The slot result is drawn on the server with a cryptographic random number generator the moment a press is accepted. The server then refuses every press until the spin time has passed, so only one spin runs at a time. Your browser plays the reels for the time the server says is left, then adds the result to the list; your own button stays off until your reels stop, so a spin always settles on your screen before you can press again.</li>
+    <li>The reels are plain HTML animated with the Web Animations API. If your device asks for reduced motion, the symbols change without spinning.</li>
     <li>A strict Content Security Policy only allows scripts, styles and connections from this site. There are no inline scripts.</li>
 </ul>
 
@@ -3261,12 +4397,12 @@ MODIFIED: 2026-10-13 01:32:31 (UTC)
 <p class="warning">Anything you post or draw goes to every connected browser at once and is stored on their devices. It can't be edited, deleted or recalled. Nothing is moderated. Don't share anything private.</p>
 
 <h2>Your data</h2>
-<p>There are no accounts, no cookies and no tracking. Your theme choice is kept in this browser's local storage. Board messages are kept in this browser's IndexedDB, up to 10,000 of them, with the oldest removed first.</p>
+<p>There are no accounts, no cookies and no tracking. Your theme choice and your count of successful slot presses are kept in this browser's local storage. Board messages and slot results are kept in this browser's IndexedDB, up to 10,000 of each, with the oldest removed first. Results you started are marked as yours only in this browser.</p>
 <p class="clear">
-    <button type="button" data-clear-history="clear-status">Clear local message history</button>
+    <button type="button" data-clear-history="clear-status">Clear local history</button>
     <output id="clear-status"></output>
 </p>
-<p>This removes only the board history on this device. The next time you open the board, it fills up again from the server.</p>
+<p>This removes the board and slot history and your press count on this device. The next time you open the board or the slots, they fill up again from the server.</p>
 
 <h2>Source code</h2>
 <p>The code is on <a href="https://github.com/kusl/chaos-velixir-run">GitHub</a> under the GNU Affero General Public License, version 3 or later. If you run a modified copy for other people, you have to offer them its source too.</p>
@@ -3274,10 +4410,10 @@ MODIFIED: 2026-10-13 01:32:31 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Pages/About.razor.css
-SIZE:     0.45 KB (458 bytes)
-LINES:    37
-SHA256:   532ad47a2a76b917cbd3fa29bd4105ae01272afaeec89b101f9c4e7adb55f3ed
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+SIZE:     0.57 KB (582 bytes)
+LINES:    42
+SHA256:   455edffb6bdf29d53c5f0d0d5207c2466f7988040c578fe46d7cd338003512bc
+MODIFIED: 2026-10-13 13:28:40 (UTC)
 ================================================================================
 
 dl {
@@ -3318,13 +4454,18 @@ output {
     color: var(--muted);
 }
 
+code {
+    font-family: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+    letter-spacing: .05em;
+}
+
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Pages/BoardPage.razor
 SIZE:     1.51 KB (1550 bytes)
 LINES:    40
 SHA256:   6736255f27edf1f2e2bf7a9ba418d0fcd77689cbd62e196ab0516b215022d09c
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 @page "/board"
@@ -3374,7 +4515,7 @@ FILE:     src/Chaos.Web/Components/Pages/BoardPage.razor.css
 SIZE:     1.11 KB (1136 bytes)
 LINES:    64
 SHA256:   f37a0c4317740d0b3c00b625551f00210b9c96bcc9ca42c25af8f018225f8704
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 .feed {
@@ -3448,7 +4589,7 @@ FILE:     src/Chaos.Web/Components/Pages/CanvasPage.razor
 SIZE:     0.71 KB (732 bytes)
 LINES:    19
 SHA256:   ea257fc5d93364399f976757beca4a36b681143b6436242f1a7fc8894e0d6c2c
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 @page "/canvas"
@@ -3477,7 +4618,7 @@ FILE:     src/Chaos.Web/Components/Pages/CanvasPage.razor.css
 SIZE:     0.08 KB (81 bytes)
 LINES:    5
 SHA256:   33ee406f97f8b99ce92b0c56782a82a9a6c072c53a36c31d19f4faad9765cd03
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 .note {
@@ -3492,7 +4633,7 @@ FILE:     src/Chaos.Web/Components/Pages/Error.razor
 SIZE:     0.53 KB (540 bytes)
 LINES:    21
 SHA256:   a269a8d7591a4dedbe6df4353064968f265bc4eb8d7931d1298a18fbfd6f8421
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 @page "/Error"
@@ -3523,7 +4664,7 @@ FILE:     src/Chaos.Web/Components/Pages/Error.razor.css
 SIZE:     0.04 KB (38 bytes)
 LINES:    3
 SHA256:   a27ea01e5be525fe1b3d551d808789d9689a00bd7ed345d9e4321eff5a90b7b6
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 .danger {
@@ -3533,18 +4674,18 @@ MODIFIED: 2026-10-13 01:32:31 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Pages/Home.razor
-SIZE:     0.78 KB (797 bytes)
-LINES:    27
-SHA256:   cfcf88e6a6531112f61b806f9645f933a8d2914726caf39beb0f520cec670b53
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+SIZE:     0.98 KB (999 bytes)
+LINES:    33
+SHA256:   a479b409fb45ee5160946216c93111c26db23e41d525468e148b015159d476da
+MODIFIED: 2026-10-13 13:28:40 (UTC)
 ================================================================================
 
 @page "/"
 
 <PageTitle>Chaos</PageTitle>
 
-<h1>Two shared spaces that forget</h1>
-<p class="lede">Post a message or draw a line and everyone here sees it at once. The server keeps very little, and only until it restarts.</p>
+<h1>Three shared spaces that forget</h1>
+<p class="lede">Post a message, draw a line or pull the lever and everyone here sees it at once. The server keeps very little, and only until it restarts.</p>
 
 <ul class="entries">
     <li>
@@ -3557,6 +4698,12 @@ MODIFIED: 2026-10-13 01:32:31 (UTC)
         <a href="canvas">
             <strong>Canvas</strong>
             <span>One black pen and one shared page, live for everyone.</span>
+        </a>
+    </li>
+    <li>
+        <a href="slots">
+            <strong>Slots</strong>
+            <span>One shared slot machine. Whoever presses first spins for everyone.</span>
         </a>
     </li>
     <li>
@@ -3573,7 +4720,7 @@ FILE:     src/Chaos.Web/Components/Pages/Home.razor.css
 SIZE:     0.69 KB (706 bytes)
 LINES:    39
 SHA256:   35d94f37bf280f833e0074d59b8d39777123ee821eda9e51d8eb934a21106d06
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 .entries {
@@ -3622,7 +4769,7 @@ FILE:     src/Chaos.Web/Components/Pages/NotFound.razor
 SIZE:     0.21 KB (210 bytes)
 LINES:    7
 SHA256:   6368d41f15714ba92646f33b74675b4b70503d1f033e60df1e96910755e11452
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 @page "/not-found"
@@ -3635,11 +4782,232 @@ MODIFIED: 2026-10-13 01:32:31 (UTC)
 
 
 ================================================================================
+FILE:     src/Chaos.Web/Components/Pages/SlotsPage.razor
+SIZE:     2.27 KB (2324 bytes)
+LINES:    57
+SHA256:   52d405f7c2b0f8ba2e5fd0030f53c391b99dd49cb1bfb2d70346dea6109aa16f
+MODIFIED: 2026-10-13 13:25:23 (UTC)
+================================================================================
+
+@page "/slots"
+@inject SlotService Slots
+@inject TimeProvider Time
+
+<PageTitle>Chaos slots</PageTitle>
+
+<h1>Slots</h1>
+<p class="lede">One shared machine and one big button. Whoever presses first spins for everyone, and nobody can press again until the reels stop. Three or more of a kind, or five in a row up or down, is a winner. Nothing is at stake.</p>
+
+<SlotIsland Client="@_client" Face="@_face" @rendermode="InteractiveServer" />
+
+<section class="feed" data-permanent="slots-feed" aria-labelledby="spins-title">
+    <h2 id="spins-title">Results</h2>
+    <p id="slots-empty" class="empty" hidden="@(_results.Count > 0)">No spins yet. Press the button.</p>
+    <ol id="slots-feed" class="spins">
+        @foreach (var result in _results)
+        {
+            var win = SlotRules.Classify(result.Text);
+            var hits = SlotRules.Hits(result.Text);
+            <li @key="result.Id" class="@(win is SlotWin.None ? "msg" : "msg win")" data-id="@result.Id">
+                <time datetime="@MessageFormat.Iso(result.Id)">@MessageFormat.Label(result.Id, _now)</time>
+                <p class="symbols">
+                    @for (var i = 0; i < result.Text.Length; i++)
+                    {
+                        <span class="@(hits[i] ? "hit" : null)">@result.Text[i]</span>
+                    }
+                </p>
+                @if (win is not SlotWin.None)
+                {
+                    <p class="tags"><strong class="badge">@SlotRules.Label(win)</strong></p>
+                }
+            </li>
+        }
+    </ol>
+    <button type="button" id="slots-older" class="older" hidden>Show older results</button>
+</section>
+
+<p id="slots-announcer" class="visually-hidden" aria-live="polite"></p>
+
+@code {
+    private IReadOnlyList<BoardMessage> _results = [];
+    private DateTimeOffset _now;
+    private string _client = ClientAddress.Unknown;
+    private string? _face;
+
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var spinning = Slots.Spinning?.Id;
+        _results = [.. Slots.Messages.Where(result => result.Id != spinning)];
+        _face = _results.Count > 0 ? _results[0].Text : null;
+        _now = Time.GetUtcNow();
+        _client = ClientAddress.Key(HttpContext?.Connection.RemoteIpAddress);
+    }
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Components/Pages/SlotsPage.razor.css
+SIZE:     2.73 KB (2797 bytes)
+LINES:    144
+SHA256:   16c68378e66ebf9833a90b9498a2920683ec9ec8f306823c22f3674bd8624b45
+MODIFIED: 2026-10-13 13:28:16 (UTC)
+================================================================================
+
+.feed {
+    display: grid;
+    gap: 1rem;
+}
+
+.feed h2 {
+    margin: 0;
+}
+
+.spins {
+    display: grid;
+    gap: .6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.spins ::deep .msg {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: .3rem 1rem;
+    padding: .55rem .8rem .65rem;
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    background: var(--bg);
+    content-visibility: auto;
+    contain-intrinsic-size: auto 4.5rem;
+}
+
+.spins ::deep time {
+    grid-column: 1 / -1;
+    color: var(--muted);
+    font-size: .75rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.spins ::deep .symbols {
+    display: flex;
+    gap: .2rem;
+    margin: 0;
+    font: 800 1.3rem/1 ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+}
+
+.spins ::deep .symbols span {
+    display: grid;
+    place-items: center;
+    inline-size: 1.6em;
+    block-size: 1.6em;
+    border-radius: .3rem;
+    background: var(--surface);
+}
+
+.spins ::deep .symbols .hit {
+    color: var(--on-gold);
+    background: var(--gold);
+}
+
+.spins ::deep .tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: .4rem;
+    margin: 0;
+}
+
+.spins ::deep .badge {
+    padding: .15rem .65rem;
+    border-radius: 999px;
+    color: var(--on-gold);
+    background: var(--gold);
+    font-size: .75rem;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.spins ::deep .badge::before {
+    content: "★ ";
+}
+
+.spins ::deep .yours {
+    padding: .1rem .55rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: .75rem;
+}
+
+.spins ::deep .msg.win {
+    border-width: 3px;
+    border-color: var(--gold);
+    background: color-mix(in oklab, var(--gold) 10%, var(--bg));
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--gold) 22%, transparent);
+}
+
+.spins ::deep .msg.archived {
+    border-style: dotted;
+    border-color: var(--muted);
+    color: var(--muted);
+}
+
+.spins ::deep .msg.win.archived {
+    border-color: var(--gold);
+}
+
+.empty {
+    margin: 0;
+    color: var(--muted);
+}
+
+.older {
+    justify-self: center;
+    border-color: var(--line);
+    color: var(--fg);
+    background: var(--surface);
+}
+
+@keyframes arrive {
+    from {
+        background: color-mix(in oklab, var(--ink) 20%, var(--bg));
+    }
+}
+
+@keyframes jackpot {
+    0%,
+    100% {
+        box-shadow: 0 0 0 3px color-mix(in oklab, var(--gold) 22%, transparent);
+    }
+
+    50% {
+        box-shadow: 0 0 0 7px color-mix(in oklab, var(--gold) 45%, transparent);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .spins ::deep .msg.fresh {
+        animation: arrive .9s ease-out;
+    }
+
+    .spins ::deep .msg.win.fresh {
+        animation: jackpot .6s ease-in-out 3;
+    }
+}
+
+
+================================================================================
 FILE:     src/Chaos.Web/Components/Routes.razor
 SIZE:     0.28 KB (291 bytes)
 LINES:    6
 SHA256:   fed8052a689ad172d87626cc0cb963dc94f6e4d0c38a87d1d12a9b5d6adac0c8
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 <Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
@@ -3652,10 +5020,10 @@ MODIFIED: 2026-10-13 01:32:31 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/_Imports.razor
-SIZE:     0.35 KB (360 bytes)
-LINES:    10
-SHA256:   d3581aa16612e4cb2e8310b048d458bd26ab21e88a64a6297586fb6795e250af
-MODIFIED: 2026-10-13 01:32:31 (UTC)
+SIZE:     0.37 KB (383 bytes)
+LINES:    11
+SHA256:   7b1b7c028116c558a209bb700e87e52f936bf5d12d8b8aa55d782f88776ecb9b
+MODIFIED: 2026-10-13 13:25:02 (UTC)
 ================================================================================
 
 @using Microsoft.AspNetCore.Components.Routing
@@ -3668,6 +5036,7 @@ MODIFIED: 2026-10-13 01:32:31 (UTC)
 @using Chaos.Web.Drawing
 @using Chaos.Web.Infrastructure
 @using Chaos.Web.Messages
+@using Chaos.Web.Slots
 
 
 ================================================================================
@@ -3675,7 +5044,7 @@ FILE:     src/Chaos.Web/Drawing/CanvasService.cs
 SIZE:     6.74 KB (6902 bytes)
 LINES:    255
 SHA256:   40acf5353673ada4c3ece8ec670a697b143271874ef58e95b43dbbde5c08195e
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 using Chaos.Web.Infrastructure;
@@ -3940,7 +5309,7 @@ FILE:     src/Chaos.Web/Drawing/CanvasSession.cs
 SIZE:     0.34 KB (348 bytes)
 LINES:    14
 SHA256:   de745f4011b68796c2f6c4fa75003ea985837fa60553e8966a4d0cdec7ec9c09
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 using Chaos.Web.Infrastructure;
@@ -3964,7 +5333,7 @@ FILE:     src/Chaos.Web/Drawing/CanvasUpdate.cs
 SIZE:     0.84 KB (860 bytes)
 LINES:    23
 SHA256:   1fa5ae904858ec94c07fc61697d603ead5c16a174374ae518c049d9bfe73a2da
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 using System.Text.Json.Serialization;
@@ -3997,7 +5366,7 @@ FILE:     src/Chaos.Web/Drawing/DrawResult.cs
 SIZE:     0.15 KB (157 bytes)
 LINES:    11
 SHA256:   5577557a8f91d08540fe300783d5690eb0a0dfda50ad046e9eeab460f079c51e
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 namespace Chaos.Web.Drawing;
@@ -4018,7 +5387,7 @@ FILE:     src/Chaos.Web/Drawing/ICanvasSubscriber.cs
 SIZE:     0.11 KB (110 bytes)
 LINES:    6
 SHA256:   940286760f4975ffb5d5d8a01a3eafccfd6634d19da53130de04c1f0de66e807
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 namespace Chaos.Web.Drawing;
@@ -4034,7 +5403,7 @@ FILE:     src/Chaos.Web/Drawing/ResetResult.cs
 SIZE:     0.08 KB (87 bytes)
 LINES:    7
 SHA256:   f96f60cdfc40c4e763d162762a65bc4f7eb1ea1307f4cbd425c3835f3e62cf0c
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 namespace Chaos.Web.Drawing;
@@ -4051,7 +5420,7 @@ FILE:     src/Chaos.Web/Drawing/Stroke.cs
 SIZE:     0.46 KB (468 bytes)
 LINES:    20
 SHA256:   2a8c0491e6000ce39014e081fac37b26fd4141c6ddbbc5fd60eda8679f0026ba
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 namespace Chaos.Web.Drawing;
@@ -4078,10 +5447,10 @@ internal sealed class Stroke(long id, int epoch, int clientId)
 
 ================================================================================
 FILE:     src/Chaos.Web/Infrastructure/ChaosOptions.cs
-SIZE:     1.31 KB (1337 bytes)
-LINES:    48
-SHA256:   99f806a7dfdbeadd243a82a4bc0aab0626d8c34a5f54ec8ac9099a8c111662bb
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+SIZE:     1.65 KB (1686 bytes)
+LINES:    60
+SHA256:   84f4d3a3a6fea4013db0f319b6a1ba6b4545a8aea1963c8911fa4a282f2b5902
+MODIFIED: 2026-10-13 13:25:02 (UTC)
 ================================================================================
 
 using Chaos.Web.Drawing;
@@ -4118,6 +5487,14 @@ internal sealed class ChaosOptions
 
     public double ResetsPerSecond { get; set; } = 0.2;
 
+    public int SlotCapacity { get; set; } = 50;
+
+    public double PressBurst { get; set; } = 3;
+
+    public double PressesPerSecond { get; set; } = 0.5;
+
+    public int SpinMilliseconds { get; set; } = 4000;
+
     public bool IsValid() =>
         MaxConnectionsPerClient > 0
         && MaxConnections >= MaxConnectionsPerClient
@@ -4130,7 +5507,11 @@ internal sealed class ChaosOptions
         && StrokePointBurst >= CanvasService.MaxBatchPoints
         && StrokePointsPerSecond > 0
         && ResetBurst >= 1
-        && ResetsPerSecond > 0;
+        && ResetsPerSecond > 0
+        && SlotCapacity > 0
+        && PressBurst >= 1
+        && PressesPerSecond > 0
+        && SpinMilliseconds is >= 1000 and <= 15000;
 }
 
 
@@ -4139,7 +5520,7 @@ FILE:     src/Chaos.Web/Infrastructure/ClientAddress.cs
 SIZE:     0.69 KB (704 bytes)
 LINES:    32
 SHA256:   74a4d1218ab5ecb1794edc6d20c47bc8c36ec2a8a85f707ff47c4078626a1aeb
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 using System.Net;
@@ -4181,7 +5562,7 @@ FILE:     src/Chaos.Web/Infrastructure/ConnectionTracker.cs
 SIZE:     2.03 KB (2083 bytes)
 LINES:    93
 SHA256:   85bbdf0dc0ab73870c586aeca1133ce287bbcf6e10d467fe87e845faab20ffb3
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 using Microsoft.Extensions.Options;
@@ -4284,7 +5665,7 @@ FILE:     src/Chaos.Web/Infrastructure/CookielessAntiforgery.cs
 SIZE:     1.17 KB (1202 bytes)
 LINES:    33
 SHA256:   d1c8a702eb5c5696733a93657d87fc2133eac786b5496d92e3e88b8ba5b014ef
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 using Microsoft.AspNetCore.Antiforgery;
@@ -4327,7 +5708,7 @@ FILE:     src/Chaos.Web/Infrastructure/HubGuard.cs
 SIZE:     2.75 KB (2811 bytes)
 LINES:    74
 SHA256:   a408ef9ce598195ffe10a451c4824934a286b1f288b0b4aa3d64aaee523bf857
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 using Microsoft.Extensions.Options;
@@ -4411,7 +5792,7 @@ FILE:     src/Chaos.Web/Infrastructure/JsCleanup.cs
 SIZE:     0.67 KB (687 bytes)
 LINES:    33
 SHA256:   18ffbdb80d4fe8f80310d1922011d4b66c8861c0b70a187ebfcac5bc327454ad
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 using Microsoft.JSInterop;
@@ -4454,7 +5835,7 @@ FILE:     src/Chaos.Web/Infrastructure/KeyedTokenBuckets.cs
 SIZE:     1.17 KB (1203 bytes)
 LINES:    53
 SHA256:   12894e606c92126391a757dd388a180e67244ab530c9fffa23961e57fa33beac
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 namespace Chaos.Web.Infrastructure;
@@ -4517,7 +5898,7 @@ FILE:     src/Chaos.Web/Infrastructure/ModulePath.cs
 SIZE:     0.28 KB (291 bytes)
 LINES:    10
 SHA256:   f32857ac2b1dac7095c277465d793e2be9eb8b763253b7fda6df217853ecb56c
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 namespace Chaos.Web.Infrastructure;
@@ -4537,7 +5918,7 @@ FILE:     src/Chaos.Web/Infrastructure/OriginPolicy.cs
 SIZE:     0.84 KB (865 bytes)
 LINES:    28
 SHA256:   3b44e7d51702ba2ee6f628a530f8090d0412ff3f7cee127133cb50766f8324cc
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 namespace Chaos.Web.Infrastructure;
@@ -4575,7 +5956,7 @@ FILE:     src/Chaos.Web/Infrastructure/Outbox.cs
 SIZE:     2.40 KB (2456 bytes)
 LINES:    76
 SHA256:   11196d5fe596cad580b40bf643ca437998eb0e31072825ec2354c6eed3421474
-MODIFIED: 2026-10-13 01:58:23 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 using System.Threading.Channels;
@@ -4661,7 +6042,7 @@ FILE:     src/Chaos.Web/Infrastructure/RequestLimits.cs
 SIZE:     1.55 KB (1586 bytes)
 LINES:    36
 SHA256:   261f6cc7f811ee6e83db130b194f1ac28b8f37b88a38eb5d7a514e81ce70b973
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 using System.Threading.RateLimiting;
@@ -4707,7 +6088,7 @@ FILE:     src/Chaos.Web/Infrastructure/SecurityHeaders.cs
 SIZE:     1.16 KB (1192 bytes)
 LINES:    29
 SHA256:   2fc23a50926a13ba206d10f0896ccff2718905f93017d31df21e2281ca0a1df7
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 namespace Chaos.Web.Infrastructure;
@@ -4746,7 +6127,7 @@ FILE:     src/Chaos.Web/Infrastructure/TokenBucket.cs
 SIZE:     1.08 KB (1108 bytes)
 LINES:    49
 SHA256:   5fcd089cd8dfb76622bbc8126100708b503d7663d17ae3c773b3fedd5db2f40d
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 namespace Chaos.Web.Infrastructure;
@@ -4805,7 +6186,7 @@ FILE:     src/Chaos.Web/Messages/BoardMessage.cs
 SIZE:     0.09 KB (90 bytes)
 LINES:    3
 SHA256:   1a382bc2f4fa460611aafc910f6341e818771ef3f4209f9757f0cad70986a7d0
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 namespace Chaos.Web.Messages;
@@ -4815,10 +6196,10 @@ internal sealed record BoardMessage(Guid Id, string Text);
 
 ================================================================================
 FILE:     src/Chaos.Web/Messages/BoardService.cs
-SIZE:     4.82 KB (4938 bytes)
-LINES:    184
-SHA256:   632ef7d0a4b2b05ade8d9f1de957ec154f85d72133e2867b9a80c0887355d099
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+SIZE:     4.14 KB (4241 bytes)
+LINES:    164
+SHA256:   88cb2c40acbae151a4c0217d47c22809091902567e13bb00f5b6ecfeb2bcf5c5
+MODIFIED: 2026-10-13 13:24:18 (UTC)
 ================================================================================
 
 using Chaos.Web.Infrastructure;
@@ -4948,44 +6329,24 @@ internal sealed class BoardService
         }
     }
 
-    private bool IsAcceptable(BoardMessage message, DateTimeOffset now)
-    {
-        if (message is null || !Uuid7.IsValid(message.Id))
-        {
-            return false;
-        }
-
-        var at = Uuid7.Timestamp(message.Id);
-        return at <= now && at < StartedAt && MessageText.IsNormalized(message.Text);
-    }
+    private bool IsAcceptable(BoardMessage message, DateTimeOffset now) =>
+        message is not null
+        && MessageWindow.IsRestorable(message.Id, now, StartedAt)
+        && MessageText.IsNormalized(message.Text);
 
     private int Merge(IReadOnlyCollection<BoardMessage> candidates)
     {
-        var current = _messages;
-        var known = new HashSet<Guid>(current.Length);
-        foreach (var message in current)
-        {
-            known.Add(message.Id);
-        }
-
-        var next = current
-            .Concat(candidates.Where(message => !known.Contains(message.Id)).DistinctBy(message => message.Id))
-            .OrderByDescending(message => message.Id)
-            .Take(Capacity)
-            .ToArray();
-        var added = next.Where(message => !known.Contains(message.Id)).ToArray();
-        if (added.Length == 0)
+        var change = MessageWindow.Merge(_messages, candidates, Capacity);
+        if (change is null)
         {
             return 0;
         }
 
-        var kept = next.Select(message => message.Id).ToHashSet();
-        var removed = current.Where(message => !kept.Contains(message.Id)).Select(message => message.Id).ToArray();
         var previous = _version;
         _version++;
-        Volatile.Write(ref _messages, next);
-        Broadcast(BoardUpdate.Delta(_version, previous, added, removed));
-        return added.Length;
+        Volatile.Write(ref _messages, change.Next);
+        Broadcast(BoardUpdate.Delta(_version, previous, change.Added, change.Removed));
+        return change.Added.Length;
     }
 
     private void Broadcast(BoardUpdate update)
@@ -5012,7 +6373,7 @@ FILE:     src/Chaos.Web/Messages/BoardUpdate.cs
 SIZE:     0.50 KB (517 bytes)
 LINES:    10
 SHA256:   a22420ec27ecb9eee95b41752482acc5f8889336b20cf4e6f6ecaaea7004cf37
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 namespace Chaos.Web.Messages;
@@ -5032,7 +6393,7 @@ FILE:     src/Chaos.Web/Messages/IBoardSubscriber.cs
 SIZE:     0.11 KB (109 bytes)
 LINES:    6
 SHA256:   90d88644418472058ffd3fa7c6d3a3c6ce81e012e6cc18605e74a791ef87ec6d
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 namespace Chaos.Web.Messages;
@@ -5048,7 +6409,7 @@ FILE:     src/Chaos.Web/Messages/MessageFormat.cs
 SIZE:     0.55 KB (568 bytes)
 LINES:    17
 SHA256:   be8aaafe6d8c492f257948688603e15535c144bfc5c127983a85151045a3f03e
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 using System.Globalization;
@@ -5075,7 +6436,7 @@ FILE:     src/Chaos.Web/Messages/MessageText.cs
 SIZE:     1.30 KB (1336 bytes)
 LINES:    48
 SHA256:   940c9ce9c46f6ffce8f69081a188057db615bd91942ec584f7dba60a81f78600
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 using System.Globalization;
@@ -5129,11 +6490,64 @@ internal static partial class MessageText
 
 
 ================================================================================
+FILE:     src/Chaos.Web/Messages/MessageWindow.cs
+SIZE:     1.43 KB (1460 bytes)
+LINES:    43
+SHA256:   33e7308c8bdaa014e7f94c55cec7d22ffc642d215a810345ad0fc5bb242a6f17
+MODIFIED: 2026-10-13 13:24:18 (UTC)
+================================================================================
+
+namespace Chaos.Web.Messages;
+
+internal sealed record WindowChange(BoardMessage[] Next, BoardMessage[] Added, Guid[] Removed);
+
+internal static class MessageWindow
+{
+    public static WindowChange? Merge(BoardMessage[] current, IEnumerable<BoardMessage> candidates, int capacity)
+    {
+        ArgumentNullException.ThrowIfNull(current);
+        ArgumentNullException.ThrowIfNull(candidates);
+        var known = new HashSet<Guid>(current.Length);
+        foreach (var message in current)
+        {
+            known.Add(message.Id);
+        }
+
+        var next = current
+            .Concat(candidates.Where(message => !known.Contains(message.Id)).DistinctBy(message => message.Id))
+            .OrderByDescending(message => message.Id)
+            .Take(capacity)
+            .ToArray();
+        var added = next.Where(message => !known.Contains(message.Id)).ToArray();
+        if (added.Length == 0)
+        {
+            return null;
+        }
+
+        var kept = next.Select(message => message.Id).ToHashSet();
+        var removed = current.Where(message => !kept.Contains(message.Id)).Select(message => message.Id).ToArray();
+        return new WindowChange(next, added, removed);
+    }
+
+    public static bool IsRestorable(Guid id, DateTimeOffset now, DateTimeOffset startedAt)
+    {
+        if (!Uuid7.IsValid(id))
+        {
+            return false;
+        }
+
+        var at = Uuid7.Timestamp(id);
+        return at <= now && at < startedAt;
+    }
+}
+
+
+================================================================================
 FILE:     src/Chaos.Web/Messages/PostResult.cs
 SIZE:     0.11 KB (110 bytes)
 LINES:    9
 SHA256:   4e52658936c7f0a9668a5dc44971f7279df9ee6803aaf91b22216f8829b9ec66
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 namespace Chaos.Web.Messages;
@@ -5152,7 +6566,7 @@ FILE:     src/Chaos.Web/Messages/Uuid7.cs
 SIZE:     0.61 KB (620 bytes)
 LINES:    21
 SHA256:   1561b47c3df85776c4dcf879fd60834abd9c34f402ea7cad69013fbb77b637d3
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 namespace Chaos.Web.Messages;
@@ -5180,10 +6594,10 @@ internal static class Uuid7
 
 ================================================================================
 FILE:     src/Chaos.Web/Program.cs
-SIZE:     3.57 KB (3652 bytes)
-LINES:    100
-SHA256:   212e7dbdd1eab61e91b0d6fef0883d67332ae350005c30f5ec6e13f797339c58
-MODIFIED: 2026-10-13 02:30:38 (UTC)
+SIZE:     3.63 KB (3721 bytes)
+LINES:    102
+SHA256:   c3806f540a63c1bee5d2e02f57ec67561aae0c87dce4816e9a7929c609576611
+MODIFIED: 2026-10-13 13:25:02 (UTC)
 ================================================================================
 
 using System.IO.Compression;
@@ -5191,6 +6605,7 @@ using Chaos.Web.Components;
 using Chaos.Web.Drawing;
 using Chaos.Web.Infrastructure;
 using Chaos.Web.Messages;
+using Chaos.Web.Slots;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -5232,6 +6647,7 @@ builder.Services.AddSingleton<IAntiforgery>(new CookielessAntiforgery());
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<BoardService>();
 builder.Services.AddSingleton<CanvasService>();
+builder.Services.AddSingleton<SlotService>();
 builder.Services.AddSingleton<ConnectionTracker>();
 builder.Services.AddHealthChecks();
 
@@ -5293,7 +6709,7 @@ FILE:     src/Chaos.Web/Properties/launchSettings.json
 SIZE:     0.33 KB (340 bytes)
 LINES:    14
 SHA256:   c9cd7aba771ca133ed8c2b95cf2ba9a2e1cccea5738ee6fc232a438299a65a2f
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 {
@@ -5313,11 +6729,410 @@ MODIFIED: 2026-10-13 01:28:42 (UTC)
 
 
 ================================================================================
+FILE:     src/Chaos.Web/Slots/ISlotSubscriber.cs
+SIZE:     0.10 KB (104 bytes)
+LINES:    6
+SHA256:   63d1c07445d06854ba56ace70b109d4b55e1575b074a5cf37bd08031867e9b5c
+MODIFIED: 2026-10-13 13:24:45 (UTC)
+================================================================================
+
+namespace Chaos.Web.Slots;
+
+internal interface ISlotSubscriber
+{
+    bool Deliver(SlotUpdate update);
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Slots/SlotPress.cs
+SIZE:     0.55 KB (566 bytes)
+LINES:    24
+SHA256:   7ce08512f3dd2aff785fa07ce8c7bfacbed14dc760c23eb471695b8b9f118f7f
+MODIFIED: 2026-10-13 13:24:45 (UTC)
+================================================================================
+
+namespace Chaos.Web.Slots;
+
+internal enum PressResult
+{
+    Accepted,
+    Busy,
+    TooFast,
+}
+
+internal sealed record SlotPress(PressResult Result, Guid Id)
+{
+    public static SlotPress Busy { get; } = new(PressResult.Busy, Guid.Empty);
+
+    public static SlotPress TooFast { get; } = new(PressResult.TooFast, Guid.Empty);
+
+    public static SlotPress Started(Guid id) => new(PressResult.Accepted, id);
+
+    public string Reply => Result switch
+    {
+        PressResult.Accepted => Id.ToString(),
+        PressResult.Busy => "busy",
+        _ => "slow",
+    };
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Slots/SlotRules.cs
+SIZE:     2.71 KB (2777 bytes)
+LINES:    112
+SHA256:   e9cbebfc7b36fad3db1e7247b867372a981bc987d66b7f6af065e7646ed9f8dc
+MODIFIED: 2026-10-13 13:25:02 (UTC)
+================================================================================
+
+using System.Diagnostics.CodeAnalysis;
+using System.Security.Cryptography;
+
+namespace Chaos.Web.Slots;
+
+internal static class SlotRules
+{
+    public const int Length = 5;
+    public const string Symbols = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    public static string Draw() => RandomNumberGenerator.GetString(Symbols, Length);
+
+    public static bool IsValid([NotNullWhen(true)] string? text)
+    {
+        if (text is null || text.Length != Length)
+        {
+            return false;
+        }
+
+        foreach (var c in text)
+        {
+            if (!char.IsAsciiDigit(c) && !char.IsAsciiLetterUpper(c))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static SlotWin Classify(string? text)
+    {
+        if (!IsValid(text))
+        {
+            return SlotWin.None;
+        }
+
+        var most = text.GroupBy(c => c).Max(group => group.Count());
+        if (most >= 5)
+        {
+            return SlotWin.FiveOfAKind;
+        }
+
+        if (most == 4)
+        {
+            return SlotWin.FourOfAKind;
+        }
+
+        if (most == 3)
+        {
+            return SlotWin.ThreeOfAKind;
+        }
+
+        if (IsOrdered(text, 1))
+        {
+            return SlotWin.StraightUp;
+        }
+
+        return IsOrdered(text, -1) ? SlotWin.StraightDown : SlotWin.None;
+    }
+
+    public static bool[] Hits(string? text)
+    {
+        var win = Classify(text);
+        var hits = new bool[Length];
+        if (win is SlotWin.None)
+        {
+            return hits;
+        }
+
+        if (win is SlotWin.StraightUp or SlotWin.StraightDown)
+        {
+            Array.Fill(hits, true);
+            return hits;
+        }
+
+        var top = text.GroupBy(c => c).MaxBy(group => group.Count())!.Key;
+        for (var i = 0; i < Length; i++)
+        {
+            hits[i] = text[i] == top;
+        }
+
+        return hits;
+    }
+
+    public static string Label(SlotWin win) => win switch
+    {
+        SlotWin.ThreeOfAKind => "Three of a kind",
+        SlotWin.FourOfAKind => "Four of a kind",
+        SlotWin.FiveOfAKind => "Five of a kind",
+        SlotWin.StraightUp => "Straight up",
+        SlotWin.StraightDown => "Straight down",
+        _ => "",
+    };
+
+    public static char Above(char symbol) => Symbols[(Symbols.IndexOf(symbol, StringComparison.Ordinal) + 1) % Symbols.Length];
+
+    public static char Below(char symbol) => Symbols[(Symbols.IndexOf(symbol, StringComparison.Ordinal) + Symbols.Length - 1) % Symbols.Length];
+
+    private static bool IsOrdered(string text, int direction)
+    {
+        for (var i = 1; i < text.Length; i++)
+        {
+            if ((text[i] - text[i - 1]) * direction <= 0)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Slots/SlotService.cs
+SIZE:     4.45 KB (4558 bytes)
+LINES:    165
+SHA256:   a8232a22bc7b973f4e5fbae3db829a56e29bb7825a5d61fbf5628d7df673637a
+MODIFIED: 2026-10-13 13:24:45 (UTC)
+================================================================================
+
+using Chaos.Web.Infrastructure;
+using Chaos.Web.Messages;
+using Microsoft.Extensions.Options;
+
+namespace Chaos.Web.Slots;
+
+internal sealed class SlotService
+{
+    public const int MaxOffers = 50;
+
+    private readonly TimeProvider _time;
+    private readonly KeyedTokenBuckets _presses;
+    private readonly Lock _gate = new();
+    private readonly HashSet<ISlotSubscriber> _subscribers = [];
+    private BoardMessage[] _messages = [];
+    private long _version;
+    private Guid _spinId;
+    private long? _spinStarted;
+
+    public SlotService(TimeProvider time, IOptions<ChaosOptions> options)
+    {
+        ArgumentNullException.ThrowIfNull(time);
+        ArgumentNullException.ThrowIfNull(options);
+        var limits = options.Value;
+        _time = time;
+        Capacity = limits.SlotCapacity;
+        SpinTime = TimeSpan.FromMilliseconds(limits.SpinMilliseconds);
+        _presses = new KeyedTokenBuckets(limits.PressBurst, limits.PressesPerSecond, time);
+        StartedAt = time.GetUtcNow();
+    }
+
+    public int Capacity { get; }
+
+    public TimeSpan SpinTime { get; }
+
+    public DateTimeOffset StartedAt { get; }
+
+    public IReadOnlyList<BoardMessage> Messages => Volatile.Read(ref _messages);
+
+    public SlotSpin? Spinning
+    {
+        get
+        {
+            lock (_gate)
+            {
+                return CurrentSpin(_time.GetTimestamp());
+            }
+        }
+    }
+
+    public SlotPress Press(string client)
+    {
+        lock (_gate)
+        {
+            var now = _time.GetTimestamp();
+            if (CurrentSpin(now) is not null)
+            {
+                return SlotPress.Busy;
+            }
+
+            if (!_presses.TryTake(client))
+            {
+                return SlotPress.TooFast;
+            }
+
+            var message = new BoardMessage(Guid.CreateVersion7(_time.GetUtcNow()), SlotRules.Draw());
+            _spinId = message.Id;
+            _spinStarted = now;
+            Merge([message], new SlotSpin(message.Id, Milliseconds(SpinTime)));
+            return SlotPress.Started(message.Id);
+        }
+    }
+
+    public int Offer(IEnumerable<BoardMessage> offered)
+    {
+        ArgumentNullException.ThrowIfNull(offered);
+        var now = _time.GetUtcNow();
+        var valid = offered
+            .Take(MaxOffers)
+            .Where(message => message is not null && MessageWindow.IsRestorable(message.Id, now, StartedAt) && SlotRules.IsValid(message.Text))
+            .ToList();
+        if (valid.Count == 0)
+        {
+            return 0;
+        }
+
+        lock (_gate)
+        {
+            return Merge(valid, null);
+        }
+    }
+
+    public void Subscribe(ISlotSubscriber subscriber)
+    {
+        ArgumentNullException.ThrowIfNull(subscriber);
+        lock (_gate)
+        {
+            if (subscriber.Deliver(SlotUpdate.Snapshot(_version, _messages, CurrentSpin(_time.GetTimestamp()))))
+            {
+                _subscribers.Add(subscriber);
+            }
+        }
+    }
+
+    public void Unsubscribe(ISlotSubscriber subscriber)
+    {
+        lock (_gate)
+        {
+            _subscribers.Remove(subscriber);
+        }
+    }
+
+    public bool IsSubscribed(ISlotSubscriber subscriber)
+    {
+        lock (_gate)
+        {
+            return _subscribers.Contains(subscriber);
+        }
+    }
+
+    private static int Milliseconds(TimeSpan span) => (int)Math.Ceiling(span.TotalMilliseconds);
+
+    private SlotSpin? CurrentSpin(long now)
+    {
+        if (_spinStarted is not { } started)
+        {
+            return null;
+        }
+
+        var remaining = SpinTime - _time.GetElapsedTime(started, now);
+        return remaining > TimeSpan.Zero ? new SlotSpin(_spinId, Milliseconds(remaining)) : null;
+    }
+
+    private int Merge(IReadOnlyCollection<BoardMessage> candidates, SlotSpin? spin)
+    {
+        var change = MessageWindow.Merge(_messages, candidates, Capacity);
+        if (change is null)
+        {
+            return 0;
+        }
+
+        var previous = _version;
+        _version++;
+        Volatile.Write(ref _messages, change.Next);
+        Broadcast(SlotUpdate.Delta(_version, previous, change.Added, change.Removed, spin));
+        return change.Added.Length;
+    }
+
+    private void Broadcast(SlotUpdate update)
+    {
+        List<ISlotSubscriber>? dropped = null;
+        foreach (var subscriber in _subscribers)
+        {
+            if (!subscriber.Deliver(update))
+            {
+                (dropped ??= []).Add(subscriber);
+            }
+        }
+
+        if (dropped is not null)
+        {
+            _subscribers.ExceptWith(dropped);
+        }
+    }
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Slots/SlotUpdate.cs
+SIZE:     0.77 KB (791 bytes)
+LINES:    21
+SHA256:   28d2797e1aa1914382e6b04944fccc7ea52edb85c7ed4a806f65bfaf68c27d94
+MODIFIED: 2026-10-13 13:24:45 (UTC)
+================================================================================
+
+using System.Text.Json.Serialization;
+using Chaos.Web.Messages;
+
+namespace Chaos.Web.Slots;
+
+internal sealed record SlotSpin(Guid Id, int Remaining);
+
+internal sealed record SlotUpdate(
+    string Kind,
+    long Version,
+    long Previous,
+    IReadOnlyList<BoardMessage> Added,
+    IReadOnlyList<Guid> Removed,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] SlotSpin? Spin)
+{
+    public static SlotUpdate Snapshot(long version, IReadOnlyList<BoardMessage> messages, SlotSpin? spin) =>
+        new("snapshot", version, version, messages, [], spin);
+
+    public static SlotUpdate Delta(long version, long previous, IReadOnlyList<BoardMessage> added, IReadOnlyList<Guid> removed, SlotSpin? spin) =>
+        new("delta", version, previous, added, removed, spin);
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Slots/SlotWin.cs
+SIZE:     0.15 KB (150 bytes)
+LINES:    11
+SHA256:   f3696f64303f4075a66af2169a5433264af8c604b624447a49467408cf2b435d
+MODIFIED: 2026-10-13 13:24:45 (UTC)
+================================================================================
+
+namespace Chaos.Web.Slots;
+
+internal enum SlotWin
+{
+    None,
+    ThreeOfAKind,
+    FourOfAKind,
+    FiveOfAKind,
+    StraightUp,
+    StraightDown,
+}
+
+
+================================================================================
 FILE:     src/Chaos.Web/appsettings.Development.json
 SIZE:     0.12 KB (119 bytes)
 LINES:    8
 SHA256:   817db0bf2ecca78364c41dbaf7949bf2504cf47a1c3d0d54f3be8178fefc030b
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 {
@@ -5335,7 +7150,7 @@ FILE:     src/Chaos.Web/appsettings.json
 SIZE:     0.21 KB (220 bytes)
 LINES:    12
 SHA256:   0bc840d3fcbac151cf5da44109712273335c0c6846895b532e6dee3606b470b0
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 {
@@ -5354,10 +7169,10 @@ MODIFIED: 2026-10-13 01:28:42 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/wwwroot/app.css
-SIZE:     2.16 KB (2210 bytes)
-LINES:    118
-SHA256:   73a64b568a8c5fb1f838946fe617e15907d727e7e4ea97d86aca5b19014f42df
-MODIFIED: 2026-10-13 01:33:43 (UTC)
+SIZE:     2.24 KB (2297 bytes)
+LINES:    120
+SHA256:   9e5c9d2db17c5e676d53eb6b747cc708a178867d46fcfe527c0b2b230feeca48
+MODIFIED: 2026-10-13 13:28:16 (UTC)
 ================================================================================
 
 :root {
@@ -5372,6 +7187,8 @@ MODIFIED: 2026-10-13 01:33:43 (UTC)
     --on-ink: light-dark(#ffffff, #0e1626);
     --link: light-dark(#2f3bc7, #b7beff);
     --danger: light-dark(#b3261e, #ffb4ab);
+    --gold: light-dark(#8f6100, #ffc93c);
+    --on-gold: light-dark(#ffffff, #1c1d21);
     --paper: #ffffff;
     --radius: .375rem;
     --measure: 44rem;
@@ -5485,7 +7302,7 @@ FILE:     src/Chaos.Web/wwwroot/favicon.svg
 SIZE:     0.24 KB (250 bytes)
 LINES:    1
 SHA256:   b4a6c2a37d1eaeb71b36043383c94366285af51b96a26478d7817b3130b397a5
-MODIFIED: 2026-10-13 01:33:43 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#2f3bc7"/><path d="M6 21c4-10 8-13 10-8s4 6 10-5" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -5496,7 +7313,7 @@ FILE:     src/Chaos.Web/wwwroot/theme-init.js
 SIZE:     0.21 KB (220 bytes)
 LINES:    10
 SHA256:   7191a3bda8d239aa0bc3cab9a29eb8a7b08c635ad4958287027fda6fe504c7fa
-MODIFIED: 2026-10-13 01:33:43 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 {
@@ -5513,10 +7330,10 @@ MODIFIED: 2026-10-13 01:33:43 (UTC)
 
 ================================================================================
 FILE:     tests/Chaos.E2E/BoardTests.cs
-SIZE:     5.33 KB (5457 bytes)
+SIZE:     5.31 KB (5441 bytes)
 LINES:    138
-SHA256:   71fd118d9e7b23ea1c580fa0e9972dee2731aa3a21e497ba0013b1a09a2fd319
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+SHA256:   de50e3495161a7ca0a739eb5b08ca689bb313f93df93b2d762ab6d930fe54be0
+MODIFIED: 2026-10-13 13:31:25 (UTC)
 ================================================================================
 
 using System.Text.RegularExpressions;
@@ -5617,8 +7434,8 @@ public sealed partial class BoardTests(BrowserFixture browser) : IClassFixture<B
         await PostAsync(page, $"to be cleared {Guid.NewGuid():N}");
 
         await page.GotoAsync("/about");
-        await page.GetByRole(AriaRole.Button, new() { Name = "Clear local message history" }).ClickAsync();
-        await Expect(page.Locator("#clear-status")).ToHaveTextAsync("Local message history cleared.");
+        await page.GetByRole(AriaRole.Button, new() { Name = "Clear local history" }).ClickAsync();
+        await Expect(page.Locator("#clear-status")).ToHaveTextAsync("Local history cleared.");
 
         var names = await page.EvaluateAsync<string[]>("async () => (await indexedDB.databases()).map(d => d.name)");
         Assert.DoesNotContain("chaos-board", names);
@@ -5664,7 +7481,7 @@ FILE:     tests/Chaos.E2E/BrowserFixture.cs
 SIZE:     1.04 KB (1068 bytes)
 LINES:    37
 SHA256:   a5f9a54ad92f72cdba0e02f5fa72055f3523c734912a4dd071bbf0a3cdd7bfc1
-MODIFIED: 2026-10-13 02:30:49 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 using Microsoft.Playwright;
@@ -5708,10 +7525,10 @@ public sealed class BrowserFixture : IAsyncLifetime
 
 ================================================================================
 FILE:     tests/Chaos.E2E/CanvasTests.cs
-SIZE:     2.35 KB (2405 bytes)
-LINES:    57
-SHA256:   568c1ff6fa41693d719d849079cfb253d994ed22ecf6879994a11661f4303200
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+SIZE:     2.43 KB (2488 bytes)
+LINES:    58
+SHA256:   2ddfcea2cbc022b2f4ae66e1eb2733b37f93bf8b6d4144c40697074157210587
+MODIFIED: 2026-10-13 13:31:25 (UTC)
 ================================================================================
 
 using Microsoft.Playwright;
@@ -5768,6 +7585,7 @@ public sealed class CanvasTests(BrowserFixture browser) : IClassFixture<BrowserF
         var page = await context.NewPageAsync();
         await page.GotoAsync("/canvas");
         await Expect(page.GetByRole(AriaRole.Button, new() { Name = "Reset canvas" })).ToBeEnabledAsync();
+        await Expect(page.Locator("canvas.paper[data-ready]")).ToBeVisibleAsync();
         return page;
     }
 }
@@ -5778,7 +7596,7 @@ FILE:     tests/Chaos.E2E/Chaos.E2E.csproj
 SIZE:     0.23 KB (236 bytes)
 LINES:    12
 SHA256:   3cecda3b6f9051e89c2122dcad22d772e872c098ec035b31f34e39e154ae06fc
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 <Project Sdk="Microsoft.NET.Sdk">
@@ -5797,10 +7615,10 @@ MODIFIED: 2026-10-13 01:53:30 (UTC)
 
 ================================================================================
 FILE:     tests/Chaos.E2E/SiteTests.cs
-SIZE:     3.16 KB (3232 bytes)
+SIZE:     3.17 KB (3242 bytes)
 LINES:    87
-SHA256:   9f8849e773af5137d0ddfc8b534bae7476aa0d4dd6373e401c5e92edccf824b7
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+SHA256:   e9c0e4c4bb62a2efd2a229bfdeebc8ce7ecda5c2c9483ecfbb0f2f1484dda2da
+MODIFIED: 2026-10-13 13:31:25 (UTC)
 ================================================================================
 
 using System.Text.RegularExpressions;
@@ -5826,7 +7644,7 @@ public sealed partial class SiteTests(BrowserFixture browser) : IClassFixture<Br
         };
         page.PageError += (_, error) => errors.Add(error);
 
-        foreach (var path in new[] { "/", "/about", "/board", "/canvas" })
+        foreach (var path in new[] { "/", "/about", "/board", "/slots", "/canvas" })
         {
             await page.GotoAsync(path);
         }
@@ -5893,11 +7711,82 @@ public sealed partial class SiteTests(BrowserFixture browser) : IClassFixture<Br
 
 
 ================================================================================
+FILE:     tests/Chaos.E2E/SlotTests.cs
+SIZE:     2.53 KB (2595 bytes)
+LINES:    61
+SHA256:   07830de7cf38bf1804c029b2ed53e5d6816ae019980b3a075afc6946bee43d7a
+MODIFIED: 2026-10-13 13:31:33 (UTC)
+================================================================================
+
+using Microsoft.Playwright;
+using static Microsoft.Playwright.Assertions;
+
+namespace Chaos.E2E;
+
+public sealed class SlotTests(BrowserFixture browser) : IClassFixture<BrowserFixture>
+{
+    [Fact]
+    public async Task APressSpinsForEveryoneAndLandsInTheirResults()
+    {
+        await using var firstContext = await browser.NewContextAsync();
+        await using var secondContext = await browser.NewContextAsync();
+        var presser = await OpenSlotsAsync(firstContext);
+        var watcher = await OpenSlotsAsync(secondContext);
+
+        await SpinButton(presser).ClickAsync();
+        await Expect(presser.Locator(".machine .status")).ToHaveTextAsync("Your press worked. This spin is yours.");
+
+        var mine = presser.Locator("#slots-feed .msg.mine").First;
+        await Expect(mine).ToBeVisibleAsync();
+        var id = await mine.GetAttributeAsync("data-id") ?? throw new InvalidOperationException("The result has no id.");
+
+        var seen = watcher.Locator($"#slots-feed .msg[data-id='{id}']");
+        await Expect(seen).ToBeVisibleAsync();
+        await Expect(seen.Locator(".yours")).ToHaveCountAsync(0);
+        await Expect(SpinButton(watcher)).ToBeEnabledAsync();
+    }
+
+    [Fact]
+    public async Task TenPressesUnlockAutoSpin()
+    {
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync("/about");
+        await page.EvaluateAsync("() => localStorage.setItem('chaos-slots-presses', '9')");
+        await page.GotoAsync("/slots");
+        await Expect(page.Locator(".machine[data-ready]")).ToBeVisibleAsync();
+
+        var auto = page.GetByRole(AriaRole.Button, new() { Name = "Auto spin" });
+        await Expect(auto).ToBeHiddenAsync();
+        await SpinButton(page).ClickAsync();
+        await Expect(auto).ToBeVisibleAsync();
+
+        await auto.ClickAsync();
+        await Expect(auto).ToHaveAttributeAsync("aria-pressed", "true");
+        await Expect(page.Locator("#slots-feed .msg.mine").Nth(2)).ToBeVisibleAsync(new() { Timeout = 20_000 });
+        await auto.ClickAsync();
+        await Expect(auto).ToHaveAttributeAsync("aria-pressed", "false");
+    }
+
+    private static ILocator SpinButton(IPage page) =>
+        page.GetByRole(AriaRole.Button, new() { Name = "Spin", Exact = true });
+
+    private static async Task<IPage> OpenSlotsAsync(IBrowserContext context)
+    {
+        var page = await context.NewPageAsync();
+        await page.GotoAsync("/slots");
+        await Expect(page.Locator(".machine[data-ready]")).ToBeVisibleAsync();
+        return page;
+    }
+}
+
+
+================================================================================
 FILE:     tests/Chaos.Web.Tests/BoardServiceTests.cs
 SIZE:     5.55 KB (5683 bytes)
 LINES:    169
 SHA256:   81b492e594b5642c5c1fb2a2fc5b6b1fc6fb3477b76b580fe414e2fb3de85d8e
-MODIFIED: 2026-10-13 02:00:17 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 using Chaos.Web.Infrastructure;
@@ -6076,7 +7965,7 @@ FILE:     tests/Chaos.Web.Tests/CanvasServiceTests.cs
 SIZE:     6.87 KB (7031 bytes)
 LINES:    187
 SHA256:   194a7673de331187aebeac5eb0640c6db83b70f45d951bc6401fb4c8cb935116
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 using Chaos.Web.Drawing;
@@ -6273,7 +8162,7 @@ FILE:     tests/Chaos.Web.Tests/Chaos.Web.Tests.csproj
 SIZE:     0.42 KB (427 bytes)
 LINES:    17
 SHA256:   eff11cbba2469b881894257ab013958a8e8f4df4f73e9079c18a8963b9c4d594
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 <Project Sdk="Microsoft.NET.Sdk">
@@ -6297,15 +8186,16 @@ MODIFIED: 2026-10-13 01:53:30 (UTC)
 
 ================================================================================
 FILE:     tests/Chaos.Web.Tests/HttpPipelineTests.cs
-SIZE:     4.99 KB (5108 bytes)
-LINES:    127
-SHA256:   5182fd8e00a20cb71d139ad7e621c2788799f8bb13fd46c834f426a6dc2d216d
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+SIZE:     5.60 KB (5733 bytes)
+LINES:    141
+SHA256:   3e96874486946e822b56e1380d4a8161f7dc8442fc5cd8a7244ab6c28b647b05
+MODIFIED: 2026-10-13 13:30:48 (UTC)
 ================================================================================
 
 using System.Net;
 using Chaos.Web.Infrastructure;
 using Chaos.Web.Messages;
+using Chaos.Web.Slots;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -6331,6 +8221,7 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
     [InlineData("/", "Chaos")]
     [InlineData("/board", "Chaos board")]
     [InlineData("/canvas", "Chaos canvas")]
+    [InlineData("/slots", "Chaos slots")]
     [InlineData("/about", "About chaos")]
     public async Task PagesRenderWithoutSettingCookies(string path, string title)
     {
@@ -6348,6 +8239,18 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
         Assert.Equal(PostResult.Accepted, factory.Services.GetRequiredService<BoardService>().Post(text, "integration"));
         using var client = CreateClient();
         Assert.Contains(text, await client.GetStringAsync("/board", Cancellation));
+    }
+
+    [Fact]
+    public async Task SlotsPageRendersSettledResults()
+    {
+        var slots = factory.Services.GetRequiredService<SlotService>();
+        var press = slots.Press($"integration {Guid.NewGuid():N}");
+        Assert.Equal(PressResult.Accepted, press.Result);
+        using var client = CreateClient();
+        var html = await client.GetStringAsync("/slots", Cancellation);
+        Assert.Contains("id=\"slots-feed\"", html, StringComparison.Ordinal);
+        Assert.DoesNotContain($"data-id=\"{press.Id}\"", html, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -6434,10 +8337,10 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
 
 ================================================================================
 FILE:     tests/Chaos.Web.Tests/InfrastructureTests.cs
-SIZE:     5.44 KB (5572 bytes)
-LINES:    168
-SHA256:   4442d8e26aff43dc6f60b0ab23c18a324ca6c81a70e1ce77ca2aea6dd0a75652
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+SIZE:     5.73 KB (5869 bytes)
+LINES:    172
+SHA256:   b0f5c69420758f0eb3ae15ef31293f8b35c8cf422fba8e5e9a2cb58e80ec372c
+MODIFIED: 2026-10-13 13:30:48 (UTC)
 ================================================================================
 
 using System.Net;
@@ -6606,6 +8509,10 @@ public sealed class ChaosOptionsTests
         Assert.False(new ChaosOptions { MaxConnections = 1, MaxConnectionsPerClient = 2 }.IsValid());
         Assert.False(new ChaosOptions { BoardCapacity = 0 }.IsValid());
         Assert.False(new ChaosOptions { CanvasMaxPoints = 10 }.IsValid());
+        Assert.False(new ChaosOptions { SlotCapacity = 0 }.IsValid());
+        Assert.False(new ChaosOptions { PressBurst = 0 }.IsValid());
+        Assert.False(new ChaosOptions { SpinMilliseconds = 500 }.IsValid());
+        Assert.False(new ChaosOptions { SpinMilliseconds = 60_000 }.IsValid());
     }
 }
 
@@ -6615,7 +8522,7 @@ FILE:     tests/Chaos.Web.Tests/MessageFormatTests.cs
 SIZE:     0.73 KB (744 bytes)
 LINES:    26
 SHA256:   01184bb6f40006ce69a21d8d88ce8b7d77a4584d8bd890af68a43302d8fa4334
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 using Chaos.Web.Messages;
@@ -6651,7 +8558,7 @@ FILE:     tests/Chaos.Web.Tests/MessageTextTests.cs
 SIZE:     1.43 KB (1462 bytes)
 LINES:    58
 SHA256:   52c8010696847c481d97f89f7064d58ba0197d9aeae392355222c4f550356848
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 using Chaos.Web.Messages;
@@ -6719,7 +8626,7 @@ FILE:     tests/Chaos.Web.Tests/OutboxTests.cs
 SIZE:     2.60 KB (2658 bytes)
 LINES:    86
 SHA256:   0d4226257642cf4580bea840a5e060c2308ef1ae59db33dc67e968552cb9d5d5
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 using Chaos.Web.Infrastructure;
@@ -6811,16 +8718,280 @@ public sealed class OutboxTests
 
 
 ================================================================================
+FILE:     tests/Chaos.Web.Tests/SlotRulesTests.cs
+SIZE:     1.93 KB (1972 bytes)
+LINES:    67
+SHA256:   1598b01be926505c250c925e33023d2d90c4f81f5332e9a9db5510d3d1d2ed00
+MODIFIED: 2026-10-13 13:31:02 (UTC)
+================================================================================
+
+using Chaos.Web.Slots;
+
+namespace Chaos.Web.Tests;
+
+public sealed class SlotRulesTests
+{
+    [Theory]
+    [InlineData("7Q7A7", nameof(SlotWin.ThreeOfAKind))]
+    [InlineData("XXXXB", nameof(SlotWin.FourOfAKind))]
+    [InlineData("KKKKK", nameof(SlotWin.FiveOfAKind))]
+    [InlineData("13AKZ", nameof(SlotWin.StraightUp))]
+    [InlineData("ZKA80", nameof(SlotWin.StraightDown))]
+    [InlineData("ZK8A0", nameof(SlotWin.None))]
+    [InlineData("AABBC", nameof(SlotWin.None))]
+    [InlineData("ABCDD", nameof(SlotWin.None))]
+    [InlineData("abcde", nameof(SlotWin.None))]
+    public void ClassifiesSpins(string text, string expected)
+    {
+        Assert.Equal(expected, SlotRules.Classify(text).ToString());
+    }
+
+    [Theory]
+    [InlineData("A1B2C", true)]
+    [InlineData("a1b2c", false)]
+    [InlineData("ABCD", false)]
+    [InlineData("ABCDEF", false)]
+    [InlineData("AB-CD", false)]
+    [InlineData(null, false)]
+    public void ValidatesSymbols(string? text, bool expected)
+    {
+        Assert.Equal(expected, SlotRules.IsValid(text));
+    }
+
+    [Fact]
+    public void DrawsValidSpins()
+    {
+        for (var i = 0; i < 200; i++)
+        {
+            Assert.True(SlotRules.IsValid(SlotRules.Draw()));
+        }
+    }
+
+    [Fact]
+    public void MarksWinningSymbols()
+    {
+        Assert.Equal([true, false, true, false, true], SlotRules.Hits("7Q7A7"));
+        Assert.Equal([true, true, true, true, true], SlotRules.Hits("ABCDE"));
+        Assert.Equal([false, false, false, false, false], SlotRules.Hits("AABBC"));
+    }
+
+    [Fact]
+    public void NeighboursWrapAroundTheStrip()
+    {
+        Assert.Equal('0', SlotRules.Above('Z'));
+        Assert.Equal('Z', SlotRules.Below('0'));
+        Assert.Equal('A', SlotRules.Above('9'));
+    }
+
+    [Fact]
+    public void EveryWinHasALabel()
+    {
+        foreach (var win in Enum.GetValues<SlotWin>())
+        {
+            Assert.Equal(win is SlotWin.None, SlotRules.Label(win).Length == 0);
+        }
+    }
+}
+
+
+================================================================================
+FILE:     tests/Chaos.Web.Tests/SlotServiceTests.cs
+SIZE:     5.80 KB (5941 bytes)
+LINES:    176
+SHA256:   b753ed976b37e100f797fbacde9a3e38d6312aaebc354a1f3e1bf6d353948566
+MODIFIED: 2026-10-13 13:30:48 (UTC)
+================================================================================
+
+using Chaos.Web.Infrastructure;
+using Chaos.Web.Messages;
+using Chaos.Web.Slots;
+
+namespace Chaos.Web.Tests;
+
+public sealed class SlotServiceTests
+{
+    private static readonly DateTimeOffset Start = new(2026, 10, 12, 12, 0, 0, TimeSpan.Zero);
+    private readonly ManualTimeProvider _time = new(Start);
+
+    [Fact]
+    public void PressStartsASpinStampedWithTheServerClock()
+    {
+        var slots = Create();
+        var press = slots.Press("a");
+        Assert.Equal(PressResult.Accepted, press.Result);
+        var result = Assert.Single(slots.Messages);
+        Assert.Equal(press.Id, result.Id);
+        Assert.True(SlotRules.IsValid(result.Text));
+        Assert.Equal(Start, Uuid7.Timestamp(result.Id));
+        Assert.Equal(press.Id.ToString(), press.Reply);
+    }
+
+    [Fact]
+    public void NobodyCanPressUntilTheSpinSettles()
+    {
+        var slots = Create();
+        Assert.Equal(PressResult.Accepted, slots.Press("a").Result);
+        Assert.Equal(PressResult.Busy, slots.Press("b").Result);
+        Assert.Equal(PressResult.Busy, slots.Press("a").Result);
+        Assert.Equal("busy", slots.Press("b").Reply);
+        _time.Advance(slots.SpinTime - TimeSpan.FromMilliseconds(1));
+        Assert.Equal(PressResult.Busy, slots.Press("b").Result);
+        _time.Advance(TimeSpan.FromMilliseconds(1));
+        Assert.Equal(PressResult.Accepted, slots.Press("b").Result);
+    }
+
+    [Fact]
+    public void BusyPressesDoNotSpendTheClientsAllowance()
+    {
+        var slots = Create(o =>
+        {
+            o.PressBurst = 1;
+            o.PressesPerSecond = 0.01;
+        });
+        Assert.Equal(PressResult.Accepted, slots.Press("a").Result);
+        for (var i = 0; i < 5; i++)
+        {
+            Assert.Equal(PressResult.Busy, slots.Press("b").Result);
+        }
+
+        _time.Advance(slots.SpinTime);
+        Assert.Equal(PressResult.Accepted, slots.Press("b").Result);
+    }
+
+    [Fact]
+    public void PressIsRateLimitedPerClient()
+    {
+        var slots = Create(o =>
+        {
+            o.PressBurst = 1;
+            o.PressesPerSecond = 0.1;
+        });
+        Assert.Equal(PressResult.Accepted, slots.Press("a").Result);
+        _time.Advance(slots.SpinTime);
+        var press = slots.Press("a");
+        Assert.Equal(PressResult.TooFast, press.Result);
+        Assert.Equal("slow", press.Reply);
+        Assert.Equal(PressResult.Accepted, slots.Press("b").Result);
+    }
+
+    [Fact]
+    public void SpinningReportsTheTimeLeft()
+    {
+        var slots = Create(o => o.SpinMilliseconds = 4000);
+        Assert.Null(slots.Spinning);
+        var press = slots.Press("a");
+        _time.Advance(TimeSpan.FromMilliseconds(1500));
+        var spin = Assert.IsType<SlotSpin>(slots.Spinning);
+        Assert.Equal(press.Id, spin.Id);
+        Assert.Equal(2500, spin.Remaining);
+        _time.Advance(TimeSpan.FromMilliseconds(2500));
+        Assert.Null(slots.Spinning);
+    }
+
+    [Fact]
+    public void SubscribersSeeTheSpinAndLateJoinersSeeWhatIsLeft()
+    {
+        var slots = Create(o => o.SpinMilliseconds = 4000);
+        var early = new SlotRecorder();
+        slots.Subscribe(early);
+        var press = slots.Press("a");
+
+        var delta = early.Updates[1];
+        Assert.Equal("delta", delta.Kind);
+        Assert.Equal(press.Id, Assert.Single(delta.Added).Id);
+        Assert.Equal(new SlotSpin(press.Id, 4000), delta.Spin);
+
+        _time.Advance(TimeSpan.FromSeconds(1));
+        var late = new SlotRecorder();
+        slots.Subscribe(late);
+        var snapshot = Assert.Single(late.Updates);
+        Assert.Equal("snapshot", snapshot.Kind);
+        Assert.Equal(new SlotSpin(press.Id, 3000), snapshot.Spin);
+
+        _time.Advance(TimeSpan.FromSeconds(3));
+        var settled = new SlotRecorder();
+        slots.Subscribe(settled);
+        Assert.Null(Assert.Single(settled.Updates).Spin);
+    }
+
+    [Fact]
+    public void KeepsOnlyTheNewestResults()
+    {
+        var slots = Create(o => o.SlotCapacity = 2);
+        var ids = new List<Guid>();
+        for (var i = 0; i < 3; i++)
+        {
+            ids.Add(slots.Press($"c{i}").Id);
+            _time.Advance(slots.SpinTime);
+        }
+
+        Assert.Equal([ids[2], ids[1]], slots.Messages.Select(m => m.Id));
+    }
+
+    [Fact]
+    public void OfferAcceptsOlderValidResults()
+    {
+        var slots = Create();
+        var recorder = new SlotRecorder();
+        slots.Subscribe(recorder);
+        Assert.Equal(2, slots.Offer([Old(-2, "ABCDE"), Old(-1, "ZZZ12")]));
+        Assert.Equal(["ZZZ12", "ABCDE"], slots.Messages.Select(m => m.Text));
+        Assert.Null(recorder.Updates[1].Spin);
+    }
+
+    [Fact]
+    public void OfferRejectsForgedResults()
+    {
+        var slots = Create();
+        _time.Advance(TimeSpan.FromHours(1));
+        Assert.Equal(0, slots.Offer(
+        [
+            new BoardMessage(Guid.NewGuid(), "ABCDE"),
+            new BoardMessage(Guid.CreateVersion7(Start.AddMinutes(5)), "ABCDE"),
+            new BoardMessage(Guid.CreateVersion7(Start.AddHours(2)), "ABCDE"),
+            Old(-1, "abcde"),
+            Old(-2, "ABCDEF"),
+            Old(-3, "hello world"),
+        ]));
+        Assert.Empty(slots.Messages);
+    }
+
+    [Fact]
+    public void OfferConsidersAtMostFiftyResults()
+    {
+        var slots = Create(o => o.SlotCapacity = 100);
+        var offered = Enumerable.Range(1, 60).Select(i => Old(-i, "ABCDE")).ToList();
+        Assert.Equal(SlotService.MaxOffers, slots.Offer(offered));
+    }
+
+    [Fact]
+    public void SubscribersThatCannotKeepUpAreDropped()
+    {
+        var slots = Create();
+        var recorder = new SlotRecorder(accept: false);
+        slots.Subscribe(recorder);
+        Assert.False(slots.IsSubscribed(recorder));
+    }
+
+    private SlotService Create(Action<ChaosOptions>? configure = null) => new(_time, Limits.Create(configure));
+
+    private static BoardMessage Old(int minutes, string text) =>
+        new(Guid.CreateVersion7(Start.AddMinutes(minutes)), text);
+}
+
+
+================================================================================
 FILE:     tests/Chaos.Web.Tests/TestSupport.cs
-SIZE:     1.38 KB (1416 bytes)
-LINES:    64
-SHA256:   ef627b630b1d96376fee1fc3c9e8e7b6953601a2fba7e4b287f69997f6f03134
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+SIZE:     1.68 KB (1721 bytes)
+LINES:    80
+SHA256:   1f4048047e117f2dd3c888e6b3d56082dca1603bd31f6f1d6c6167bd895319a5
+MODIFIED: 2026-10-13 13:30:48 (UTC)
 ================================================================================
 
 using Chaos.Web.Drawing;
 using Chaos.Web.Infrastructure;
 using Chaos.Web.Messages;
+using Chaos.Web.Slots;
 using Microsoft.Extensions.Options;
 
 namespace Chaos.Web.Tests;
@@ -6868,6 +9039,21 @@ internal sealed class BoardRecorder(bool accept = true) : IBoardSubscriber
     }
 }
 
+internal sealed class SlotRecorder(bool accept = true) : ISlotSubscriber
+{
+    public List<SlotUpdate> Updates { get; } = [];
+
+    public bool Deliver(SlotUpdate update)
+    {
+        if (accept)
+        {
+            Updates.Add(update);
+        }
+
+        return accept;
+    }
+}
+
 internal sealed class CanvasRecorder(bool accept = true) : ICanvasSubscriber
 {
     public List<CanvasUpdate> Updates { get; } = [];
@@ -6889,7 +9075,7 @@ FILE:     tests/Chaos.Web.Tests/Uuid7Tests.cs
 SIZE:     1.25 KB (1278 bytes)
 LINES:    40
 SHA256:   7345f02347adc58c7fb1c83d1f107b8960f2c2bfe6d5dfa4b3140e0e92ab3864
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 using Chaos.Web.Messages;
@@ -6939,7 +9125,7 @@ FILE:     tests/Directory.Build.props
 SIZE:     0.32 KB (332 bytes)
 LINES:    12
 SHA256:   157ef84daa9296831d30ffe748a26494e70f529dd2d96b409d570c8a3c9b7ddd
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 <Project>
@@ -6961,7 +9147,7 @@ FILE:     tests/js/app.test.js
 SIZE:     1.89 KB (1939 bytes)
 LINES:    52
 SHA256:   80967508a2768aa7ef7f1cdf4a2b82035cbfc70306ae5d1d0199cc978320099b
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 import { describe, expect, it } from 'vitest';
@@ -7023,7 +9209,7 @@ FILE:     tests/js/board.test.js
 SIZE:     3.03 KB (3099 bytes)
 LINES:    85
 SHA256:   dc7b8ea3fcce149e7be7cdf30a9456c3d26ef3618863cf0eaa133410ed913e61
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 import { describe, expect, it } from 'vitest';
@@ -7118,7 +9304,7 @@ FILE:     tests/js/canvas.test.js
 SIZE:     3.86 KB (3956 bytes)
 LINES:    115
 SHA256:   39988587d3b9d2e65367516ef812f4eccd856cd00b7b9bdbecfe7bb4dbfdafbc
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 import { describe, expect, it } from 'vitest';
@@ -7243,7 +9429,7 @@ FILE:     tests/js/package.json
 SIZE:     0.22 KB (224 bytes)
 LINES:    12
 SHA256:   13673cd3f5a48ff3d8af21342bb02e3e48ab4e2529f5f4547a0cdba19cf77c2b
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 {
@@ -7261,11 +9447,132 @@ MODIFIED: 2026-10-13 01:53:30 (UTC)
 
 
 ================================================================================
+FILE:     tests/js/slots.test.js
+SIZE:     3.72 KB (3808 bytes)
+LINES:    111
+SHA256:   db6d2c7444dfa6033c9b7199726d54090a05a49e08591754d787d7c2cd575aeb
+MODIFIED: 2026-10-13 13:29:02 (UTC)
+================================================================================
+
+import { describe, expect, it } from 'vitest';
+import {
+    AUTO_UNLOCK,
+    LABELS,
+    PRESS_KEY,
+    SYMBOLS,
+    above,
+    autoDelay,
+    below,
+    classify,
+    hits,
+    isValid,
+    parseReply,
+    progressText,
+    readPresses,
+    spinFrames,
+    stopTimes,
+    stripFor,
+} from '../../src/Chaos.Web/Components/Islands/SlotIsland.razor.js';
+
+describe('symbols', () => {
+    it('accepts five digits or capital letters only', () => {
+        expect(isValid('A1B2C')).toBe(true);
+        expect(isValid('a1b2c')).toBe(false);
+        expect(isValid('ABCD')).toBe(false);
+        expect(isValid('ABCDEF')).toBe(false);
+        expect(isValid(null)).toBe(false);
+    });
+
+    it('wraps neighbours around the strip', () => {
+        expect(above('Z')).toBe('0');
+        expect(below('0')).toBe('Z');
+        expect(above('9')).toBe('A');
+        expect(SYMBOLS).toHaveLength(36);
+    });
+});
+
+describe('winners', () => {
+    it.each([
+        ['7Q7A7', 'three'],
+        ['XXXXB', 'four'],
+        ['KKKKK', 'five'],
+        ['13AKZ', 'up'],
+        ['ZKA80', 'down'],
+        ['ZK8A0', 'none'],
+        ['AABBC', 'none'],
+        ['ABCDD', 'none'],
+    ])('classifies %s as %s', (text, expected) => {
+        expect(classify(text)).toBe(expected);
+    });
+
+    it('labels every kind of win', () => {
+        expect(Object.keys(LABELS).sort()).toEqual(['down', 'five', 'four', 'three', 'up']);
+    });
+
+    it('marks the symbols that won', () => {
+        expect(hits('7Q7A7')).toEqual([true, false, true, false, true]);
+        expect(hits('ABCDE')).toEqual([true, true, true, true, true]);
+        expect(hits('AABBC')).toEqual([false, false, false, false, false]);
+    });
+});
+
+describe('reels', () => {
+    it('stops left to right inside the spin', () => {
+        const stops = stopTimes(4000);
+        expect(stops).toHaveLength(5);
+        expect([...stops].sort((a, b) => a - b)).toEqual(stops);
+        expect(stops[4]).toBeLessThan(4000);
+        expect(stopTimes(0)).toEqual([0, 0, 0, 0, 0]);
+    });
+
+    it('builds a strip that starts on the current face and ends on the target', () => {
+        const strip = stripFor('A', 'Q', 4, () => 0);
+        expect(strip).toEqual(['R', 'Q', 'P', '0', '0', '0', '0', 'B', 'A', '9']);
+    });
+
+    it('moves the strip from its last window to its first', () => {
+        const frames = spinFrames(10);
+        expect(frames[0].transform).toBe('translateY(-70%)');
+        expect(frames.at(-1).transform).toBe('translateY(0%)');
+    });
+});
+
+describe('presses', () => {
+    const storage = value => ({ getItem: key => (key === PRESS_KEY ? value : null) });
+
+    it('reads a stored count', () => {
+        expect(readPresses(storage('12'))).toBe(12);
+        expect(readPresses(storage('nope'))).toBe(0);
+        expect(readPresses(storage(null))).toBe(0);
+        expect(readPresses({ getItem() { throw new Error('denied'); } })).toBe(0);
+    });
+
+    it('counts down to auto spin', () => {
+        expect(progressText(0)).toBe(`${AUTO_UNLOCK} more successful presses unlock auto spin.`);
+        expect(progressText(AUTO_UNLOCK - 1)).toBe('1 more successful press unlocks auto spin.');
+        expect(progressText(AUTO_UNLOCK)).toContain('successful presses from this browser');
+    });
+
+    it('understands server replies', () => {
+        expect(parseReply('busy')).toEqual({ kind: 'busy', id: null });
+        expect(parseReply('slow')).toEqual({ kind: 'slow', id: null });
+        expect(parseReply('0199a000-0000-7000-8000-000000000000')).toEqual({ kind: 'accepted', id: '0199a000-0000-7000-8000-000000000000' });
+        expect(parseReply(undefined).kind).toBe('error');
+    });
+
+    it('waits a little before an automatic press', () => {
+        expect(autoDelay(() => 0)).toBe(200);
+        expect(autoDelay(() => 1)).toBe(1000);
+    });
+});
+
+
+================================================================================
 FILE:     tests/js/vitest.config.mjs
 SIZE:     0.60 KB (619 bytes)
 LINES:    23
 SHA256:   f34e65d2358fc28291d35d746e1bf9298839189f93e3bdaa73d1784f6e881701
-MODIFIED: 2026-10-13 01:53:30 (UTC)
+MODIFIED: 2026-10-13 13:17:58 (UTC)
 ================================================================================
 
 import { fileURLToPath } from 'node:url';
@@ -7294,9 +9601,9 @@ export default defineConfig({
 
 
 ===============================================================================
-EXPORT COMPLETED (UTC): 2026-10-13 08:36:07
-Total Files Exported:   123
-Total Source Size:      0.18 MB (188979 bytes)
+EXPORT COMPLETED (UTC): 2026-10-13 13:47:39
+Total Files Exported:   140
+Total Source Size:      0.24 MB (256655 bytes)
 Output File:            /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
 ===============================================================================
-DUMP SHA256 (of all lines above this one): 47d0a90d532ede21911efc758124a13a4525f29f36404cab6cd5a4d487e288d9
+DUMP SHA256 (of all lines above this one): 7a469a4e1ac6c20c06263a4fc146efd1337e2ef81b00d93c7e572e5900f92d43
