@@ -1,0 +1,48 @@
+07
+19
+
+I have an idea for another page... a shared / collaborative slot machine 
+let me explain 
+It is very similar to the existing board 
+except instead of posting text yourself, 
+the message is a random five letter string A-Z0-9
+there is a big button you can press and when you do, 
+the slot machine animation starts 
+the server decides on a random string 
+if any three or more characters are the same 
+you are a "winner" 
+if all five are in ascending or descending order 
+you are a "winner" 
+you can't press the button until the animation has settled fully 
+nobody can press the button until the animation has settled fully 
+then the next person who presses it goes next 
+but nobody knows who pressed 
+there is no sign in or any name associated with any press
+but you know if your button press worked 
+or not 
+all we care about is the messages 
+same as before 
+we store all previous messages locally 
+same island idea as before 
+same reconciliation idea as before 
+the animation should be beautiful like a slot machine 
+but remember no money changes hands, this is all for fun 
+once you have successfully pressed the button ten times 
+you get a second button 
+this second button means you no longer have to press the button manually 
+it automatically retries to press the button once the animation has settled 
+in the results, 
+unlike before, 
+we need some kind of visual indication for "winners" 
+and we also need to explain in the about page what the "winners" are 
+and what the technical aspects of this page are
+
+If only a few files (under five or there about) need to change, give me the full path of the files that need to change and the FULL file 
+if there are a lot of files that need to change 
+    Delivery
+    Whole project as one tar.gz, unambiguous file placement
+    Any files to delete on updates called out explicitly
+    No bespoke sed/patch scripts — full files only for anything that changes
+    Docs updated alongside code changes
+    Low verbosity, no code comments
+
