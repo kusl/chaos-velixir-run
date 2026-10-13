@@ -1315,3 +1315,13 @@ Claude is AI and can make mistakes. Please double-check responses.
 
 
 Claude finished the response
+
+07
+19 
+
+So for context, 
+the current session was 00 and the weekly limit was 18 when this conversation started. 
+I used Opus 5.5 Medium 
+There was only one part in this conversation 
+When it ended, 
+the current session was at 07 which means 7% used and the weekly limit was at 19 which means 19% used. 
