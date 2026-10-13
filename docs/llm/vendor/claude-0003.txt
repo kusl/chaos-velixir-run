@@ -1,0 +1,30 @@
+00
+18
+
+We are very close. 
+Both the send button on the board 
+and the reset button on the canvas 
+take some time before becoming active 
+which is honest 
+however, 
+for example, 
+there is no indicator that the canvas page 
+is not ready for input 
+after it loads. 
+There should be some loading indicator 
+because every time I switch to the board 
+and come back to the canvas 
+It can take upwards of twenty seconds for the drawing to load 
+and the reset button becomes available before the drawing loads 
+plus there is a failing test if you look at terminal.txt 
+I have uploaded the full dump.txt and a terminal.txt as well. 
+Please review them 
+
+If only a few files (under five or there about) need to change, give me the full path of the files that need to change and the FULL file 
+if there are a lot of files that need to change 
+    Delivery
+    Whole project as one tar.gz, unambiguous file placement
+    Any files to delete on updates called out explicitly
+    No bespoke sed/patch scripts — full files only for anything that changes
+    Docs updated alongside code changes
+    Low verbosity, no code comments
