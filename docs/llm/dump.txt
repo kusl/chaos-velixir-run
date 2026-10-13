@@ -1,8 +1,8 @@
 ===============================================================================
 PROJECT EXPORT
-Generated (UTC): 2026-10-13 02:19:59
+Generated (UTC): 2026-10-13 02:31:49
 Project Path:    /home/kushal/src/dotnet/chaos-velixir-run
-Git Commit:      bc5c5daca7e9e66377daf839da63eee247b2c7cc
+Git Commit:      e20d2f19ca4187c4858fe5e76cb85cb922ca951a
 Git Branch:      main
 Git Dirty:       no
 .NET SDK:        10.0.112
@@ -531,10 +531,10 @@ Status: accepted
 
 ================================================================================
 FILE:     docs/adr/0003-deploy-only-the-web-project.md
-SIZE:     0.95 KB (976 bytes)
-LINES:    10
-SHA256:   4c52c4ba14e06cc4019ef2a13577e48efddc34cc04dbc51cfd3e24423b295ce1
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+SIZE:     1.22 KB (1251 bytes)
+LINES:    11
+SHA256:   67986b4f46897c04989b6667a2b2caabf2f5eef0e1fe8c76fcd0d015606f8d7f
+MODIFIED: 2026-10-13 02:31:14 (UTC)
 ================================================================================
 
 # 0003 Deploy only the web project
@@ -545,6 +545,7 @@ velixir builds with a Nixpacks-style plan: `dotnet restore` and `dotnet publish 
 
 - The deploy workflow runs `velixir deploy --app <id> --source-dir ./src/Chaos.Web`, the documented monorepo option.
 - `Chaos.Web.csproj` is self-sufficient: target framework, nullable, implicit usings and runtime settings are in the project, not only in `Directory.Build.props`. `global.json`, central package management and analyzers do not reach the velixir build, which is fine because the project has no package references.
+- The start command runs from the upload root, so the content root is the source folder, not `out/`. The web root is set to `wwwroot` next to the assembly when it exists, so published assets are served. The content root is left alone because `WebApplicationFactory` sets it.
 - The app binds to `PORT` when set, like zen.
 - Deploys are not gated on CI, matching zen. A failing velixir build keeps the previous release; the `/health` probe stops a release that does not start.
 
@@ -761,10 +762,10 @@ Status: accepted
 
 ================================================================================
 FILE:     docs/adr/0014-testing.md
-SIZE:     0.94 KB (964 bytes)
-LINES:    9
-SHA256:   d86f19b84bac8febde189e8c3c7b5170c708894bcbc8614f7f982b4f3061ed2e
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+SIZE:     1.31 KB (1341 bytes)
+LINES:    10
+SHA256:   748393417c959a2406706b34037deedb61ad8c250992bbc008dcdf383b58b008
+MODIFIED: 2026-10-13 02:31:26 (UTC)
 ================================================================================
 
 # 0014 Test strategy
@@ -773,7 +774,8 @@ Status: accepted
 
 - .NET: xUnit v3 (package `xunit.v3` 4.x) on Microsoft Testing Platform v2, enabled for `dotnet test` in `global.json`. Unit tests cover services and helpers; integration tests use `WebApplicationFactory` for pages, headers, cookies, the hub guard and compression.
 - JavaScript: Vitest in Node tests the pure exports of each module. DOM, IndexedDB, canvas and WebSocket behaviour is covered by Playwright, so no DOM library is installed.
-- End to end: Playwright .NET in `mcr.microsoft.com/playwright/dotnet:v<version>-noble`, which ships the .NET 10 SDK and browsers. The version comes from `Directory.Packages.props` only. The app is published and run inside the same container on localhost, in Production mode with relaxed limits.
+- End to end: Playwright .NET in `mcr.microsoft.com/playwright/dotnet:v<version>-noble`, which ships the .NET 10 SDK and browsers. The version comes from `Directory.Packages.props` only. The app is published and run inside the same container on localhost, in Production mode with relaxed limits. It is started from the source copy, not its publish folder, like velixir starts it. The app log is printed when tests fail and kept in `artifacts/e2e/app.log`.
+- End-to-end tests run serially (`[assembly: Parallelization(Mode = ParallelMode.None)]`) because they share one server's board and canvas. `CollectionBehavior.DisableTestParallelization` is obsolete in xUnit v3 4.x.
 - Coverage is reported (Cobertura for .NET and JavaScript) with no threshold.
 - Test projects use the default analyzer set; the app uses the recommended set. Warnings are errors everywhere.
 
@@ -925,10 +927,10 @@ dotnet build chaos-velixir-run.slnx --configuration Release --no-restore
 
 ================================================================================
 FILE:     scripts/e2e-container.sh
-SIZE:     1.25 KB (1278 bytes)
-LINES:    51
-SHA256:   3b94c80c3561698ba2b2b83bdc904db05cd44e01d1ab4598393d20f0ebd7f915
-MODIFIED: 2026-10-13 01:55:22 (UTC)
+SIZE:     1.40 KB (1435 bytes)
+LINES:    59
+SHA256:   0e08367d9131ffeb886203f76ec30452be9806281afd457ccdacf87d599827b8
+MODIFIED: 2026-10-13 02:31:02 (UTC)
 ================================================================================
 
 #!/usr/bin/env bash
@@ -980,8 +982,16 @@ if [ "$ready" != true ]; then
     exit 1
 fi
 
+status=0
 CHAOS_BASE_URL="http://127.0.0.1:$port/" \
-    dotnet test --project tests/Chaos.E2E --configuration Release --results-directory /out/results
+    dotnet test --project tests/Chaos.E2E --configuration Release --results-directory /out/results || status=$?
+
+if [ "$status" -ne 0 ]; then
+    printf '\n==> Last 50 lines of the app log\n' >&2
+    tail -n 50 /out/app.log >&2
+fi
+
+exit "$status"
 
 
 ================================================================================
@@ -5111,10 +5121,10 @@ internal static class Uuid7
 
 ================================================================================
 FILE:     src/Chaos.Web/Program.cs
-SIZE:     3.35 KB (3435 bytes)
-LINES:    94
-SHA256:   51592526f5d0918c8c658324412fc9cdd037383d0e69ff931c9f52e8c03b8048
-MODIFIED: 2026-10-13 01:28:42 (UTC)
+SIZE:     3.57 KB (3652 bytes)
+LINES:    100
+SHA256:   212e7dbdd1eab61e91b0d6fef0883d67332ae350005c30f5ec6e13f797339c58
+MODIFIED: 2026-10-13 02:30:38 (UTC)
 ================================================================================
 
 using System.IO.Compression;
@@ -5129,7 +5139,12 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Options;
 
-var builder = WebApplication.CreateBuilder(args);
+var publishedWebRoot = Path.Combine(AppContext.BaseDirectory, "wwwroot");
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    WebRootPath = Directory.Exists(publishedWebRoot) ? publishedWebRoot : null,
+});
 
 builder.WebHost.ConfigureKestrel(kestrel =>
 {
@@ -5200,6 +5215,7 @@ if (!app.Environment.IsDevelopment())
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseResponseCompression();
 app.UseRateLimiter();
+app.UseWebSockets();
 app.UseHubGuard();
 app.UseAntiforgery();
 
@@ -5586,14 +5602,17 @@ public sealed partial class BoardTests(BrowserFixture browser) : IClassFixture<B
 
 ================================================================================
 FILE:     tests/Chaos.E2E/BrowserFixture.cs
-SIZE:     0.96 KB (981 bytes)
-LINES:    34
-SHA256:   8e91733493ac7584ed31ef5444903489d89635cc3f667a17c2f2a15faa46ac28
-MODIFIED: 2026-10-13 02:16:41 (UTC)
+SIZE:     1.04 KB (1068 bytes)
+LINES:    37
+SHA256:   a5f9a54ad92f72cdba0e02f5fa72055f3523c734912a4dd071bbf0a3cdd7bfc1
+MODIFIED: 2026-10-13 02:30:49 (UTC)
 ================================================================================
 
 using Microsoft.Playwright;
+using Xunit.Sdk;
+using Xunit.v3;
 
+[assembly: Parallelization(Mode = ParallelMode.None)]
 
 namespace Chaos.E2E;
 
@@ -7216,9 +7235,9 @@ export default defineConfig({
 
 
 ===============================================================================
-EXPORT COMPLETED (UTC): 2026-10-13 02:20:00
+EXPORT COMPLETED (UTC): 2026-10-13 02:31:50
 Total Files Exported:   123
-Total Source Size:      0.18 MB (186376 bytes)
+Total Source Size:      0.18 MB (187489 bytes)
 Output File:            /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
 ===============================================================================
-DUMP SHA256 (of all lines above this one): 20569b2ce97c0136dbc08351fb4b1856de613e892a7162f2fa4541aa5d4638c6
+DUMP SHA256 (of all lines above this one): 7986d5cb729930053183b78e34d24a9a1827695fdc64caa4a1c3a1e8d037f4ec
