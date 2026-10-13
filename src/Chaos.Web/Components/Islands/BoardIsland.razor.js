@@ -450,8 +450,10 @@ class BoardClient {
 
 export function attach(dotnet) {
     const client = new BoardClient(dotnet, document, window);
-    client.start();
     return {
+        start: () => {
+            client.start();
+        },
         apply: updates => client.apply(updates),
         dispose: () => client.dispose(),
     };

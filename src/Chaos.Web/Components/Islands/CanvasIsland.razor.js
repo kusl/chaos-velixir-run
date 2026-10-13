@@ -385,8 +385,8 @@ class CanvasClient {
 
 export function attach(canvas, dotnet) {
     const client = new CanvasClient(canvas, dotnet, window);
-    client.start();
     return {
+        start: () => client.start(),
         apply: updates => client.apply(updates),
         dispose: () => client.dispose(),
     };

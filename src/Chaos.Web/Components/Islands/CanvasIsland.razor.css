@@ -1,4 +1,5 @@
 .stage {
+    position: relative;
     inline-size: min(100%, 70dvh);
     margin-inline: auto;
 }
@@ -14,6 +15,45 @@
     touch-action: none;
     user-select: none;
     cursor: crosshair;
+}
+
+.stage[aria-busy="true"] .paper {
+    cursor: progress;
+}
+
+.loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    margin: 0;
+    color: #5b5f6d;
+    font-size: .875rem;
+    pointer-events: none;
+}
+
+.loading::before {
+    content: "";
+    inline-size: 1rem;
+    block-size: 1rem;
+    border: 2px solid currentColor;
+    border-inline-end-color: transparent;
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .loading::before {
+        animation: none;
+    }
 }
 
 .tools {

@@ -40,6 +40,7 @@
         _client = await _module.InvokeAsync<IJSObjectReference>("attach", _self);
         _ready = true;
         StateHasChanged();
+        await _client.InvokeVoidAsync("start");
     }
 
     [JSInvokable]

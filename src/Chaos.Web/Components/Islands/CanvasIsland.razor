@@ -3,9 +3,13 @@
 @inject IJSRuntime JS
 @inject ILogger<CanvasIsland> Logger
 
-<div class="stage">
+<div class="stage" aria-busy="@(_ready ? "false" : "true")">
     <canvas @ref="_canvas" class="paper" width="1024" height="1024" role="img"
             aria-label="Shared drawing canvas. Drawing needs a mouse, a finger or a stylus."></canvas>
+    @if (!_ready)
+    {
+        <p class="loading" role="status">Loading the drawing…</p>
+    }
 </div>
 <div class="tools">
     <button type="button" @onclick="Reset" disabled="@(!_ready)">Reset canvas</button>
@@ -36,8 +40,7 @@
         _self = DotNetObjectReference.Create(this);
         _module = await JS.InvokeAsync<IJSObjectReference>("import", ModulePath.Of(Assets["Components/Islands/CanvasIsland.razor.js"]));
         _client = await _module.InvokeAsync<IJSObjectReference>("attach", _canvas, _self);
-        _ready = true;
-        StateHasChanged();
+        await _client.InvokeVoidAsync("start");
     }
 
     [JSInvokable]
@@ -96,9 +99,20 @@
     }
 
     private Task SendAsync(IReadOnlyList<CanvasUpdate> batch, CancellationToken cancellationToken) =>
-        InvokeAsync(() => _client is null
-            ? Task.FromException(new InvalidOperationException("The canvas module is not attached."))
-            : _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask());
+        InvokeAsync(async () =>
+        {
+            if (_client is null)
+            {
+                throw new InvalidOperationException("The canvas module is not attached.");
+            }
+
+            await _client.InvokeVoidAsync("apply", cancellationToken, batch);
+            if (!_ready && batch.Any(update => update.Kind == "snapshot"))
+            {
+                _ready = true;
+                StateHasChanged();
+            }
+        });
 
     private async Task StopAsync()
     {
