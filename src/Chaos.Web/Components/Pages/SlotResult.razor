@@ -1,0 +1,46 @@
+<li class="@Classes" data-id="@Result.Id">
+    @if (_win is SlotWin.None)
+    {
+        @Row
+    }
+    else
+    {
+        <details class="odds" data-text="@Result.Text">
+            <summary class="row">@Row</summary>
+        </details>
+    }
+</li>
+
+@code {
+    private SlotWin _win;
+    private bool[] _hits = [];
+
+    [Parameter, EditorRequired]
+    public BoardMessage Result { get; set; } = null!;
+
+    [Parameter]
+    public DateTimeOffset Now { get; set; }
+
+    private string Classes => _win is SlotWin.None ? "msg" : "msg win";
+
+    protected override void OnParametersSet()
+    {
+        _win = SlotRules.Classify(Result.Text);
+        _hits = SlotRules.Hits(Result.Text);
+    }
+
+    private RenderFragment Row => __builder =>
+    {
+        <time datetime="@MessageFormat.Iso(Result.Id)">@MessageFormat.Label(Result.Id, Now)</time>
+        <p class="symbols">
+            @for (var i = 0; i < Result.Text.Length; i++)
+            {
+                <span class="@(_hits[i] ? "hit" : null)">@Result.Text[i]</span>
+            }
+        </p>
+        @if (_win is not SlotWin.None)
+        {
+            <p class="tags"><strong class="badge">@SlotRules.Label(_win)</strong><span class="more">Odds</span></p>
+        }
+    };
+}

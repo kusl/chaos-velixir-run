@@ -1,21 +1,35 @@
 import { describe, expect, it } from 'vitest';
 import {
+    ALL_DIFFERENT,
     AUTO_UNLOCK,
+    FULL_HOUSE,
     LABELS,
+    OUTCOMES,
     PRESS_KEY,
     SYMBOLS,
+    WINNING,
     above,
     autoDelay,
     below,
+    choose,
     classify,
+    duration,
+    headsInARow,
     hits,
+    isFullHouse,
     isValid,
+    lesson,
+    medianWait,
+    newestWinners,
+    oneIn,
     parseReply,
+    percent,
     progressText,
     readPresses,
     spinFrames,
     stopTimes,
     stripFor,
+    waysOf,
 } from '../../src/Chaos.Web/Components/Islands/SlotIsland.razor.js';
 
 describe('symbols', () => {
@@ -107,5 +121,84 @@ describe('presses', () => {
     it('waits a little before an automatic press', () => {
         expect(autoDelay(() => 0)).toBe(200);
         expect(autoDelay(() => 1)).toBe(1000);
+    });
+});
+
+describe('odds', () => {
+    it('counts every kind the same way an exhaustive search does', () => {
+        const symbols = '05AKPZ';
+        const counts = { none: 0, three: 0, four: 0, five: 0, up: 0, down: 0 };
+        const total = symbols.length ** 5;
+        for (let index = 0; index < total; index += 1) {
+            let text = '';
+            for (let rest = index, reel = 0; reel < 5; reel += 1, rest = Math.floor(rest / symbols.length)) {
+                text += symbols[rest % symbols.length];
+            }
+            counts[classify(text)] += 1;
+        }
+        for (const kind of Object.keys(LABELS)) {
+            expect(counts[kind]).toBe(waysOf(kind, symbols.length));
+        }
+    });
+
+    it('knows the real totals', () => {
+        expect(OUTCOMES).toBe(60_466_176);
+        expect(waysOf('five')).toBe(36);
+        expect(waysOf('four')).toBe(6_300);
+        expect(waysOf('three')).toBe(441_000);
+        expect(waysOf('up')).toBe(376_992);
+        expect(waysOf('down')).toBe(376_992);
+        expect(waysOf('none')).toBe(0);
+        expect(WINNING).toBe(1_201_320);
+        expect(FULL_HOUSE).toBe(12_600);
+        expect(ALL_DIFFERENT).toBe(45_239_040);
+        expect(choose(36, 5)).toBe(376_992);
+        expect(choose(5, 6)).toBe(0);
+    });
+
+    it('formats chances for people', () => {
+        expect(oneIn(WINNING)).toBe('50.3');
+        expect(oneIn(waysOf('four'))).toBe('9,598');
+        expect(percent(waysOf('three') / OUTCOMES)).toBe('0.729%');
+        expect(percent(waysOf('five') / OUTCOMES)).toBe('0.0000595%');
+        expect(duration(4000)).toBe('4 seconds');
+        expect(duration(1000)).toBe('1 second');
+        expect(duration(548_000)).toBe('9.1 minutes');
+        expect(duration(36 ** 4 * 4000)).toBe('78 days');
+    });
+
+    it('separates the median wait from the average', () => {
+        expect(medianWait(0.5)).toBe(1);
+        expect(medianWait(waysOf('three') / OUTCOMES)).toBe(95);
+        expect(headsInARow(1 / 8192)).toBe(13);
+        expect(headsInARow(0.9)).toBe(1);
+    });
+
+    it('spots three with a pair', () => {
+        expect(isFullHouse('77QQ7')).toBe(true);
+        expect(isFullHouse('7Q7A7')).toBe(false);
+        expect(isFullHouse('ABCDE')).toBe(false);
+    });
+
+    it('explains only winners', () => {
+        expect(lesson('ZK8A0')).toBeNull();
+        const four = lesson('XXXXB', 4000);
+        expect(four.kind).toBe('four');
+        expect(four.headline).toBe('1 in 9,598');
+        expect(four.facts.map(([term]) => term)).toContain('Half the time within');
+        expect(four.sections.some(([, text]) => text.includes('XXXXB'))).toBe(true);
+        expect(lesson('77QQ7').facts.at(-1)[1]).toBe('12,600 ways, 1 in 4,799');
+        expect(lesson('ZKA80').sections[0][1]).toContain('falls');
+    });
+
+    it('offers the newest winners from local history', () => {
+        const records = [
+            { id: '0199a000-0000-7000-8000-000000000001', text: 'AAAB1' },
+            { id: '0199a000-0000-7000-8000-000000000002', text: 'ZK8A0' },
+            { id: '0199a000-0000-7000-8000-000000000003', text: '13AKZ' },
+            { id: '0199a000-0000-7000-8000-000000000004', text: 'bad' },
+        ];
+        expect(newestWinners(records).map(record => record.text)).toEqual(['13AKZ', 'AAAB1']);
+        expect(newestWinners(records, 1)).toHaveLength(1);
     });
 });

@@ -161,6 +161,51 @@ public sealed class SlotServiceTests
     }
 
     [Fact]
+    public void WinnersOutliveTheRecentResults()
+    {
+        var slots = Create(o => o.SlotCapacity = 2);
+        Assert.Equal(3, slots.Offer([Old(-3, "AAAB1"), Old(-2, "ZK8A0"), Old(-1, "ZK8A1")]));
+        Assert.Equal(["ZK8A1", "ZK8A0"], slots.Messages.Select(m => m.Text));
+        Assert.Equal("AAAB1", Assert.Single(slots.Winners).Text);
+    }
+
+    [Fact]
+    public void KeepsOnlyTheNewestWinners()
+    {
+        var slots = Create(o => o.SlotWinnerCapacity = 2);
+        slots.Offer([Old(-3, "AAAB1"), Old(-2, "13AKZ"), Old(-1, "ZKA80"), Old(-4, "ZK8A0")]);
+        Assert.Equal(["ZKA80", "13AKZ"], slots.Winners.Select(m => m.Text));
+    }
+
+    [Fact]
+    public void OfferedWinnersSkipTheRecentResults()
+    {
+        var slots = Create();
+        var recorder = new SlotRecorder();
+        slots.Subscribe(recorder);
+        Assert.Equal(1, slots.OfferWinners([Old(-2, "ZK8A0"), Old(-1, "KKKKK")]));
+        Assert.Empty(slots.Messages);
+        Assert.Equal("KKKKK", Assert.Single(slots.Winners).Text);
+        var delta = recorder.Updates[1];
+        Assert.Empty(delta.Added);
+        Assert.Equal("KKKKK", Assert.Single(delta.WinnersAdded).Text);
+        Assert.Equal(0, slots.OfferWinners([Old(-2, "ZK8A0")]));
+    }
+
+    [Fact]
+    public void DeltasReportWinnersThatFallOff()
+    {
+        var slots = Create(o => o.SlotWinnerCapacity = 1);
+        var first = Old(-2, "AAAB1");
+        slots.Offer([first]);
+        var recorder = new SlotRecorder();
+        slots.Subscribe(recorder);
+        Assert.Equal(first.Id, Assert.Single(recorder.Updates[0].WinnersAdded).Id);
+        slots.Offer([Old(-1, "13AKZ")]);
+        Assert.Equal(first.Id, Assert.Single(recorder.Updates[1].WinnersRemoved));
+    }
+
+    [Fact]
     public void SubscribersThatCannotKeepUpAreDropped()
     {
         var slots = Create();

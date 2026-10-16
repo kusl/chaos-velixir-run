@@ -5,7 +5,7 @@
 <PageTitle>Chaos slots</PageTitle>
 
 <h1>Slots</h1>
-<p class="lede">One shared machine and one big button. Whoever presses first spins for everyone, and nobody can press again until the reels stop. Three or more of a kind, or five in a row up or down, is a winner. Nothing is at stake.</p>
+<p class="lede">One shared machine and one big button. Whoever presses first spins for everyone, and nobody can press again until the reels stop. Three or more of a kind, or five in a row up or down, is a winner. Tap a winner to see how rare it was and why. Nothing is at stake.</p>
 
 <SlotIsland Client="@_client" Face="@_face" @rendermode="InteractiveServer" />
 
@@ -15,28 +15,27 @@
     <ol id="slots-feed" class="spins">
         @foreach (var result in _results)
         {
-            var win = SlotRules.Classify(result.Text);
-            var hits = SlotRules.Hits(result.Text);
-            <li @key="result.Id" class="@(win is SlotWin.None ? "msg" : "msg win")" data-id="@result.Id">
-                <time datetime="@MessageFormat.Iso(result.Id)">@MessageFormat.Label(result.Id, _now)</time>
-                <p class="symbols">
-                    @for (var i = 0; i < result.Text.Length; i++)
-                    {
-                        <span class="@(hits[i] ? "hit" : null)">@result.Text[i]</span>
-                    }
-                </p>
-                @if (win is not SlotWin.None)
-                {
-                    <p class="tags"><strong class="badge">@SlotRules.Label(win)</strong></p>
-                }
-            </li>
+            <SlotResult @key="result.Id" Result="result" Now="_now" />
         }
     </ol>
     <button type="button" id="slots-older" class="older" hidden>Show older results</button>
 </section>
 
+<section class="feed" data-permanent="slots-winners-feed" aria-labelledby="winners-title">
+    <h2 id="winners-title">Winners</h2>
+    <p class="note">The newest @Slots.WinnerCapacity winning spins, kept after they leave the results.</p>
+    <p id="slots-winners-empty" class="empty" hidden="@(_winners.Count > 0)">No winners yet.</p>
+    <ol id="slots-winners" class="spins">
+        @foreach (var result in _winners)
+        {
+            <SlotResult @key="result.Id" Result="result" Now="_now" />
+        }
+    </ol>
+</section>
+
 @code {
     private IReadOnlyList<BoardMessage> _results = [];
+    private IReadOnlyList<BoardMessage> _winners = [];
     private DateTimeOffset _now;
     private string _client = ClientAddress.Unknown;
     private string? _face;
@@ -48,6 +47,7 @@
     {
         var spinning = Slots.Spinning?.Id;
         _results = [.. Slots.Messages.Where(result => result.Id != spinning)];
+        _winners = [.. Slots.Winners.Where(result => result.Id != spinning)];
         _face = _results.Count > 0 ? _results[0].Text : null;
         _now = Time.GetUtcNow();
         _client = ClientAddress.Key(HttpContext?.Connection.RemoteIpAddress);

@@ -48,6 +48,42 @@ public sealed class SlotTests(BrowserFixture browser) : IClassFixture<BrowserFix
         await Expect(auto).ToHaveAttributeAsync("aria-pressed", "false");
     }
 
+    [Fact]
+    public async Task WinnersAreKeptAndExplainTheirOdds()
+    {
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync("/about");
+        var id = Guid.CreateVersion7(DateTimeOffset.UtcNow.AddDays(-1)).ToString();
+        await page.EvaluateAsync(
+            """
+            ([id, text]) => new Promise((resolve, reject) => {
+                const request = indexedDB.open('chaos-slots', 1);
+                request.onupgradeneeded = () => request.result.createObjectStore('spins', { keyPath: 'id' });
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    const db = request.result;
+                    const transaction = db.transaction('spins', 'readwrite');
+                    transaction.objectStore('spins').put({ id, text, mine: false });
+                    transaction.oncomplete = () => {
+                        db.close();
+                        resolve();
+                    };
+                    transaction.onerror = () => reject(transaction.error);
+                };
+            })
+            """,
+            new[] { id, "QQQQ7" });
+        await page.GotoAsync("/slots");
+        await Expect(page.Locator(".machine[data-ready]")).ToBeVisibleAsync();
+
+        var winner = page.Locator($"#slots-winners .msg[data-id='{id}']");
+        await Expect(winner).ToBeVisibleAsync();
+        await Expect(winner.Locator(".lesson")).ToHaveCountAsync(0);
+        await winner.Locator("summary").ClickAsync();
+        await Expect(winner.Locator(".lesson")).ToContainTextAsync("1 in 9,598");
+    }
+
     private static ILocator SpinButton(IPage page) =>
         page.GetByRole(AriaRole.Button, new() { Name = "Spin", Exact = true });
 

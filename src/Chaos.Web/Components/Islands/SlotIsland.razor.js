@@ -10,6 +10,8 @@ export const AUTO_UNLOCK = 10;
 export const SYMBOLS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 export const LENGTH = 5;
 export const SYMBOL_MS = 55;
+export const WINNER_OFFERS = 50;
+export const SPIN_MS = 4000;
 
 export const migrations = [
     db => db.createObjectStore(STORE, { keyPath: 'id' }),
@@ -76,6 +78,149 @@ export function hits(text) {
     }
     const [top] = [...tally(text)].reduce((best, entry) => (entry[1] > best[1] ? entry : best));
     return [...text].map(symbol => symbol === top);
+}
+
+export function choose(n, k) {
+    if (k < 0 || k > n) {
+        return 0;
+    }
+    let result = 1;
+    for (let index = 1; index <= k; index += 1) {
+        result = (result * (n - k + index)) / index;
+    }
+    return Math.round(result);
+}
+
+export function waysOf(kind, symbols = SYMBOLS.length) {
+    switch (kind) {
+        case 'five':
+            return symbols;
+        case 'four':
+            return symbols * choose(LENGTH, 4) * (symbols - 1);
+        case 'three':
+            return symbols * choose(LENGTH, 3) * (symbols - 1) ** 2;
+        case 'up':
+        case 'down':
+            return choose(symbols, LENGTH);
+        default:
+            return 0;
+    }
+}
+
+export const OUTCOMES = SYMBOLS.length ** LENGTH;
+export const WINNING = Object.keys(LABELS).reduce((sum, kind) => sum + waysOf(kind), 0);
+export const FULL_HOUSE = SYMBOLS.length * choose(LENGTH, 3) * (SYMBOLS.length - 1);
+export const ALL_DIFFERENT = Array.from({ length: LENGTH }, (_, index) => SYMBOLS.length - index).reduce((product, value) => product * value, 1);
+
+const NUMBER = new Intl.NumberFormat('en-US');
+
+export function grouped(value) {
+    return NUMBER.format(value);
+}
+
+export function oneIn(ways, outcomes = OUTCOMES) {
+    const ratio = outcomes / ways;
+    return ratio < 100 ? NUMBER.format(Math.round(ratio * 10) / 10) : NUMBER.format(Math.round(ratio));
+}
+
+export function percent(fraction) {
+    return `${Number((fraction * 100).toPrecision(3))}%`;
+}
+
+export function medianWait(chance) {
+    return Math.ceil(Math.log(0.5) / Math.log1p(-chance));
+}
+
+export function headsInARow(chance) {
+    return Math.max(1, Math.round(Math.log2(1 / chance)));
+}
+
+export function isFullHouse(text) {
+    return classify(text) === 'three' && tally(text).size === 2;
+}
+
+const UNITS = [
+    ['year', 31_557_600_000],
+    ['day', 86_400_000],
+    ['hour', 3_600_000],
+    ['minute', 60_000],
+    ['second', 1000],
+];
+
+export function duration(ms) {
+    const [name, size] = UNITS.find(([, length]) => ms >= length) ?? UNITS.at(-1);
+    const value = ms / size;
+    const shown = value >= 10 ? Math.round(value) : Math.round(value * 10) / 10;
+    return `${NUMBER.format(shown)} ${name}${shown === 1 ? '' : 's'}`;
+}
+
+function counting(kind) {
+    const n = SYMBOLS.length;
+    switch (kind) {
+        case 'five':
+            return `The first reel can be anything. Each of the other four must match it, 1 chance in ${n} each: ${n} × ${n} × ${n} × ${n} = ${grouped(n ** 4)}, so 1 in ${grouped(n ** 4)}.`;
+        case 'four':
+            return `${n} symbols × ${choose(LENGTH, 4)} places for the odd reel × ${n - 1} choices for it = ${grouped(waysOf('four'))}.`;
+        case 'three':
+            return `${n} symbols × ${choose(LENGTH, 3)} ways to pick its three reels × ${n - 1} × ${n - 1} for the other two = ${grouped(waysOf('three'))}.`;
+        default:
+            return `Pick any ${LENGTH} different symbols: ${n} choose ${LENGTH} = ${grouped(choose(n, LENGTH))} ways. Each set ${kind === 'up' ? 'climbs in exactly one order, 0 to 9 then A to Z' : 'falls in exactly one order, Z to A then 9 to 0'}.`;
+    }
+}
+
+function idea(kind) {
+    switch (kind) {
+        case 'five':
+            return 'Multiplication rule: the chance that independent things all happen is the product of their chances. Four matches at 1 in 36 each is (1/36)⁴.';
+        case 'four':
+            return `Counting: when every result is equally likely, chance = ways to get it ÷ all results = ${grouped(waysOf('four'))} ÷ ${grouped(OUTCOMES)}.`;
+        case 'three':
+            return `Combinations: "5 choose 3" counts ways to pick 3 reels of 5 when order does not matter: (5 × 4 × 3) ÷ (3 × 2 × 1) = 10. Some repeat is common: ${percent(1 - ALL_DIFFERENT / OUTCOMES)} of spins have at least two matching symbols, because five reels form 10 pairs. That is the birthday problem.`;
+        default:
+            return `Order versus choice: ${LENGTH} different symbols can be lined up 5! = 120 ways, and only one climbs and one falls. Even so, straights (${grouped(waysOf('up') * 2)} ways both directions) are more common than three or more of a kind (${grouped(waysOf('three') + waysOf('four') + waysOf('five'))}).`;
+    }
+}
+
+export function lesson(text, spinMs = SPIN_MS) {
+    const kind = classify(text);
+    if (kind === 'none') {
+        return null;
+    }
+    const ways = waysOf(kind);
+    const chance = ways / OUTCOMES;
+    const mean = OUTCOMES / ways;
+    const heads = headsInARow(chance);
+    const facts = [
+        ['Ways to get it', `${grouped(ways)} of ${grouped(OUTCOMES)}`],
+        ['Chance per spin', percent(chance)],
+        ['Average wait', `${oneIn(ways)} spins, about ${duration(mean * spinMs)} spinning nonstop, one spin every ${duration(spinMs)}`],
+        ['Half the time within', `${grouped(medianWait(chance))} spins`],
+        ['About as likely as', `${heads} coin ${heads === 1 ? 'flip' : 'flips'} all heads (1 in ${grouped(2 ** heads)})`],
+        ['Share of all wins', percent(ways / WINNING)],
+    ];
+    if (isFullHouse(text)) {
+        facts.push(['Three with a pair', `${grouped(FULL_HOUSE)} ways, 1 in ${oneIn(FULL_HOUSE)}`]);
+    }
+    return {
+        kind,
+        headline: `1 in ${oneIn(ways)}`,
+        summary: `${LABELS[kind]} comes up about once every ${oneIn(ways)} spins.`,
+        facts,
+        sections: [
+            ['How it is counted', counting(kind)],
+            ['The idea', idea(kind)],
+            ['This exact result', `${text} had a 1 in ${grouped(OUTCOMES)} chance, the same as every other result. What makes a kind rare is how few results belong to it.`],
+            ['Nothing is ever due', 'Spins are independent, so a dry spell does not make a win more likely. Waits follow a geometric distribution: mostly short, sometimes very long, which is why half of them end well before the average.'],
+            ['Any win', `${grouped(WINNING)} of ${grouped(OUTCOMES)} results win, about 1 in ${oneIn(WINNING)}.`],
+        ],
+    };
+}
+
+export function newestWinners(records, limit = WINNER_OFFERS) {
+    return records
+        .filter(record => isValid(record?.text) && classify(record.text) !== 'none')
+        .sort(newestFirst)
+        .slice(0, limit);
 }
 
 export function above(symbol) {
@@ -154,12 +299,17 @@ class SlotClient {
         this.feed = doc.getElementById('slots-feed');
         this.empty = doc.getElementById('slots-empty');
         this.older = doc.getElementById('slots-older');
+        this.winnersList = doc.getElementById('slots-winners');
+        this.winnersEmpty = doc.getElementById('slots-winners-empty');
+        this.spinMs = Number.parseInt(machine.dataset.spin ?? '', 10) || SPIN_MS;
         this.faces = [...(isValid(machine.dataset.initial) ? machine.dataset.initial : 'CHAOS')];
         this.motion = win.matchMedia('(prefers-reduced-motion: reduce)');
         this.presses = readPresses(win.localStorage);
         this.version = -1;
         this.live = new Map();
         this.shown = new Map();
+        this.winners = new Map();
+        this.crowned = new Map();
         this.mine = new Set();
         this.cursor = null;
         this.spin = null;
@@ -175,6 +325,7 @@ class SlotClient {
         this.onOlder = () => this.loadOlder();
         this.onReconnected = () => this.join();
         this.onVisibility = () => this.scheduleAuto();
+        this.onToggle = event => this.explain(event.target);
     }
 
     async start() {
@@ -183,10 +334,15 @@ class SlotClient {
         this.older?.addEventListener('click', this.onOlder);
         this.win.addEventListener('chaos:reconnected', this.onReconnected);
         this.doc.addEventListener('visibilitychange', this.onVisibility);
+        this.doc.addEventListener('toggle', this.onToggle, true);
         this.timer = this.win.setInterval(() => this.ping(), PING_MS);
         this.updateControls();
         try {
             await this.offer();
+        } catch {
+        }
+        try {
+            await this.offerWinners();
         } catch {
         }
         await this.join();
@@ -204,6 +360,30 @@ class SlotClient {
                 return;
             }
             await this.dotnet.invokeMethodAsync('Offer', chunk.map(record => record.id), chunk.map(record => record.text));
+        }
+    }
+
+    async offerWinners() {
+        const db = await this.history.database();
+        if (!db || this.disposed) {
+            return;
+        }
+        const records = await new Promise((resolve, reject) => {
+            const request = db.transaction(STORE, 'readonly').objectStore(STORE).getAll();
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+        const winners = newestWinners(records);
+        for (const record of winners) {
+            if (record.mine) {
+                this.mine.add(record.id);
+            }
+        }
+        for (const chunk of chunkOffers(winners, undefined, WINNER_OFFERS)) {
+            if (this.disposed) {
+                return;
+            }
+            await this.dotnet.invokeMethodAsync('OfferWinners', chunk.map(record => record.id), chunk.map(record => record.text));
         }
     }
 
@@ -263,6 +443,7 @@ class SlotClient {
     async snapshot(update) {
         this.version = update.version;
         this.live = new Map(update.added.map(message => [message.id, message]));
+        this.winners = new Map((update.winnersAdded ?? []).map(message => [message.id, message]));
         const spinning = update.spin && this.live.has(update.spin.id) ? update.spin : null;
         if (this.spin && this.spin.message.id !== spinning?.id) {
             this.finish(true);
@@ -276,6 +457,7 @@ class SlotClient {
         }
         this.cursor = archive.last;
         this.render([...settled, ...archive.items].sort(newestFirst), archive.done);
+        this.renderWinners(spinning?.id ?? this.spin?.message.id);
         if (spinning && !this.spin) {
             this.begin(this.live.get(spinning.id), spinning.remaining);
         } else if (!this.spin && settled.length > 0) {
@@ -310,6 +492,17 @@ class SlotClient {
                 this.insert(message, true);
             }
             settled.push(message);
+        }
+        for (const id of update.winnersRemoved ?? []) {
+            this.winners.delete(id);
+            this.crowned.get(id)?.remove();
+            this.crowned.delete(id);
+        }
+        for (const message of update.winnersAdded ?? []) {
+            this.winners.set(message.id, message);
+            if (message.id !== update.spin?.id && message.id !== this.spin?.message.id) {
+                this.crown(message, true);
+            }
         }
         this.updateEmpty();
         if (spinning) {
@@ -405,6 +598,9 @@ class SlotClient {
         if (!this.shown.has(message.id)) {
             this.insert(message, fresh);
         }
+        if (this.winners.has(message.id)) {
+            this.crown(message, fresh);
+        }
         this.updateEmpty();
         this.announce(message);
         this.save([message]);
@@ -476,6 +672,13 @@ class SlotClient {
             this.shown.set(id, element);
             this.save([message]);
         }
+        const crowned = this.crowned.get(id);
+        const winner = this.winners.get(id);
+        if (crowned && winner) {
+            const element = this.item(winner, crowned.classList.contains('fresh'), false);
+            crowned.replaceWith(element);
+            this.crowned.set(id, element);
+        }
     }
 
     toggleAuto() {
@@ -543,7 +746,7 @@ class SlotClient {
         }
     }
 
-    item(message, fresh) {
+    item(message, fresh, archived = !this.live.has(message.id)) {
         const win = classify(message.text);
         const marks = hits(message.text);
         const mine = this.mine.has(message.id) || message.mine === true;
@@ -551,7 +754,7 @@ class SlotClient {
         element.className = 'msg';
         element.classList.toggle('win', win !== 'none');
         element.classList.toggle('mine', mine);
-        element.classList.toggle('archived', !this.live.has(message.id));
+        element.classList.toggle('archived', archived);
         element.classList.toggle('fresh', fresh);
         element.dataset.id = message.id;
         const time = this.doc.createElement('time');
@@ -567,7 +770,17 @@ class SlotClient {
             }
             symbols.append(cell);
         });
-        element.append(time, symbols);
+        let row = element;
+        if (win !== 'none') {
+            const details = this.doc.createElement('details');
+            details.className = 'odds';
+            details.dataset.text = message.text;
+            row = this.doc.createElement('summary');
+            row.className = 'row';
+            details.append(row);
+            element.append(details);
+        }
+        row.append(time, symbols);
         if (win !== 'none' || mine) {
             const tags = this.doc.createElement('p');
             tags.className = 'tags';
@@ -583,19 +796,83 @@ class SlotClient {
                 yours.textContent = 'Your press';
                 tags.append(yours);
             }
-            element.append(tags);
+            if (win !== 'none') {
+                const more = this.doc.createElement('span');
+                more.className = 'more';
+                more.textContent = 'Odds';
+                tags.append(more);
+            }
+            row.append(tags);
         }
         return element;
     }
 
     insert(message, fresh) {
         const element = this.item(message, fresh);
-        let next = this.feed.firstElementChild;
-        while (next && next.dataset.id > message.id) {
-            next = next.nextElementSibling;
-        }
-        this.feed.insertBefore(element, next);
+        place(this.feed, element, message.id);
         this.shown.set(message.id, element);
+    }
+
+    crown(message, fresh) {
+        if (!this.winnersList || this.crowned.has(message.id)) {
+            return;
+        }
+        const element = this.item(message, fresh, false);
+        place(this.winnersList, element, message.id);
+        this.crowned.set(message.id, element);
+    }
+
+    renderWinners(pending) {
+        this.crowned.clear();
+        if (!this.winnersList) {
+            return;
+        }
+        const fragment = this.doc.createDocumentFragment();
+        for (const message of [...this.winners.values()].sort(newestFirst)) {
+            if (message.id === pending) {
+                continue;
+            }
+            const element = this.item(message, false, false);
+            this.crowned.set(message.id, element);
+            fragment.append(element);
+        }
+        this.winnersList.replaceChildren(fragment);
+        this.updateEmpty();
+    }
+
+    explain(details) {
+        if (!details?.classList?.contains('odds') || !details.open || 'explained' in details.dataset) {
+            return;
+        }
+        const facts = lesson(details.dataset.text, this.spinMs);
+        if (!facts) {
+            return;
+        }
+        details.dataset.explained = '';
+        const body = this.doc.createElement('div');
+        body.className = 'lesson';
+        const headline = this.doc.createElement('p');
+        headline.className = 'headline';
+        const odds = this.doc.createElement('strong');
+        odds.textContent = facts.headline;
+        headline.append(odds, ` ${facts.summary}`);
+        const list = this.doc.createElement('dl');
+        for (const [term, value] of facts.facts) {
+            const dt = this.doc.createElement('dt');
+            dt.textContent = term;
+            const dd = this.doc.createElement('dd');
+            dd.textContent = value;
+            list.append(dt, dd);
+        }
+        body.append(headline, list);
+        for (const [title, text] of facts.sections) {
+            const paragraph = this.doc.createElement('p');
+            const label = this.doc.createElement('strong');
+            label.textContent = `${title}. `;
+            paragraph.append(label, text);
+            body.append(paragraph);
+        }
+        details.append(body);
     }
 
     render(messages, done) {
@@ -629,6 +906,9 @@ class SlotClient {
         if (this.empty) {
             this.empty.hidden = this.shown.size > 0;
         }
+        if (this.winnersEmpty) {
+            this.winnersEmpty.hidden = this.crowned.size > 0;
+        }
     }
 
     dispose() {
@@ -649,7 +929,16 @@ class SlotClient {
         this.older?.removeEventListener('click', this.onOlder);
         this.win.removeEventListener('chaos:reconnected', this.onReconnected);
         this.doc.removeEventListener('visibilitychange', this.onVisibility);
+        this.doc.removeEventListener('toggle', this.onToggle, true);
     }
+}
+
+function place(list, element, id) {
+    let next = list.firstElementChild;
+    while (next && next.dataset.id > id) {
+        next = next.nextElementSibling;
+    }
+    list.insertBefore(element, next);
 }
 
 export function attach(machine, dotnet) {

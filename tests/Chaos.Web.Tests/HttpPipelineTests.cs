@@ -63,6 +63,18 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
     }
 
     [Fact]
+    public async Task SlotsPageRendersWinnersWithTheirOdds()
+    {
+        var slots = factory.Services.GetRequiredService<SlotService>();
+        var winner = new BoardMessage(Guid.CreateVersion7(DateTimeOffset.UtcNow.AddHours(-1)), "QQQQ7");
+        slots.OfferWinners([winner]);
+        using var client = CreateClient();
+        var html = await client.GetStringAsync("/slots", Cancellation);
+        Assert.Contains("id=\"slots-winners\"", html, StringComparison.Ordinal);
+        Assert.Contains("data-text=\"QQQQ7\"", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task ResponsesCarrySecurityHeaders()
     {
         using var client = CreateClient();

@@ -3,7 +3,7 @@
 @inject IJSRuntime JS
 @inject ILogger<SlotIsland> Logger
 
-<section @ref="_machine" class="machine" aria-labelledby="machine-title" data-initial="@_face">
+<section @ref="_machine" class="machine" aria-labelledby="machine-title" data-initial="@_face" data-spin="@((int)Slots.SpinTime.TotalMilliseconds)">
     <h2 id="machine-title" class="visually-hidden">Slot machine</h2>
     <div class="lights" aria-hidden="true">
         @for (var i = 0; i < Bulbs; i++)
@@ -39,6 +39,7 @@
     private Subscriber? _subscriber;
     private string _face = "CHAOS";
     private int _offered;
+    private int _offeredWinners;
 
     [Parameter, EditorRequired]
     public string Client { get; set; } = ClientAddress.Unknown;
@@ -62,31 +63,10 @@
     }
 
     [JSInvokable]
-    public int Offer(string[] ids, string[] texts)
-    {
-        if (ids is null || texts is null || ids.Length != texts.Length)
-        {
-            return 0;
-        }
+    public int Offer(string[] ids, string[] texts) => Slots.Offer(Parse(ids, texts, ref _offered));
 
-        var count = Math.Min(SlotService.MaxOffers - _offered, ids.Length);
-        if (count <= 0)
-        {
-            return 0;
-        }
-
-        _offered += count;
-        var offered = new List<BoardMessage>(count);
-        for (var i = 0; i < count; i++)
-        {
-            if (Guid.TryParseExact(ids[i], "D", out var id) && texts[i] is { } text)
-            {
-                offered.Add(new BoardMessage(id, text));
-            }
-        }
-
-        return Slots.Offer(offered);
-    }
+    [JSInvokable]
+    public int OfferWinners(string[] ids, string[] texts) => Slots.OfferWinners(Parse(ids, texts, ref _offeredWinners));
 
     [JSInvokable]
     public async Task Join()
@@ -110,6 +90,32 @@
         await JsCleanup.DisposeAsync(_client, "dispose");
         await JsCleanup.DisposeAsync(_module, null);
         _self?.Dispose();
+    }
+
+    private static List<BoardMessage> Parse(string[]? ids, string[]? texts, ref int used)
+    {
+        if (ids is null || texts is null || ids.Length != texts.Length)
+        {
+            return [];
+        }
+
+        var count = Math.Min(SlotService.MaxOffers - used, ids.Length);
+        if (count <= 0)
+        {
+            return [];
+        }
+
+        used += count;
+        var offered = new List<BoardMessage>(count);
+        for (var i = 0; i < count; i++)
+        {
+            if (Guid.TryParseExact(ids[i], "D", out var id) && texts[i] is { } text)
+            {
+                offered.Add(new BoardMessage(id, text));
+            }
+        }
+
+        return offered;
     }
 
     private async Task SendAsync(IReadOnlyList<SlotUpdate> batch, CancellationToken cancellationToken)

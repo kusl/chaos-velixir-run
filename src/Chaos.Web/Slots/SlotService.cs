@@ -13,6 +13,7 @@ internal sealed class SlotService
     private readonly Lock _gate = new();
     private readonly HashSet<ISlotSubscriber> _subscribers = [];
     private BoardMessage[] _messages = [];
+    private BoardMessage[] _winners = [];
     private long _version;
     private Guid _spinId;
     private long? _spinStarted;
@@ -24,6 +25,7 @@ internal sealed class SlotService
         var limits = options.Value;
         _time = time;
         Capacity = limits.SlotCapacity;
+        WinnerCapacity = limits.SlotWinnerCapacity;
         SpinTime = TimeSpan.FromMilliseconds(limits.SpinMilliseconds);
         _presses = new KeyedTokenBuckets(limits.PressBurst, limits.PressesPerSecond, time);
         StartedAt = time.GetUtcNow();
@@ -31,11 +33,15 @@ internal sealed class SlotService
 
     public int Capacity { get; }
 
+    public int WinnerCapacity { get; }
+
     public TimeSpan SpinTime { get; }
 
     public DateTimeOffset StartedAt { get; }
 
     public IReadOnlyList<BoardMessage> Messages => Volatile.Read(ref _messages);
+
+    public IReadOnlyList<BoardMessage> Winners => Volatile.Read(ref _winners);
 
     public SlotSpin? Spinning
     {
@@ -66,36 +72,21 @@ internal sealed class SlotService
             var message = new BoardMessage(Guid.CreateVersion7(_time.GetUtcNow()), SlotRules.Draw());
             _spinId = message.Id;
             _spinStarted = now;
-            Merge([message], new SlotSpin(message.Id, Milliseconds(SpinTime)));
+            Merge([message], new SlotSpin(message.Id, Milliseconds(SpinTime)), true);
             return SlotPress.Started(message.Id);
         }
     }
 
-    public int Offer(IEnumerable<BoardMessage> offered)
-    {
-        ArgumentNullException.ThrowIfNull(offered);
-        var now = _time.GetUtcNow();
-        var valid = offered
-            .Take(MaxOffers)
-            .Where(message => message is not null && MessageWindow.IsRestorable(message.Id, now, StartedAt) && SlotRules.IsValid(message.Text))
-            .ToList();
-        if (valid.Count == 0)
-        {
-            return 0;
-        }
+    public int Offer(IEnumerable<BoardMessage> offered) => Restore(offered, true);
 
-        lock (_gate)
-        {
-            return Merge(valid, null);
-        }
-    }
+    public int OfferWinners(IEnumerable<BoardMessage> offered) => Restore(offered, false);
 
     public void Subscribe(ISlotSubscriber subscriber)
     {
         ArgumentNullException.ThrowIfNull(subscriber);
         lock (_gate)
         {
-            if (subscriber.Deliver(SlotUpdate.Snapshot(_version, _messages, CurrentSpin(_time.GetTimestamp()))))
+            if (subscriber.Deliver(SlotUpdate.Snapshot(_version, _messages, _winners, CurrentSpin(_time.GetTimestamp()))))
             {
                 _subscribers.Add(subscriber);
             }
@@ -120,6 +111,28 @@ internal sealed class SlotService
 
     private static int Milliseconds(TimeSpan span) => (int)Math.Ceiling(span.TotalMilliseconds);
 
+    private static bool IsWinner(BoardMessage message) => SlotRules.Classify(message.Text) is not SlotWin.None;
+
+    private int Restore(IEnumerable<BoardMessage> offered, bool recent)
+    {
+        ArgumentNullException.ThrowIfNull(offered);
+        var now = _time.GetUtcNow();
+        var valid = offered
+            .Take(MaxOffers)
+            .Where(message => message is not null && MessageWindow.IsRestorable(message.Id, now, StartedAt) && SlotRules.IsValid(message.Text))
+            .Where(message => recent || IsWinner(message))
+            .ToList();
+        if (valid.Count == 0)
+        {
+            return 0;
+        }
+
+        lock (_gate)
+        {
+            return Merge(valid, null, recent);
+        }
+    }
+
     private SlotSpin? CurrentSpin(long now)
     {
         if (_spinStarted is not { } started)
@@ -131,19 +144,36 @@ internal sealed class SlotService
         return remaining > TimeSpan.Zero ? new SlotSpin(_spinId, Milliseconds(remaining)) : null;
     }
 
-    private int Merge(IReadOnlyCollection<BoardMessage> candidates, SlotSpin? spin)
+    private int Merge(IReadOnlyCollection<BoardMessage> candidates, SlotSpin? spin, bool recent)
     {
-        var change = MessageWindow.Merge(_messages, candidates, Capacity);
-        if (change is null)
+        var change = recent ? MessageWindow.Merge(_messages, candidates, Capacity) : null;
+        var crowned = MessageWindow.Merge(_winners, candidates.Where(IsWinner), WinnerCapacity);
+        if (change is null && crowned is null)
         {
             return 0;
         }
 
         var previous = _version;
         _version++;
-        Volatile.Write(ref _messages, change.Next);
-        Broadcast(SlotUpdate.Delta(_version, previous, change.Added, change.Removed, spin));
-        return change.Added.Length;
+        if (change is not null)
+        {
+            Volatile.Write(ref _messages, change.Next);
+        }
+
+        if (crowned is not null)
+        {
+            Volatile.Write(ref _winners, crowned.Next);
+        }
+
+        Broadcast(SlotUpdate.Delta(
+            _version,
+            previous,
+            change?.Added ?? [],
+            change?.Removed ?? [],
+            spin,
+            crowned?.Added ?? [],
+            crowned?.Removed ?? []));
+        return (change?.Added ?? []).Select(message => message.Id).Union((crowned?.Added ?? []).Select(message => message.Id)).Count();
     }
 
     private void Broadcast(SlotUpdate update)

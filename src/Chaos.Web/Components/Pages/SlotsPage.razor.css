@@ -28,6 +28,82 @@
     contain-intrinsic-size: auto 4.5rem;
 }
 
+.spins ::deep .msg > .odds {
+    grid-column: 1 / -1;
+}
+
+.spins ::deep .row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: .3rem 1rem;
+    list-style: none;
+    cursor: pointer;
+}
+
+.spins ::deep .row::-webkit-details-marker {
+    display: none;
+}
+
+.spins ::deep .row:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: .3rem;
+    border-radius: var(--radius);
+}
+
+.spins ::deep .more {
+    padding: .1rem .55rem;
+    border: 1px solid var(--gold);
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+.spins ::deep .more::after {
+    content: " ▸";
+}
+
+.spins ::deep .odds[open] .more::after {
+    content: " ▾";
+}
+
+.spins ::deep .lesson {
+    display: grid;
+    gap: .6rem;
+    margin-block-start: .8rem;
+    padding-block-start: .8rem;
+    border-block-start: 1px solid var(--line);
+    font-size: .9rem;
+    line-height: 1.45;
+}
+
+.spins ::deep .lesson p {
+    margin: 0;
+}
+
+.spins ::deep .headline strong {
+    margin-inline-end: .3rem;
+    color: var(--gold);
+    font-size: 1.4rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.spins ::deep .lesson dl {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: .25rem 1rem;
+    margin: 0;
+}
+
+.spins ::deep .lesson dt {
+    color: var(--muted);
+}
+
+.spins ::deep .lesson dd {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+}
+
 .spins ::deep time {
     grid-column: 1 / -1;
     color: var(--muted);
@@ -104,7 +180,8 @@
     border-color: var(--gold);
 }
 
-.empty {
+.empty,
+.note {
     margin: 0;
     color: var(--muted);
 }
@@ -130,6 +207,17 @@
 
     50% {
         box-shadow: 0 0 0 7px color-mix(in oklab, var(--gold) 45%, transparent);
+    }
+}
+
+@media (max-width: 30rem) {
+    .spins ::deep .lesson dl {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .spins ::deep .lesson dd {
+        margin-block-end: .4rem;
     }
 }
 

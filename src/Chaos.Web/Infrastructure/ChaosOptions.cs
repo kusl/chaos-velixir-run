@@ -34,6 +34,8 @@ internal sealed class ChaosOptions
 
     public int SlotCapacity { get; set; } = 50;
 
+    public int SlotWinnerCapacity { get; set; } = 50;
+
     public double PressBurst { get; set; } = 3;
 
     public double PressesPerSecond { get; set; } = 0.5;
@@ -64,6 +66,7 @@ internal sealed class ChaosOptions
         && ResetBurst >= 1
         && ResetsPerSecond > 0
         && SlotCapacity > 0
+        && SlotWinnerCapacity > 0
         && PressBurst >= 1
         && PressesPerSecond > 0
         && SpinMilliseconds is >= 1000 and <= 15000
