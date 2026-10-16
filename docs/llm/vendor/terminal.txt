@@ -1,571 +1,20 @@
-kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
-scripts/run-all.sh: line 23: /home/kushal/src/dotnet/chaos-velixir-run/scripts/build.sh: Permission denied
-
-real	0m0.004s
-user	0m0.001s
-sys	0m0.004s
-kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/build.sh 
+kushal@fedora:~/src/dotnet/network-monitor/src$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
 
 ==> Restore
-Restore complete (0.6s)
-
-Build succeeded in 0.7s
-
-==> Build (Release, warnings are errors)
-  Chaos.E2E net10.0 succeeded (2.7s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
-  Chaos.Web net10.0 failed with 1 error(s) (3.9s)
-    /home/kushal/src/dotnet/chaos-velixir-run/src/Chaos.Web/Slots/SlotRules.cs(77,19): error CS8604: Possible null reference argument for parameter 'source' in 'IEnumerable<IGrouping<char, char>> Enumerable.GroupBy<char, char>(IEnumerable<char> source, Func<char, char> keySelector)'.
-
-Build failed with 1 error(s) in 4.3s
-
-real	0m5.324s
-user	0m2.305s
-sys	0m0.435s
-kushal@fedora:~/src/dotnet/chaos-velixir-run$ ls -lah scripts/
-total 36K
-drwxr-xr-x. 1 kushal kushal  164 Oct 13 09:46 .
-drwxr-xr-x. 1 kushal kushal  360 Oct 13 09:46 ..
--rw-r--r--. 1 kushal kushal  283 Oct 13 09:17 build.sh
--rw-r--r--. 1 kushal kushal 1.5K Oct 13 09:31 e2e-container.sh
--rw-r--r--. 1 kushal kushal 7.7K Oct 13 09:17 export.sh
--rw-r--r--. 1 kushal kushal 1.1K Oct 13 09:17 lib.sh
--rw-r--r--. 1 kushal kushal  753 Oct 13 09:17 run-all.sh
--rw-r--r--. 1 kushal kushal  587 Oct 13 09:17 test-e2e.sh
--rw-r--r--. 1 kushal kushal  206 Oct 13 09:17 test-js.sh
--rw-r--r--. 1 kushal kushal  719 Oct 13 09:17 test-unit.sh
-kushal@fedora:~/src/dotnet/chaos-velixir-run$ chmod +x scripts/*.sh
-kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
-
-==> Restore
-Restore complete (0.5s)
-
-Build succeeded in 0.6s
-
-==> Build (Release, warnings are errors)
-  Chaos.E2E net10.0 succeeded (0.2s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
-  Chaos.Web net10.0 failed with 1 error(s) (0.6s)
-    /home/kushal/src/dotnet/chaos-velixir-run/src/Chaos.Web/Slots/SlotRules.cs(77,19): error CS8604: Possible null reference argument for parameter 'source' in 'IEnumerable<IGrouping<char, char>> Enumerable.GroupBy<char, char>(IEnumerable<char> source, Func<char, char> keySelector)'.
-
-Build failed with 1 error(s) in 0.9s
-
-real	0m1.833s
-user	0m1.564s
-sys	0m0.302s
-kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
-
-==> Restore
-Restore complete (0.5s)
-
-Build succeeded in 0.5s
-
-==> Build (Release, warnings are errors)
-  Chaos.E2E net10.0 succeeded (0.2s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
-  Chaos.Web net10.0 succeeded (0.8s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
-  Chaos.Web.Tests net10.0 succeeded (0.3s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
-
-Build succeeded in 1.4s
-
-==> Unit and integration tests
-Running tests from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
-tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 091ms)
-
-  In process file artifacts produced:
-    - artifacts/test-results/unit/coverage.cobertura.xml
-
-Test run summary: Passed!
-  total: 125
-  failed: 0
-  succeeded: 125
-  skipped: 0
-  duration: 1s 975ms
-.NET line coverage: 78.8%
-
-==> JavaScript unit tests
-
-added 49 packages in 560ms
-
- RUN  v5.0.4 /home/kushal/src/dotnet/chaos-velixir-run/tests/js
-      Coverage enabled with v8
-
- ✓ app.test.js (8 tests) 3ms
- ✓ canvas.test.js (14 tests) 5ms
- ✓ board.test.js (10 tests) 5ms
- ✓ slots.test.js (19 tests) 6ms
-
- Test Files  4 passed (4)
-      Tests  51 passed (51)
-   Start at  09:54:56
-   Duration  207ms (transform 43%, worker 31%, import 19%, tests 7%)
-
- % Coverage report from v8
-------------------------|---------|----------|---------|---------|-------------------
-File                    | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
-------------------------|---------|----------|---------|---------|-------------------
-All files               |   15.24 |     21.3 |   17.67 |   15.29 |                   
- Components             |   15.47 |    30.61 |   17.64 |   15.85 |                   
-  App.razor.js          |   15.47 |    30.61 |   17.64 |   15.85 | 27-153,157        
- Components/Islands     |    15.3 |    20.39 |   17.67 |   15.32 |                   
-  BoardIsland.razor.js  |   13.42 |    17.64 |   11.84 |   14.07 | 38,76-459         
-  CanvasIsland.razor.js |   17.01 |    16.96 |   17.39 |   16.87 | 83-392            
-  SlotIsland.razor.js   |   15.65 |    23.83 |   23.68 |   15.27 | 15,51,142-661     
- wwwroot                |       0 |        0 |     100 |       0 |                   
-  theme-init.js         |       0 |        0 |     100 |       0 | 2-8               
-------------------------|---------|----------|---------|---------|-------------------
-
-==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.63.0-noble
-  Determining projects to restore...
-  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 341 ms).
-  Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
-  Chaos.Web -> /tmp/app/
-Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
-failed Chaos.E2E.CanvasTests.StrokesReachEveryoneAndResetClearsThem (5s 143ms)
-  from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
-  Xunit.MicrosoftTestingPlatform.XunitException: Microsoft.Playwright.PlaywrightException : Locator expected to be visible
-  Error: element(s) not found 
-  Call log:
-    - Expect "ToBeVisibleAsync" Locator("canvas.paper[data-ready]") with timeout 5000ms
-    - waiting for Locator("canvas.paper[data-ready]")
-  Aria snapshot:
-  - banner:
-    - link "chaos":
-      - /url: ""
-    - navigation "Main":
-      - link "Board":
-        - /url: board
-      - link "Canvas":
-        - /url: canvas
-      - link "Slots":
-        - /url: slots
-      - link "About":
-        - /url: about
-    - button "Dark theme"
-  - main:
-    - heading "Canvas" [level=1]
-    - paragraph: One black pen and one shared page. Every stroke shows up for everyone while it is being drawn. Reset clears the page for everyone, and so does a server restart.
-    - img "Shared drawing canvas. Drawing needs a mouse, a finger or a stylus."
-    - button "Reset canvas"
-    - status
-    - paragraph: "Drawing needs a pointer: a mouse, a finger or a stylus. There is no way to draw with a keyboard, but the reset button works from one."
-  - contentinfo:
-    - link "Source code":
-      - /url: https://github.com/kusl/chaos-velixir-run
-    - text: AGPL-3.0-or-later
-    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, FrameExpectOptions expectOptions, Object expected, String message, String title) in /_/src/Playwright/Core/AssertionsBase.cs:95
-    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, ExpectedTextValue[] expectedText, Object expected, String message, String title, FrameExpectOptions options) in /_/src/Playwright/Core/AssertionsBase.cs:69
-    at Chaos.E2E.CanvasTests.OpenCanvasAsync(IBrowserContext context) in /work/tests/Chaos.E2E/CanvasTests.cs:55
-    at Chaos.E2E.CanvasTests.StrokesReachEveryoneAndResetClearsThem() in /work/tests/Chaos.E2E/CanvasTests.cs:29
-    at Chaos.E2E.CanvasTests.StrokesReachEveryoneAndResetClearsThem() in /work/tests/Chaos.E2E/CanvasTests.cs:47
-    at Chaos.E2E.CanvasTests.StrokesReachEveryoneAndResetClearsThem() in /work/tests/Chaos.E2E/CanvasTests.cs:47
-    --- End of stack trace from previous location ---
-/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) failed with 1 error(s) (18s 298ms)
-Exit code: 2
-
-Test run summary: Failed!
-  total: 11
-  failed: 1
-  succeeded: 10
-  skipped: 0
-  duration: 18s 460ms
-Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
-
-==> Last 50 lines of the app log
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/Chaos.Web.ibggqi5jv8.styles.css - 200 3359 text/css 0.1174ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/theme-init.txzesam2x6.js - 200 129 text/javascript 0.2271ms
-info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
-      Sending file. Request path: '_framework/blazor.web.9hsif5t8mt.js'. Physical path: '/tmp/app/wwwroot/_framework/blazor.web.js.br'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/_framework/blazor.web.9hsif5t8mt.js - 200 47578 text/javascript 0.1247ms
-info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
-      Sending file. Request path: 'Components/App.jo229i2r4h.razor.js'. Physical path: '/tmp/app/wwwroot/Components/App.razor.js.br'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/Components/App.jo229i2r4h.razor.js - 200 1298 text/javascript 0.0851ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5080/_blazor/initializers - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/_blazor/initializers - 200 - application/json;+charset=utf-8 0.2115ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 POST http://127.0.0.1:5080/_blazor/negotiate?negotiateVersion=1 - - 0
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 POST http://127.0.0.1:5080/_blazor/negotiate?negotiateVersion=1 - 200 - application/json 0.3149ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5080/_blazor?id=5KMLOH0ALo_GDq6B7owVgg - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/CanvasIsland.tm0fb3asrv.razor.js - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
-      Sending file. Request path: 'Components/Islands/CanvasIsland.tm0fb3asrv.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/CanvasIsland.razor.js.br'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/CanvasIsland.tm0fb3asrv.razor.js - 200 2593 text/javascript 0.2631ms
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/_blazor?id=5KMLOH0ALo_GDq6B7owVgg - 101 - - 5049.0358ms
-
-real	0m31.937s
-user	0m6.357s
-sys	0m1.528s
-kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/export.sh
-Starting project export...
-Project Path: /home/kushal/src/dotnet/chaos-velixir-run
-Output File:  /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
-Listing files via git...
-Found 140 files to export
-Processing (1/140): .editorconfig
-Processing (2/140): .gitattributes
-Processing (3/140): .github/dependabot.yml
-Processing (4/140): .github/workflows/ci.yml
-Processing (5/140): .github/workflows/velixir.yml
-Processing (6/140): .gitignore
-Processing (7/140): Directory.Build.props
-Processing (8/140): Directory.Packages.props
-Processing (9/140): README.md
-Processing (10/140): REUSE.toml
-Processing (11/140): chaos-velixir-run.slnx
-Processing (12/140): docs/adr/0001-record-decisions.md
-Processing (13/140): docs/adr/0002-rendering-model.md
-Processing (14/140): docs/adr/0003-deploy-only-the-web-project.md
-Processing (15/140): docs/adr/0004-message-ids-and-reconciliation.md
-Processing (16/140): docs/adr/0005-local-history.md
-Processing (17/140): docs/adr/0006-canvas-protocol.md
-Processing (18/140): docs/adr/0007-realtime-delivery.md
-Processing (19/140): docs/adr/0008-abuse-limits.md
-Processing (20/140): docs/adr/0009-security-headers.md
-Processing (21/140): docs/adr/0010-no-cookies.md
-Processing (22/140): docs/adr/0011-theme.md
-Processing (23/140): docs/adr/0012-reconnect-and-cold-start.md
-Processing (24/140): docs/adr/0013-runtime-footprint.md
-Processing (25/140): docs/adr/0014-testing.md
-Processing (26/140): docs/adr/0015-dependencies.md
-Processing (27/140): docs/adr/0016-licensing.md
-Processing (28/140): docs/adr/0017-scripts-and-ci.md
-Processing (29/140): docs/adr/0018-export.md
-Processing (30/140): docs/adr/0019-slots.md
-Processing (31/140): docs/adr/README.md
-Processing (32/140): global.json
-Processing (33/140): scripts/build.sh
-Processing (34/140): scripts/e2e-container.sh
-Processing (35/140): scripts/export.sh
-Processing (36/140): scripts/lib.sh
-Processing (37/140): scripts/run-all.sh
-Processing (38/140): scripts/test-e2e.sh
-Processing (39/140): scripts/test-js.sh
-Processing (40/140): scripts/test-unit.sh
-Processing (41/140): src/Chaos.Web/Chaos.Web.csproj
-Processing (42/140): src/Chaos.Web/Components/App.razor
-Processing (43/140): src/Chaos.Web/Components/App.razor.js
-Processing (44/140): src/Chaos.Web/Components/Islands/BoardIsland.razor
-Processing (45/140): src/Chaos.Web/Components/Islands/BoardIsland.razor.css
-Processing (46/140): src/Chaos.Web/Components/Islands/BoardIsland.razor.js
-Processing (47/140): src/Chaos.Web/Components/Islands/CanvasIsland.razor
-Processing (48/140): src/Chaos.Web/Components/Islands/CanvasIsland.razor.css
-Processing (49/140): src/Chaos.Web/Components/Islands/CanvasIsland.razor.js
-Processing (50/140): src/Chaos.Web/Components/Islands/SlotIsland.razor
-Processing (51/140): src/Chaos.Web/Components/Islands/SlotIsland.razor.css
-Processing (52/140): src/Chaos.Web/Components/Islands/SlotIsland.razor.js
-Processing (53/140): src/Chaos.Web/Components/Layout/MainLayout.razor
-Processing (54/140): src/Chaos.Web/Components/Layout/MainLayout.razor.css
-Processing (55/140): src/Chaos.Web/Components/Layout/ReconnectBanner.razor
-Processing (56/140): src/Chaos.Web/Components/Layout/ReconnectBanner.razor.css
-Processing (57/140): src/Chaos.Web/Components/Layout/ThemeToggle.razor
-Processing (58/140): src/Chaos.Web/Components/Layout/ThemeToggle.razor.css
-Processing (59/140): src/Chaos.Web/Components/Pages/About.razor
-Processing (60/140): src/Chaos.Web/Components/Pages/About.razor.css
-Processing (61/140): src/Chaos.Web/Components/Pages/BoardPage.razor
-Processing (62/140): src/Chaos.Web/Components/Pages/BoardPage.razor.css
-Processing (63/140): src/Chaos.Web/Components/Pages/CanvasPage.razor
-Processing (64/140): src/Chaos.Web/Components/Pages/CanvasPage.razor.css
-Processing (65/140): src/Chaos.Web/Components/Pages/Error.razor
-Processing (66/140): src/Chaos.Web/Components/Pages/Error.razor.css
-Processing (67/140): src/Chaos.Web/Components/Pages/Home.razor
-Processing (68/140): src/Chaos.Web/Components/Pages/Home.razor.css
-Processing (69/140): src/Chaos.Web/Components/Pages/NotFound.razor
-Processing (70/140): src/Chaos.Web/Components/Pages/SlotsPage.razor
-Processing (71/140): src/Chaos.Web/Components/Pages/SlotsPage.razor.css
-Processing (72/140): src/Chaos.Web/Components/Routes.razor
-Processing (73/140): src/Chaos.Web/Components/_Imports.razor
-Processing (74/140): src/Chaos.Web/Drawing/CanvasService.cs
-Processing (75/140): src/Chaos.Web/Drawing/CanvasSession.cs
-Processing (76/140): src/Chaos.Web/Drawing/CanvasUpdate.cs
-Processing (77/140): src/Chaos.Web/Drawing/DrawResult.cs
-Processing (78/140): src/Chaos.Web/Drawing/ICanvasSubscriber.cs
-Processing (79/140): src/Chaos.Web/Drawing/ResetResult.cs
-Processing (80/140): src/Chaos.Web/Drawing/Stroke.cs
-Processing (81/140): src/Chaos.Web/Infrastructure/ChaosOptions.cs
-Processing (82/140): src/Chaos.Web/Infrastructure/ClientAddress.cs
-Processing (83/140): src/Chaos.Web/Infrastructure/ConnectionTracker.cs
-Processing (84/140): src/Chaos.Web/Infrastructure/CookielessAntiforgery.cs
-Processing (85/140): src/Chaos.Web/Infrastructure/HubGuard.cs
-Processing (86/140): src/Chaos.Web/Infrastructure/JsCleanup.cs
-Processing (87/140): src/Chaos.Web/Infrastructure/KeyedTokenBuckets.cs
-Processing (88/140): src/Chaos.Web/Infrastructure/ModulePath.cs
-Processing (89/140): src/Chaos.Web/Infrastructure/OriginPolicy.cs
-Processing (90/140): src/Chaos.Web/Infrastructure/Outbox.cs
-Processing (91/140): src/Chaos.Web/Infrastructure/RequestLimits.cs
-Processing (92/140): src/Chaos.Web/Infrastructure/SecurityHeaders.cs
-Processing (93/140): src/Chaos.Web/Infrastructure/TokenBucket.cs
-Processing (94/140): src/Chaos.Web/Messages/BoardMessage.cs
-Processing (95/140): src/Chaos.Web/Messages/BoardService.cs
-Processing (96/140): src/Chaos.Web/Messages/BoardUpdate.cs
-Processing (97/140): src/Chaos.Web/Messages/IBoardSubscriber.cs
-Processing (98/140): src/Chaos.Web/Messages/MessageFormat.cs
-Processing (99/140): src/Chaos.Web/Messages/MessageText.cs
-Processing (100/140): src/Chaos.Web/Messages/MessageWindow.cs
-Processing (101/140): src/Chaos.Web/Messages/PostResult.cs
-Processing (102/140): src/Chaos.Web/Messages/Uuid7.cs
-Processing (103/140): src/Chaos.Web/Program.cs
-Processing (104/140): src/Chaos.Web/Properties/launchSettings.json
-Processing (105/140): src/Chaos.Web/Slots/ISlotSubscriber.cs
-Processing (106/140): src/Chaos.Web/Slots/SlotPress.cs
-Processing (107/140): src/Chaos.Web/Slots/SlotRules.cs
-Processing (108/140): src/Chaos.Web/Slots/SlotService.cs
-Processing (109/140): src/Chaos.Web/Slots/SlotUpdate.cs
-Processing (110/140): src/Chaos.Web/Slots/SlotWin.cs
-Processing (111/140): src/Chaos.Web/appsettings.Development.json
-Processing (112/140): src/Chaos.Web/appsettings.json
-Processing (113/140): src/Chaos.Web/wwwroot/app.css
-Processing (114/140): src/Chaos.Web/wwwroot/favicon.svg
-Processing (115/140): src/Chaos.Web/wwwroot/theme-init.js
-Processing (116/140): tests/Chaos.E2E/BoardTests.cs
-Processing (117/140): tests/Chaos.E2E/BrowserFixture.cs
-Processing (118/140): tests/Chaos.E2E/CanvasTests.cs
-Processing (119/140): tests/Chaos.E2E/Chaos.E2E.csproj
-Processing (120/140): tests/Chaos.E2E/SiteTests.cs
-Processing (121/140): tests/Chaos.E2E/SlotTests.cs
-Processing (122/140): tests/Chaos.Web.Tests/BoardServiceTests.cs
-Processing (123/140): tests/Chaos.Web.Tests/CanvasServiceTests.cs
-Processing (124/140): tests/Chaos.Web.Tests/Chaos.Web.Tests.csproj
-Processing (125/140): tests/Chaos.Web.Tests/HttpPipelineTests.cs
-Processing (126/140): tests/Chaos.Web.Tests/InfrastructureTests.cs
-Processing (127/140): tests/Chaos.Web.Tests/MessageFormatTests.cs
-Processing (128/140): tests/Chaos.Web.Tests/MessageTextTests.cs
-Processing (129/140): tests/Chaos.Web.Tests/OutboxTests.cs
-Processing (130/140): tests/Chaos.Web.Tests/SlotRulesTests.cs
-Processing (131/140): tests/Chaos.Web.Tests/SlotServiceTests.cs
-Processing (132/140): tests/Chaos.Web.Tests/TestSupport.cs
-Processing (133/140): tests/Chaos.Web.Tests/Uuid7Tests.cs
-Processing (134/140): tests/Directory.Build.props
-Processing (135/140): tests/js/app.test.js
-Processing (136/140): tests/js/board.test.js
-Processing (137/140): tests/js/canvas.test.js
-Processing (138/140): tests/js/package.json
-Processing (139/140): tests/js/slots.test.js
-Processing (140/140): tests/js/vitest.config.mjs
-
-Export completed successfully!
-Output file: /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
-Total source size: 0.24 MB across 140 files
-
-real	0m1.985s
-user	0m1.043s
-sys	0m1.362s
-kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
-
-==> Restore
-Restore complete (0.5s)
-
-Build succeeded in 0.6s
-
-==> Build (Release, warnings are errors)
-  Chaos.E2E net10.0 succeeded (0.1s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
-  Chaos.Web net10.0 succeeded (0.7s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
-  Chaos.Web.Tests net10.0 succeeded (0.2s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
-
-Build succeeded in 1.3s
-
-==> Unit and integration tests
-Running tests from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
-tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 099ms)
-
-  In process file artifacts produced:
-    - artifacts/test-results/unit/coverage.cobertura.xml
-
-Test run summary: Passed!
-  total: 125
-  failed: 0
-  succeeded: 125
-  skipped: 0
-  duration: 1s 908ms
-.NET line coverage: 78.8%
-
-==> JavaScript unit tests
-
-added 49 packages in 479ms
-
- RUN  v5.0.4 /home/kushal/src/dotnet/chaos-velixir-run/tests/js
-      Coverage enabled with v8
-
- ✓ canvas.test.js (14 tests) 5ms
- ✓ app.test.js (8 tests) 3ms
- ✓ board.test.js (10 tests) 6ms
- ✓ slots.test.js (19 tests) 6ms
-
- Test Files  4 passed (4)
-      Tests  51 passed (51)
-   Start at  09:59:31
-   Duration  195ms (transform 52%, worker 22%, import 17%, tests 8%)
-
- % Coverage report from v8
-------------------------|---------|----------|---------|---------|-------------------
-File                    | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
-------------------------|---------|----------|---------|---------|-------------------
-All files               |   15.24 |     21.3 |   17.67 |   15.29 |                   
- Components             |   15.47 |    30.61 |   17.64 |   15.85 |                   
-  App.razor.js          |   15.47 |    30.61 |   17.64 |   15.85 | 27-153,157        
- Components/Islands     |    15.3 |    20.39 |   17.67 |   15.32 |                   
-  BoardIsland.razor.js  |   13.42 |    17.64 |   11.84 |   14.07 | 38,76-459         
-  CanvasIsland.razor.js |   17.01 |    16.96 |   17.39 |   16.87 | 83-392            
-  SlotIsland.razor.js   |   15.65 |    23.83 |   23.68 |   15.27 | 15,51,142-661     
- wwwroot                |       0 |        0 |     100 |       0 |                   
-  theme-init.js         |       0 |        0 |     100 |       0 | 2-8               
-------------------------|---------|----------|---------|---------|-------------------
-
-==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.63.0-noble
-  Determining projects to restore...
-  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 498 ms).
-  Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
-  Chaos.Web -> /tmp/app/
-Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
-failed Chaos.E2E.CanvasTests.StrokesReachEveryoneAndResetClearsThem (5s 146ms)
-  from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
-  Xunit.MicrosoftTestingPlatform.XunitException: Microsoft.Playwright.PlaywrightException : Locator expected to be visible
-  Error: element(s) not found 
-  Call log:
-    - Expect "ToBeVisibleAsync" Locator("canvas.paper[data-ready]") with timeout 5000ms
-    - waiting for Locator("canvas.paper[data-ready]")
-  Aria snapshot:
-  - banner:
-    - link "chaos":
-      - /url: ""
-    - navigation "Main":
-      - link "Board":
-        - /url: board
-      - link "Canvas":
-        - /url: canvas
-      - link "Slots":
-        - /url: slots
-      - link "About":
-        - /url: about
-    - button "Dark theme"
-  - main:
-    - heading "Canvas" [level=1]
-    - paragraph: One black pen and one shared page. Every stroke shows up for everyone while it is being drawn. Reset clears the page for everyone, and so does a server restart.
-    - img "Shared drawing canvas. Drawing needs a mouse, a finger or a stylus."
-    - button "Reset canvas"
-    - status
-    - paragraph: "Drawing needs a pointer: a mouse, a finger or a stylus. There is no way to draw with a keyboard, but the reset button works from one."
-  - contentinfo:
-    - link "Source code":
-      - /url: https://github.com/kusl/chaos-velixir-run
-    - text: AGPL-3.0-or-later
-    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, FrameExpectOptions expectOptions, Object expected, String message, String title) in /_/src/Playwright/Core/AssertionsBase.cs:95
-    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, ExpectedTextValue[] expectedText, Object expected, String message, String title, FrameExpectOptions options) in /_/src/Playwright/Core/AssertionsBase.cs:69
-    at Chaos.E2E.CanvasTests.OpenCanvasAsync(IBrowserContext context) in /work/tests/Chaos.E2E/CanvasTests.cs:55
-    at Chaos.E2E.CanvasTests.StrokesReachEveryoneAndResetClearsThem() in /work/tests/Chaos.E2E/CanvasTests.cs:29
-    at Chaos.E2E.CanvasTests.StrokesReachEveryoneAndResetClearsThem() in /work/tests/Chaos.E2E/CanvasTests.cs:47
-    at Chaos.E2E.CanvasTests.StrokesReachEveryoneAndResetClearsThem() in /work/tests/Chaos.E2E/CanvasTests.cs:47
-    --- End of stack trace from previous location ---
-/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) failed with 1 error(s) (18s 573ms)
-Exit code: 2
-
-Test run summary: Failed!
-  total: 11
-  failed: 1
-  succeeded: 10
-  skipped: 0
-  duration: 18s 732ms
-Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
-
-==> Last 50 lines of the app log
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
-      Sending file. Request path: '_framework/blazor.web.9hsif5t8mt.js'. Physical path: '/tmp/app/wwwroot/_framework/blazor.web.js.br'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/Chaos.Web.ibggqi5jv8.styles.css - 200 3359 text/css 0.1651ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/Components/App.jo229i2r4h.razor.js - 200 1298 text/javascript 0.0892ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/theme-init.txzesam2x6.js - 200 129 text/javascript 0.2332ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/app.6yx7hxyzaq.css - 200 766 text/css 0.2075ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/_framework/blazor.web.9hsif5t8mt.js - 200 47578 text/javascript 0.1367ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5080/_blazor/initializers - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/_blazor/initializers - 200 - application/json;+charset=utf-8 0.2169ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 POST http://127.0.0.1:5080/_blazor/negotiate?negotiateVersion=1 - - 0
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 POST http://127.0.0.1:5080/_blazor/negotiate?negotiateVersion=1 - 200 - application/json 0.2296ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5080/_blazor?id=SLYRDoTRl4sYtQfISTPh7A - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/CanvasIsland.tm0fb3asrv.razor.js - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
-      Sending file. Request path: 'Components/Islands/CanvasIsland.tm0fb3asrv.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/CanvasIsland.razor.js.br'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/CanvasIsland.tm0fb3asrv.razor.js - 200 2593 text/javascript 0.2286ms
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/_blazor?id=SLYRDoTRl4sYtQfISTPh7A - 101 - - 5047.1328ms
-
-real	0m32.338s
-user	0m6.326s
-sys	0m1.518s
-kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
-
-==> Restore
-Restore complete (0.5s)
-
-Build succeeded in 0.6s
-
-==> Build (Release, warnings are errors)
-  Chaos.E2E net10.0 succeeded (0.1s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
-  Chaos.Web net10.0 succeeded (0.7s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
-  Chaos.Web.Tests net10.0 succeeded (0.2s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
+Restore complete (1.1s)
 
 Build succeeded in 1.2s
 
+==> Build (Release, warnings are errors)
+  Chaos.E2E net10.0 succeeded (2.8s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
+  Chaos.Web net10.0 succeeded (4.4s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web.Tests net10.0 succeeded (0.4s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
+
+Build succeeded in 5.2s
+
 ==> Unit and integration tests
 Running tests from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
-tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 047ms)
+tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 251ms)
 
   In process file artifacts produced:
     - artifacts/test-results/unit/coverage.cobertura.xml
@@ -575,25 +24,25 @@ Test run summary: Passed!
   failed: 0
   succeeded: 125
   skipped: 0
-  duration: 1s 812ms
+  duration: 2s 186ms
 .NET line coverage: 78.2%
 
 ==> JavaScript unit tests
 
-added 49 packages in 470ms
+added 49 packages in 609ms
 
  RUN  v5.0.4 /home/kushal/src/dotnet/chaos-velixir-run/tests/js
       Coverage enabled with v8
 
+ ✓ app.test.js (8 tests) 4ms
  ✓ canvas.test.js (14 tests) 5ms
- ✓ app.test.js (8 tests) 3ms
  ✓ board.test.js (10 tests) 6ms
  ✓ slots.test.js (19 tests) 6ms
 
  Test Files  4 passed (4)
       Tests  51 passed (51)
-   Start at  10:02:00
-   Duration  200ms (transform 49%, worker 22%, import 21%, tests 8%)
+   Start at  04:10:16
+   Duration  241ms (transform 53%, worker 27%, import 14%, tests 6%)
 
  % Coverage report from v8
 ------------------------|---------|----------|---------|---------|-------------------
@@ -612,18 +61,18 @@ All files               |   15.24 |     21.3 |   17.67 |   15.29 |
 
 ==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.63.0-noble
   Determining projects to restore...
-  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 345 ms).
+  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 405 ms).
   Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
   Chaos.Web -> /tmp/app/
 Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
-/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) passed (14s 581ms)
+/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) passed (14s 091ms)
 
 Test run summary: Passed!
   total: 11
   failed: 0
   succeeded: 11
   skipped: 0
-  duration: 14s 720ms
+  duration: 14s 279ms
 Starting project export...
 Project Path: /home/kushal/src/dotnet/chaos-velixir-run
 Output File:  /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
@@ -776,7 +225,7 @@ Total source size: 0.25 MB across 140 files
 
 ==> All steps passed
 
-real	0m29.257s
-user	0m7.107s
-sys	0m2.825s
+real	0m35.500s
+user	0m8.375s
+sys	0m3.234s
 kushal@fedora:~/src/dotnet/chaos-velixir-run$ 
