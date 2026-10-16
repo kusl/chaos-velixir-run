@@ -1,0 +1,62 @@
+00
+36
+
+1. The footer on every single page should show the current server time 
+and this time should keep ticking forever 
+kind of like how it used to do on zen dot velixir dot run 
+this is NOT the time on the user's computer clock
+2. The board should show the character count and should update 
+as you type in the box or paste into the box 
+kind of like how it used to do on zen dot velixir dot run 
+3. `/canvas` has a defect. It shows new message sometimes 
+`New message: ... investment, adding to your rental portfolio, or taking advantage of a house hacking opportunity, this duplex offers flexibility, strong Drawing needs a pointer: a mouse, a finger or a stylus. There is no way to draw with a keyboard, but the reset button works from one.`
+but the actual text is actually only 
+Drawing needs a pointer: a mouse, a finger or a stylus. There is no way to draw with a keyboard, but the reset button works from one.
+maybe there is some defect and some message crossing wires. 
+please review thoroughly and fix all defects 
+that being said, 
+4. we need to implement some kind of reset protection on canvas as well 
+we need to start keeping track of the canvas as well 
+when someone makes any strokes on the canvas 
+save every single one of them on indexed db or something 
+and add them back on reconnect 
+unless someone has since pressed the reset canvas button
+we should use the same UUIDv7 scheme for this as well 
+same as before cap local history to about 10k or something. 
+and we only send the latest five hundred or something 
+same idea as `/board`
+5. I am thinking of a new page as well 
+it is a little like the slot machine page 
+starts with one button 
+and every time you press it, 
+it makes some network request to a list of public endpoints 
+maybe ping is the wrong word here 
+something we can do automatically from the browser 
+something like a latency test and maybe a speed test 
+the speed test isn't important, focus on the latency 
+try to get as many endpoints as possible 
+public only, nothing that requires a log in 
+we will make two kinds of requests 
+one that sends requests directly from the user's browser and measures the time it takes to get a response 
+one that sends requests from velixir server and measures time time it takes to get a response
+you can only press the button once every like five minutes or so 
+after you press the button like ten times 
+you can automate this 
+everyone sees everyone else's results 
+so don't put anything personally identifiable like ip address in there 
+same idea as before 
+store everything locally 
+server only keeps last fifty 
+local keeps last 10k 
+UUIDv7 with every message as usual 
+
+Use your best judgment
+
+If only a few files (under five or there about) need to change, give me the full path of the files that need to change and the FULL file 
+if there are a lot of files that need to change 
+    Delivery
+    Whole project as one tar.gz, unambiguous file placement
+    Any files to delete on updates called out explicitly
+    No bespoke sed/patch scripts — full files only for anything that changes
+    Docs updated alongside code changes
+    Low verbosity, no code comments
