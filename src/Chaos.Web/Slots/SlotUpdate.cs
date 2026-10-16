@@ -13,10 +13,16 @@ internal sealed record SlotUpdate(
     IReadOnlyList<Guid> Removed,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] SlotSpin? Spin,
     IReadOnlyList<BoardMessage> WinnersAdded,
-    IReadOnlyList<Guid> WinnersRemoved)
+    IReadOnlyList<Guid> WinnersRemoved,
+    IReadOnlyList<BoardMessage> JackpotsAdded)
 {
-    public static SlotUpdate Snapshot(long version, IReadOnlyList<BoardMessage> messages, IReadOnlyList<BoardMessage> winners, SlotSpin? spin) =>
-        new("snapshot", version, version, messages, [], spin, winners, []);
+    public static SlotUpdate Snapshot(
+        long version,
+        IReadOnlyList<BoardMessage> messages,
+        IReadOnlyList<BoardMessage> winners,
+        IReadOnlyList<BoardMessage> jackpots,
+        SlotSpin? spin) =>
+        new("snapshot", version, version, messages, [], spin, winners, [], jackpots);
 
     public static SlotUpdate Delta(
         long version,
@@ -25,6 +31,7 @@ internal sealed record SlotUpdate(
         IReadOnlyList<Guid> removed,
         SlotSpin? spin,
         IReadOnlyList<BoardMessage> winnersAdded,
-        IReadOnlyList<Guid> winnersRemoved) =>
-        new("delta", version, previous, added, removed, spin, winnersAdded, winnersRemoved);
+        IReadOnlyList<Guid> winnersRemoved,
+        IReadOnlyList<BoardMessage> jackpotsAdded) =>
+        new("delta", version, previous, added, removed, spin, winnersAdded, winnersRemoved, jackpotsAdded);
 }

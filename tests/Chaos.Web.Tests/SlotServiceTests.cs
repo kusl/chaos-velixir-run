@@ -206,6 +206,98 @@ public sealed class SlotServiceTests
     }
 
     [Fact]
+    public void WinnerOffersConsiderFiveHundred()
+    {
+        var slots = Create(o => o.SlotWinnerCapacity = 1000);
+        var offered = Enumerable.Range(1, 600).Select(i => Old(-i, "13AKZ")).ToList();
+        Assert.Equal(SlotService.MaxWinnerOffers, slots.OfferWinners(offered));
+        Assert.Equal(500, slots.Winners.Count);
+    }
+
+    [Fact]
+    public void JackpotsOutliveEveryOtherList()
+    {
+        var slots = Create(o =>
+        {
+            o.SlotCapacity = 1;
+            o.SlotWinnerCapacity = 1;
+        });
+        slots.Offer([Old(-5, "XXXXB"), Old(-4, "KKKKK"), Old(-3, "13AKZ"), Old(-2, "AAAB1"), Old(-1, "ZK8A0")]);
+        Assert.Equal(["ZK8A0"], slots.Messages.Select(m => m.Text));
+        Assert.Equal(["AAAB1"], slots.Winners.Select(m => m.Text));
+        Assert.Equal(["KKKKK", "XXXXB"], slots.Jackpots.Select(m => m.Text));
+    }
+
+    [Fact]
+    public void OfferedJackpotsOnlyTouchTheJackpots()
+    {
+        var slots = Create();
+        var recorder = new SlotRecorder();
+        slots.Subscribe(recorder);
+        Assert.Equal(1, slots.OfferJackpots([Old(-3, "AAAB1"), Old(-2, "13AKZ"), Old(-1, "QQQQ7")]));
+        Assert.Empty(slots.Messages);
+        Assert.Empty(slots.Winners);
+        Assert.Equal("QQQQ7", Assert.Single(slots.Jackpots).Text);
+        var delta = recorder.Updates[1];
+        Assert.Empty(delta.Added);
+        Assert.Empty(delta.WinnersAdded);
+        Assert.Equal("QQQQ7", Assert.Single(delta.JackpotsAdded).Text);
+        Assert.Equal(0, slots.OfferJackpots([Old(-1, "QQQQ7")]));
+    }
+
+    [Fact]
+    public void OfferedJackpotsStopAtCapacityWithoutEvicting()
+    {
+        var slots = Create(o => o.SlotJackpotCapacity = 2);
+        var oldest = Old(-9, "KKKKK");
+        Assert.Equal(2, slots.OfferJackpots([oldest, Old(-8, "XXXXB")]));
+        Assert.Equal(0, slots.OfferJackpots([Old(-1, "77777")]));
+        Assert.Contains(slots.Jackpots, m => m.Id == oldest.Id);
+        Assert.Equal(2, slots.Jackpots.Count);
+    }
+
+    [Fact]
+    public void DrawnJackpotsAreAlwaysKept()
+    {
+        var slots = Create(o =>
+        {
+            o.SlotDrawSymbols = "7";
+            o.SlotCapacity = 1;
+            o.SlotWinnerCapacity = 1;
+            o.SlotJackpotCapacity = 1;
+        });
+        var recorder = new SlotRecorder();
+        slots.Subscribe(recorder);
+        var first = slots.Press("a");
+        _time.Advance(slots.SpinTime);
+        var second = slots.Press("a");
+        Assert.Equal("77777", slots.Messages[0].Text);
+        Assert.Equal([second.Id, first.Id], slots.Jackpots.Select(m => m.Id));
+        Assert.Equal(second.Id, Assert.Single(recorder.Updates[^1].JackpotsAdded).Id);
+        Assert.Equal(second.Id, recorder.Updates[^1].Spin!.Id);
+    }
+
+    [Fact]
+    public void SnapshotsCarryEveryJackpot()
+    {
+        var slots = Create(o => o.SlotWinnerCapacity = 1);
+        slots.Offer([Old(-2, "XXXXB"), Old(-1, "KKKKK")]);
+        var recorder = new SlotRecorder();
+        slots.Subscribe(recorder);
+        var snapshot = Assert.Single(recorder.Updates);
+        Assert.Single(snapshot.WinnersAdded);
+        Assert.Equal(["KKKKK", "XXXXB"], snapshot.JackpotsAdded.Select(m => m.Text));
+    }
+
+    [Fact]
+    public void AnInvalidDrawAlphabetFallsBackToEverySymbol()
+    {
+        var slots = Create(o => o.SlotDrawSymbols = "abc");
+        slots.Press("a");
+        Assert.True(SlotRules.IsValid(slots.Messages[0].Text));
+    }
+
+    [Fact]
     public void SubscribersThatCannotKeepUpAreDropped()
     {
         var slots = Create();

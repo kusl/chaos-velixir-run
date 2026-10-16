@@ -166,6 +166,9 @@ public sealed class ChaosOptionsTests
         Assert.False(new ChaosOptions { CanvasMaxPoints = 10 }.IsValid());
         Assert.False(new ChaosOptions { SlotCapacity = 0 }.IsValid());
         Assert.False(new ChaosOptions { SlotWinnerCapacity = 0 }.IsValid());
+        Assert.False(new ChaosOptions { SlotJackpotCapacity = 0 }.IsValid());
+        Assert.False(new ChaosOptions { SlotDrawSymbols = "" }.IsValid());
+        Assert.False(new ChaosOptions { SlotDrawSymbols = "abc" }.IsValid());
         Assert.False(new ChaosOptions { PressBurst = 0 }.IsValid());
         Assert.False(new ChaosOptions { SpinMilliseconds = 500 }.IsValid());
         Assert.False(new ChaosOptions { SpinMilliseconds = 60_000 }.IsValid());

@@ -8,7 +8,16 @@ internal static class SlotRules
     public const int Length = 5;
     public const string Symbols = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    public static string Draw() => RandomNumberGenerator.GetString(Symbols, Length);
+    public static string Draw() => Draw(Symbols);
+
+    public static string Draw(string alphabet) => RandomNumberGenerator.GetString(alphabet, Length);
+
+    public static bool IsAlphabet([NotNullWhen(true)] string? alphabet) =>
+        !string.IsNullOrEmpty(alphabet) && alphabet.Length <= Symbols.Length && alphabet.All(c => Symbols.Contains(c, StringComparison.Ordinal));
+
+    public static bool IsJackpot(SlotWin win) => win is SlotWin.FourOfAKind or SlotWin.FiveOfAKind;
+
+    public static bool IsJackpot(string? text) => IsJackpot(Classify(text));
 
     public static bool IsValid([NotNullWhen(true)] string? text)
     {

@@ -13,6 +13,8 @@ public sealed class BrowserFixture : IAsyncLifetime
 
     public static string BaseUrl { get; } = Environment.GetEnvironmentVariable("CHAOS_BASE_URL") ?? "http://127.0.0.1:5080/";
 
+    public static string RiggedUrl { get; } = Environment.GetEnvironmentVariable("CHAOS_RIGGED_URL") ?? "http://127.0.0.1:5081/";
+
     public async ValueTask InitializeAsync()
     {
         _playwright = await Playwright.CreateAsync();
@@ -29,9 +31,11 @@ public sealed class BrowserFixture : IAsyncLifetime
         _playwright?.Dispose();
     }
 
-    public Task<IBrowserContext> NewContextAsync(ColorScheme scheme = ColorScheme.Light)
+    public Task<IBrowserContext> NewContextAsync(ColorScheme scheme = ColorScheme.Light) => NewContextAsync(BaseUrl, scheme);
+
+    public Task<IBrowserContext> NewContextAsync(string baseUrl, ColorScheme scheme = ColorScheme.Light)
     {
         var browser = _browser ?? throw new InvalidOperationException("The browser is not running.");
-        return browser.NewContextAsync(new BrowserNewContextOptions { BaseURL = BaseUrl, ColorScheme = scheme });
+        return browser.NewContextAsync(new BrowserNewContextOptions { BaseURL = baseUrl, ColorScheme = scheme });
     }
 }

@@ -1,4 +1,5 @@
 using Chaos.Web.Drawing;
+using Chaos.Web.Slots;
 
 namespace Chaos.Web.Infrastructure;
 
@@ -34,7 +35,11 @@ internal sealed class ChaosOptions
 
     public int SlotCapacity { get; set; } = 50;
 
-    public int SlotWinnerCapacity { get; set; } = 50;
+    public int SlotWinnerCapacity { get; set; } = 500;
+
+    public int SlotJackpotCapacity { get; set; } = 10_000;
+
+    public string SlotDrawSymbols { get; set; } = SlotRules.Symbols;
 
     public double PressBurst { get; set; } = 3;
 
@@ -67,6 +72,8 @@ internal sealed class ChaosOptions
         && ResetsPerSecond > 0
         && SlotCapacity > 0
         && SlotWinnerCapacity > 0
+        && SlotJackpotCapacity > 0
+        && SlotRules.IsAlphabet(SlotDrawSymbols)
         && PressBurst >= 1
         && PressesPerSecond > 0
         && SpinMilliseconds is >= 1000 and <= 15000

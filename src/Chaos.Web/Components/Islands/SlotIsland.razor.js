@@ -1,8 +1,9 @@
 import { LocalHistory, OFFER_LIMIT, PAGE_SIZE, announce, chunkOffers, isoOf, labelOf, needsResync, newestFirst } from './BoardIsland.razor.js';
 
 export const DB_NAME = 'chaos-slots';
-export const DB_VERSION = 1;
+export const DB_VERSION = 2;
 export const STORE = 'spins';
+export const JACKPOTS = 'jackpots';
 export const LOCAL_CAP = 10000;
 export const PING_MS = 25000;
 export const PRESS_KEY = 'chaos-slots-presses';
@@ -10,11 +11,14 @@ export const AUTO_UNLOCK = 10;
 export const SYMBOLS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 export const LENGTH = 5;
 export const SYMBOL_MS = 55;
-export const WINNER_OFFERS = 50;
+export const WINNER_OFFERS = 500;
+export const JACKPOT_OFFERS = 500;
 export const SPIN_MS = 4000;
+export const CELEBRATE_MS = 8000;
 
 export const migrations = [
     db => db.createObjectStore(STORE, { keyPath: 'id' }),
+    db => db.createObjectStore(JACKPOTS, { keyPath: 'id' }),
 ];
 
 export const SCHEMA = Object.freeze({ name: DB_NAME, version: DB_VERSION, store: STORE, migrations, cap: LOCAL_CAP });
@@ -66,6 +70,11 @@ export function classify(text) {
         return 'up';
     }
     return ordered(text, -1) ? 'down' : 'none';
+}
+
+export function isJackpot(text) {
+    const kind = classify(text);
+    return kind === 'four' || kind === 'five';
 }
 
 export function hits(text) {
@@ -223,6 +232,45 @@ export function newestWinners(records, limit = WINNER_OFFERS) {
         .slice(0, limit);
 }
 
+export function verdictText(text) {
+    const kind = classify(text);
+    if (kind === 'none') {
+        return '';
+    }
+    return isJackpot(text) ? `Jackpot! ${LABELS[kind]}` : LABELS[kind];
+}
+
+export function newestJackpots(records, limit = JACKPOT_OFFERS) {
+    return records
+        .filter(record => isJackpot(record?.text))
+        .sort(newestFirst)
+        .slice(0, limit);
+}
+
+export function readAll(db, store) {
+    return new Promise((resolve, reject) => {
+        const request = db.transaction(store, 'readonly').objectStore(store).getAll();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+export function putAll(db, store, records) {
+    if (records.length === 0) {
+        return Promise.resolve();
+    }
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(store, 'readwrite');
+        const objects = transaction.objectStore(store);
+        for (const record of records) {
+            objects.put(record);
+        }
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+        transaction.onabort = () => reject(transaction.error);
+    });
+}
+
 export function above(symbol) {
     return SYMBOLS[(SYMBOLS.indexOf(symbol) + 1) % SYMBOLS.length];
 }
@@ -301,6 +349,8 @@ class SlotClient {
         this.older = doc.getElementById('slots-older');
         this.winnersList = doc.getElementById('slots-winners');
         this.winnersEmpty = doc.getElementById('slots-winners-empty');
+        this.jackpotsList = doc.getElementById('slots-jackpots');
+        this.jackpotsEmpty = doc.getElementById('slots-jackpots-empty');
         this.spinMs = Number.parseInt(machine.dataset.spin ?? '', 10) || SPIN_MS;
         this.faces = [...(isValid(machine.dataset.initial) ? machine.dataset.initial : 'CHAOS')];
         this.motion = win.matchMedia('(prefers-reduced-motion: reduce)');
@@ -310,6 +360,8 @@ class SlotClient {
         this.shown = new Map();
         this.winners = new Map();
         this.crowned = new Map();
+        this.jackpots = new Map();
+        this.enshrined = new Map();
         this.mine = new Set();
         this.cursor = null;
         this.spin = null;
@@ -317,6 +369,7 @@ class SlotClient {
         this.pressing = false;
         this.auto = false;
         this.autoTimer = 0;
+        this.party = 0;
         this.joining = null;
         this.timer = 0;
         this.disposed = false;
@@ -345,6 +398,10 @@ class SlotClient {
             await this.offerWinners();
         } catch {
         }
+        try {
+            await this.offerJackpots();
+        } catch {
+        }
         await this.join();
     }
 
@@ -368,22 +425,38 @@ class SlotClient {
         if (!db || this.disposed) {
             return;
         }
-        const records = await new Promise((resolve, reject) => {
-            const request = db.transaction(STORE, 'readonly').objectStore(STORE).getAll();
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
-        });
+        const records = await readAll(db, STORE);
+        await putAll(db, JACKPOTS, newestJackpots(records, Infinity));
         const winners = newestWinners(records);
         for (const record of winners) {
             if (record.mine) {
                 this.mine.add(record.id);
             }
         }
-        for (const chunk of chunkOffers(winners, undefined, WINNER_OFFERS)) {
+        await this.send('OfferWinners', winners, WINNER_OFFERS);
+    }
+
+    async offerJackpots() {
+        const db = await this.history.database();
+        if (!db || this.disposed) {
+            return;
+        }
+        const jackpots = newestJackpots(await readAll(db, JACKPOTS), Infinity);
+        for (const record of jackpots) {
+            if (record.mine) {
+                this.mine.add(record.id);
+            }
+            this.jackpots.set(record.id, record);
+        }
+        await this.send('OfferJackpots', jackpots, JACKPOT_OFFERS);
+    }
+
+    async send(method, records, limit) {
+        for (const chunk of chunkOffers(records, undefined, limit)) {
             if (this.disposed) {
                 return;
             }
-            await this.dotnet.invokeMethodAsync('OfferWinners', chunk.map(record => record.id), chunk.map(record => record.text));
+            await this.dotnet.invokeMethodAsync(method, chunk.map(record => record.id), chunk.map(record => record.text));
         }
     }
 
@@ -438,18 +511,37 @@ class SlotClient {
             await this.history.save(messages.map(message => this.record(message)));
         } catch {
         }
+        await this.keep(messages);
+    }
+
+    async keep(messages) {
+        const jackpots = messages.filter(message => isJackpot(message.text)).map(message => this.record(message));
+        if (jackpots.length === 0) {
+            return;
+        }
+        try {
+            const db = await this.history.database();
+            if (db) {
+                await putAll(db, JACKPOTS, jackpots);
+            }
+        } catch {
+        }
     }
 
     async snapshot(update) {
         this.version = update.version;
         this.live = new Map(update.added.map(message => [message.id, message]));
         this.winners = new Map((update.winnersAdded ?? []).map(message => [message.id, message]));
+        for (const message of update.jackpotsAdded ?? []) {
+            this.jackpots.set(message.id, message);
+        }
         const spinning = update.spin && this.live.has(update.spin.id) ? update.spin : null;
         if (this.spin && this.spin.message.id !== spinning?.id) {
             this.finish(true);
         }
         const settled = update.added.filter(message => message.id !== spinning?.id);
         await this.save(settled);
+        await this.keep((update.jackpotsAdded ?? []).filter(message => message.id !== spinning?.id));
         let archive = { items: [], last: null, done: true };
         try {
             archive = await this.history.page(null, PAGE_SIZE, this.live);
@@ -458,6 +550,7 @@ class SlotClient {
         this.cursor = archive.last;
         this.render([...settled, ...archive.items].sort(newestFirst), archive.done);
         this.renderWinners(spinning?.id ?? this.spin?.message.id);
+        this.renderJackpots(spinning?.id ?? this.spin?.message.id);
         if (spinning && !this.spin) {
             this.begin(this.live.get(spinning.id), spinning.remaining);
         } else if (!this.spin && settled.length > 0) {
@@ -504,11 +597,20 @@ class SlotClient {
                 this.crown(message, true);
             }
         }
+        const kept = [];
+        for (const message of update.jackpotsAdded ?? []) {
+            this.jackpots.set(message.id, message);
+            if (message.id !== update.spin?.id && message.id !== this.spin?.message.id) {
+                this.enshrine(message, true);
+                kept.push(message);
+            }
+        }
         this.updateEmpty();
         if (spinning) {
             this.begin(spinning, update.spin.remaining);
         }
         await this.save(settled);
+        await this.keep(kept);
     }
 
     reducedMotion() {
@@ -524,6 +626,7 @@ class SlotClient {
         const duration = Math.max(0, Math.round(remaining));
         const spin = { message, timers: [], animations: [] };
         this.spin = spin;
+        this.calm();
         this.machine.classList.remove('win');
         this.machine.classList.add('spinning');
         this.verdict.textContent = '';
@@ -588,8 +691,11 @@ class SlotClient {
         const marks = hits(text);
         this.reels.forEach((reel, index) => reel.classList.toggle('hit', marks[index]));
         this.machine.classList.toggle('win', win !== 'none');
-        this.verdict.textContent = LABELS[win] ?? '';
+        this.verdict.textContent = verdictText(text);
         this.land(spin.message, !instant);
+        if (!instant && isJackpot(text)) {
+            this.celebrate();
+        }
         this.updateControls();
         this.scheduleAuto();
     }
@@ -601,9 +707,25 @@ class SlotClient {
         if (this.winners.has(message.id)) {
             this.crown(message, fresh);
         }
+        if (isJackpot(message.text)) {
+            this.jackpots.set(message.id, message);
+            this.enshrine(message, fresh);
+        }
         this.updateEmpty();
         this.announce(message);
         this.save([message]);
+    }
+
+    celebrate() {
+        this.calm();
+        this.machine.classList.add('jackpot');
+        this.party = this.win.setTimeout(() => this.calm(), CELEBRATE_MS);
+    }
+
+    calm() {
+        this.win.clearTimeout(this.party);
+        this.party = 0;
+        this.machine.classList.remove('jackpot');
     }
 
     show(text) {
@@ -679,6 +801,13 @@ class SlotClient {
             crowned.replaceWith(element);
             this.crowned.set(id, element);
         }
+        const enshrined = this.enshrined.get(id);
+        const jackpot = this.jackpots.get(id);
+        if (enshrined && jackpot) {
+            const element = this.item(jackpot, enshrined.classList.contains('fresh'), false);
+            enshrined.replaceWith(element);
+            this.enshrined.set(id, element);
+        }
     }
 
     toggleAuto() {
@@ -753,6 +882,7 @@ class SlotClient {
         const element = this.doc.createElement('li');
         element.className = 'msg';
         element.classList.toggle('win', win !== 'none');
+        element.classList.toggle('jackpot', isJackpot(message.text));
         element.classList.toggle('mine', mine);
         element.classList.toggle('archived', archived);
         element.classList.toggle('fresh', fresh);
@@ -784,6 +914,12 @@ class SlotClient {
         if (win !== 'none' || mine) {
             const tags = this.doc.createElement('p');
             tags.className = 'tags';
+            if (isJackpot(message.text)) {
+                const prize = this.doc.createElement('strong');
+                prize.className = 'prize';
+                prize.textContent = 'Jackpot';
+                tags.append(prize);
+            }
             if (win !== 'none') {
                 const badge = this.doc.createElement('strong');
                 badge.className = 'badge';
@@ -820,6 +956,33 @@ class SlotClient {
         const element = this.item(message, fresh, false);
         place(this.winnersList, element, message.id);
         this.crowned.set(message.id, element);
+    }
+
+    enshrine(message, fresh) {
+        if (!this.jackpotsList || this.enshrined.has(message.id)) {
+            return;
+        }
+        const element = this.item(message, fresh, false);
+        place(this.jackpotsList, element, message.id);
+        this.enshrined.set(message.id, element);
+    }
+
+    renderJackpots(pending) {
+        this.enshrined.clear();
+        if (!this.jackpotsList) {
+            return;
+        }
+        const fragment = this.doc.createDocumentFragment();
+        for (const message of [...this.jackpots.values()].sort(newestFirst)) {
+            if (message.id === pending) {
+                continue;
+            }
+            const element = this.item(message, false, false);
+            this.enshrined.set(message.id, element);
+            fragment.append(element);
+        }
+        this.jackpotsList.replaceChildren(fragment);
+        this.updateEmpty();
     }
 
     renderWinners(pending) {
@@ -899,7 +1062,8 @@ class SlotClient {
         }
         const win = classify(message.text);
         const spelled = [...message.text].join(' ');
-        announce(this.doc, win === 'none' ? `Result: ${spelled}.` : `Winner! ${spelled}. ${LABELS[win]}.`);
+        const prefix = isJackpot(message.text) ? 'Jackpot!' : 'Winner!';
+        announce(this.doc, win === 'none' ? `Result: ${spelled}.` : `${prefix} ${spelled}. ${LABELS[win]}.`);
     }
 
     updateEmpty() {
@@ -909,12 +1073,16 @@ class SlotClient {
         if (this.winnersEmpty) {
             this.winnersEmpty.hidden = this.crowned.size > 0;
         }
+        if (this.jackpotsEmpty) {
+            this.jackpotsEmpty.hidden = this.enshrined.size > 0;
+        }
     }
 
     dispose() {
         this.disposed = true;
         this.win.clearInterval(this.timer);
         this.win.clearTimeout(this.autoTimer);
+        this.calm();
         if (this.spin) {
             for (const timer of this.spin.timers) {
                 this.win.clearTimeout(timer);

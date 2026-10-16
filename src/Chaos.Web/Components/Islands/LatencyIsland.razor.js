@@ -459,7 +459,7 @@ class LatencyClient {
             this.setStatus(manual ? 'Someone else is testing right now. Try again in a few seconds.' : '');
         } else if (reply.kind === 'wait') {
             this.setNext(Date.now() + reply.seconds * 1000);
-            this.setStatus(`You ran a test recently. The next one is possible in ${clockText(reply.seconds * 1000)}.`);
+            this.setStatus(`A test ran from your network recently. Devices sharing an internet connection share this limit. The next one is possible in ${clockText(reply.seconds * 1000)}.`);
         } else {
             this.setStatus('Could not reach the server.');
         }

@@ -1,12 +1,19 @@
 import { describe, expect, it } from 'vitest';
+import { upgrade } from '../../src/Chaos.Web/Components/Islands/BoardIsland.razor.js';
 import {
     ALL_DIFFERENT,
     AUTO_UNLOCK,
+    CELEBRATE_MS,
+    DB_VERSION,
     FULL_HOUSE,
+    JACKPOTS,
+    JACKPOT_OFFERS,
     LABELS,
     OUTCOMES,
     PRESS_KEY,
     SYMBOLS,
+    STORE,
+    WINNER_OFFERS,
     WINNING,
     above,
     autoDelay,
@@ -17,18 +24,24 @@ import {
     headsInARow,
     hits,
     isFullHouse,
+    isJackpot,
     isValid,
     lesson,
     medianWait,
+    migrations,
+    newestJackpots,
     newestWinners,
     oneIn,
     parseReply,
     percent,
     progressText,
+    putAll,
+    readAll,
     readPresses,
     spinFrames,
     stopTimes,
     stripFor,
+    verdictText,
     waysOf,
 } from '../../src/Chaos.Web/Components/Islands/SlotIsland.razor.js';
 
@@ -200,5 +213,86 @@ describe('odds', () => {
         ];
         expect(newestWinners(records).map(record => record.text)).toEqual(['13AKZ', 'AAAB1']);
         expect(newestWinners(records, 1)).toHaveLength(1);
+    });
+});
+
+describe('jackpots', () => {
+    it.each([
+        ['XXXXB', true],
+        ['KKKKK', true],
+        ['7Q7A7', false],
+        ['13AKZ', false],
+        ['ZK8A0', false],
+        ['kkkkk', false],
+        [null, false],
+    ])('knows whether %s is a jackpot', (text, expected) => {
+        expect(isJackpot(text)).toBe(expected);
+    });
+
+    it('shouts about jackpots in the verdict', () => {
+        expect(verdictText('KKKKK')).toBe('Jackpot! Five of a kind');
+        expect(verdictText('XXXXB')).toBe('Jackpot! Four of a kind');
+        expect(verdictText('7Q7A7')).toBe('Three of a kind');
+        expect(verdictText('ZK8A0')).toBe('');
+    });
+
+    it('keeps jackpots in their own store added by the second schema version', () => {
+        expect(DB_VERSION).toBe(2);
+        expect(migrations).toHaveLength(2);
+        const created = [];
+        upgrade({ createObjectStore: (name, options) => created.push([name, options]) }, 1, DB_VERSION, migrations);
+        expect(created).toEqual([[JACKPOTS, { keyPath: 'id' }]]);
+        expect(JACKPOTS).not.toBe(STORE);
+    });
+
+    it('offers every jackpot newest first', () => {
+        const records = [
+            { id: '0199a000-0000-7000-8000-000000000001', text: 'XXXXB' },
+            { id: '0199a000-0000-7000-8000-000000000002', text: 'AAAB1' },
+            { id: '0199a000-0000-7000-8000-000000000003', text: 'KKKKK' },
+            { id: '0199a000-0000-7000-8000-000000000004', text: 'kkkkk' },
+        ];
+        expect(newestJackpots(records).map(record => record.text)).toEqual(['KKKKK', 'XXXXB']);
+        expect(newestJackpots(records, 1)).toHaveLength(1);
+        expect(JACKPOT_OFFERS).toBe(500);
+        expect(WINNER_OFFERS).toBe(500);
+    });
+
+    it('celebrates for a few seconds', () => {
+        expect(CELEBRATE_MS).toBeGreaterThanOrEqual(3000);
+        expect(CELEBRATE_MS).toBeLessThanOrEqual(15000);
+    });
+
+    it('reads and writes whole stores', async () => {
+        const rows = new Map();
+        const db = {
+            transaction(store, mode) {
+                const transaction = {
+                    objectStore(name) {
+                        expect(name).toBe(store);
+                        return {
+                            put(record) {
+                                expect(mode).toBe('readwrite');
+                                rows.set(record.id, record);
+                            },
+                            getAll() {
+                                const request = {};
+                                queueMicrotask(() => {
+                                    request.result = [...rows.values()];
+                                    request.onsuccess();
+                                });
+                                return request;
+                            },
+                        };
+                    },
+                };
+                queueMicrotask(() => transaction.oncomplete?.());
+                return transaction;
+            },
+        };
+        await putAll(db, JACKPOTS, []);
+        expect(rows.size).toBe(0);
+        await putAll(db, JACKPOTS, [{ id: 'a', text: 'KKKKK' }, { id: 'b', text: 'XXXXB' }]);
+        expect((await readAll(db, JACKPOTS)).map(record => record.text)).toEqual(['KKKKK', 'XXXXB']);
     });
 });

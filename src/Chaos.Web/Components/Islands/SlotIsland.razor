@@ -19,6 +19,12 @@
         <div class="payline"></div>
     </div>
     <p class="verdict" aria-hidden="true"></p>
+    <div class="confetti" aria-hidden="true">
+        @for (var i = 0; i < Confetti; i++)
+        {
+            <span></span>
+        }
+    </div>
     <div class="controls">
         <button type="button" class="spin" disabled>Spin</button>
         <button type="button" class="auto" aria-pressed="false" hidden>Auto spin</button>
@@ -29,6 +35,7 @@
 
 @code {
     private const int Bulbs = 18;
+    private const int Confetti = 24;
 
     private ElementReference _machine;
     private readonly TaskCompletionSource _attached = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -40,6 +47,7 @@
     private string _face = "CHAOS";
     private int _offered;
     private int _offeredWinners;
+    private int _offeredJackpots;
 
     [Parameter, EditorRequired]
     public string Client { get; set; } = ClientAddress.Unknown;
@@ -63,10 +71,13 @@
     }
 
     [JSInvokable]
-    public int Offer(string[] ids, string[] texts) => Slots.Offer(Parse(ids, texts, ref _offered));
+    public int Offer(string[] ids, string[] texts) => Slots.Offer(Parse(ids, texts, SlotService.MaxOffers, ref _offered));
 
     [JSInvokable]
-    public int OfferWinners(string[] ids, string[] texts) => Slots.OfferWinners(Parse(ids, texts, ref _offeredWinners));
+    public int OfferWinners(string[] ids, string[] texts) => Slots.OfferWinners(Parse(ids, texts, SlotService.MaxWinnerOffers, ref _offeredWinners));
+
+    [JSInvokable]
+    public int OfferJackpots(string[] ids, string[] texts) => Slots.OfferJackpots(Parse(ids, texts, SlotService.MaxJackpotOffers, ref _offeredJackpots));
 
     [JSInvokable]
     public async Task Join()
@@ -92,14 +103,14 @@
         _self?.Dispose();
     }
 
-    private static List<BoardMessage> Parse(string[]? ids, string[]? texts, ref int used)
+    private static List<BoardMessage> Parse(string[]? ids, string[]? texts, int limit, ref int used)
     {
         if (ids is null || texts is null || ids.Length != texts.Length)
         {
             return [];
         }
 
-        var count = Math.Min(SlotService.MaxOffers - used, ids.Length);
+        var count = Math.Min(limit - used, ids.Length);
         if (count <= 0)
         {
             return [];

@@ -24,7 +24,12 @@
     [Parameter]
     public DateTimeOffset Now { get; set; }
 
-    private string Classes => _win is SlotWin.None ? "msg" : "msg win";
+    private string Classes => _win switch
+    {
+        SlotWin.None => "msg",
+        _ when SlotRules.IsJackpot(_win) => "msg win jackpot",
+        _ => "msg win",
+    };
 
     protected override void OnParametersSet()
     {
@@ -43,7 +48,13 @@
         </p>
         @if (_win is not SlotWin.None)
         {
-            <p class="tags"><strong class="badge">@SlotRules.Label(_win)</strong><span class="more">Odds</span></p>
+            <p class="tags">
+                @if (SlotRules.IsJackpot(_win))
+                {
+                    <strong class="prize">Jackpot</strong>
+                }
+                <strong class="badge">@SlotRules.Label(_win)</strong><span class="more">Odds</span>
+            </p>
         }
     };
 }

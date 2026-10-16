@@ -170,6 +170,29 @@
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--gold) 22%, transparent);
 }
 
+.spins ::deep .msg.jackpot {
+    border-width: 4px;
+    border-color: #ff5a4e;
+    background:
+        linear-gradient(120deg, color-mix(in oklab, var(--gold) 22%, var(--bg)), color-mix(in oklab, #ff5a4e 14%, var(--bg)));
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--gold) 40%, transparent), 0 0 1.2rem color-mix(in oklab, #ff5a4e 35%, transparent);
+}
+
+.spins ::deep .prize {
+    padding: .15rem .65rem;
+    border-radius: 999px;
+    color: #fff;
+    background: linear-gradient(90deg, #e03a2f, #ff8f1f, #e03a2f);
+    font-size: .75rem;
+    font-weight: 900;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.spins ::deep .prize::before {
+    content: "♛ ";
+}
+
 .spins ::deep .msg.archived {
     border-style: dotted;
     border-color: var(--muted);
@@ -228,5 +251,9 @@
 
     .spins ::deep .msg.win.fresh {
         animation: jackpot .6s ease-in-out 3;
+    }
+
+    .spins ::deep .msg.jackpot.fresh {
+        animation: jackpot .5s ease-in-out 10;
     }
 }

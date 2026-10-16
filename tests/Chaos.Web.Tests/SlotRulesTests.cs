@@ -31,6 +31,37 @@ public sealed class SlotRulesTests
         Assert.Equal(expected, SlotRules.IsValid(text));
     }
 
+    [Theory]
+    [InlineData("XXXXB", true)]
+    [InlineData("KKKKK", true)]
+    [InlineData("7Q7A7", false)]
+    [InlineData("13AKZ", false)]
+    [InlineData("ZK8A0", false)]
+    [InlineData("kkkkk", false)]
+    [InlineData(null, false)]
+    public void KnowsJackpots(string? text, bool expected)
+    {
+        Assert.Equal(expected, SlotRules.IsJackpot(text));
+    }
+
+    [Theory]
+    [InlineData("7", true)]
+    [InlineData("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", true)]
+    [InlineData("", false)]
+    [InlineData(null, false)]
+    [InlineData("a", false)]
+    [InlineData("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0", false)]
+    public void ValidatesDrawAlphabets(string? alphabet, bool expected)
+    {
+        Assert.Equal(expected, SlotRules.IsAlphabet(alphabet));
+    }
+
+    [Fact]
+    public void DrawsFromTheGivenAlphabet()
+    {
+        Assert.Equal("77777", SlotRules.Draw("7"));
+    }
+
     [Fact]
     public void DrawsValidSpins()
     {
