@@ -1,8 +1,8 @@
 ===============================================================================
 PROJECT EXPORT
-Generated (UTC): 2026-10-16 10:45:12
+Generated (UTC): 2026-10-16 10:48:19
 Project Path:    /home/kushal/src/dotnet/chaos-velixir-run
-Git Commit:      c96b49909a4fd5b81389db8d959d058d991af558
+Git Commit:      15434f97bdcb5ca36bbc7c4571979c753b5ab95a
 Git Branch:      main
 Git Dirty:       no
 .NET SDK:        10.0.112
@@ -13606,10 +13606,10 @@ public sealed class SlotRulesTests
 
 ================================================================================
 FILE:     tests/Chaos.Web.Tests/SlotServiceTests.cs
-SIZE:     10.85 KB (11110 bytes)
-LINES:    313
-SHA256:   bc953fb424db30d087b2405ed4585497ecb014d2aeebbbdb07eab42e472f342b
-MODIFIED: 2026-10-16 10:37:58 (UTC)
+SIZE:     10.87 KB (11132 bytes)
+LINES:    314
+SHA256:   67a6153786e5a56f1a4b1d1bcefe9769ef6f76a4879072c59885053a5e560a83
+MODIFIED: 2026-10-16 10:47:24 (UTC)
 ================================================================================
 
 using Chaos.Web.Infrastructure;
@@ -13848,7 +13848,8 @@ public sealed class SlotServiceTests
         var slots = Create();
         var recorder = new SlotRecorder();
         slots.Subscribe(recorder);
-        Assert.Equal(1, slots.OfferJackpots([Old(-3, "AAAB1"), Old(-2, "13AKZ"), Old(-1, "QQQQ7")]));
+        var jackpot = Old(-1, "QQQQ7");
+        Assert.Equal(1, slots.OfferJackpots([Old(-3, "AAAB1"), Old(-2, "13AKZ"), jackpot]));
         Assert.Empty(slots.Messages);
         Assert.Empty(slots.Winners);
         Assert.Equal("QQQQ7", Assert.Single(slots.Jackpots).Text);
@@ -13856,7 +13857,7 @@ public sealed class SlotServiceTests
         Assert.Empty(delta.Added);
         Assert.Empty(delta.WinnersAdded);
         Assert.Equal("QQQQ7", Assert.Single(delta.JackpotsAdded).Text);
-        Assert.Equal(0, slots.OfferJackpots([Old(-1, "QQQQ7")]));
+        Assert.Equal(0, slots.OfferJackpots([jackpot]));
     }
 
     [Fact]
@@ -15036,9 +15037,9 @@ export default defineConfig({
 
 
 ===============================================================================
-EXPORT COMPLETED (UTC): 2026-10-16 10:45:14
+EXPORT COMPLETED (UTC): 2026-10-16 10:48:21
 Total Files Exported:   167
-Total Source Size:      0.42 MB (445563 bytes)
+Total Source Size:      0.42 MB (445585 bytes)
 Output File:            /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
 ===============================================================================
-DUMP SHA256 (of all lines above this one): d7ed4619647acf109a4080756f79c8a718fb016566e7da372b9958f66758ea4d
+DUMP SHA256 (of all lines above this one): 280b4054b9ed66f0cde47224dbcd2a561e33371a4ecefb1fff949ebd64fad68c
