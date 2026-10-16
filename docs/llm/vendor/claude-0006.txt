@@ -1,0 +1,26 @@
+43
+40
+
+lets make the slot machine more eductional and more fun 
+while we do want to keep only fifty rolling on the server 
+lets also keep another list of fifty winners at the bottom as well 
+so up to fifty winners at the bottom 
+and for each result that is a winner 
+the box should be expandable 
+and it should give you all kinds of details about 
+what the odds of this kind of a result was 
+and teach a little bit about probability as well 
+try to include good concise factual information 
+we won't show it by default only when someone clicks it or taps on the particular winning result 
+
+Use your best judgment
+
+If only a few files (under five or there about) need to change, give me the full path of the files that need to change and the FULL file 
+if there are a lot of files that need to change 
+    Delivery
+    Whole project as one tar.gz, unambiguous file placement
+    Any files to delete on updates called out explicitly
+    No bespoke sed/patch scripts — full files only for anything that changes
+    Docs updated alongside code changes
+    Low verbosity, no code comments
+
