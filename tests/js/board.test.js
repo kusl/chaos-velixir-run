@@ -3,6 +3,7 @@ import {
     LOCAL_CAP,
     OFFER_LIMIT,
     chunkOffers,
+    countText,
     excessOf,
     isoOf,
     labelOf,
@@ -81,5 +82,13 @@ describe('schema migrations', () => {
         const ran = [];
         upgrade({}, 1, 3, [() => ran.push(1), () => ran.push(2), () => ran.push(3)]);
         expect(ran).toEqual([2, 3]);
+    });
+});
+
+describe('countText', () => {
+    it('shows the length against the limit', () => {
+        expect(countText(0, 500)).toBe('0 / 500');
+        expect(countText(137, 500)).toBe('137 / 500');
+        expect(countText(3, -1)).toBe('3');
     });
 });

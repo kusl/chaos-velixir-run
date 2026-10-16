@@ -1,10 +1,13 @@
+using Chaos.Web.Latency;
+
 namespace Chaos.Web.Infrastructure;
 
 internal static class SecurityHeaders
 {
-    public const string ContentSecurityPolicy =
-        "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; "
-        + "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+    public static readonly string ContentSecurityPolicy =
+        "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' "
+        + string.Join(' ', LatencyCatalog.Origins)
+        + "; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
 
     public const string PermissionsPolicy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()";
 

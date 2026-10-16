@@ -1,3 +1,5 @@
+import { deleteDatabase, excessOf, openDatabase, timestampOf } from './BoardIsland.razor.js';
+
 export const RESOLUTION = 4095;
 export const BRUSH = 0.006;
 export const FLUSH_MS = 50;
@@ -7,6 +9,24 @@ export const MIN_STEP = 3;
 export const PALM_SIZE = 40;
 export const PEN_GRACE_MS = 1500;
 export const PING_MS = 25000;
+export const DB_NAME = 'chaos-canvas';
+export const DB_VERSION = 1;
+export const STROKES = 'strokes';
+export const META = 'meta';
+export const LOCAL_CAP = 10000;
+export const OFFER_LIMIT = 500;
+export const OFFER_BYTES = 24000;
+
+export const migrations = [
+    db => {
+        db.createObjectStore(STROKES, { keyPath: 'id' });
+        db.createObjectStore(META, { keyPath: 'key' });
+    },
+];
+
+export const SCHEMA = Object.freeze({ name: DB_NAME, version: DB_VERSION, store: STROKES, migrations, cap: LOCAL_CAP });
+
+export { deleteDatabase };
 
 export const Result = Object.freeze({
     Accepted: 0,
@@ -59,6 +79,206 @@ export function unseen(have, offset, points) {
     return skip >= points.length ? [] : points.slice(skip);
 }
 
+export function parseDrawReply(reply) {
+    if (typeof reply !== 'string') {
+        return { result: Result.Invalid, stroke: null };
+    }
+    const [code, stroke] = reply.split(' ');
+    const result = Number.parseInt(code, 10);
+    return {
+        result: Number.isInteger(result) ? result : Result.Invalid,
+        stroke: result === Result.Accepted && isUuid7(stroke) ? stroke : null,
+    };
+}
+
+export function isUuid7(id) {
+    return typeof id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(id);
+}
+
+export function timeKey(milliseconds) {
+    const hex = Math.max(0, Math.floor(milliseconds)).toString(16).padStart(12, '0');
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}`;
+}
+
+export function later(a, b) {
+    if (!a) {
+        return b ?? null;
+    }
+    if (!b) {
+        return a;
+    }
+    return a > b ? a : b;
+}
+
+export function shouldOfferReset(local, server, started) {
+    return isUuid7(local) && (!server || local > server) && timestampOf(local) < started;
+}
+
+export function pickOffers(strokes, known, floor, started, room, limit = OFFER_LIMIT) {
+    const picked = [];
+    let budget = room;
+    for (const stroke of strokes) {
+        if (picked.length >= limit) {
+            break;
+        }
+        const count = stroke.points.length / 2;
+        if (!isUuid7(stroke.id) || known.has(stroke.id) || (floor && stroke.id <= floor) || timestampOf(stroke.id) >= started || count === 0 || count > budget) {
+            continue;
+        }
+        picked.push(stroke);
+        budget -= count;
+    }
+    return picked;
+}
+
+export function chunkStrokes(strokes, maxBytes = OFFER_BYTES) {
+    const chunks = [];
+    let chunk = [];
+    let size = 0;
+    for (const stroke of strokes) {
+        const bytes = stroke.id.length + 8 + stroke.points.length * 5;
+        if (bytes > maxBytes) {
+            continue;
+        }
+        if (chunk.length > 0 && size + bytes > maxBytes) {
+            chunks.push(chunk);
+            chunk = [];
+            size = 0;
+        }
+        chunk.push(stroke);
+        size += bytes;
+    }
+    if (chunk.length > 0) {
+        chunks.push(chunk);
+    }
+    return chunks;
+}
+
+function settle(request) {
+    return new Promise((resolve, reject) => {
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function finished(transaction) {
+    return new Promise((resolve, reject) => {
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+        transaction.onabort = () => reject(transaction.error);
+    });
+}
+
+export class StrokeHistory {
+    constructor(factory, schema = SCHEMA) {
+        this.factory = factory ?? null;
+        this.schema = schema;
+        this.db = null;
+        this.opening = null;
+    }
+
+    database() {
+        if (this.db) {
+            return Promise.resolve(this.db);
+        }
+        if (!this.factory) {
+            return Promise.resolve(null);
+        }
+        this.opening ??= openDatabase(this.factory, this.schema, () => {
+            this.db = null;
+        })
+            .then(db => {
+                this.db = db;
+                return db;
+            }, () => {
+                this.factory = null;
+                return null;
+            })
+            .finally(() => {
+                this.opening = null;
+            });
+        return this.opening;
+    }
+
+    async reset() {
+        const db = await this.database();
+        if (!db) {
+            return null;
+        }
+        const record = await settle(db.transaction(META, 'readonly').objectStore(META).get('reset'));
+        return record?.id ?? null;
+    }
+
+    async setReset(id) {
+        const db = await this.database();
+        if (!db || !isUuid7(id)) {
+            return;
+        }
+        const transaction = db.transaction([META, STROKES], 'readwrite');
+        const done = finished(transaction);
+        const meta = transaction.objectStore(META);
+        const current = await settle(meta.get('reset'));
+        if (!current?.id || id > current.id) {
+            meta.put({ key: 'reset', id });
+            transaction.objectStore(STROKES).delete(IDBKeyRange.upperBound(id));
+        }
+        await done;
+    }
+
+    async save(strokes) {
+        const db = await this.database();
+        const usable = strokes.filter(stroke => isUuid7(stroke.id) && stroke.points.length > 0);
+        if (!db || usable.length === 0) {
+            return;
+        }
+        const transaction = db.transaction([META, STROKES], 'readwrite');
+        const done = finished(transaction);
+        const reset = (await settle(transaction.objectStore(META).get('reset')))?.id ?? null;
+        const store = transaction.objectStore(STROKES);
+        for (const stroke of usable) {
+            if (!reset || stroke.id > reset) {
+                store.put({ id: stroke.id, points: Uint16Array.from(stroke.points) });
+            }
+        }
+        const excess = excessOf(await settle(store.count()), this.schema.cap);
+        if (excess > 0) {
+            const keys = await settle(store.getAllKeys(null, excess));
+            store.delete(IDBKeyRange.upperBound(keys[keys.length - 1]));
+        }
+        await done;
+    }
+
+    async candidates(floor, started, known, limit) {
+        const db = await this.database();
+        if (!db) {
+            return [];
+        }
+        const upper = timeKey(started);
+        if (floor && floor >= upper) {
+            return [];
+        }
+        const range = floor ? IDBKeyRange.bound(floor, upper, true, true) : IDBKeyRange.upperBound(upper, true);
+        const store = db.transaction(STROKES, 'readonly').objectStore(STROKES);
+        const items = [];
+        await new Promise((resolve, reject) => {
+            const request = store.openCursor(range, 'prev');
+            request.onsuccess = () => {
+                const cursor = request.result;
+                if (!cursor || items.length >= limit) {
+                    resolve();
+                    return;
+                }
+                if (!known.has(cursor.key)) {
+                    items.push({ id: cursor.value.id, points: Array.from(cursor.value.points) });
+                }
+                cursor.continue();
+            };
+            request.onerror = () => reject(request.error);
+        });
+        return items;
+    }
+}
+
 export function drawPath(context, size, points, from) {
     if (points.length === 0 || from >= points.length) {
         return;
@@ -84,6 +304,7 @@ class CanvasClient {
         this.dotnet = dotnet;
         this.win = win;
         this.context = canvas.getContext('2d');
+        this.history = new StrokeHistory(win.indexedDB);
         this.epoch = 0;
         this.size = 0;
         this.strokes = new Map();
@@ -97,6 +318,8 @@ class CanvasClient {
         this.timer = 0;
         this.observer = null;
         this.ratioQuery = null;
+        this.persisting = Promise.resolve();
+        this.offeredResets = new Set();
         this.disposed = false;
         this.handlers = {
             pointerdown: event => this.down(event),
@@ -190,23 +413,65 @@ class CanvasClient {
 
     apply(updates) {
         for (const update of updates) {
+            if (this.disposed) {
+                return;
+            }
             if (update.kind === 'snapshot') {
                 this.snapshot(update);
             } else if (update.kind === 'reset') {
                 this.clear(update.epoch);
+                this.persist(() => this.history.setReset(update.reset));
             } else if (update.kind === 'stroke') {
                 this.remote(update);
+            } else if (update.kind === 'merge') {
+                this.merge(update);
             }
         }
     }
 
+    persist(work) {
+        this.persisting = this.persisting.then(() => (this.disposed ? null : work())).catch(() => {});
+        return this.persisting;
+    }
+
     snapshot(update) {
         this.clear(update.epoch);
+        const known = new Set();
         for (const stroke of update.strokes ?? []) {
             this.strokes.set(`r${stroke.id}`, [...stroke.points]);
+            known.add(stroke.id);
         }
         this.redraw();
         this.canvas.dataset.ready = '';
+        const done = (update.strokes ?? []).filter(stroke => stroke.done);
+        this.persist(() => this.restore(update, known, done));
+    }
+
+    async restore(update, known, done) {
+        const server = update.reset ?? null;
+        if (server) {
+            await this.history.setReset(server);
+        }
+        await this.history.save(done);
+        const local = await this.history.reset();
+        if (shouldOfferReset(local, server, update.started) && !this.offeredResets.has(local)) {
+            this.offeredResets.add(local);
+            if (await this.dotnet.invokeMethodAsync('OfferReset', local)) {
+                return;
+            }
+        }
+        if (this.disposed || update.epoch !== this.epoch) {
+            return;
+        }
+        const floor = later(server, local);
+        const candidates = await this.history.candidates(floor, update.started, known, OFFER_LIMIT);
+        const offers = pickOffers(candidates, known, floor, update.started, update.room ?? 0);
+        for (const chunk of chunkStrokes(offers)) {
+            if (this.disposed || update.epoch !== this.epoch) {
+                return;
+            }
+            await this.dotnet.invokeMethodAsync('OfferStrokes', chunk.map(stroke => stroke.id), chunk.map(stroke => stroke.points));
+        }
     }
 
     clear(epoch) {
@@ -215,6 +480,24 @@ class CanvasClient {
         this.active = null;
         this.queue = [];
         this.redraw();
+    }
+
+    merge(update) {
+        if (update.epoch !== this.epoch) {
+            return;
+        }
+        const fresh = [];
+        for (const stroke of update.strokes ?? []) {
+            const key = `r${stroke.id}`;
+            if (this.strokes.has(key)) {
+                continue;
+            }
+            const points = [...stroke.points];
+            this.strokes.set(key, points);
+            drawPath(this.context, this.size, points, 0);
+            fresh.push({ id: stroke.id, points });
+        }
+        this.persist(() => this.history.save(fresh));
     }
 
     remote(update) {
@@ -236,12 +519,15 @@ class CanvasClient {
             this.join();
             return;
         }
-        if (fresh.length === 0) {
-            return;
+        if (fresh.length > 0) {
+            const from = points.length;
+            points.push(...fresh);
+            drawPath(this.context, this.size, points, from);
         }
-        const from = points.length;
-        points.push(...fresh);
-        drawPath(this.context, this.size, points, from);
+        if (update.done) {
+            const stroke = { id: update.stroke, points: [...points] };
+            this.persist(() => this.history.save([stroke]));
+        }
     }
 
     down(event) {
@@ -262,7 +548,7 @@ class CanvasClient {
         this.localId += 1;
         const points = [];
         this.strokes.set(`l${this.localId}`, points);
-        this.active = { pointerId: event.pointerId, id: this.localId, epoch: this.epoch, points, sent: 0, ended: false };
+        this.active = { pointerId: event.pointerId, id: this.localId, epoch: this.epoch, points, sent: 0, ended: false, stroke: null };
         this.queue.push(this.active);
         this.add(event);
     }
@@ -337,31 +623,44 @@ class CanvasClient {
         }
         const points = record.points.slice(record.sent * 2, (record.sent + count) * 2);
         this.sending = true;
-        let result = Result.Invalid;
+        let reply = { result: Result.Invalid, stroke: null };
         try {
-            result = await this.dotnet.invokeMethodAsync('Draw', record.id, record.epoch, points, end);
+            reply = parseDrawReply(await this.dotnet.invokeMethodAsync('Draw', record.id, record.epoch, points, end));
         } catch {
-            result = Result.Invalid;
+            reply = { result: Result.Invalid, stroke: null };
         } finally {
             this.sending = false;
         }
-        if (result === Result.Accepted) {
+        if (reply.result === Result.Accepted) {
+            record.stroke ??= reply.stroke;
             record.sent += count;
             if (end) {
                 this.drop(record);
+                this.keep(record);
             }
         } else {
             this.drop(record);
             if (this.active === record) {
                 this.active = null;
             }
-            if (result !== Result.Stale) {
+            if (reply.result !== Result.Stale && reply.result !== Result.Invalid) {
+                this.keep(record);
+            }
+            if (reply.result !== Result.Stale) {
                 this.join();
             }
         }
         if (this.queue.length > 0) {
             this.schedule();
         }
+    }
+
+    keep(record) {
+        if (!record.stroke || record.sent === 0) {
+            return;
+        }
+        const stroke = { id: record.stroke, points: record.points.slice(0, record.sent * 2) };
+        this.persist(() => this.history.save([stroke]));
     }
 
     drop(record) {

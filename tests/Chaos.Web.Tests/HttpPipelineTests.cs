@@ -1,5 +1,7 @@
 using System.Net;
+using System.Text.Json;
 using Chaos.Web.Infrastructure;
+using Chaos.Web.Latency;
 using Chaos.Web.Messages;
 using Chaos.Web.Slots;
 using Microsoft.AspNetCore.Hosting;
@@ -28,6 +30,7 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
     [InlineData("/board", "Chaos board")]
     [InlineData("/canvas", "Chaos canvas")]
     [InlineData("/slots", "Chaos slots")]
+    [InlineData("/latency", "Chaos latency")]
     [InlineData("/about", "About chaos")]
     public async Task PagesRenderWithoutSettingCookies(string path, string title)
     {
@@ -68,6 +71,53 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
         Assert.Equal("nosniff", response.Headers.GetValues("X-Content-Type-Options").Single());
         Assert.Equal("no-referrer", response.Headers.GetValues("Referrer-Policy").Single());
         Assert.Equal(SecurityHeaders.PermissionsPolicy, response.Headers.GetValues("Permissions-Policy").Single());
+    }
+
+    [Fact]
+    public async Task PagesShowTheServerClock()
+    {
+        using var client = CreateClient();
+        var html = await client.GetStringAsync("/about", Cancellation);
+        Assert.Contains("id=\"server-clock\"", html, StringComparison.Ordinal);
+        Assert.Contains("data-now=\"", html, StringComparison.Ordinal);
+        Assert.Contains("id=\"announcer\"", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task TimeEndpointReportsTheServerClock()
+    {
+        using var client = CreateClient();
+        var before = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        using var response = await client.GetAsync("/time", Cancellation);
+        var after = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.True(response.Headers.CacheControl?.NoStore);
+        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync(Cancellation));
+        var now = json.RootElement.GetProperty("unixMs").GetInt64();
+        Assert.InRange(now, before, after);
+        Assert.InRange(json.RootElement.GetProperty("offsetMinutes").GetInt32(), -14 * 60, 14 * 60);
+    }
+
+    [Fact]
+    public async Task LatencyPageListsEveryEndpoint()
+    {
+        using var client = CreateClient();
+        var html = await client.GetStringAsync("/latency", Cancellation);
+        foreach (var endpoint in LatencyCatalog.Endpoints)
+        {
+            Assert.Contains($"data-key=\"{endpoint.Key}\"", html, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
+    public async Task ThePolicyAllowsTheLatencyEndpoints()
+    {
+        using var client = CreateClient();
+        using var response = await client.GetAsync("/", Cancellation);
+        var policy = response.Headers.GetValues("Content-Security-Policy").Single();
+        Assert.StartsWith("default-src 'self'; script-src 'self'", policy, StringComparison.Ordinal);
+        Assert.Contains("https://dynamodb.us-east-1.amazonaws.com", policy, StringComparison.Ordinal);
+        Assert.Contains("object-src 'none'", policy, StringComparison.Ordinal);
     }
 
     [Fact]

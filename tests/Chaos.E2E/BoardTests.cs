@@ -68,6 +68,44 @@ public sealed partial class BoardTests(BrowserFixture browser) : IClassFixture<B
     }
 
     [Fact]
+    public async Task TheCharacterCountFollowsTypingPastingAndSending()
+    {
+        await using var context = await browser.NewContextAsync();
+        var page = await OpenBoardAsync(context);
+        var count = page.Locator("#compose-count");
+        await Expect(count).ToHaveTextAsync("0 / 500");
+
+        await page.Locator("#compose-text").PressSequentiallyAsync("abc");
+        await Expect(count).ToHaveTextAsync("3 / 500");
+
+        var text = $"counted {Guid.NewGuid():N}";
+        await page.Locator("#compose-text").FillAsync(text);
+        await Expect(count).ToHaveTextAsync($"{text.Length} / 500");
+
+        await page.GetByRole(AriaRole.Button, new() { Name = "Send" }).ClickAsync();
+        await Expect(page.Locator("#compose-text")).ToHaveValueAsync("");
+        await Expect(count).ToHaveTextAsync("0 / 500");
+    }
+
+    [Fact]
+    public async Task NewMessagesNeverLeakIntoOtherPages()
+    {
+        await using var readerContext = await browser.NewContextAsync();
+        await using var writerContext = await browser.NewContextAsync();
+        var reader = await OpenBoardAsync(readerContext);
+        var writer = await OpenBoardAsync(writerContext);
+
+        await reader.GetByRole(AriaRole.Navigation).GetByRole(AriaRole.Link, new() { Name = "Canvas" }).ClickAsync();
+        await Expect(reader.GetByRole(AriaRole.Button, new() { Name = "Reset canvas" })).ToBeEnabledAsync();
+        var text = $"leak {Guid.NewGuid():N}";
+        await PostAsync(writer, text);
+        await reader.WaitForTimeoutAsync(1000);
+
+        await Expect(reader.Locator("main")).Not.ToContainTextAsync(text);
+        await Expect(reader.Locator("main .note")).ToHaveTextAsync("Drawing needs a pointer: a mouse, a finger or a stylus. There is no way to draw with a keyboard, but the reset button works from one.");
+    }
+
+    [Fact]
     public async Task MessagesTheServerForgotHaveADottedBorder()
     {
         await using var seededContext = await browser.NewContextAsync();

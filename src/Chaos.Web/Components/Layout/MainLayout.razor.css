@@ -76,3 +76,8 @@ main {
     inset-inline-end: 1rem;
     cursor: pointer;
 }
+
+.clock {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}

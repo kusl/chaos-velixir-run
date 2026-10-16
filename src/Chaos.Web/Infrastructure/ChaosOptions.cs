@@ -40,6 +40,16 @@ internal sealed class ChaosOptions
 
     public int SpinMilliseconds { get; set; } = 4000;
 
+    public int LatencyCapacity { get; set; } = 50;
+
+    public int LatencyCooldownSeconds { get; set; } = 300;
+
+    public int LatencyGapSeconds { get; set; } = 10;
+
+    public int LatencyBudgetSeconds { get; set; } = 30;
+
+    public bool LatencyServerProbe { get; set; } = true;
+
     public bool IsValid() =>
         MaxConnectionsPerClient > 0
         && MaxConnections >= MaxConnectionsPerClient
@@ -56,5 +66,9 @@ internal sealed class ChaosOptions
         && SlotCapacity > 0
         && PressBurst >= 1
         && PressesPerSecond > 0
-        && SpinMilliseconds is >= 1000 and <= 15000;
+        && SpinMilliseconds is >= 1000 and <= 15000
+        && LatencyCapacity > 0
+        && LatencyCooldownSeconds is >= 1 and <= 86_400
+        && LatencyGapSeconds is >= 0 and <= 3_600
+        && LatencyBudgetSeconds is >= 5 and <= 120;
 }

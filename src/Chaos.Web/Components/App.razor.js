@@ -23,6 +23,143 @@ export function reconnectDelay(attempt, random = Math.random) {
     return Math.round(ceiling / 2 + random() * ceiling / 2);
 }
 
+export const CLOCK_SYNC_MS = 10 * 60 * 1000;
+export const DRIFT_PER_MS = 0.0001;
+
+export function zoneLabel(offsetMinutes) {
+    if (!offsetMinutes) {
+        return 'UTC';
+    }
+    const magnitude = Math.abs(offsetMinutes);
+    const hours = String(Math.floor(magnitude / 60)).padStart(2, '0');
+    const minutes = String(magnitude % 60).padStart(2, '0');
+    return `UTC${offsetMinutes < 0 ? '-' : '+'}${hours}:${minutes}`;
+}
+
+export function clockLabel(serverMs, offsetMinutes) {
+    const iso = new Date(serverMs + offsetMinutes * 60000).toISOString();
+    return `${iso.slice(0, 10)} ${iso.slice(11, 19)} ${zoneLabel(offsetMinutes)}`;
+}
+
+export function sample(serverMs, start, end, offsetMinutes = 0) {
+    const low = Math.min(start, end);
+    const high = Math.max(start, end);
+    return { offset: serverMs - (low + high) / 2, error: (high - low) / 2, at: high, zone: offsetMinutes };
+}
+
+export function uncertainty(current, now) {
+    return current ? current.error + Math.max(0, now - current.at) * DRIFT_PER_MS : Infinity;
+}
+
+export function better(candidate, current, now) {
+    return !current || candidate.error <= uncertainty(current, now);
+}
+
+export function untilNextSecond(serverMs) {
+    return 1000 - (((Math.floor(serverMs) % 1000) + 1000) % 1000) + 5;
+}
+
+export class ServerClock {
+    constructor(win) {
+        this.win = win;
+        this.doc = win.document;
+        this.current = null;
+        this.timer = 0;
+        this.lastPerf = 0;
+        this.lastWall = 0;
+        this.syncing = null;
+        this.syncedAt = -Infinity;
+    }
+
+    element() {
+        return this.doc.getElementById('server-clock');
+    }
+
+    start() {
+        const element = this.element();
+        const now = Number(element?.dataset.now);
+        if (Number.isFinite(now) && now > 0) {
+            const navigation = this.win.performance.getEntriesByType?.('navigation')?.[0];
+            const start = navigation?.requestStart || 0;
+            const end = navigation?.responseStart || this.win.performance.now();
+            this.current = sample(now, start, end, Number(element.dataset.offset) || 0);
+        }
+        this.doc.addEventListener('visibilitychange', () => {
+            if (this.doc.visibilityState === 'visible') {
+                this.sync(true);
+            }
+        });
+        this.lastPerf = this.win.performance.now();
+        this.lastWall = Date.now();
+        this.tick();
+        this.sync(false);
+    }
+
+    async sync(force) {
+        const perf = this.win.performance;
+        if (this.syncing || (!force && perf.now() - this.syncedAt < CLOCK_SYNC_MS && this.current)) {
+            return;
+        }
+        this.syncing = (async () => {
+            try {
+                const start = perf.now();
+                const response = await this.win.fetch(`/time?n=${Math.round(start)}`, { cache: 'no-store', credentials: 'omit' });
+                const end = perf.now();
+                if (!response.ok) {
+                    return;
+                }
+                const body = await response.json();
+                if (!Number.isFinite(body?.unixMs)) {
+                    return;
+                }
+                const candidate = sample(body.unixMs, start, end, Number(body.offsetMinutes) || 0);
+                if (force || better(candidate, this.current, end)) {
+                    this.current = candidate;
+                } else {
+                    this.current = { ...this.current, zone: candidate.zone };
+                }
+                this.syncedAt = end;
+                this.render();
+            } catch {
+            } finally {
+                this.syncing = null;
+            }
+        })();
+        await this.syncing;
+    }
+
+    now() {
+        return this.current ? this.win.performance.now() + this.current.offset : null;
+    }
+
+    render() {
+        const element = this.element();
+        const now = this.now();
+        if (!element || now === null) {
+            return now;
+        }
+        element.textContent = clockLabel(now, this.current.zone);
+        element.dateTime = new Date(now).toISOString();
+        return now;
+    }
+
+    tick() {
+        const perf = this.win.performance.now();
+        const wall = Date.now();
+        if (Math.abs((wall - this.lastWall) - (perf - this.lastPerf)) > 2000) {
+            this.sync(true);
+        }
+        this.lastPerf = perf;
+        this.lastWall = wall;
+        if (perf - this.syncedAt >= CLOCK_SYNC_MS) {
+            this.sync(false);
+        }
+        const now = this.render();
+        this.win.clearTimeout(this.timer);
+        this.timer = this.win.setTimeout(() => this.tick(), now === null ? 1000 : untilNextSecond(now));
+    }
+}
+
 export function boot(win) {
     const doc = win.document;
     const darkQuery = win.matchMedia('(prefers-color-scheme: dark)');
@@ -85,18 +222,27 @@ export function boot(win) {
         const output = doc.getElementById(button.dataset.clearHistory);
         button.disabled = true;
         try {
-            const [{ DB_NAME: BOARD_DB, deleteDatabase }, { DB_NAME: SLOTS_DB, PRESS_KEY }] = await Promise.all([
+            const [
+                { DB_NAME: BOARD_DB, deleteDatabase },
+                { DB_NAME: SLOTS_DB, PRESS_KEY },
+                { DB_NAME: CANVAS_DB },
+                { DB_NAME: LATENCY_DB, RUNS_KEY, NEXT_KEY },
+            ] = await Promise.all([
                 import('./Islands/BoardIsland.razor.js'),
                 import('./Islands/SlotIsland.razor.js'),
+                import('./Islands/CanvasIsland.razor.js'),
+                import('./Islands/LatencyIsland.razor.js'),
             ]);
-            const outcomes = await Promise.all([BOARD_DB, SLOTS_DB].map(name => deleteDatabase(win.indexedDB, name)));
-            try {
-                win.localStorage.removeItem(PRESS_KEY);
-            } catch {
+            const outcomes = await Promise.all([BOARD_DB, SLOTS_DB, CANVAS_DB, LATENCY_DB].map(name => deleteDatabase(win.indexedDB, name)));
+            for (const key of [PRESS_KEY, RUNS_KEY, NEXT_KEY]) {
+                try {
+                    win.localStorage.removeItem(key);
+                } catch {
+                }
             }
             if (output) {
                 output.textContent = outcomes.includes('blocked')
-                    ? 'Close any other board or slots tabs to finish clearing.'
+                    ? 'Close any other board, canvas, slots or latency tabs to finish clearing.'
                     : 'Local history cleared.';
             }
         } catch {
@@ -143,6 +289,18 @@ export function boot(win) {
     darkQuery.addEventListener('change', applyStoredTheme);
     applyStoredTheme();
 
+    const clock = new ServerClock(win);
+    clock.start();
+
+    const afterNavigation = () => {
+        applyStoredTheme();
+        const announcer = doc.getElementById('announcer');
+        if (announcer) {
+            announcer.textContent = '';
+        }
+        clock.render();
+    };
+
     return win.Blazor.start({
         circuit: {
             reconnectionOptions: {
@@ -150,7 +308,7 @@ export function boot(win) {
                 retryIntervalMilliseconds: attempt => reconnectDelay(attempt),
             },
         },
-    }).then(() => win.Blazor.addEventListener('enhancedload', applyStoredTheme));
+    }).then(() => win.Blazor.addEventListener('enhancedload', afterNavigation));
 }
 
 if (typeof window !== 'undefined' && window.Blazor) {

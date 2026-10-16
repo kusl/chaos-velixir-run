@@ -1,0 +1,147 @@
+@implements IAsyncDisposable
+@inject LatencyService Latency
+@inject IJSRuntime JS
+@inject ILogger<LatencyIsland> Logger
+
+<section @ref="_panel" class="probe" aria-labelledby="probe-title"
+         data-cooldown="@((int)Latency.Cooldown.TotalSeconds)" data-budget="@((int)Latency.Budget.TotalSeconds)">
+    <h2 id="probe-title" class="visually-hidden">Latency test</h2>
+    <div class="controls">
+        <button type="button" class="run" disabled>Run test</button>
+        <button type="button" class="auto" aria-pressed="false" hidden>Auto run</button>
+    </div>
+    <output class="status"></output>
+    <p class="progress"></p>
+    <div class="table-wrap">
+        <table class="current">
+            <caption>Your latest test</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Endpoint</th>
+                    <th scope="col">Your browser</th>
+                    <th scope="col">Server</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var endpoint in LatencyCatalog.Endpoints)
+                {
+                    <tr data-key="@endpoint.Key" data-url="@endpoint.Url" data-label="@endpoint.Label" data-server="@(endpoint.FromServer ? "true" : "false")">
+                        <th scope="row">@endpoint.Label</th>
+                        <td class="browser">–</td>
+                        <td class="server">–</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+@code {
+    private ElementReference _panel;
+    private readonly TaskCompletionSource _attached = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private DotNetObjectReference<LatencyIsland>? _self;
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _client;
+    private Outbox<LatencyUpdate>? _outbox;
+    private Subscriber? _subscriber;
+    private int _offered;
+
+    [Parameter, EditorRequired]
+    public string Client { get; set; } = ClientAddress.Unknown;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        _self = DotNetObjectReference.Create(this);
+        _module = await JS.InvokeAsync<IJSObjectReference>("import", ModulePath.Of(Assets["Components/Islands/LatencyIsland.razor.js"]));
+        _client = await _module.InvokeAsync<IJSObjectReference>("attach", _panel, _self);
+        _attached.TrySetResult();
+    }
+
+    [JSInvokable]
+    public int Offer(string[] ids, string[] texts)
+    {
+        if (ids is null || texts is null || ids.Length != texts.Length)
+        {
+            return 0;
+        }
+
+        var count = Math.Min(LatencyService.MaxOffers - _offered, ids.Length);
+        if (count <= 0)
+        {
+            return 0;
+        }
+
+        _offered += count;
+        var offered = new List<BoardMessage>(count);
+        for (var i = 0; i < count; i++)
+        {
+            if (Guid.TryParseExact(ids[i], "D", out var id) && texts[i] is { } text)
+            {
+                offered.Add(new BoardMessage(id, text));
+            }
+        }
+
+        return Latency.Offer(offered);
+    }
+
+    [JSInvokable]
+    public async Task Join()
+    {
+        await StopAsync();
+        var outbox = new Outbox<LatencyUpdate>(64, 16, TimeSpan.FromSeconds(20), SendAsync, Logger);
+        _outbox = outbox;
+        _subscriber = new Subscriber(outbox);
+        Latency.Subscribe(_subscriber);
+    }
+
+    [JSInvokable]
+    public string Begin() => Latency.Begin(Client).Reply;
+
+    [JSInvokable]
+    public bool Finish(string id, int[] browser) =>
+        Guid.TryParseExact(id, "D", out var run) && Latency.Finish(run, browser);
+
+    [JSInvokable]
+    public bool Ping() => _subscriber is not null && _outbox is { IsFaulted: false } && Latency.IsSubscribed(_subscriber);
+
+    public async ValueTask DisposeAsync()
+    {
+        await StopAsync();
+        await JsCleanup.DisposeAsync(_client, "dispose");
+        await JsCleanup.DisposeAsync(_module, null);
+        _self?.Dispose();
+    }
+
+    private async Task SendAsync(IReadOnlyList<LatencyUpdate> batch, CancellationToken cancellationToken)
+    {
+        await _attached.Task.WaitAsync(cancellationToken);
+        await InvokeAsync(() => _client is null
+            ? Task.FromException(new InvalidOperationException("The latency module is not attached."))
+            : _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask());
+    }
+
+    private async Task StopAsync()
+    {
+        if (_subscriber is not null)
+        {
+            Latency.Unsubscribe(_subscriber);
+            _subscriber = null;
+        }
+
+        if (_outbox is not null)
+        {
+            await _outbox.DisposeAsync();
+            _outbox = null;
+        }
+    }
+
+    private sealed class Subscriber(Outbox<LatencyUpdate> outbox) : ILatencySubscriber
+    {
+        public bool Deliver(LatencyUpdate update) => outbox.TryPost(update);
+    }
+}

@@ -1,0 +1,77 @@
+@page "/latency"
+@inject LatencyService Latency
+@inject TimeProvider Time
+
+<PageTitle>Chaos latency</PageTitle>
+
+<h1>Latency</h1>
+<p class="lede">One button times how long @LatencyCatalog.Endpoints.Count public endpoints take to answer, once from your browser and once from this server. Everyone sees every result. You can run a test every @Minutes minutes.</p>
+
+<LatencyIsland Client="@_client" @rendermode="InteractiveServer" />
+
+<section class="feed" data-permanent="latency-feed" aria-labelledby="runs-title">
+    <h2 id="runs-title">Results</h2>
+    <p id="latency-empty" class="empty" hidden="@(_runs.Count > 0)">No tests yet. Press the button.</p>
+    <ol id="latency-feed" class="runs">
+        @foreach (var run in _runs)
+        {
+            if (!LatencyRun.TryParse(run.Text, out var results))
+            {
+                continue;
+            }
+
+            var summary = LatencyRun.Summarize(results);
+            <li @key="run.Id" class="msg" data-id="@run.Id">
+                <time datetime="@MessageFormat.Iso(run.Id)">@MessageFormat.Label(run.Id, _now)</time>
+                <p class="summary">
+                    <span>Browser median <strong>@LatencyRun.Milliseconds(summary.Browser)</strong></span>
+                    <span>Server median <strong>@LatencyRun.Milliseconds(summary.Server)</strong></span>
+                    <span>@summary.Answered of @summary.Total answered</span>
+                </p>
+                <details>
+                    <summary>All endpoints</summary>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Endpoint</th>
+                                    <th scope="col">Browser</th>
+                                    <th scope="col">Server</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var result in results)
+                                {
+                                    <tr>
+                                        <th scope="row">@LatencyCatalog.LabelOf(result.Key)</th>
+                                        <td>@LatencyRun.Milliseconds(result.Browser)</td>
+                                        <td>@LatencyRun.Milliseconds(result.Server)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </details>
+            </li>
+        }
+    </ol>
+    <button type="button" id="latency-older" class="older" hidden>Show older results</button>
+</section>
+
+@code {
+    private IReadOnlyList<BoardMessage> _runs = [];
+    private DateTimeOffset _now;
+    private string _client = ClientAddress.Unknown;
+
+    private int Minutes => Math.Max(1, (int)Math.Round(Latency.Cooldown.TotalMinutes));
+
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _runs = Latency.Messages;
+        _now = Time.GetUtcNow();
+        _client = ClientAddress.Key(HttpContext?.Connection.RemoteIpAddress);
+    }
+}

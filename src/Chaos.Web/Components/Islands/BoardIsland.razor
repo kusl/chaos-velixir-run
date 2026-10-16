@@ -5,10 +5,11 @@
 
 <form class="compose" @onsubmit="Send">
     <label class="visually-hidden" for="compose-text">Message</label>
-    <textarea id="compose-text" @bind="_draft" maxlength="@MessageText.MaxLength" rows="3" required
+    <textarea id="compose-text" @bind="_draft" maxlength="@MessageText.MaxLength" rows="3" required aria-describedby="compose-count"
               placeholder="Write something everyone here will see" disabled="@(!_ready)"></textarea>
     <div class="actions">
         <output class="status" for="compose-text">@_status</output>
+        <span id="compose-count" class="count"></span>
         <span class="hint">Ctrl+Enter sends</span>
         <button type="submit" disabled="@(!_ready)">Send</button>
     </div>
@@ -24,6 +25,7 @@
     private string? _draft;
     private string? _status;
     private bool _ready;
+    private bool _recount;
     private int _offered;
 
     [Parameter, EditorRequired]
@@ -33,6 +35,12 @@
     {
         if (!firstRender)
         {
+            if (_recount && _client is not null)
+            {
+                _recount = false;
+                await JsCleanup.InvokeAsync(_client, "recount");
+            }
+
             return;
         }
 
@@ -106,6 +114,7 @@
         if (result is PostResult.Accepted)
         {
             _draft = null;
+            _recount = true;
         }
     }
 

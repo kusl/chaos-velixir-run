@@ -3,7 +3,7 @@
 <PageTitle>About chaos</PageTitle>
 
 <h1>About</h1>
-<p class="lede">Chaos is a small public experiment: a message board, a drawing canvas and a slot machine that anyone can use, with no accounts and nothing kept for long.</p>
+<p class="lede">Chaos is a small public experiment: a message board, a drawing canvas, a slot machine and a latency test that anyone can use, with no accounts and nothing kept for long.</p>
 
 <h2>Why it exists</h2>
 <p>To show how much a plain Blazor Server app can do on a free hosting plan with a quarter of a CPU and 256 MB of memory, with no database, no cookies and no third-party code. The HTML, the CSS and the small amount of JavaScript are all written by hand.</p>
@@ -13,9 +13,11 @@
     <dt><a href="board">Board</a></dt>
     <dd>Post a message of up to 500 characters. Everyone on the board sees it at once. The server keeps the newest 50. This browser keeps up to 10,000 on your device, so you still see messages after the server has forgotten them. Those have a dotted border.</dd>
     <dt><a href="canvas">Canvas</a></dt>
-    <dd>Draw with a mouse, a finger or a stylus. Everyone sees each stroke as it is drawn. Anyone can reset the page for everyone, and a server restart clears it too.</dd>
+    <dd>Draw with a mouse, a finger or a stylus. Everyone sees each stroke as it is drawn. Anyone can reset the page for everyone. This browser keeps up to 10,000 finished strokes, so after a server restart the drawing comes back from the browsers that saw it, unless someone had pressed reset since.</dd>
     <dt><a href="slots">Slots</a></dt>
     <dd>Press the button and the shared machine spins for everyone watching. Nobody can press again until the reels stop, and then whoever presses first goes next. Nobody knows who pressed, but you are told whether your own press worked. After ten successful presses from this browser you get an auto spin button that presses for you each time the reels stop. No money or prizes are involved; it is just for fun.</dd>
+    <dt><a href="latency">Latency</a></dt>
+    <dd>Press the button and your browser times how long a list of public endpoints takes to answer, while this server times the same endpoints from its data centre. Each endpoint gets one warm-up request and then the fastest of three is kept. Everyone sees every result, with no name or address attached. You can start a test every five minutes, and after ten tests from this browser an auto run button appears.</dd>
 </dl>
 
 <h2>Winners</h2>
@@ -28,25 +30,27 @@
 
 <h2>How it works</h2>
 <ul>
-    <li>Pages are rendered on the server and arrive as plain HTML. Only the board, the canvas and the slot machine open a live connection, over a WebSocket.</li>
+    <li>Pages are rendered on the server and arrive as plain HTML. Only the board, the canvas, the slot machine and the latency test open a live connection, over a WebSocket.</li>
+    <li>The clock at the bottom of every page shows the server's time, not your device's. The page measures how far its own clock is from the server's and keeps ticking from there.</li>
     <li>Every message and every spin gets a UUIDv7 from the server clock, so its ID also records when it happened. Anything that claims to come from the future is rejected.</li>
     <li>The server can restart at any time and then remembers nothing. When you open the board or the slots, your browser offers its 50 newest entries back, and the server keeps the ones that fit among its newest 50.</li>
-    <li>The canvas sends strokes in small batches of points measured from 0 to 1 across a square page, so phones and desktops draw the same picture. Each reset starts a new round, and strokes still in flight from the old one are dropped.</li>
+    <li>The canvas sends strokes in small batches of points measured from 0 to 1 across a square page, so phones and desktops draw the same picture. Each reset starts a new round, and strokes still in flight from the old one are dropped. Every finished stroke and every reset gets a UUIDv7, so after a restart the server takes back only strokes drawn after the newest reset anyone remembers.</li>
+    <li>The latency test from your browser uses plain requests whose answers it cannot read, only time. It cannot see anything those sites send back, and they see a request with no cookies and no referrer.</li>
     <li>The slot result is drawn on the server with a cryptographic random number generator the moment a press is accepted. The server then refuses every press until the spin time has passed, so only one spin runs at a time. Your browser plays the reels for the time the server says is left, then adds the result to the list; your own button stays off until your reels stop, so a spin always settles on your screen before you can press again.</li>
     <li>The reels are plain HTML animated with the Web Animations API. If your device asks for reduced motion, the symbols change without spinning.</li>
-    <li>A strict Content Security Policy only allows scripts, styles and connections from this site. There are no inline scripts.</li>
+    <li>A strict Content Security Policy only allows scripts and styles from this site, and connections only to this site and the latency test endpoints. There are no inline scripts.</li>
 </ul>
 
 <h2>Before you post</h2>
 <p class="warning">Anything you post or draw goes to every connected browser at once and is stored on their devices. It can't be edited, deleted or recalled. Nothing is moderated. Don't share anything private.</p>
 
 <h2>Your data</h2>
-<p>There are no accounts, no cookies and no tracking. Your theme choice and your count of successful slot presses are kept in this browser's local storage. Board messages and slot results are kept in this browser's IndexedDB, up to 10,000 of each, with the oldest removed first. Results you started are marked as yours only in this browser.</p>
+<p>There are no accounts, no cookies and no tracking. Your theme choice, your count of successful slot presses and latency tests, and when your next test is allowed are kept in this browser's local storage. Board messages, canvas strokes, slot results and latency results are kept in this browser's IndexedDB, up to 10,000 of each, with the oldest removed first. Results you started are marked as yours only in this browser. Latency results carry only timings: no address, no name and no device details.</p>
 <p class="clear">
     <button type="button" data-clear-history="clear-status">Clear local history</button>
     <output id="clear-status"></output>
 </p>
-<p>This removes the board and slot history and your press count on this device. The next time you open the board or the slots, they fill up again from the server.</p>
+<p>This removes the board, canvas, slot and latency history and your counts on this device. The next time you open those pages, they fill up again from the server.</p>
 
 <h2>Source code</h2>
 <p>The code is on <a href="https://github.com/kusl/chaos-velixir-run">GitHub</a> under the GNU Affero General Public License, version 3 or later. If you run a modified copy for other people, you have to offer them its source too.</p>

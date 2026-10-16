@@ -1,5 +1,6 @@
 using Chaos.Web.Drawing;
 using Chaos.Web.Infrastructure;
+using Chaos.Web.Latency;
 using Chaos.Web.Messages;
 using Chaos.Web.Slots;
 using Microsoft.Extensions.Options;
@@ -76,5 +77,34 @@ internal sealed class CanvasRecorder(bool accept = true) : ICanvasSubscriber
         }
 
         return accept;
+    }
+}
+
+internal sealed class LatencyRecorder(bool accept = true) : ILatencySubscriber
+{
+    public List<LatencyUpdate> Updates { get; } = [];
+
+    public bool Deliver(LatencyUpdate update)
+    {
+        if (accept)
+        {
+            lock (Updates)
+            {
+                Updates.Add(update);
+            }
+        }
+
+        return accept;
+    }
+}
+
+internal sealed class FakeProbe(Func<IReadOnlyList<LatencyEndpoint>, int?[]> measure) : ILatencyProbe
+{
+    public int Calls { get; private set; }
+
+    public Task<int?[]> MeasureAsync(IReadOnlyList<LatencyEndpoint> endpoints, TimeSpan budget, CancellationToken cancellationToken)
+    {
+        Calls++;
+        return Task.FromResult(measure(endpoints));
     }
 }

@@ -17,6 +17,9 @@ Defaults live in `ChaosOptions` and can be overridden with `Chaos__*` environmen
 | Resets | 1 s global cooldown, 2 burst per client |
 | Slot presses | one spin at a time (4 s), 3 burst, 1 every 2 s per client |
 | Slot results kept | 50 |
+| Canvas offers per circuit | 500 strokes, 20,000 points, 4 resets |
+| Latency tests | one at a time, 10 s apart, one per client every 300 s, 30 s probe budget |
+| Latency results kept | 50 |
 
 - A client is its IP after `X-Forwarded-For`, or its /64 for IPv6.
 - The hub (`/_blazor`) only accepts WebSocket connections, so connection counts are real. Clients behind proxies that block WebSockets cannot use the board, canvas or slots.

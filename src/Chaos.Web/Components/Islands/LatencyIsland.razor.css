@@ -1,0 +1,96 @@
+.probe {
+    display: grid;
+    gap: .75rem;
+    margin-block-end: 2rem;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.run {
+    min-inline-size: 13rem;
+    padding: 1rem 2rem;
+    border-radius: 999px;
+    font-size: 1.25rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+.auto {
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    color: var(--ink);
+    background: transparent;
+}
+
+.auto[aria-pressed="true"] {
+    color: var(--on-ink);
+    background: var(--ink);
+}
+
+.status {
+    min-block-size: 1.4em;
+    color: var(--fg);
+    font-size: .9rem;
+    text-align: center;
+}
+
+.progress {
+    margin: 0;
+    color: var(--muted);
+    font-size: .8rem;
+    text-align: center;
+}
+
+.table-wrap {
+    max-block-size: 26rem;
+    overflow: auto;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg);
+}
+
+table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font-size: .875rem;
+}
+
+caption {
+    padding: .5rem .75rem;
+    color: var(--muted);
+    font-size: .8rem;
+    text-align: start;
+}
+
+th,
+td {
+    padding: .3rem .75rem;
+    border-block-start: 1px solid var(--line);
+    text-align: start;
+}
+
+td {
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+    white-space: nowrap;
+}
+
+thead th {
+    position: sticky;
+    inset-block-start: 0;
+    background: var(--surface);
+}
+
+thead th:not(:first-child) {
+    text-align: end;
+}
+
+tbody th {
+    font-weight: 500;
+}

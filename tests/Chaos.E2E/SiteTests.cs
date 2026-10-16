@@ -21,7 +21,7 @@ public sealed partial class SiteTests(BrowserFixture browser) : IClassFixture<Br
         };
         page.PageError += (_, error) => errors.Add(error);
 
-        foreach (var path in new[] { "/", "/about", "/board", "/slots", "/canvas" })
+        foreach (var path in new[] { "/", "/about", "/board", "/slots", "/latency", "/canvas" })
         {
             await page.GotoAsync(path);
         }
@@ -81,6 +81,24 @@ public sealed partial class SiteTests(BrowserFixture browser) : IClassFixture<Br
         Assert.Equal(404, missing.Status);
         await Expect(page.GetByRole(AriaRole.Heading, new() { Name = "Nothing here" })).ToBeVisibleAsync();
     }
+
+    [Fact]
+    public async Task TheFooterClockTicksWithTheServerTime()
+    {
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync("/about");
+        var clock = page.Locator("#server-clock");
+        await Expect(clock).ToHaveTextAsync(ClockFormat());
+        var first = await clock.TextContentAsync();
+        await Expect(clock).Not.ToHaveTextAsync(first ?? "", new() { Timeout = 5000 });
+
+        await page.GetByRole(AriaRole.Navigation).GetByRole(AriaRole.Link, new() { Name = "Board" }).ClickAsync();
+        await Expect(clock).ToHaveTextAsync(ClockFormat());
+    }
+
+    [GeneratedRegex(@"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} UTC([+-]\d{2}:\d{2})?$")]
+    private static partial Regex ClockFormat();
 
     [GeneratedRegex("/canvas$")]
     private static partial Regex CanvasUrl();

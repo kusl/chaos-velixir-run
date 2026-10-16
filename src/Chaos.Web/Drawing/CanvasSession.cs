@@ -11,4 +11,6 @@ internal sealed class CanvasSession(ICanvasSubscriber subscriber, TokenBucket bu
     public Stroke? Open { get; set; }
 
     public int LastClientId { get; set; }
+
+    public Guid LastStroke { get; set; }
 }

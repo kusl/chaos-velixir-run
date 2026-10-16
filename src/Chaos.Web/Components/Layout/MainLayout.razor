@@ -1,4 +1,5 @@
 @inherits LayoutComponentBase
+@inject TimeProvider Time
 
 <header class="site-header">
     <a class="brand" href="">chaos</a>
@@ -6,6 +7,7 @@
         <NavLink href="board">Board</NavLink>
         <NavLink href="canvas">Canvas</NavLink>
         <NavLink href="slots">Slots</NavLink>
+        <NavLink href="latency">Latency</NavLink>
         <NavLink href="about">About</NavLink>
     </nav>
     <ThemeToggle />
@@ -16,9 +18,12 @@
 </main>
 
 <footer class="site-footer">
+    <span class="clock-wrap">Server time <time id="server-clock" class="clock" data-permanent="server-clock" data-now="@_now.UnixMs" data-offset="@_now.OffsetMinutes" datetime="@_now.Iso">@_now.Label</time></span>
     <a href="https://github.com/kusl/chaos-velixir-run">Source code</a>
     <span>AGPL-3.0-or-later</span>
 </footer>
+
+<p id="announcer" class="visually-hidden" aria-live="polite" data-permanent="announcer"></p>
 
 <ReconnectBanner />
 
@@ -27,3 +32,9 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss" aria-label="Dismiss">✕</span>
 </div>
+
+@code {
+    private ServerTime _now = new(0, 0);
+
+    protected override void OnInitialized() => _now = ServerTime.Now(Time);
+}

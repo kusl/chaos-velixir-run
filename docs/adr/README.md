@@ -21,3 +21,5 @@
 | [0017](0017-scripts-and-ci.md) | Scripts and CI |
 | [0018](0018-export.md) | Export dump rules |
 | [0019](0019-slots.md) | Shared slot machine |
+| [0020](0020-latency.md) | Shared latency test |
+| [0021](0021-server-clock.md) | Server clock in the footer |

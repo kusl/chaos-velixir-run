@@ -35,3 +35,14 @@ textarea:disabled {
     color: var(--muted);
     font-size: .8rem;
 }
+
+.count {
+    color: var(--muted);
+    font-size: .8rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.count.full {
+    color: var(--danger);
+    font-weight: 650;
+}

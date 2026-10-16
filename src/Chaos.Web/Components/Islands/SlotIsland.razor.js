@@ -1,4 +1,4 @@
-import { LocalHistory, OFFER_LIMIT, PAGE_SIZE, chunkOffers, isoOf, labelOf, needsResync, newestFirst } from './BoardIsland.razor.js';
+import { LocalHistory, OFFER_LIMIT, PAGE_SIZE, announce, chunkOffers, isoOf, labelOf, needsResync, newestFirst } from './BoardIsland.razor.js';
 
 export const DB_NAME = 'chaos-slots';
 export const DB_VERSION = 1;
@@ -154,7 +154,6 @@ class SlotClient {
         this.feed = doc.getElementById('slots-feed');
         this.empty = doc.getElementById('slots-empty');
         this.older = doc.getElementById('slots-older');
-        this.announcer = doc.getElementById('slots-announcer');
         this.faces = [...(isValid(machine.dataset.initial) ? machine.dataset.initial : 'CHAOS')];
         this.motion = win.matchMedia('(prefers-reduced-motion: reduce)');
         this.presses = readPresses(win.localStorage);
@@ -618,12 +617,12 @@ class SlotClient {
     }
 
     announce(message) {
-        if (!this.announcer) {
+        if (this.disposed || !this.feed?.isConnected) {
             return;
         }
         const win = classify(message.text);
         const spelled = [...message.text].join(' ');
-        this.announcer.textContent = win === 'none' ? `Result: ${spelled}.` : `Winner! ${spelled}. ${LABELS[win]}.`;
+        announce(this.doc, win === 'none' ? `Result: ${spelled}.` : `Winner! ${spelled}. ${LABELS[win]}.`);
     }
 
     updateEmpty() {

@@ -1,10 +1,10 @@
 namespace Chaos.Web.Drawing;
 
-internal sealed class Stroke(long id, int epoch, int clientId)
+internal sealed class Stroke(Guid id, int epoch, int clientId)
 {
     private readonly List<int> _points = [];
 
-    public long Id { get; } = id;
+    public Guid Id { get; } = id;
 
     public int Epoch { get; } = epoch;
 

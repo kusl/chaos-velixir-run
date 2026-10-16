@@ -2,6 +2,7 @@ using System.IO.Compression;
 using Chaos.Web.Components;
 using Chaos.Web.Drawing;
 using Chaos.Web.Infrastructure;
+using Chaos.Web.Latency;
 using Chaos.Web.Messages;
 using Chaos.Web.Slots;
 using Microsoft.AspNetCore.Antiforgery;
@@ -46,6 +47,8 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<BoardService>();
 builder.Services.AddSingleton<CanvasService>();
 builder.Services.AddSingleton<SlotService>();
+builder.Services.AddSingleton<ILatencyProbe, HttpLatencyProbe>();
+builder.Services.AddSingleton<LatencyService>();
 builder.Services.AddSingleton<ConnectionTracker>();
 builder.Services.AddHealthChecks();
 
@@ -93,6 +96,11 @@ app.UseHubGuard();
 app.UseAntiforgery();
 
 app.MapHealthChecks("/health");
+app.MapGet("/time", static (TimeProvider time, HttpResponse response) =>
+{
+    response.Headers.CacheControl = "no-store";
+    return Results.Json(ServerTime.Now(time));
+});
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode(server => server.DisableWebSocketCompression = true);

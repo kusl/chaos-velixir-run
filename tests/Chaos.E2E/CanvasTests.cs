@@ -47,6 +47,51 @@ public sealed class CanvasTests(BrowserFixture browser) : IClassFixture<BrowserF
         await late.WaitForFunctionAsync(Blank, centre);
     }
 
+    [Fact]
+    public async Task FinishedStrokesAreKeptInTheBrowser()
+    {
+        await using var context = await browser.NewContextAsync();
+        var artist = await OpenCanvasAsync(context);
+        var box = await artist.Locator("canvas.paper").BoundingBoxAsync() ?? throw new InvalidOperationException("The canvas has no size.");
+        await artist.Mouse.MoveAsync(box.X + (box.Width * 0.3f), box.Y + (box.Height * 0.6f));
+        await artist.Mouse.DownAsync();
+        await artist.Mouse.MoveAsync(box.X + (box.Width * 0.7f), box.Y + (box.Height * 0.6f), new() { Steps = 10 });
+        await artist.Mouse.UpAsync();
+
+        await artist.WaitForFunctionAsync(StoredStrokes, 1);
+
+        await artist.GetByRole(AriaRole.Button, new() { Name = "Reset canvas" }).ClickAsync();
+        await artist.WaitForFunctionAsync(StoredStrokesAtMost, 0);
+    }
+
+    private const string StoredStrokes = """
+        async minimum => (await indexedDB.databases()).some(d => d.name === 'chaos-canvas') && await new Promise(resolve => {
+            const request = indexedDB.open('chaos-canvas');
+            request.onsuccess = () => {
+                const db = request.result;
+                if (!db.objectStoreNames.contains('strokes')) { db.close(); resolve(false); return; }
+                const count = db.transaction('strokes', 'readonly').objectStore('strokes').count();
+                count.onsuccess = () => { db.close(); resolve(count.result >= minimum); };
+                count.onerror = () => { db.close(); resolve(false); };
+            };
+            request.onerror = () => resolve(false);
+        })
+        """;
+
+    private const string StoredStrokesAtMost = """
+        async maximum => (await indexedDB.databases()).some(d => d.name === 'chaos-canvas') && await new Promise(resolve => {
+            const request = indexedDB.open('chaos-canvas');
+            request.onsuccess = () => {
+                const db = request.result;
+                if (!db.objectStoreNames.contains('strokes')) { db.close(); resolve(false); return; }
+                const count = db.transaction('strokes', 'readonly').objectStore('strokes').count();
+                count.onsuccess = () => { db.close(); resolve(count.result <= maximum); };
+                count.onerror = () => { db.close(); resolve(false); };
+            };
+            request.onerror = () => resolve(false);
+        })
+        """;
+
     private static async Task<IPage> OpenCanvasAsync(IBrowserContext context)
     {
         var page = await context.NewPageAsync();

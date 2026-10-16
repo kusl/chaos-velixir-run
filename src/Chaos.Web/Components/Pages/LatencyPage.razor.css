@@ -1,0 +1,117 @@
+.feed {
+    display: grid;
+    gap: 1rem;
+}
+
+.feed h2 {
+    margin: 0;
+}
+
+.runs {
+    display: grid;
+    gap: .6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.runs ::deep .msg {
+    display: grid;
+    gap: .35rem;
+    padding: .55rem .8rem .65rem;
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    background: var(--bg);
+    content-visibility: auto;
+    contain-intrinsic-size: auto 5.5rem;
+}
+
+.runs ::deep .msg.archived {
+    border-style: dotted;
+    border-color: var(--muted);
+}
+
+.runs ::deep time {
+    color: var(--muted);
+    font-size: .75rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.runs ::deep .summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .25rem 1.25rem;
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.runs ::deep .tags {
+    margin: 0;
+}
+
+.runs ::deep .yours {
+    padding: .1rem .55rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: .75rem;
+}
+
+.runs ::deep summary {
+    color: var(--link);
+    font-size: .875rem;
+    cursor: pointer;
+}
+
+.runs ::deep .table-wrap {
+    margin-block-start: .5rem;
+    overflow-x: auto;
+}
+
+.runs ::deep table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font-size: .8rem;
+}
+
+.runs ::deep th,
+.runs ::deep td {
+    padding: .2rem .5rem;
+    border-block-start: 1px solid var(--line);
+    text-align: start;
+}
+
+.runs ::deep td,
+.runs ::deep thead th:not(:first-child) {
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+    white-space: nowrap;
+}
+
+.runs ::deep tbody th {
+    font-weight: 500;
+}
+
+.empty {
+    margin: 0;
+    color: var(--muted);
+}
+
+.older {
+    justify-self: center;
+    border-color: var(--line);
+    color: var(--fg);
+    background: var(--surface);
+}
+
+@keyframes arrive {
+    from {
+        background: color-mix(in oklab, var(--ink) 20%, var(--bg));
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .runs ::deep .msg.fresh {
+        animation: arrive .9s ease-out;
+    }
+}

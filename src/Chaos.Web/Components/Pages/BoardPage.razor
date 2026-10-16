@@ -21,8 +21,6 @@
     <button type="button" id="board-older" class="older" hidden>Show older messages</button>
 </section>
 
-<p id="board-announcer" class="visually-hidden" aria-live="polite"></p>
-
 @code {
     private IReadOnlyList<BoardMessage> _messages = [];
     private DateTimeOffset _now;

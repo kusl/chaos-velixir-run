@@ -30,4 +30,26 @@ internal static class JsCleanup
         {
         }
     }
+
+    public static async ValueTask InvokeAsync(IJSObjectReference? reference, string method)
+    {
+        if (reference is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await reference.InvokeVoidAsync(method).ConfigureAwait(false);
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+        catch (JSException)
+        {
+        }
+        catch (TaskCanceledException)
+        {
+        }
+    }
 }

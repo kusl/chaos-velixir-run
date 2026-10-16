@@ -13,6 +13,8 @@
 </div>
 
 @code {
+    private const int MaxResetOffers = 4;
+
     private ElementReference _canvas;
     private readonly TaskCompletionSource _attached = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private DotNetObjectReference<CanvasIsland>? _self;
@@ -23,6 +25,9 @@
     private CanvasSession? _session;
     private string? _status;
     private bool _ready;
+    private int _offeredStrokes;
+    private int _offeredPoints;
+    private int _offeredResets;
 
     [Parameter, EditorRequired]
     public string Client { get; set; } = ClientAddress.Unknown;
@@ -54,11 +59,11 @@
     }
 
     [JSInvokable]
-    public int Draw(int stroke, int epoch, int[] points, bool end)
+    public string Draw(int stroke, int epoch, int[] points, bool end)
     {
         if (_session is null || points is null)
         {
-            return (int)DrawResult.Invalid;
+            return DrawReply.Format(DrawResult.Invalid, Guid.Empty);
         }
 
         var result = Canvas.Draw(_session, epoch, stroke, points, end);
@@ -69,7 +74,46 @@
             DrawResult.TooLong => "That stroke got too long, so it ended.",
             _ => null,
         });
-        return (int)result;
+        return DrawReply.Format(result, _session.LastStroke);
+    }
+
+    [JSInvokable]
+    public bool OfferReset(string id)
+    {
+        if (_offeredResets >= MaxResetOffers || !Guid.TryParseExact(id, "D", out var reset))
+        {
+            return false;
+        }
+
+        _offeredResets++;
+        return Canvas.OfferReset(reset);
+    }
+
+    [JSInvokable]
+    public int OfferStrokes(string[] ids, int[][] points)
+    {
+        if (ids is null || points is null || ids.Length != points.Length)
+        {
+            return 0;
+        }
+
+        var offered = new List<StrokeOffer>(ids.Length);
+        for (var i = 0; i < ids.Length && _offeredStrokes < CanvasService.MaxOfferedStrokes; i++)
+        {
+            if (points[i] is not { } stroke || _offeredPoints + (stroke.Length / 2) > Canvas.MaxPoints)
+            {
+                continue;
+            }
+
+            _offeredStrokes++;
+            _offeredPoints += stroke.Length / 2;
+            if (Guid.TryParseExact(ids[i], "D", out var id))
+            {
+                offered.Add(new StrokeOffer(id, stroke));
+            }
+        }
+
+        return offered.Count == 0 ? 0 : Canvas.OfferStrokes(offered);
     }
 
     [JSInvokable]

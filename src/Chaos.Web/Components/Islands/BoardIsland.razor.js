@@ -68,6 +68,17 @@ export function needsResync(version, update) {
     return update.previous !== version;
 }
 
+export function countText(length, max) {
+    return max > 0 ? `${length} / ${max}` : String(length);
+}
+
+export function announce(doc, text) {
+    const announcer = doc.getElementById('announcer');
+    if (announcer) {
+        announcer.textContent = text;
+    }
+}
+
 export function excessOf(count, cap = LOCAL_CAP) {
     return Math.max(0, count - cap);
 }
@@ -239,8 +250,8 @@ class BoardClient {
         this.feed = doc.getElementById('board-feed');
         this.empty = doc.getElementById('board-empty');
         this.older = doc.getElementById('board-older');
-        this.announcer = doc.getElementById('board-announcer');
         this.textarea = doc.getElementById('compose-text');
+        this.count = doc.getElementById('compose-count');
         this.version = -1;
         this.live = new Map();
         this.shown = new Map();
@@ -249,20 +260,33 @@ class BoardClient {
         this.timer = 0;
         this.disposed = false;
         this.onKeyDown = event => this.keyDown(event);
+        this.onInput = () => this.recount();
         this.onOlder = () => this.loadOlder();
         this.onReconnected = () => this.join();
     }
 
     async start() {
         this.textarea?.addEventListener('keydown', this.onKeyDown);
+        this.textarea?.addEventListener('input', this.onInput);
         this.older?.addEventListener('click', this.onOlder);
         this.win.addEventListener('chaos:reconnected', this.onReconnected);
+        this.recount();
         this.timer = this.win.setInterval(() => this.ping(), PING_MS);
         try {
             await this.offer();
         } catch {
         }
         await this.join();
+    }
+
+    recount() {
+        if (!this.count || !this.textarea || this.disposed) {
+            return;
+        }
+        const max = this.textarea.maxLength;
+        const length = this.textarea.value.length;
+        this.count.textContent = countText(length, max);
+        this.count.classList.toggle('full', max > 0 && length >= max);
     }
 
     keyDown(event) {
@@ -429,11 +453,11 @@ class BoardClient {
     }
 
     announce(messages) {
-        if (!this.announcer || messages.length === 0) {
+        if (this.disposed || !this.feed?.isConnected || messages.length === 0) {
             return;
         }
         const newest = [...messages].sort(newestFirst)[0];
-        this.announcer.textContent = `New message: ${newest.text.slice(0, 140)}`;
+        announce(this.doc, `New message: ${newest.text.slice(0, 140)}`);
     }
 
     updateEmpty() {
@@ -446,6 +470,7 @@ class BoardClient {
         this.disposed = true;
         this.win.clearInterval(this.timer);
         this.textarea?.removeEventListener('keydown', this.onKeyDown);
+        this.textarea?.removeEventListener('input', this.onInput);
         this.older?.removeEventListener('click', this.onOlder);
         this.win.removeEventListener('chaos:reconnected', this.onReconnected);
     }
@@ -456,6 +481,7 @@ export function attach(dotnet) {
     client.start();
     return {
         apply: updates => client.apply(updates),
+        recount: () => client.recount(),
         dispose: () => client.dispose(),
     };
 }
