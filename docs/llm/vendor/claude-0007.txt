@@ -36,3 +36,166 @@ if there are a lot of files that need to change
     No bespoke sed/patch scripts — full files only for anything that changes
     Docs updated alongside code changes
     Low verbosity, no code comments
+
+
+/
+Need to tweak this slots thing slightly 
+i need a concept of jackpot 
+at least four of a kind and five of a kind 
+if we see it 
+we never delete it 
+I don't know how we would test this 
+because I have never seen a four of a kind or five of a kind 
+but if we do we need to celebrate it 
+also lets sync more than the last fifty winners 
+lets sync up to 500 winners 
+
+also I think there is a defect 
+with the latency page 
+sometimes when I click on my desktop and then go to my phone 
+even though I clicked run test on the desktop 
+on my phone it says you ran a test recently 
+both are on the same wifi yes 
+but that shouldn't matter 
+we don't track ip addresses 
+and this throttling is not by ip address
+it is by the browser local storage, right? 
+please review and fix this defect 
+if it is indeed a defect 
+
+Use your best judgment
+
+If only a few files (under five or there about) need to change, give me the full path of the files that need to change and the FULL file 
+if there are a lot of files that need to change 
+    Delivery
+    Whole project as one tar.gz, unambiguous file placement
+    Any files to delete on updates called out explicitly
+    No bespoke sed/patch scripts — full files only for anything that changes
+    Docs updated alongside code changes
+    Low verbosity, no code comments
+
+Ran 49 commands, read memory
+Let me reconstruct the project tree so I can work on real files.
+All 167 files extracted with matching hashes. Now the slots code.
+Working out how the cooldown mechanism is keyed by network.
+Sizing message limits for a large batch of winner ids.
+Now LocalHistory (the IndexedDB cap pruning) in BoardIsland.
+Checking unit tests tied to slot updates and capacity limits.
+Investigating test coverage for skipping recent results.
+Designing a configurable slot option for chaos settings.
+Now the server side. ChaosOptions first.
+Debugging edge cases around default limits and enum placement.
+Checking enum design rules against analyzer recommendations.
+Reviewing access modifiers across methods and components.
+Designing the layout and ordering of the slots page sections.
+Untangling a CSS specificity conflict on archived jackpot borders.
+Fixing a slot-machine styling and overlap issue.
+Documenting how slot jackpots and leaderboards work.
+Calculating poker odds for a specific hand probability.
+Working out how the deployment script locates the application.
+Debugging shell argument expansion under strict mode settings.
+Untangling overload resolution for the context method call.
+Checking Playwright .NET's assertion polling API.
+Checking whether test project setup provides needed namespace.
+Writing automated tests for a hidden game-state indicator.
+Summarizing the scope of changes across several files.
+I hit my tool limit before I could package the tarball, so there’s nothing to download yet. Here’s where things stand.
+
+Latency “defect”
+The throttle is not based on browser local storage. The authority is the server’s 300 s per-client cooldown (KeyedCooldowns in LatencyService.Begin). The client key is ClientAddress.Key(RemoteIpAddress): your IPv4 address, or your IPv6 /64. ADR 0008 documents this: “A client is its IP after X-Forwarded-For”. Your phone and desktop on the same Wi-Fi share one public address, so the phone gets wait N from the server. Local storage (chaos-latency-next) is only a hint for the browser’s own countdown. Addresses are held in memory for rate limiting and never saved or shown, but they are used.
+
+The limiting itself is working as designed. The message is the bug: “You ran a test recently” is false on the phone. I kept IP keying, because without cookies or identity a key held in the browser can be cleared and so can’t enforce a limit. I changed the wording:
+
+Status message: “A test ran from your network recently. Devices sharing an internet connection share this limit…”
+Latency page lede and About page: these now say the limit is per network, and that rate limits count by address in memory only.
+If you’d rather two devices in a household could each run a test, the alternative is a small per-network burst, for example 2 tests per 5 minutes. Say so and I’ll do that instead.
+
+Jackpots and 500 winners
+All of this is written in my working copy:
+
+Rules: four or five of a kind is a jackpot (SlotRules.IsJackpot, isJackpot in JS).
+Server list: SlotService keeps a separate Jackpots list that never evicts. Drawn jackpots are always kept. Offered ones are accepted up to SlotJackpotCapacity (default 10,000), which stops forged offers from growing it without bound. Snapshots and deltas carry jackpotsAdded, and there’s a new OfferJackpots hub method with its own budget of 500.
+Winners: SlotWinnerCapacity goes from 50 to 500, and the winner offer budget goes from 50 to 500 per circuit. Offers are chunked to stay under the hub’s 32 KB message limit.
+Browser storage: IndexedDB moves to v2 with a new jackpots store that is never pruned. On upgrade, existing jackpots in spins are copied into it.
+UI: there’s a new Jackpots list under the machine, and jackpot rows get a red border and a “Jackpot” badge.
+Celebration: the verdict reads “Jackpot! Five of a kind”, the cabinet glows and the lights race, and confetti falls for 8 seconds. Everyone watching sees it, and screen readers hear “Jackpot!”. With reduced motion it’s the glow only. Nothing uses inline styles, so the CSP is unchanged.
+How to test without ever rolling one: a new option, Chaos__SlotDrawSymbols, limits which symbols the server draws. Chaos__SlotDrawSymbols=7 dotnet run --project src/Chaos.Web makes every spin 77777, so you can watch the celebration locally. The E2E container now also starts a second app with that setting on port 5081.
+New tests:
+.NET: jackpot rules, capacity and eviction, snapshot, 500-winner offers, option validation, and the page rendering the jackpot list.
+JS: isJackpot, verdict text, the v2 migration, and offer ordering.
+E2E: a jackpot is celebrated by two browsers, a seeded jackpot reaches a fresh browser through the server, and the v1-to-v2 upgrade copies existing jackpots.
+Not done yet
+Nothing is compiled or run. There’s no .NET SDK in my sandbox, and the npm install for vitest failed, so you’d be the first to build it.
+Docs not updated: ADR 0019, 0020, 0008 and 0014, and the README.
+Not packaged: no tarball yet. Nothing needs deleting; only files are added and changed.
+Reply “continue” and next turn I’ll update the docs and deliver the whole project as one tar.gz.
+
+Claude reached its tool-use limit for this turn.
+
+
+
+Claude is AI and can make mistakes. Please double-check responses.
+
+
+
+
+Claude finished the response
+
+76
+44
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+please continue 
