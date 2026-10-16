@@ -15,7 +15,7 @@
     <ol id="slots-feed" class="spins">
         @foreach (var result in _results)
         {
-            <SlotResult @key="result.Id" Result="result" Now="_now" />
+            <SlotResult @key="result.Id" Id="result.Id" Text="@result.Text" Now="_now" />
         }
     </ol>
     <button type="button" id="slots-older" class="older" hidden>Show older results</button>
@@ -28,7 +28,7 @@
     <ol id="slots-winners" class="spins">
         @foreach (var result in _winners)
         {
-            <SlotResult @key="result.Id" Result="result" Now="_now" />
+            <SlotResult @key="result.Id" Id="result.Id" Text="@result.Text" Now="_now" />
         }
     </ol>
 </section>

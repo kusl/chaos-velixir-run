@@ -1,11 +1,11 @@
-<li class="@Classes" data-id="@Result.Id">
+<li class="@Classes" data-id="@Id">
     @if (_win is SlotWin.None)
     {
         @Row
     }
     else
     {
-        <details class="odds" data-text="@Result.Text">
+        <details class="odds" data-text="@Text">
             <summary class="row">@Row</summary>
         </details>
     }
@@ -16,7 +16,10 @@
     private bool[] _hits = [];
 
     [Parameter, EditorRequired]
-    public BoardMessage Result { get; set; } = null!;
+    public Guid Id { get; set; }
+
+    [Parameter, EditorRequired]
+    public string Text { get; set; } = "";
 
     [Parameter]
     public DateTimeOffset Now { get; set; }
@@ -25,17 +28,17 @@
 
     protected override void OnParametersSet()
     {
-        _win = SlotRules.Classify(Result.Text);
-        _hits = SlotRules.Hits(Result.Text);
+        _win = SlotRules.Classify(Text);
+        _hits = SlotRules.Hits(Text);
     }
 
     private RenderFragment Row => __builder =>
     {
-        <time datetime="@MessageFormat.Iso(Result.Id)">@MessageFormat.Label(Result.Id, Now)</time>
+        <time datetime="@MessageFormat.Iso(Id)">@MessageFormat.Label(Id, Now)</time>
         <p class="symbols">
-            @for (var i = 0; i < Result.Text.Length; i++)
+            @for (var i = 0; i < Text.Length; i++)
             {
-                <span class="@(_hits[i] ? "hit" : null)">@Result.Text[i]</span>
+                <span class="@(_hits[i] ? "hit" : null)">@Text[i]</span>
             }
         </p>
         @if (_win is not SlotWin.None)
