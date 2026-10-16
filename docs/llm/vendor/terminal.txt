@@ -228,4 +228,74 @@ Total source size: 0.25 MB across 140 files
 real	0m35.500s
 user	0m8.375s
 sys	0m3.234s
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
+
+==> Restore
+Restore complete (0.7s)
+
+Build succeeded in 0.8s
+
+==> Build (Release, warnings are errors)
+  Chaos.E2E net10.0 succeeded (2.7s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
+  Chaos.Web net10.0 succeeded (4.3s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web.Tests net10.0 succeeded (0.6s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
+
+Build succeeded in 5.2s
+
+==> Unit and integration tests
+Running tests from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
+failed Chaos.Web.Tests.LatencyRunTests.TheCatalogIsUsableInRunsAndThePolicy (10ms)
+  from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
+  Assert.All() Failure: 1 out of 37 items in the collection did not pass.
+  [0]: Item:  "file://"
+       Error: Assert.StartsWith() Failure: String start does not match
+              String:         "file://"
+              Expected start: "https://"
+    at Chaos.Web.Tests.LatencyRunTests.TheCatalogIsUsableInRunsAndThePolicy() in tests/Chaos.Web.Tests/LatencyRunTests.cs:58
+    at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+    at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) failed with 1 error(s) (1s 153ms)
+Exit code: 2
+  Standard output: info: Microsoft.Hosting.Lifetime[0]
+        Application started. Press Ctrl+C to shut down.
+  info: Microsoft.Hosting.Lifetime[0]
+        Hosting environment: Development
+  info: Microsoft.Hosting.Lifetime[0]
+        Content root path: /home/kushal/src/dotnet/chaos-velixir-run/src/Chaos.Web
+  info: Microsoft.Hosting.Lifetime[0]
+        Application is shutting down...
+  
+
+  In process file artifacts produced:
+    - artifacts/test-results/unit/coverage.cobertura.xml
+
+Test run summary: Failed!
+  total: 177
+  failed: 1
+  succeeded: 176
+  skipped: 0
+  duration: 2s 060ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
+
+real	0m8.728s
+user	0m5.510s
+sys	0m0.932s
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
+
+==> Restore
+Restore complete (0.5s)
+
+Build succeeded in 0.5s
+
+==> Build (Release, warnings are errors)
+  Chaos.E2E net10.0 succeeded (0.1s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
+  Chaos.Web net10.0 succeeded (0.4s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web.Tests net10.0 failed with 1 error(s) (0.2s)
+    /home/kushal/src/dotnet/chaos-velixir-run/tests/Chaos.Web.Tests/LatencyRunTests.cs(58,34): error CS0103: The name 'origin' does not exist in the current context
+
+Build failed with 1 error(s) in 0.9s
+
+real	0m1.777s
+user	0m1.693s
+sys	0m0.340s
 kushal@fedora:~/src/dotnet/chaos-velixir-run$ 
