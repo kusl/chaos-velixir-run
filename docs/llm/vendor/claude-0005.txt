@@ -398,3 +398,73 @@ Claude finished the response
 42
 40
 
+Exit code is 0
+
+Last runner error: Process /usr/lib64/dotnet/dotnet:96147 exited with code '0'.
+
+--- EXCEPTION #1/1 [LoggerException]
+Message = “Process /usr/lib64/dotnet/dotnet:96147 exited with code '0'.”
+StackTraceString = “
+  at JetBrains.Util.ILoggerEx.LogMessage(ILogger logger, LoggingLevel level, String message) in LogMessage.il:line IL_002E mvid 0C8B
+     at JetBrains.Util.ILoggerEx.Error(ILogger logger, String message) in Error.il:line IL_0000 mvid 0C8B
+     at JetBrains.ReSharper.UnitTestFramework.Execution.TestRunner.TestRunnerRunStrategy.AnalyseProcessCrash(ProcessExitedUnexpectedlyException ex, IUnitTestRun run) in AnalyseProcessCrash.il:line IL_006B mvid 5A9E
+     at JetBrains.ReSharper.UnitTestFramework.Execution.TestRunner.TestRunnerRunStrategy.Run(IUnitTestRun run) in Run.il:line IL_01C8 mvid 5A9E
+     at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.ExecutionContextCallback(Object s) in ExecutionContextCallback.il:line IL_0000 mvid E184
+     at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state) in RunInternal.il:line IL_0040 mvid E184
+     at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.MoveNext(Thread threadPoolThread) in MoveNext.il:line IL_0000 mvid E184 or MoveNext.il:line IL_003A mvid E184 or MoveNext.il:line IL_004B mvid E184
+     at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.MoveNext() in MoveNext.il:line IL_0000 mvid E184 or MoveNext.il:line IL_003A mvid E184 or MoveNext.il:line IL_004B mvid E184
+     at System.Threading.Tasks.AwaitTaskContinuation.RunOrScheduleAction(IAsyncStateMachineBox box, Boolean allowInlining) in RunOrScheduleAction.il:line IL_003B mvid E184
+     at System.Threading.Tasks.Task.RunContinuations(Object continuationObject) in RunContinuations.il:line IL_0065 mvid E184 or RunContinuations.il:line IL_0090 mvid E184
+     at System.Threading.Tasks.Task.FinishSlow(Boolean userDelegateExecute) in FinishSlow.il:line IL_0003 mvid E184
+     at System.Threading.Tasks.Task.TrySetException(Object exceptionObject) in TrySetException.il:line IL_0022 mvid E184
+     at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.SetException(Exception exception, Task`1& taskField) in SetException.il:line IL_0025 mvid E184
+     at JetBrains.ReSharper.UnitTestFramework.Execution.TestRunner.TestRunnerAgentManager.TestRunnerExecutionAgent.RunTests(CancellationToken cancelCt, CancellationToken abortCt) in RunTests.il:line IL_00AE mvid 5A9E
+     at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.ExecutionContextCallback(Object s) in ExecutionContextCallback.il:line IL_0000 mvid E184
+     at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state) in RunInternal.il:line IL_0040 mvid E184
+     at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.MoveNext(Thread threadPoolThread) in MoveNext.il:line IL_0000 mvid E184 or MoveNext.il:line IL_003A mvid E184 or MoveNext.il:line IL_004B mvid E184
+     at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.MoveNext() in MoveNext.il:line IL_0000 mvid E184 or MoveNext.il:line IL_003A mvid E184 or MoveNext.il:line IL_004B mvid E184
+     at System.Threading.Tasks.AwaitTaskContinuation.RunOrScheduleAction(IAsyncStateMachineBox box, Boolean allowInlining) in RunOrScheduleAction.il:line IL_003B mvid E184
+     at System.Threading.Tasks.Task.RunContinuations(Object continuationObject) in RunContinuations.il:line IL_0065 mvid E184 or RunContinuations.il:line IL_0090 mvid E184
+     at System.Threading.Tasks.Task.FinishSlow(Boolean userDelegateExecute) in FinishSlow.il:line IL_0003 mvid E184
+     at System.Threading.Tasks.Task.TrySetException(Object exceptionObject) in TrySetException.il:line IL_0022 mvid E184
+     at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.SetException(Exception exception, Task`1& taskField) in SetException.il:line IL_0025 mvid E184
+     at JetBrains.ReSharper.UnitTestFramework.Common.Extensions.TaskExtensions.CancelIf(Task task, CancellationToken ct, TaskCreationOptions options) in CancelIf.il:line IL_0126 mvid 5A9E
+     at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.ExecutionContextCallback(Object s) in ExecutionContextCallback.il:line IL_0000 mvid E184
+     at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state) in RunInternal.il:line IL_0040 mvid E184
+     at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.MoveNext(Thread threadPoolThread) in MoveNext.il:line IL_0000 mvid E184 or MoveNext.il:line IL_003A mvid E184 or MoveNext.il:line IL_004B mvid E184
+     at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.MoveNext() in MoveNext.il:line IL_0000 mvid E184 or MoveNext.il:line IL_003A mvid E184 or MoveNext.il:line IL_004B mvid E184
+     at System.Threading.Tasks.AwaitTaskContinuation.RunOrScheduleAction(IAsyncStateMachineBox box, Boolean allowInlining) in RunOrScheduleAction.il:line IL_003B mvid E184
+     at System.Threading.Tasks.Task.RunContinuations(Object continuationObject) in RunContinuations.il:line IL_0065 mvid E184 or RunContinuations.il:line IL_0090 mvid E184
+     at System.Threading.Tasks.Task`1.TrySetResult(TResult result) in TrySetResult.il:line IL_004B mvid E184
+     at System.Threading.Tasks.Task.TwoTaskWhenAnyPromise`1.Invoke(Task completingTask) in Invoke.il:line IL_0088 mvid E184
+     at System.Threading.Tasks.Task.RunContinuations(Object continuationObject) in RunContinuations.il:line IL_0065 mvid E184 or RunContinuations.il:line IL_0090 mvid E184
+     at System.Threading.Tasks.Task.FinishSlow(Boolean userDelegateExecute) in FinishSlow.il:line IL_0003 mvid E184
+     at System.Threading.Tasks.Task.TrySetException(Object exceptionObject) in TrySetException.il:line IL_0022 mvid E184
+     at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.SetException(Exception exception, Task`1& taskField) in SetException.il:line IL_0025 mvid E184
+     at JetBrains.ReSharper.UnitTestFramework.Common.Extensions.TaskExtensions.ThrowIf[TException](Task task, Task signallingTask, Func`1 exceptionFactory) in ThrowIf.il:line IL_00A9 mvid 5A9E
+     at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.ExecutionContextCallback(Object s) in ExecutionContextCallback.il:line IL_0000 mvid E184
+     at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state) in RunInternal.il:line IL_0040 mvid E184
+     at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.MoveNext(Thread threadPoolThread) in MoveNext.il:line IL_0000 mvid E184 or MoveNext.il:line IL_003A mvid E184 or MoveNext.il:line IL_004B mvid E184
+     at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.MoveNext() in MoveNext.il:line IL_0000 mvid E184 or MoveNext.il:line IL_003A mvid E184 or MoveNext.il:line IL_004B mvid E184
+     at System.Threading.Tasks.AwaitTaskContinuation.RunOrScheduleAction(IAsyncStateMachineBox box, Boolean allowInlining) in RunOrScheduleAction.il:line IL_003B mvid E184
+     at System.Threading.Tasks.Task.RunContinuations(Object continuationObject) in RunContinuations.il:line IL_0065 mvid E184 or RunContinuations.il:line IL_0090 mvid E184
+     at System.Threading.Tasks.Task`1.TrySetResult(TResult result) in TrySetResult.il:line IL_004B mvid E184
+     at System.Threading.Tasks.Task.TwoTaskWhenAnyPromise`1.Invoke(Task completingTask) in Invoke.il:line IL_0088 mvid E184
+     at System.Threading.Tasks.Task.RunContinuations(Object continuationObject) in RunContinuations.il:line IL_0065 mvid E184 or RunContinuations.il:line IL_0090 mvid E184
+     at System.Threading.Tasks.Task`1.TrySetResult(TResult result) in TrySetResult.il:line IL_004B mvid E184
+     at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.SetExistingTaskResult(Task`1 task, TResult result) in SetExistingTaskResult.il:line IL_001D mvid E184
+     at JetBrains.Util.ProcessExtensions.WaitForExitAsync(IPreparedProcess process, CancellationToken token) in WaitForExitAsync.il:line IL_018C mvid 0B93
+     at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.ExecutionContextCallback(Object s) in ExecutionContextCallback.il:line IL_0000 mvid E184
+     at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state) in RunFromThreadPoolDispatchLoop.il:line IL_0015 mvid E184
+     at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.MoveNext(Thread threadPoolThread) in MoveNext.il:line IL_0000 mvid E184 or MoveNext.il:line IL_003A mvid E184 or MoveNext.il:line IL_004B mvid E184
+     at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.ExecuteFromThreadPool(Thread threadPoolThread) in ExecuteFromThreadPool.il:line IL_0000 mvid E184
+     at System.Threading.ThreadPoolWorkQueue.Dispatch() in Dispatch.il:line IL_00E3 mvid E184
+     at System.Threading.PortableThreadPool.WorkerThread.WorkerThreadStart() in WorkerThreadStart.il:line IL_0096 mvid E184
+     at System.Threading.Thread.StartCallback() in StartCallback.il:line IL_0000 mvid E184
+”
+ExceptionPath = Root
+ClassName = JetBrains.Util.LoggerException
+HResult = COR_E_APPLICATION=80131600
+
+
+Last launch log file: /home/kushal/.cache/JetBrains/Rider2026.2/log/UnitTestLogs/Sessions/2026-10-16-04-57-48-348___b77b67c3-ebbe-491b-afce-8e62b7210d85.log
