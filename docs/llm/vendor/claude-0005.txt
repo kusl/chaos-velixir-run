@@ -455,3 +455,346 @@ user	0m5.704s
 sys	0m1.019s
 kushal@fedora:~/src/dotnet/chaos-velixir-run$ 
 ```
+
+
+/
+Ran 27 commands, shared files
+Building a Razor markup snippet for answer summaries.
+Working out how CSS scoping applies to island versus page elements.
+Investigating how SSR timing interacts with streamed rendering.
+Updating the test suite for the rendering changes.
+Tracing which stroke offers qualify against the start time.
+Testing snapshot capacity against the canvas point limit.
+Verifying cache-control header assertions in the test suite.
+Verifying regex escaping and debugging an async canvas test.
+Untangling a timing issue with database open requests.
+Verifying the config diff reflects a corrupted base, not a real change.
+Debugging table row duplication in the output.
+Tracing a reset flow across saved stroke snapshots.
+Presented file
+I couldn’t build or run the C# here because there is no .NET SDK, so scripts/run-all.sh on your machine is the first real check of the C# and the Playwright tests. The JavaScript tests do run here and all 90 pass; the latency and canvas clients also ran correctly in a simulated browser. The whole project is in chaos-velixir-run.tar.gz; extract it over the repo. No files need deleting.
+
+1. Footer clock. Every page footer now shows the server’s time and offset, and it keeps ticking. The browser works out how far it is from the server once and ticks from there, so the user’s own clock is never shown. It re-checks against a new GET /time endpoint on load, every 10 minutes, when the tab becomes visible again, and after the device wakes from sleep.
+
+2. Character count. The board shows n / 500 and updates on typing and pasting, without a round trip to the server. It goes back to 0 / 500 after a successful send and turns red at the limit.
+
+3. Canvas “New message” defect. The board’s screen-reader announcement went into a hidden paragraph at the end of the board page. When you navigated to the canvas, Blazor reused that paragraph as the canvas page’s visible note, and the board’s late announcements still landed in it. The slots page had the same problem.
+
+There is now one announcer for the whole site, which is cleared on every navigation.
+The board and slots code stops announcing once you leave the page.
+I checked every other place the JavaScript writes into a page, and none of them can be reused across pages this way.
+A new end-to-end test checks that board messages never appear on the canvas page.
+4. Canvas survives restarts.
+
+Every stroke and every reset now gets a server UUIDv7, and later ids always sort after earlier ones.
+The browser saves finished strokes and the latest reset in IndexedDB, keeping up to 10,000 strokes. A reset deletes the strokes before it.
+After a server restart, the browser offers back its latest reset first, then its newest 500 strokes, but only strokes drawn after that reset. The server checks them, never evicts existing strokes to make room for them, and sends them to everyone.
+5. /latency page.
+
+One “Run test” button times 37 public endpoints: Cloudflare, Google, Apple, Microsoft, GitHub, Wikipedia, npm, NuGet and others, plus 17 AWS regions. Each gets one warm-up request, and the fastest of the next three is kept.
+The same endpoints are timed from your browser and, in parallel, from the velixir server.
+Only one test runs at a time, at least 10 seconds apart, and each client can start one every 5 minutes.
+Results contain only timings, no IP or identity. The server keeps the last 50, the browser keeps 10,000, and everyone sees every result live.
+After ten tests from a browser, an auto run button appears. It keeps running while the tab is hidden, because the point is monitoring.
+The browser can only talk to endpoints the security policy allows, so the policy now includes all of them. It is built from the same endpoint list, so the two can’t drift apart.
+I haven’t checked every endpoint from a real browser. One that is down or blocked just shows –.
+
+The settings are Chaos__LatencyCooldownSeconds, LatencyGapSeconds, LatencyBudgetSeconds, LatencyCapacity and LatencyServerProbe. The end-to-end script turns the server probe off and Playwright blocks requests to other sites, so the tests don’t depend on the internet.
+
+Other changes
+
+The About page’s “Clear local history” now also clears the canvas and latency data.
+The Home page, About page, README and ADRs are updated, with new ADRs 0020 (latency) and 0021 (server clock).
+The export had restored tests/js/vitest.config.mjs with the dump’s trailer stuck to the end. The copy in the tarball matches your repo’s hash, so it is not a real change. The script execute bits are restored.
+
+Chaos velixir run.tar
+GZ 
+Test is failing 
+
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
+
+==> Restore
+Restore complete (0.9s)
+
+Build succeeded in 1.0s
+
+==> Build (Release, warnings are errors)
+  Chaos.E2E net10.0 succeeded (0.5s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
+  Chaos.Web net10.0 succeeded (1.1s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web.Tests net10.0 succeeded (0.6s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
+
+Build succeeded in 2.1s
+
+==> Unit and integration tests
+Running tests from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
+failed Chaos.Web.Tests.LatencyRunTests.TheCatalogIsUsableInRunsAndThePolicy (10ms)
+  from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
+  Assert.All() Failure: 1 out of 37 items in the collection did not pass.
+  [0]: Item:  "file://"
+       Error: Assert.StartsWith() Failure: String start does not match
+              String:         "file://"
+              Expected start: "https://"
+    at Chaos.Web.Tests.LatencyRunTests.TheCatalogIsUsableInRunsAndThePolicy() in tests/Chaos.Web.Tests/LatencyRunTests.cs:58
+    at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+    at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) failed with 1 error(s) (1s 220ms)
+Exit code: 2
+  Standard output: info: Microsoft.Hosting.Lifetime[0]
+        Application started. Press Ctrl+C to shut down.
+  info: Microsoft.Hosting.Lifetime[0]
+        Hosting environment: Development
+  info: Microsoft.Hosting.Lifetime[0]
+        Content root path: /home/kushal/src/dotnet/chaos-velixir-run/src/Chaos.Web
+  info: Microsoft.Hosting.Lifetime[0]
+        Application is shutting down...
+  
+
+  In process file artifacts produced:
+    - artifacts/test-results/unit/coverage.cobertura.xml
+
+Test run summary: Failed!
+  total: 177
+  failed: 1
+  succeeded: 176
+  skipped: 0
+  duration: 2s 177ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
+
+real    0m5.987s
+user    0m5.704s
+sys    0m1.019s
+kushal@fedora:~/src/dotnet/chaos-velixir-run$
+Fixing cross-platform URI parsing for absolute path validation.
+Fixing cross-platform URI parsing for absolute path validation.
+On Linux, .NET treats a path like /time as an absolute file:///time URI. So the “This site” endpoint produced a file:// origin, which also leaked into the Content Security Policy. Endpoints now count as remote only if they are http or https. The server probe uses the same check, so it can’t be pointed at a local file.
+
+Two files change.
+
+src/Chaos.Web/Latency/LatencyEndpoint.cs
+
+csharp
+namespace Chaos.Web.Latency;
+
+internal sealed record LatencyEndpoint(string Key, string Label, string Url, bool FromServer = true)
+{
+    public Uri? Remote =>
+        Uri.TryCreate(Url, UriKind.Absolute, out var uri) && (uri.Scheme == Uri.UriSchemeHttps || uri.Scheme == Uri.UriSchemeHttp)
+            ? uri
+            : null;
+
+    public string? Origin => Remote?.GetLeftPart(UriPartial.Authority);
+}
+src/Chaos.Web/Latency/HttpLatencyProbe.cs
+
+csharp
+using System.Diagnostics;
+using System.Net;
+using System.Net.Http.Headers;
+
+namespace Chaos.Web.Latency;
+
+internal sealed class HttpLatencyProbe : ILatencyProbe, IDisposable
+{
+    public const int Samples = 3;
+    public const int Parallelism = 6;
+    public const string UserAgent = "chaos-velixir-run/1.0 (+https://github.com/kusl/chaos-velixir-run)";
+
+    private static readonly TimeSpan RequestTimeout = TimeSpan.FromSeconds(4);
+
+    private readonly SocketsHttpHandler _handler;
+    private readonly HttpClient _client;
+
+    public HttpLatencyProbe()
+    {
+        _handler = new SocketsHttpHandler
+        {
+            AllowAutoRedirect = true,
+            MaxAutomaticRedirections = 3,
+            AutomaticDecompression = DecompressionMethods.None,
+            UseCookies = false,
+            ConnectTimeout = RequestTimeout,
+            PooledConnectionLifetime = TimeSpan.FromMinutes(1),
+            PooledConnectionIdleTimeout = TimeSpan.FromSeconds(20),
+            MaxConnectionsPerServer = 2,
+        };
+        _client = new HttpClient(_handler, disposeHandler: false)
+        {
+            Timeout = Timeout.InfiniteTimeSpan,
+            DefaultRequestVersion = HttpVersion.Version20,
+            DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower,
+        };
+        _client.DefaultRequestHeaders.UserAgent.ParseAdd(UserAgent);
+    }
+
+    public async Task<int?[]> MeasureAsync(IReadOnlyList<LatencyEndpoint> endpoints, TimeSpan budget, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(endpoints);
+        var results = new int?[endpoints.Count];
+        var targets = new List<(int Index, Uri Uri)>();
+        for (var i = 0; i < endpoints.Count; i++)
+        {
+            if (endpoints[i].FromServer && endpoints[i].Remote is { } uri)
+            {
+                targets.Add((i, uri));
+            }
+        }
+
+        using var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        deadline.CancelAfter(budget);
+        var options = new ParallelOptions { MaxDegreeOfParallelism = Parallelism, CancellationToken = deadline.Token };
+        try
+        {
+            await Parallel.ForEachAsync(targets, options, async (target, token) =>
+            {
+                results[target.Index] = await MeasureOneAsync(target.Uri, token).ConfigureAwait(false);
+            }).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (deadline.IsCancellationRequested)
+        {
+        }
+
+        return results;
+    }
+
+    public void Dispose()
+    {
+        _client.Dispose();
+        _handler.Dispose();
+    }
+
+    private async Task<int?> MeasureOneAsync(Uri uri, CancellationToken cancellationToken)
+    {
+        if (await TimeAsync(uri, cancellationToken).ConfigureAwait(false) is null)
+        {
+            return null;
+        }
+
+        int? best = null;
+        for (var i = 0; i < Samples; i++)
+        {
+            if (await TimeAsync(uri, cancellationToken).ConfigureAwait(false) is not { } elapsed)
+            {
+                break;
+            }
+
+            best = best is { } current ? Math.Min(current, elapsed) : elapsed;
+        }
+
+        return best;
+    }
+
+    private async Task<int?> TimeAsync(Uri uri, CancellationToken cancellationToken)
+    {
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeout.CancelAfter(RequestTimeout);
+        try
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            request.Headers.CacheControl = new CacheControlHeaderValue { NoCache = true, NoStore = true };
+            var start = Stopwatch.GetTimestamp();
+            using var response = await _client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, timeout.Token).ConfigureAwait(false);
+            var elapsed = Stopwatch.GetElapsedTime(start);
+            await response.Content.CopyToAsync(Stream.Null, timeout.Token).ConfigureAwait(false);
+            return (int)Math.Round(elapsed.TotalMilliseconds, MidpointRounding.AwayFromZero);
+        }
+        catch (Exception exception) when (exception is HttpRequestException or OperationCanceledException or IOException)
+        {
+            return null;
+        }
+    }
+}
+No tests or docs change. The failing test now passes as written, and ThePolicyAllowsTheLatencyEndpoints keeps the policy free of file://.
+
+
+
+
+Claude is AI and can make mistakes. Please double-check responses.
+
+
+
+
+Claude finished the response
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+43
+40
+

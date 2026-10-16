@@ -44,7 +44,7 @@ internal sealed class HttpLatencyProbe : ILatencyProbe, IDisposable
         var targets = new List<(int Index, Uri Uri)>();
         for (var i = 0; i < endpoints.Count; i++)
         {
-            if (endpoints[i].FromServer && Uri.TryCreate(endpoints[i].Url, UriKind.Absolute, out var uri))
+            if (endpoints[i].FromServer && endpoints[i].Remote is { } uri)
             {
                 targets.Add((i, uri));
             }
