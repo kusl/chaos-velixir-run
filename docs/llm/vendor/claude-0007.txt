@@ -1,0 +1,38 @@
+60
+42
+
+Need to tweak this slots thing slightly 
+i need a concept of jackpot 
+at least four of a kind and five of a kind 
+if we see it 
+we never delete it 
+I don't know how we would test this 
+because I have never seen a four of a kind or five of a kind 
+but if we do we need to celebrate it 
+also lets sync more than the last fifty winners 
+lets sync up to 500 winners 
+
+also I think there is a defect 
+with the latency page 
+sometimes when I click on my desktop and then go to my phone 
+even though I clicked run test on the desktop 
+on my phone it says you ran a test recently 
+both are on the same wifi yes 
+but that shouldn't matter 
+we don't track ip addresses 
+and this throttling is not by ip address
+it is by the browser local storage, right? 
+please review and fix this defect 
+if it is indeed a defect 
+
+
+Use your best judgment
+
+If only a few files (under five or there about) need to change, give me the full path of the files that need to change and the FULL file 
+if there are a lot of files that need to change 
+    Delivery
+    Whole project as one tar.gz, unambiguous file placement
+    Any files to delete on updates called out explicitly
+    No bespoke sed/patch scripts — full files only for anything that changes
+    Docs updated alongside code changes
+    Low verbosity, no code comments
