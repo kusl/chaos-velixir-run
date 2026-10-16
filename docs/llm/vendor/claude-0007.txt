@@ -398,3 +398,703 @@ Claude finished the response
 
 
 
+A test failed 
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
+scripts/run-all.sh: line 23: /home/kushal/src/dotnet/chaos-velixir-run/scripts/build.sh: Permission denied
+
+real	0m0.006s
+user	0m0.001s
+sys	0m0.004s
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ chmod +x scripts/*.sh
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
+
+==> Restore
+Restore complete (0.7s)
+
+Build succeeded in 0.8s
+
+==> Build (Release, warnings are errors)
+  Chaos.E2E net10.0 succeeded (2.9s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
+  Chaos.Web net10.0 succeeded (4.5s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web.Tests net10.0 succeeded (0.5s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
+
+Build succeeded in 5.4s
+
+==> Unit and integration tests
+Running tests from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
+failed Chaos.Web.Tests.SlotServiceTests.OfferedJackpotsOnlyTouchTheJackpots (10ms)
+  from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
+  Assert.Equal() Failure: Values differ
+  Expected: 0
+  Actual:   1
+    at Chaos.Web.Tests.SlotServiceTests.OfferedJackpotsOnlyTouchTheJackpots() in tests/Chaos.Web.Tests/SlotServiceTests.cs:245
+    at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+    at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) failed with 1 error(s) (1s 178ms)
+Exit code: 2
+  Standard output: info: Microsoft.Hosting.Lifetime[0]
+        Application started. Press Ctrl+C to shut down.
+  info: Microsoft.Hosting.Lifetime[0]
+        Hosting environment: Development
+  info: Microsoft.Hosting.Lifetime[0]
+        Content root path: /home/kushal/src/dotnet/chaos-velixir-run/src/Chaos.Web
+  info: Microsoft.Hosting.Lifetime[0]
+        Application is shutting down...
+  
+
+  In process file artifacts produced:
+    - artifacts/test-results/unit/coverage.cobertura.xml
+
+Test run summary: Failed!
+  total: 204
+  failed: 1
+  succeeded: 203
+  skipped: 0
+  duration: 2s 059ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
+
+real	0m8.952s
+user	0m5.634s
+sys	0m0.884s
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/
+Need to tweak this slots thing slightly 
+i need a concept of jackpot 
+at least four of a kind and five of a kind 
+if we see it 
+we never delete it 
+I don't know how we would test this 
+because I have never seen a four of a kind or five of a kind 
+but if we do we need to celebrate it 
+also lets sync more than the last fifty winners 
+lets sync up to 500 winners 
+
+also I think there is a defect 
+with the latency page 
+sometimes when I click on my desktop and then go to my phone 
+even though I clicked run test on the desktop 
+on my phone it says you ran a test recently 
+both are on the same wifi yes 
+but that shouldn't matter 
+we don't track ip addresses 
+and this throttling is not by ip address
+it is by the browser local storage, right? 
+please review and fix this defect 
+if it is indeed a defect 
+
+Use your best judgment
+
+If only a few files (under five or there about) need to change, give me the full path of the files that need to change and the FULL file 
+if there are a lot of files that need to change 
+    Delivery
+    Whole project as one tar.gz, unambiguous file placement
+    Any files to delete on updates called out explicitly
+    No bespoke sed/patch scripts — full files only for anything that changes
+    Docs updated alongside code changes
+    Low verbosity, no code comments
+
+Ran 49 commands, read memory
+Let me reconstruct the project tree so I can work on real files.
+All 167 files extracted with matching hashes. Now the slots code.
+Working out how the cooldown mechanism is keyed by network.
+Sizing message limits for a large batch of winner ids.
+Now LocalHistory (the IndexedDB cap pruning) in BoardIsland.
+Checking unit tests tied to slot updates and capacity limits.
+Investigating test coverage for skipping recent results.
+Designing a configurable slot option for chaos settings.
+Now the server side. ChaosOptions first.
+Debugging edge cases around default limits and enum placement.
+Checking enum design rules against analyzer recommendations.
+Reviewing access modifiers across methods and components.
+Designing the layout and ordering of the slots page sections.
+Untangling a CSS specificity conflict on archived jackpot borders.
+Fixing a slot-machine styling and overlap issue.
+Documenting how slot jackpots and leaderboards work.
+Calculating poker odds for a specific hand probability.
+Working out how the deployment script locates the application.
+Debugging shell argument expansion under strict mode settings.
+Untangling overload resolution for the context method call.
+Checking Playwright .NET's assertion polling API.
+Checking whether test project setup provides needed namespace.
+Writing automated tests for a hidden game-state indicator.
+Summarizing the scope of changes across several files.
+I hit my tool limit before I could package the tarball, so there’s nothing to download yet. Here’s where things stand.
+
+Latency “defect”
+The throttle is not based on browser local storage. The authority is the server’s 300 s per-client cooldown (KeyedCooldowns in LatencyService.Begin). The client key is ClientAddress.Key(RemoteIpAddress): your IPv4 address, or your IPv6 /64. ADR 0008 documents this: “A client is its IP after X-Forwarded-For”. Your phone and desktop on the same Wi-Fi share one public address, so the phone gets wait N from the server. Local storage (chaos-latency-next) is only a hint for the browser’s own countdown. Addresses are held in memory for rate limiting and never saved or shown, but they are used.
+
+The limiting itself is working as designed. The message is the bug: “You ran a test recently” is false on the phone. I kept IP keying, because without cookies or identity a key held in the browser can be cleared and so can’t enforce a limit. I changed the wording:
+
+Status message: “A test ran from your network recently. Devices sharing an internet connection share this limit…”
+Latency page lede and About page: these now say the limit is per network, and that rate limits count by address in memory only.
+If you’d rather two devices in a household could each run a test, the alternative is a small per-network burst, for example 2 tests per 5 minutes. Say so and I’ll do that instead.
+
+Jackpots and 500 winners
+All of this is written in my working copy:
+
+Rules: four or five of a kind is a jackpot (SlotRules.IsJackpot, isJackpot in JS).
+Server list: SlotService keeps a separate Jackpots list that never evicts. Drawn jackpots are always kept. Offered ones are accepted up to SlotJackpotCapacity (default 10,000), which stops forged offers from growing it without bound. Snapshots and deltas carry jackpotsAdded, and there’s a new OfferJackpots hub method with its own budget of 500.
+Winners: SlotWinnerCapacity goes from 50 to 500, and the winner offer budget goes from 50 to 500 per circuit. Offers are chunked to stay under the hub’s 32 KB message limit.
+Browser storage: IndexedDB moves to v2 with a new jackpots store that is never pruned. On upgrade, existing jackpots in spins are copied into it.
+UI: there’s a new Jackpots list under the machine, and jackpot rows get a red border and a “Jackpot” badge.
+Celebration: the verdict reads “Jackpot! Five of a kind”, the cabinet glows and the lights race, and confetti falls for 8 seconds. Everyone watching sees it, and screen readers hear “Jackpot!”. With reduced motion it’s the glow only. Nothing uses inline styles, so the CSP is unchanged.
+How to test without ever rolling one: a new option, Chaos__SlotDrawSymbols, limits which symbols the server draws. Chaos__SlotDrawSymbols=7 dotnet run --project src/Chaos.Web makes every spin 77777, so you can watch the celebration locally. The E2E container now also starts a second app with that setting on port 5081.
+New tests:
+.NET: jackpot rules, capacity and eviction, snapshot, 500-winner offers, option validation, and the page rendering the jackpot list.
+JS: isJackpot, verdict text, the v2 migration, and offer ordering.
+E2E: a jackpot is celebrated by two browsers, a seeded jackpot reaches a fresh browser through the server, and the v1-to-v2 upgrade copies existing jackpots.
+Not done yet
+Nothing is compiled or run. There’s no .NET SDK in my sandbox, and the npm install for vitest failed, so you’d be the first to build it.
+Docs not updated: ADR 0019, 0020, 0008 and 0014, and the README.
+Not packaged: no tarball yet. Nothing needs deleting; only files are added and changed.
+Reply “continue” and next turn I’ll update the docs and deliver the whole project as one tar.gz.
+
+please continue
+
+Ran a command
+Working copy survived. Let me try running the JS tests once more with a different install approach.
+
+Ran 10 commands, shared files
+Here’s the full project as chaos-velixir-run.tar.gz, with the docs now updated. The JavaScript tests pass (109 tests), but the .NET code hasn’t been compiled: there’s no .NET SDK here, so your scripts/run-all.sh run will be the first build.
+
+Placement: the archive’s top folder is chaos-velixir-run/, and it mirrors your repo. From ~/src/dotnet, run tar -xzf chaos-velixir-run.tar.gz to overwrite in place. It contains only the 167 files from your export, so files that weren’t exported (such as LICENSE) are left as they are.
+
+Delete: nothing.
+
+Changed (27 files):
+
+Code:
+src/Chaos.Web/Slots/SlotRules.cs
+src/Chaos.Web/Slots/SlotService.cs
+src/Chaos.Web/Slots/SlotUpdate.cs
+src/Chaos.Web/Infrastructure/ChaosOptions.cs
+src/Chaos.Web/Components/Islands/SlotIsland.razor, .razor.js and .razor.css
+src/Chaos.Web/Components/Islands/LatencyIsland.razor.js
+src/Chaos.Web/Components/Pages/SlotsPage.razor and .razor.css
+src/Chaos.Web/Components/Pages/SlotResult.razor
+src/Chaos.Web/Components/Pages/LatencyPage.razor
+src/Chaos.Web/Components/Pages/About.razor
+scripts/e2e-container.sh
+Tests:
+tests/Chaos.Web.Tests/SlotServiceTests.cs
+tests/Chaos.Web.Tests/SlotRulesTests.cs
+tests/Chaos.Web.Tests/InfrastructureTests.cs
+tests/Chaos.Web.Tests/HttpPipelineTests.cs
+tests/Chaos.E2E/BrowserFixture.cs
+tests/Chaos.E2E/SlotTests.cs
+tests/js/slots.test.js
+Docs:
+README.md
+docs/adr/0005-local-history.md
+docs/adr/0008-abuse-limits.md
+docs/adr/0014-testing.md
+docs/adr/0019-slots.md
+docs/adr/0020-latency.md
+To watch the celebration locally, run Chaos__SlotDrawSymbols=7 dotnet run --project src/Chaos.Web; every spin will come up 77777.
+
+The E2E container now starts a second copy of the app on port 5081 with that setting, so the end-to-end jackpot test gets a jackpot on every spin.
+
+
+Chaos velixir run.tar
+GZ 
+A test failed 
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
+scripts/run-all.sh: line 23: /home/kushal/src/dotnet/chaos-velixir-run/scripts/build.sh: Permission denied
+
+real    0m0.006s
+user    0m0.001s
+sys    0m0.004s
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ chmod +x scripts/*.sh
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
+
+==> Restore
+Restore complete (0.7s)
+
+Build succeeded in 0.8s
+
+==> Build (Release, warnings are errors)
+  Chaos.E2E net10.0 succeeded (2.9s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
+  Chaos.Web net10.0 succeeded (4.5s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web.Tests net10.0 succeeded (0.5s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
+
+Build succeeded in 5.4s
+
+==> Unit and integration tests
+Running tests from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
+failed Chaos.Web.Tests.SlotServiceTests.OfferedJackpotsOnlyTouchTheJackpots (10ms)
+  from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
+  Assert.Equal() Failure: Values differ
+  Expected: 0
+  Actual:   1
+    at Chaos.Web.Tests.SlotServiceTests.OfferedJackpotsOnlyTouchTheJackpots() in tests/Chaos.Web.Tests/SlotServiceTests.cs:245
+    at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+    at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) failed with 1 error(s) (1s 178ms)
+Exit code: 2
+  Standard output: info: Microsoft.Hosting.Lifetime[0]
+        Application started. Press Ctrl+C to shut down.
+  info: Microsoft.Hosting.Lifetime[0]
+        Hosting environment: Development
+  info: Microsoft.Hosting.Lifetime[0]
+        Content root path: /home/kushal/src/dotnet/chaos-velixir-run/src/Chaos.Web
+  info: Microsoft.Hosting.Lifetime[0]
+        Application is shutting down...
+
+  In process file artifacts produced:
+    - artifacts/test-results/unit/coverage.cobertura.xml
+
+Test run summary: Failed!
+  total: 204
+  failed: 1
+  succeeded: 203
+  skipped: 0
+  duration: 2s 059ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
+
+real    0m8.952s
+user    0m5.634s
+sys    0m0.884s
+kushal@fedora:~/src/dotnet/chaos-velixir-run$
+
+Ran a command
+Testing jackpot slot logic with unusual input cases.
+The test was wrong, not the app. Old() builds a fresh UUIDv7 on every call, and those IDs carry random bits. So the second Old(-1, "QQQQ7") was a different jackpot with a different ID, and the server correctly accepted it. The fix offers the same message object twice, so the second offer really is a duplicate and should be refused.
+
+The “Permission denied” was my packaging. The files were rebuilt from your dump, which doesn’t record executable bits. Your chmod +x scripts/*.sh already fixed that, and git tracks the mode, so git status should show no mode changes.
+
+Only one file changes.
+
+tests/Chaos.Web.Tests/SlotServiceTests.cs
+
+csharp
+using Chaos.Web.Infrastructure;
+using Chaos.Web.Messages;
+using Chaos.Web.Slots;
+
+namespace Chaos.Web.Tests;
+
+public sealed class SlotServiceTests
+{
+    private static readonly DateTimeOffset Start = new(2026, 10, 12, 12, 0, 0, TimeSpan.Zero);
+    private readonly ManualTimeProvider _time = new(Start);
+
+    [Fact]
+    public void PressStartsASpinStampedWithTheServerClock()
+    {
+        var slots = Create();
+        var press = slots.Press("a");
+        Assert.Equal(PressResult.Accepted, press.Result);
+        var result = Assert.Single(slots.Messages);
+        Assert.Equal(press.Id, result.Id);
+        Assert.True(SlotRules.IsValid(result.Text));
+        Assert.Equal(Start, Uuid7.Timestamp(result.Id));
+        Assert.Equal(press.Id.ToString(), press.Reply);
+    }
+
+    [Fact]
+    public void NobodyCanPressUntilTheSpinSettles()
+    {
+        var slots = Create();
+        Assert.Equal(PressResult.Accepted, slots.Press("a").Result);
+        Assert.Equal(PressResult.Busy, slots.Press("b").Result);
+        Assert.Equal(PressResult.Busy, slots.Press("a").Result);
+        Assert.Equal("busy", slots.Press("b").Reply);
+        _time.Advance(slots.SpinTime - TimeSpan.FromMilliseconds(1));
+        Assert.Equal(PressResult.Busy, slots.Press("b").Result);
+        _time.Advance(TimeSpan.FromMilliseconds(1));
+        Assert.Equal(PressResult.Accepted, slots.Press("b").Result);
+    }
+
+    [Fact]
+    public void BusyPressesDoNotSpendTheClientsAllowance()
+    {
+        var slots = Create(o =>
+        {
+            o.PressBurst = 1;
+            o.PressesPerSecond = 0.01;
+        });
+        Assert.Equal(PressResult.Accepted, slots.Press("a").Result);
+        for (var i = 0; i < 5; i++)
+        {
+            Assert.Equal(PressResult.Busy, slots.Press("b").Result);
+        }
+
+        _time.Advance(slots.SpinTime);
+        Assert.Equal(PressResult.Accepted, slots.Press("b").Result);
+    }
+
+    [Fact]
+    public void PressIsRateLimitedPerClient()
+    {
+        var slots = Create(o =>
+        {
+            o.PressBurst = 1;
+            o.PressesPerSecond = 0.1;
+        });
+        Assert.Equal(PressResult.Accepted, slots.Press("a").Result);
+        _time.Advance(slots.SpinTime);
+        var press = slots.Press("a");
+        Assert.Equal(PressResult.TooFast, press.Result);
+        Assert.Equal("slow", press.Reply);
+        Assert.Equal(PressResult.Accepted, slots.Press("b").Result);
+    }
+
+    [Fact]
+    public void SpinningReportsTheTimeLeft()
+    {
+        var slots = Create(o => o.SpinMilliseconds = 4000);
+        Assert.Null(slots.Spinning);
+        var press = slots.Press("a");
+        _time.Advance(TimeSpan.FromMilliseconds(1500));
+        var spin = Assert.IsType<SlotSpin>(slots.Spinning);
+        Assert.Equal(press.Id, spin.Id);
+        Assert.Equal(2500, spin.Remaining);
+        _time.Advance(TimeSpan.FromMilliseconds(2500));
+        Assert.Null(slots.Spinning);
+    }
+
+    [Fact]
+    public void SubscribersSeeTheSpinAndLateJoinersSeeWhatIsLeft()
+    {
+        var slots = Create(o => o.SpinMilliseconds = 4000);
+        var early = new SlotRecorder();
+        slots.Subscribe(early);
+        var press = slots.Press("a");
+
+        var delta = early.Updates[1];
+        Assert.Equal("delta", delta.Kind);
+        Assert.Equal(press.Id, Assert.Single(delta.Added).Id);
+        Assert.Equal(new SlotSpin(press.Id, 4000), delta.Spin);
+
+        _time.Advance(TimeSpan.FromSeconds(1));
+        var late = new SlotRecorder();
+        slots.Subscribe(late);
+        var snapshot = Assert.Single(late.Updates);
+        Assert.Equal("snapshot", snapshot.Kind);
+        Assert.Equal(new SlotSpin(press.Id, 3000), snapshot.Spin);
+
+        _time.Advance(TimeSpan.FromSeconds(3));
+        var settled = new SlotRecorder();
+        slots.Subscribe(settled);
+        Assert.Null(Assert.Single(settled.Updates).Spin);
+    }
+
+    [Fact]
+    public void KeepsOnlyTheNewestResults()
+    {
+        var slots = Create(o => o.SlotCapacity = 2);
+        var ids = new List<Guid>();
+        for (var i = 0; i < 3; i++)
+        {
+            ids.Add(slots.Press($"c{i}").Id);
+            _time.Advance(slots.SpinTime);
+        }
+
+        Assert.Equal([ids[2], ids[1]], slots.Messages.Select(m => m.Id));
+    }
+
+    [Fact]
+    public void OfferAcceptsOlderValidResults()
+    {
+        var slots = Create();
+        var recorder = new SlotRecorder();
+        slots.Subscribe(recorder);
+        Assert.Equal(2, slots.Offer([Old(-2, "ABCDE"), Old(-1, "ZZZ12")]));
+        Assert.Equal(["ZZZ12", "ABCDE"], slots.Messages.Select(m => m.Text));
+        Assert.Null(recorder.Updates[1].Spin);
+    }
+
+    [Fact]
+    public void OfferRejectsForgedResults()
+    {
+        var slots = Create();
+        _time.Advance(TimeSpan.FromHours(1));
+        Assert.Equal(0, slots.Offer(
+        [
+            new BoardMessage(Guid.NewGuid(), "ABCDE"),
+            new BoardMessage(Guid.CreateVersion7(Start.AddMinutes(5)), "ABCDE"),
+            new BoardMessage(Guid.CreateVersion7(Start.AddHours(2)), "ABCDE"),
+            Old(-1, "abcde"),
+            Old(-2, "ABCDEF"),
+            Old(-3, "hello world"),
+        ]));
+        Assert.Empty(slots.Messages);
+    }
+
+    [Fact]
+    public void OfferConsidersAtMostFiftyResults()
+    {
+        var slots = Create(o => o.SlotCapacity = 100);
+        var offered = Enumerable.Range(1, 60).Select(i => Old(-i, "ABCDE")).ToList();
+        Assert.Equal(SlotService.MaxOffers, slots.Offer(offered));
+    }
+
+    [Fact]
+    public void WinnersOutliveTheRecentResults()
+    {
+        var slots = Create(o => o.SlotCapacity = 2);
+        Assert.Equal(3, slots.Offer([Old(-3, "AAAB1"), Old(-2, "ZK8A0"), Old(-1, "ZK8A1")]));
+        Assert.Equal(["ZK8A1", "ZK8A0"], slots.Messages.Select(m => m.Text));
+        Assert.Equal("AAAB1", Assert.Single(slots.Winners).Text);
+    }
+
+    [Fact]
+    public void KeepsOnlyTheNewestWinners()
+    {
+        var slots = Create(o => o.SlotWinnerCapacity = 2);
+        slots.Offer([Old(-3, "AAAB1"), Old(-2, "13AKZ"), Old(-1, "ZKA80"), Old(-4, "ZK8A0")]);
+        Assert.Equal(["ZKA80", "13AKZ"], slots.Winners.Select(m => m.Text));
+    }
+
+    [Fact]
+    public void OfferedWinnersSkipTheRecentResults()
+    {
+        var slots = Create();
+        var recorder = new SlotRecorder();
+        slots.Subscribe(recorder);
+        Assert.Equal(1, slots.OfferWinners([Old(-2, "ZK8A0"), Old(-1, "KKKKK")]));
+        Assert.Empty(slots.Messages);
+        Assert.Equal("KKKKK", Assert.Single(slots.Winners).Text);
+        var delta = recorder.Updates[1];
+        Assert.Empty(delta.Added);
+        Assert.Equal("KKKKK", Assert.Single(delta.WinnersAdded).Text);
+        Assert.Equal(0, slots.OfferWinners([Old(-2, "ZK8A0")]));
+    }
+
+    [Fact]
+    public void DeltasReportWinnersThatFallOff()
+    {
+        var slots = Create(o => o.SlotWinnerCapacity = 1);
+        var first = Old(-2, "AAAB1");
+        slots.Offer([first]);
+        var recorder = new SlotRecorder();
+        slots.Subscribe(recorder);
+        Assert.Equal(first.Id, Assert.Single(recorder.Updates[0].WinnersAdded).Id);
+        slots.Offer([Old(-1, "13AKZ")]);
+        Assert.Equal(first.Id, Assert.Single(recorder.Updates[1].WinnersRemoved));
+    }
+
+    [Fact]
+    public void WinnerOffersConsiderFiveHundred()
+    {
+        var slots = Create(o => o.SlotWinnerCapacity = 1000);
+        var offered = Enumerable.Range(1, 600).Select(i => Old(-i, "13AKZ")).ToList();
+        Assert.Equal(SlotService.MaxWinnerOffers, slots.OfferWinners(offered));
+        Assert.Equal(500, slots.Winners.Count);
+    }
+
+    [Fact]
+    public void JackpotsOutliveEveryOtherList()
+    {
+        var slots = Create(o =>
+        {
+            o.SlotCapacity = 1;
+            o.SlotWinnerCapacity = 1;
+        });
+        slots.Offer([Old(-5, "XXXXB"), Old(-4, "KKKKK"), Old(-3, "13AKZ"), Old(-2, "AAAB1"), Old(-1, "ZK8A0")]);
+        Assert.Equal(["ZK8A0"], slots.Messages.Select(m => m.Text));
+        Assert.Equal(["AAAB1"], slots.Winners.Select(m => m.Text));
+        Assert.Equal(["KKKKK", "XXXXB"], slots.Jackpots.Select(m => m.Text));
+    }
+
+    [Fact]
+    public void OfferedJackpotsOnlyTouchTheJackpots()
+    {
+        var slots = Create();
+        var recorder = new SlotRecorder();
+        slots.Subscribe(recorder);
+        var jackpot = Old(-1, "QQQQ7");
+        Assert.Equal(1, slots.OfferJackpots([Old(-3, "AAAB1"), Old(-2, "13AKZ"), jackpot]));
+        Assert.Empty(slots.Messages);
+        Assert.Empty(slots.Winners);
+        Assert.Equal("QQQQ7", Assert.Single(slots.Jackpots).Text);
+        var delta = recorder.Updates[1];
+        Assert.Empty(delta.Added);
+        Assert.Empty(delta.WinnersAdded);
+        Assert.Equal("QQQQ7", Assert.Single(delta.JackpotsAdded).Text);
+        Assert.Equal(0, slots.OfferJackpots([jackpot]));
+    }
+
+    [Fact]
+    public void OfferedJackpotsStopAtCapacityWithoutEvicting()
+    {
+        var slots = Create(o => o.SlotJackpotCapacity = 2);
+        var oldest = Old(-9, "KKKKK");
+        Assert.Equal(2, slots.OfferJackpots([oldest, Old(-8, "XXXXB")]));
+        Assert.Equal(0, slots.OfferJackpots([Old(-1, "77777")]));
+        Assert.Contains(slots.Jackpots, m => m.Id == oldest.Id);
+        Assert.Equal(2, slots.Jackpots.Count);
+    }
+
+    [Fact]
+    public void DrawnJackpotsAreAlwaysKept()
+    {
+        var slots = Create(o =>
+        {
+            o.SlotDrawSymbols = "7";
+            o.SlotCapacity = 1;
+            o.SlotWinnerCapacity = 1;
+            o.SlotJackpotCapacity = 1;
+        });
+        var recorder = new SlotRecorder();
+        slots.Subscribe(recorder);
+        var first = slots.Press("a");
+        _time.Advance(slots.SpinTime);
+        var second = slots.Press("a");
+        Assert.Equal("77777", slots.Messages[0].Text);
+        Assert.Equal([second.Id, first.Id], slots.Jackpots.Select(m => m.Id));
+        Assert.Equal(second.Id, Assert.Single(recorder.Updates[^1].JackpotsAdded).Id);
+        Assert.Equal(second.Id, recorder.Updates[^1].Spin!.Id);
+    }
+
+    [Fact]
+    public void SnapshotsCarryEveryJackpot()
+    {
+        var slots = Create(o => o.SlotWinnerCapacity = 1);
+        slots.Offer([Old(-2, "XXXXB"), Old(-1, "KKKKK")]);
+        var recorder = new SlotRecorder();
+        slots.Subscribe(recorder);
+        var snapshot = Assert.Single(recorder.Updates);
+        Assert.Single(snapshot.WinnersAdded);
+        Assert.Equal(["KKKKK", "XXXXB"], snapshot.JackpotsAdded.Select(m => m.Text));
+    }
+
+    [Fact]
+    public void AnInvalidDrawAlphabetFallsBackToEverySymbol()
+    {
+        var slots = Create(o => o.SlotDrawSymbols = "abc");
+        slots.Press("a");
+        Assert.True(SlotRules.IsValid(slots.Messages[0].Text));
+    }
+
+    [Fact]
+    public void SubscribersThatCannotKeepUpAreDropped()
+    {
+        var slots = Create();
+        var recorder = new SlotRecorder(accept: false);
+        slots.Subscribe(recorder);
+        Assert.False(slots.IsSubscribed(recorder));
+    }
+
+    private SlotService Create(Action<ChaosOptions>? configure = null) => new(_time, Limits.Create(configure));
+
+    private static BoardMessage Old(int minutes, string text) =>
+        new(Guid.CreateVersion7(Start.AddMinutes(minutes)), text);
+}
+The other 203 tests passed, and the build was clean with warnings as errors. The E2E and JavaScript steps never ran because the run stopped at this failure, so expect them to run for the first time on this pass.
+
+
+
+
+
+Claude is AI and can make mistakes. Please double-check responses.
+
+
+
+
+Claude finished the response
+
+85
+44
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

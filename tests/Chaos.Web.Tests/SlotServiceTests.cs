@@ -234,7 +234,8 @@ public sealed class SlotServiceTests
         var slots = Create();
         var recorder = new SlotRecorder();
         slots.Subscribe(recorder);
-        Assert.Equal(1, slots.OfferJackpots([Old(-3, "AAAB1"), Old(-2, "13AKZ"), Old(-1, "QQQQ7")]));
+        var jackpot = Old(-1, "QQQQ7");
+        Assert.Equal(1, slots.OfferJackpots([Old(-3, "AAAB1"), Old(-2, "13AKZ"), jackpot]));
         Assert.Empty(slots.Messages);
         Assert.Empty(slots.Winners);
         Assert.Equal("QQQQ7", Assert.Single(slots.Jackpots).Text);
@@ -242,7 +243,7 @@ public sealed class SlotServiceTests
         Assert.Empty(delta.Added);
         Assert.Empty(delta.WinnersAdded);
         Assert.Equal("QQQQ7", Assert.Single(delta.JackpotsAdded).Text);
-        Assert.Equal(0, slots.OfferJackpots([Old(-1, "QQQQ7")]));
+        Assert.Equal(0, slots.OfferJackpots([jackpot]));
     }
 
     [Fact]
