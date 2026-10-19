@@ -6,3 +6,6 @@ Please update the slot machine win rules to classify **strict consecutive sequen
 * **Requirement:** A spin must consist of 5 symbols that appear in exact consecutive ascending or descending order along the sequence `0–9A–Z` (e.g., `ABCDE`, `43210`, or `VWXYZ`). Non-consecutive combinations like `13AKZ` should remain standard straight wins.
 * **Jackpot Classification:** Treat these strict consecutive sequences as Jackpots alongside 4-of-a-kind and 5-of-a-kind. They should receive the red border, crown badge, and permanent storage treatment.
 * **Stats/About Page Update:** Update the probability math in the "About" section to reflect the new Jackpot criteria (strict consecutive sequence odds are ~1 in 944,784).
+
+also please remove any and all requirement for the tab to be in focus such as for slots auto spin 
+and please update all documentation accordingly. 
