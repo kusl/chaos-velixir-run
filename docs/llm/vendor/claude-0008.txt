@@ -98,3 +98,103 @@ if there are a lot of files that need to change
 
 
 
+
+/
+**Feature Request: Add Strict Consecutive Sequences as Jackpots**
+
+Please update the slot machine win rules to classify **strict consecutive sequences** as Jackpots:
+
+**Requirement:** A spin must consist of 5 symbols that appear in exact consecutive ascending or descending order along the sequence 0–9A–Z (e.g., ABCDE, 43210, or VWXYZ). Non-consecutive combinations like 13AKZ should remain standard straight wins.
+**Jackpot Classification:** Treat these strict consecutive sequences as Jackpots alongside 4-of-a-kind and 5-of-a-kind. They should receive the red border, crown badge, and permanent storage treatment.
+**Stats/About Page Update:** Update the probability math in the "About" section to reflect the new Jackpot criteria (strict consecutive sequence odds are ~1 in 944,784).
+also please remove any and all requirement for the tab to be in focus such as for slots auto spin 
+and please update all documentation accordingly. 
+
+Use your best judgment
+
+If only a few files (under five or there about) need to change, give me the full path of the files that need to change and the FULL file 
+if there are a lot of files that need to change 
+    Delivery
+    Whole project as one tar.gz, unambiguous file placement
+    do not include any file that has not changed 
+    Any files to delete on updates called out explicitly
+    No bespoke sed/patch scripts — full files only for anything that changes
+    Docs updated alongside code changes
+    Low verbosity, no code comments
+
+Ran 32 commands, read memory, shared files
+All hashes verified. Now the slot code.
+Checking ordering logic against character and index comparisons.
+Removing all focus-dependent requirements from tab behavior.
+Reworking the counting rule for consecutive sequences.
+Investigating background throttling behavior for chained timers.
+Figuring out when reconnection attempts should resume after failures.
+Working out reconnect behavior across hidden browser tabs.
+Checking result limits against matching test cases.
+Debugging the jackpot fact for a specific poker hand pattern.
+Speeding up a brute-force search over a large dataset.
+Verifying test syntax for jackpot ordering assertions.
+Reviewing Razor pages and related documentation files.
+Verifying consistency between the rule files and documentation.
+Checking whether package.json or lock files changed unexpectedly.
+Presented file
+Eleven files changed. They’re in chaos-velixir-run-sequences.tar.gz. Extract it from the repo root with tar xzf chaos-velixir-run-sequences.tar.gz -C ~/src/dotnet/chaos-velixir-run. There are no deletions.
+
+Changed files
+
+README.md
+docs/adr/0019-slots.md
+src/Chaos.Web/Slots/SlotWin.cs
+src/Chaos.Web/Slots/SlotRules.cs
+src/Chaos.Web/Components/Islands/SlotIsland.razor.js
+src/Chaos.Web/Components/Pages/About.razor
+src/Chaos.Web/Components/Pages/SlotsPage.razor
+tests/Chaos.Web.Tests/SlotRulesTests.cs
+tests/Chaos.Web.Tests/SlotServiceTests.cs
+tests/Chaos.E2E/SlotTests.cs
+tests/js/slots.test.js
+Sequences
+
+There are two new win kinds, SequenceUp and SequenceDown, labelled “Sequence up” and “Sequence down”. They sit between three of a kind and straights in the classification order, in both the C# and JS rules.
+A sequence is five adjacent symbols in 0–9A–Z with no wraparound. 789AB counts and YZ012 does not.
+Sequences are jackpots on both server and client. That covers enshrining, the red border and crown, the celebration and the jackpots IndexedDB store. Existing local spins that are sequences get copied into jackpots on the next visit.
+New counts:
+Sequences: 32 each way, 64 total, 1 in 944,784.
+Straights: 376,960 each way.
+All jackpots: 6,400, about 1 in 9,448.
+Total winners: unchanged at 1,201,320.
+Each sequence on its own is rarer than five of a kind, so the About page now gives the combined either-direction figure.
+The odds panel for sequences adds two rows, “Either direction” and “Any jackpot”.
+The JS exhaustive-search test now uses 89ABCD. The old 05AKPZ alphabet had no adjacent symbols, so it could never produce a sequence.
+Background tabs
+
+Auto spin no longer checks visibilityState, and the visibility listener is gone.
+The E2E auto spin test now forces a hidden document and checks that auto spin keeps pressing.
+Judgment calls
+
+I left the visibility listeners in App.razor.js alone. The clock resync and the reconnect retry use them only as extra triggers; nothing waits on the tab being visible.
+I couldn’t run the .NET build or tests here because no SDK is available. The JS suite passes: 120 tests.
+
+Chaos velixir run sequences.tar
+GZ 
+
+
+
+Claude is AI and can make mistakes. Please double-check responses.
+
+
+
+
+Claude finished the response
+
+21
+06
+
+
+
+
+
+
+
+
+

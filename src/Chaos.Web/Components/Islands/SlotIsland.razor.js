@@ -29,7 +29,12 @@ export const LABELS = Object.freeze({
     five: 'Five of a kind',
     up: 'Straight up',
     down: 'Straight down',
+    sequenceUp: 'Sequence up',
+    sequenceDown: 'Sequence down',
 });
+
+export const SEQUENCE_KINDS = Object.freeze(['sequenceUp', 'sequenceDown']);
+export const JACKPOT_KINDS = Object.freeze(['four', 'five', ...SEQUENCE_KINDS]);
 
 export function isValid(text) {
     return typeof text === 'string' && /^[0-9A-Z]{5}$/.test(text);
@@ -52,6 +57,15 @@ function ordered(text, direction) {
     return true;
 }
 
+function consecutive(text, direction) {
+    for (let index = 1; index < text.length; index += 1) {
+        if (SYMBOLS.indexOf(text[index]) - SYMBOLS.indexOf(text[index - 1]) !== direction) {
+            return false;
+        }
+    }
+    return true;
+}
+
 export function classify(text) {
     if (!isValid(text)) {
         return 'none';
@@ -66,6 +80,12 @@ export function classify(text) {
     if (most === 3) {
         return 'three';
     }
+    if (consecutive(text, 1)) {
+        return 'sequenceUp';
+    }
+    if (consecutive(text, -1)) {
+        return 'sequenceDown';
+    }
     if (ordered(text, 1)) {
         return 'up';
     }
@@ -73,8 +93,7 @@ export function classify(text) {
 }
 
 export function isJackpot(text) {
-    const kind = classify(text);
-    return kind === 'four' || kind === 'five';
+    return JACKPOT_KINDS.includes(classify(text));
 }
 
 export function hits(text) {
@@ -82,7 +101,7 @@ export function hits(text) {
     if (win === 'none') {
         return Array(LENGTH).fill(false);
     }
-    if (win === 'up' || win === 'down') {
+    if (win === 'up' || win === 'down' || SEQUENCE_KINDS.includes(win)) {
         return Array(LENGTH).fill(true);
     }
     const [top] = [...tally(text)].reduce((best, entry) => (entry[1] > best[1] ? entry : best));
@@ -108,9 +127,12 @@ export function waysOf(kind, symbols = SYMBOLS.length) {
             return symbols * choose(LENGTH, 4) * (symbols - 1);
         case 'three':
             return symbols * choose(LENGTH, 3) * (symbols - 1) ** 2;
+        case 'sequenceUp':
+        case 'sequenceDown':
+            return Math.max(0, symbols - LENGTH + 1);
         case 'up':
         case 'down':
-            return choose(symbols, LENGTH);
+            return choose(symbols, LENGTH) - waysOf('sequenceUp', symbols);
         default:
             return 0;
     }
@@ -118,6 +140,8 @@ export function waysOf(kind, symbols = SYMBOLS.length) {
 
 export const OUTCOMES = SYMBOLS.length ** LENGTH;
 export const WINNING = Object.keys(LABELS).reduce((sum, kind) => sum + waysOf(kind), 0);
+export const JACKPOT_WAYS = JACKPOT_KINDS.reduce((sum, kind) => sum + waysOf(kind), 0);
+export const SEQUENCES = SEQUENCE_KINDS.reduce((sum, kind) => sum + waysOf(kind), 0);
 export const FULL_HOUSE = SYMBOLS.length * choose(LENGTH, 3) * (SYMBOLS.length - 1);
 export const ALL_DIFFERENT = Array.from({ length: LENGTH }, (_, index) => SYMBOLS.length - index).reduce((product, value) => product * value, 1);
 
@@ -172,8 +196,12 @@ function counting(kind) {
             return `${n} symbols × ${choose(LENGTH, 4)} places for the odd reel × ${n - 1} choices for it = ${grouped(waysOf('four'))}.`;
         case 'three':
             return `${n} symbols × ${choose(LENGTH, 3)} ways to pick its three reels × ${n - 1} × ${n - 1} for the other two = ${grouped(waysOf('three'))}.`;
+        case 'sequenceUp':
+            return `A rising sequence is fixed by its first symbol, which can be 0 to ${SYMBOLS[n - LENGTH]}: ${grouped(waysOf(kind))} ways, ${SYMBOLS.slice(0, LENGTH)} to ${SYMBOLS.slice(-LENGTH)}. It does not wrap from Z to 0.`;
+        case 'sequenceDown':
+            return `A falling sequence is fixed by its first symbol, which can be Z down to ${SYMBOLS[LENGTH - 1]}: ${grouped(waysOf(kind))} ways, ${[...SYMBOLS.slice(-LENGTH)].reverse().join('')} to ${[...SYMBOLS.slice(0, LENGTH)].reverse().join('')}. It does not wrap from 0 to Z.`;
         default:
-            return `Pick any ${LENGTH} different symbols: ${n} choose ${LENGTH} = ${grouped(choose(n, LENGTH))} ways. Each set ${kind === 'up' ? 'climbs in exactly one order, 0 to 9 then A to Z' : 'falls in exactly one order, Z to A then 9 to 0'}.`;
+            return `Pick any ${LENGTH} different symbols: ${n} choose ${LENGTH} = ${grouped(choose(n, LENGTH))} ways. Each set ${kind === 'up' ? 'climbs in exactly one order, 0 to 9 then A to Z' : 'falls in exactly one order, Z to A then 9 to 0'}. The ${grouped(waysOf('sequenceUp'))} sets with no gaps are sequences, which are jackpots, leaving ${grouped(waysOf(kind))}.`;
     }
 }
 
@@ -185,6 +213,9 @@ function idea(kind) {
             return `Counting: when every result is equally likely, chance = ways to get it ÷ all results = ${grouped(waysOf('four'))} ÷ ${grouped(OUTCOMES)}.`;
         case 'three':
             return `Combinations: "5 choose 3" counts ways to pick 3 reels of 5 when order does not matter: (5 × 4 × 3) ÷ (3 × 2 × 1) = 10. Some repeat is common: ${percent(1 - ALL_DIFFERENT / OUTCOMES)} of spins have at least two matching symbols, because five reels form 10 pairs. That is the birthday problem.`;
+        case 'sequenceUp':
+        case 'sequenceDown':
+            return `A sequence is a straight with no gaps. Of the ${grouped(choose(SYMBOLS.length, LENGTH))} sets of ${LENGTH} different symbols, only ${grouped(waysOf(kind))} have no gaps, so either direction comes up 1 in ${oneIn(SEQUENCES)}, rarer than five of a kind (1 in ${oneIn(waysOf('five'))}).`;
         default:
             return `Order versus choice: ${LENGTH} different symbols can be lined up 5! = 120 ways, and only one climbs and one falls. Even so, straights (${grouped(waysOf('up') * 2)} ways both directions) are more common than three or more of a kind (${grouped(waysOf('three') + waysOf('four') + waysOf('five'))}).`;
     }
@@ -207,6 +238,12 @@ export function lesson(text, spinMs = SPIN_MS) {
         ['About as likely as', `${heads} coin ${heads === 1 ? 'flip' : 'flips'} all heads (1 in ${grouped(2 ** heads)})`],
         ['Share of all wins', percent(ways / WINNING)],
     ];
+    if (SEQUENCE_KINDS.includes(kind)) {
+        facts.push(['Either direction', `${grouped(SEQUENCES)} ways, 1 in ${oneIn(SEQUENCES)}`]);
+    }
+    if (isJackpot(text)) {
+        facts.push(['Any jackpot', `${grouped(JACKPOT_WAYS)} ways, 1 in ${oneIn(JACKPOT_WAYS)}`]);
+    }
     if (isFullHouse(text)) {
         facts.push(['Three with a pair', `${grouped(FULL_HOUSE)} ways, 1 in ${oneIn(FULL_HOUSE)}`]);
     }
@@ -377,7 +414,6 @@ class SlotClient {
         this.onAuto = () => this.toggleAuto();
         this.onOlder = () => this.loadOlder();
         this.onReconnected = () => this.join();
-        this.onVisibility = () => this.scheduleAuto();
         this.onToggle = event => this.explain(event.target);
     }
 
@@ -386,7 +422,6 @@ class SlotClient {
         this.autoButton?.addEventListener('click', this.onAuto);
         this.older?.addEventListener('click', this.onOlder);
         this.win.addEventListener('chaos:reconnected', this.onReconnected);
-        this.doc.addEventListener('visibilitychange', this.onVisibility);
         this.doc.addEventListener('toggle', this.onToggle, true);
         this.timer = this.win.setInterval(() => this.ping(), PING_MS);
         this.updateControls();
@@ -815,7 +850,7 @@ class SlotClient {
             return;
         }
         this.auto = !this.auto;
-        this.setStatus(this.auto ? 'Auto spin is on. It pauses while this tab is hidden.' : 'Auto spin is off.');
+        this.setStatus(this.auto ? 'Auto spin is on. It keeps going in background tabs.' : 'Auto spin is off.');
         this.updateControls();
         this.scheduleAuto();
     }
@@ -823,7 +858,7 @@ class SlotClient {
     scheduleAuto() {
         this.win.clearTimeout(this.autoTimer);
         this.autoTimer = 0;
-        if (!this.auto || !this.ready || this.spin || this.pressing || this.disposed || this.doc.visibilityState !== 'visible') {
+        if (!this.auto || !this.ready || this.spin || this.pressing || this.disposed) {
             return;
         }
         this.autoTimer = this.win.setTimeout(() => {
@@ -1096,7 +1131,6 @@ class SlotClient {
         this.autoButton?.removeEventListener('click', this.onAuto);
         this.older?.removeEventListener('click', this.onOlder);
         this.win.removeEventListener('chaos:reconnected', this.onReconnected);
-        this.doc.removeEventListener('visibilitychange', this.onVisibility);
         this.doc.removeEventListener('toggle', this.onToggle, true);
     }
 }

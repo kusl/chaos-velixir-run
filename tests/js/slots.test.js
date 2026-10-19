@@ -7,10 +7,12 @@ import {
     DB_VERSION,
     FULL_HOUSE,
     JACKPOTS,
+    JACKPOT_WAYS,
     JACKPOT_OFFERS,
     LABELS,
     OUTCOMES,
     PRESS_KEY,
+    SEQUENCES,
     SYMBOLS,
     STORE,
     WINNER_OFFERS,
@@ -69,6 +71,13 @@ describe('winners', () => {
         ['KKKKK', 'five'],
         ['13AKZ', 'up'],
         ['ZKA80', 'down'],
+        ['ABCDE', 'sequenceUp'],
+        ['789AB', 'sequenceUp'],
+        ['VWXYZ', 'sequenceUp'],
+        ['43210', 'sequenceDown'],
+        ['BA987', 'sequenceDown'],
+        ['YZ012', 'none'],
+        ['ABCDF', 'up'],
         ['ZK8A0', 'none'],
         ['AABBC', 'none'],
         ['ABCDD', 'none'],
@@ -77,12 +86,13 @@ describe('winners', () => {
     });
 
     it('labels every kind of win', () => {
-        expect(Object.keys(LABELS).sort()).toEqual(['down', 'five', 'four', 'three', 'up']);
+        expect(Object.keys(LABELS).sort()).toEqual(['down', 'five', 'four', 'sequenceDown', 'sequenceUp', 'three', 'up']);
     });
 
     it('marks the symbols that won', () => {
         expect(hits('7Q7A7')).toEqual([true, false, true, false, true]);
         expect(hits('ABCDE')).toEqual([true, true, true, true, true]);
+        expect(hits('43210')).toEqual([true, true, true, true, true]);
         expect(hits('AABBC')).toEqual([false, false, false, false, false]);
     });
 });
@@ -139,8 +149,8 @@ describe('presses', () => {
 
 describe('odds', () => {
     it('counts every kind the same way an exhaustive search does', () => {
-        const symbols = '05AKPZ';
-        const counts = { none: 0, three: 0, four: 0, five: 0, up: 0, down: 0 };
+        const symbols = '89ABCD';
+        const counts = { none: 0, three: 0, four: 0, five: 0, up: 0, down: 0, sequenceUp: 0, sequenceDown: 0 };
         const total = symbols.length ** 5;
         for (let index = 0; index < total; index += 1) {
             let text = '';
@@ -159,8 +169,12 @@ describe('odds', () => {
         expect(waysOf('five')).toBe(36);
         expect(waysOf('four')).toBe(6_300);
         expect(waysOf('three')).toBe(441_000);
-        expect(waysOf('up')).toBe(376_992);
-        expect(waysOf('down')).toBe(376_992);
+        expect(waysOf('up')).toBe(376_960);
+        expect(waysOf('down')).toBe(376_960);
+        expect(waysOf('sequenceUp')).toBe(32);
+        expect(waysOf('sequenceDown')).toBe(32);
+        expect(SEQUENCES).toBe(64);
+        expect(JACKPOT_WAYS).toBe(6_400);
         expect(waysOf('none')).toBe(0);
         expect(WINNING).toBe(1_201_320);
         expect(FULL_HOUSE).toBe(12_600);
@@ -172,6 +186,8 @@ describe('odds', () => {
     it('formats chances for people', () => {
         expect(oneIn(WINNING)).toBe('50.3');
         expect(oneIn(waysOf('four'))).toBe('9,598');
+        expect(oneIn(SEQUENCES)).toBe('944,784');
+        expect(oneIn(JACKPOT_WAYS)).toBe('9,448');
         expect(percent(waysOf('three') / OUTCOMES)).toBe('0.729%');
         expect(percent(waysOf('five') / OUTCOMES)).toBe('0.0000595%');
         expect(duration(4000)).toBe('4 seconds');
@@ -202,6 +218,12 @@ describe('odds', () => {
         expect(four.sections.some(([, text]) => text.includes('XXXXB'))).toBe(true);
         expect(lesson('77QQ7').facts.at(-1)[1]).toBe('12,600 ways, 1 in 4,799');
         expect(lesson('ZKA80').sections[0][1]).toContain('falls');
+        const run = lesson('ABCDE');
+        expect(run.kind).toBe('sequenceUp');
+        expect(run.facts).toContainEqual(['Either direction', '64 ways, 1 in 944,784']);
+        expect(run.facts).toContainEqual(['Any jackpot', '6,400 ways, 1 in 9,448']);
+        expect(lesson('43210').sections[0][1]).toContain('43210');
+        expect(lesson('13AKZ').facts.map(([term]) => term)).not.toContain('Any jackpot');
     });
 
     it('offers the newest winners from local history', () => {
@@ -221,7 +243,11 @@ describe('jackpots', () => {
         ['XXXXB', true],
         ['KKKKK', true],
         ['7Q7A7', false],
+        ['ABCDE', true],
+        ['43210', true],
+        ['VWXYZ', true],
         ['13AKZ', false],
+        ['YZ012', false],
         ['ZK8A0', false],
         ['kkkkk', false],
         [null, false],
@@ -232,6 +258,9 @@ describe('jackpots', () => {
     it('shouts about jackpots in the verdict', () => {
         expect(verdictText('KKKKK')).toBe('Jackpot! Five of a kind');
         expect(verdictText('XXXXB')).toBe('Jackpot! Four of a kind');
+        expect(verdictText('ABCDE')).toBe('Jackpot! Sequence up');
+        expect(verdictText('43210')).toBe('Jackpot! Sequence down');
+        expect(verdictText('13AKZ')).toBe('Straight up');
         expect(verdictText('7Q7A7')).toBe('Three of a kind');
         expect(verdictText('ZK8A0')).toBe('');
     });
@@ -251,8 +280,10 @@ describe('jackpots', () => {
             { id: '0199a000-0000-7000-8000-000000000002', text: 'AAAB1' },
             { id: '0199a000-0000-7000-8000-000000000003', text: 'KKKKK' },
             { id: '0199a000-0000-7000-8000-000000000004', text: 'kkkkk' },
+            { id: '0199a000-0000-7000-8000-000000000005', text: '13AKZ' },
+            { id: '0199a000-0000-7000-8000-000000000006', text: '43210' },
         ];
-        expect(newestJackpots(records).map(record => record.text)).toEqual(['KKKKK', 'XXXXB']);
+        expect(newestJackpots(records).map(record => record.text)).toEqual(['43210', 'KKKKK', 'XXXXB']);
         expect(newestJackpots(records, 1)).toHaveLength(1);
         expect(JACKPOT_OFFERS).toBe(500);
         expect(WINNER_OFFERS).toBe(500);

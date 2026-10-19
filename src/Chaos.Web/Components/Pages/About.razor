@@ -15,7 +15,7 @@
     <dt><a href="canvas">Canvas</a></dt>
     <dd>Draw with a mouse, a finger or a stylus. Everyone sees each stroke as it is drawn. Anyone can reset the page for everyone. This browser keeps up to 10,000 finished strokes, so after a server restart the drawing comes back from the browsers that saw it, unless someone had pressed reset since.</dd>
     <dt><a href="slots">Slots</a></dt>
-    <dd>Press the button and the shared machine spins for everyone watching. Nobody can press again until the reels stop, and then whoever presses first goes next. Nobody knows who pressed, but you are told whether your own press worked. After ten successful presses from this browser you get an auto spin button that presses for you each time the reels stop. Four or five of a kind is a jackpot: the machine celebrates, and every jackpot is kept forever in its own list. The newest 500 winners stay in their own list below the results. Tap any winner to see how rare it was and the probability behind it. No money or prizes are involved; it is just for fun.</dd>
+    <dd>Press the button and the shared machine spins for everyone watching. Nobody can press again until the reels stop, and then whoever presses first goes next. Nobody knows who pressed, but you are told whether your own press worked. After ten successful presses from this browser you get an auto spin button that presses for you each time the reels stop, even while the tab is in the background. Four or five of a kind, or five symbols in an unbroken sequence like <code>ABCDE</code>, is a jackpot: the machine celebrates, and every jackpot is kept forever in its own list. The newest 500 winners stay in their own list below the results. Tap any winner to see how rare it was and the probability behind it. No money or prizes are involved; it is just for fun.</dd>
     <dt><a href="latency">Latency</a></dt>
     <dd>Press the button and your browser times how long a list of public endpoints takes to answer, while this server times the same endpoints from its data centre. Each endpoint gets one warm-up request and then the fastest of three is kept. Everyone sees every result, with no name or address attached. Each network can start a test every five minutes, so phones and computers on the same Wi-Fi share that limit. After ten tests from this browser an auto run button appears.</dd>
 </dl>
@@ -24,10 +24,11 @@
 <p>Each spin is five symbols, each one of the letters A to Z or the digits 0 to 9. A spin is a winner if:</p>
 <ul>
     <li><strong>Three, four or five of a kind:</strong> the same symbol appears at least three times, anywhere. <code>7Q7A7</code> wins.</li>
-    <li><strong>Straight up or down:</strong> all five symbols climb or all five fall, with no repeats, in the order 0 to 9 and then A to Z. <code>13AKZ</code> and <code>ZKA80</code> win; <code>ZK8A0</code> does not.</li>
+    <li><strong>Sequence up or down:</strong> five neighbours in a row along 0 to 9 and then A to Z, with no gaps. <code>ABCDE</code>, <code>789AB</code>, <code>43210</code> and <code>VWXYZ</code> win. It does not wrap around, so <code>YZ012</code> does not.</li>
+    <li><strong>Straight up or down:</strong> all five symbols climb or all five fall, with no repeats but with gaps, in the same order. <code>13AKZ</code> and <code>ZKA80</code> win; <code>ZK8A0</code> does not.</li>
 </ul>
-<p>Winners have a gold border and a star badge in the results, and their winning symbols are highlighted. About one spin in fifty wins: 1,201,320 of the 60,466,176 possible results. Straights are the most common win and five of a kind the rarest, 1 in 1,679,616.</p>
-<p>Four or five of a kind is a <strong>jackpot</strong>, about 1 in 9,543. Jackpots get a red border and a crown badge, and they are never removed: not by the server, not by your browser's 10,000 limit.</p>
+<p>Winners have a gold border and a star badge in the results, and their winning symbols are highlighted. About one spin in fifty wins: 1,201,320 of the 60,466,176 possible results. Straights are the most common win, 753,920 results. Five of a kind is 1 in 1,679,616. A sequence in either direction is 1 in 944,784: only 32 runs go up and 32 come down.</p>
+<p>Four of a kind, five of a kind and sequences are <strong>jackpots</strong>: 6,400 results, about 1 in 9,448. Jackpots get a red border and a crown badge, and they are never removed: not by the server, not by your browser's 10,000 limit.</p>
 
 <h2>How it works</h2>
 <ul>

@@ -15,7 +15,7 @@ internal static class SlotRules
     public static bool IsAlphabet([NotNullWhen(true)] string? alphabet) =>
         !string.IsNullOrEmpty(alphabet) && alphabet.Length <= Symbols.Length && alphabet.All(c => Symbols.Contains(c, StringComparison.Ordinal));
 
-    public static bool IsJackpot(SlotWin win) => win is SlotWin.FourOfAKind or SlotWin.FiveOfAKind;
+    public static bool IsJackpot(SlotWin win) => win is SlotWin.FourOfAKind or SlotWin.FiveOfAKind or SlotWin.SequenceUp or SlotWin.SequenceDown;
 
     public static bool IsJackpot(string? text) => IsJackpot(Classify(text));
 
@@ -60,6 +60,16 @@ internal static class SlotRules
             return SlotWin.ThreeOfAKind;
         }
 
+        if (IsConsecutive(text, 1))
+        {
+            return SlotWin.SequenceUp;
+        }
+
+        if (IsConsecutive(text, -1))
+        {
+            return SlotWin.SequenceDown;
+        }
+
         if (IsOrdered(text, 1))
         {
             return SlotWin.StraightUp;
@@ -82,7 +92,7 @@ internal static class SlotRules
             return hits;
         }
 
-        if (win is SlotWin.StraightUp or SlotWin.StraightDown)
+        if (win is SlotWin.StraightUp or SlotWin.StraightDown or SlotWin.SequenceUp or SlotWin.SequenceDown)
         {
             Array.Fill(hits, true);
             return hits;
@@ -104,12 +114,27 @@ internal static class SlotRules
         SlotWin.FiveOfAKind => "Five of a kind",
         SlotWin.StraightUp => "Straight up",
         SlotWin.StraightDown => "Straight down",
+        SlotWin.SequenceUp => "Sequence up",
+        SlotWin.SequenceDown => "Sequence down",
         _ => "",
     };
 
     public static char Above(char symbol) => Symbols[(Symbols.IndexOf(symbol, StringComparison.Ordinal) + 1) % Symbols.Length];
 
     public static char Below(char symbol) => Symbols[(Symbols.IndexOf(symbol, StringComparison.Ordinal) + Symbols.Length - 1) % Symbols.Length];
+
+    private static bool IsConsecutive(string text, int direction)
+    {
+        for (var i = 1; i < text.Length; i++)
+        {
+            if (Symbols.IndexOf(text[i], StringComparison.Ordinal) - Symbols.IndexOf(text[i - 1], StringComparison.Ordinal) != direction)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     private static bool IsOrdered(string text, int direction)
     {

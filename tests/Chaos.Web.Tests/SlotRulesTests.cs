@@ -10,6 +10,13 @@ public sealed class SlotRulesTests
     [InlineData("KKKKK", nameof(SlotWin.FiveOfAKind))]
     [InlineData("13AKZ", nameof(SlotWin.StraightUp))]
     [InlineData("ZKA80", nameof(SlotWin.StraightDown))]
+    [InlineData("ABCDF", nameof(SlotWin.StraightUp))]
+    [InlineData("ABCDE", nameof(SlotWin.SequenceUp))]
+    [InlineData("789AB", nameof(SlotWin.SequenceUp))]
+    [InlineData("VWXYZ", nameof(SlotWin.SequenceUp))]
+    [InlineData("43210", nameof(SlotWin.SequenceDown))]
+    [InlineData("BA987", nameof(SlotWin.SequenceDown))]
+    [InlineData("YZ012", nameof(SlotWin.None))]
     [InlineData("ZK8A0", nameof(SlotWin.None))]
     [InlineData("AABBC", nameof(SlotWin.None))]
     [InlineData("ABCDD", nameof(SlotWin.None))]
@@ -35,7 +42,11 @@ public sealed class SlotRulesTests
     [InlineData("XXXXB", true)]
     [InlineData("KKKKK", true)]
     [InlineData("7Q7A7", false)]
+    [InlineData("ABCDE", true)]
+    [InlineData("43210", true)]
+    [InlineData("VWXYZ", true)]
     [InlineData("13AKZ", false)]
+    [InlineData("YZ012", false)]
     [InlineData("ZK8A0", false)]
     [InlineData("kkkkk", false)]
     [InlineData(null, false)]
@@ -76,6 +87,7 @@ public sealed class SlotRulesTests
     {
         Assert.Equal([true, false, true, false, true], SlotRules.Hits("7Q7A7"));
         Assert.Equal([true, true, true, true, true], SlotRules.Hits("ABCDE"));
+        Assert.Equal([true, true, true, true, true], SlotRules.Hits("43210"));
         Assert.Equal([false, false, false, false, false], SlotRules.Hits("AABBC"));
     }
 

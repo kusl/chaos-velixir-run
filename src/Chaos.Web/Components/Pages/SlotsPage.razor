@@ -5,13 +5,13 @@
 <PageTitle>Chaos slots</PageTitle>
 
 <h1>Slots</h1>
-<p class="lede">One shared machine and one big button. Whoever presses first spins for everyone, and nobody can press again until the reels stop. Three or more of a kind, or five in a row up or down, is a winner. Four or five of a kind is a jackpot. Tap a winner to see how rare it was and why. Nothing is at stake.</p>
+<p class="lede">One shared machine and one big button. Whoever presses first spins for everyone, and nobody can press again until the reels stop. Three or more of a kind, or five climbing or falling, is a winner. Four or five of a kind, or an unbroken sequence like ABCDE or 43210, is a jackpot. Tap a winner to see how rare it was and why. Nothing is at stake.</p>
 
 <SlotIsland Client="@_client" Face="@_face" @rendermode="InteractiveServer" />
 
 <section class="feed" data-permanent="slots-jackpots-feed" aria-labelledby="jackpots-title">
     <h2 id="jackpots-title">Jackpots</h2>
-    <p class="note">Every four or five of a kind ever seen. Jackpots are never removed.</p>
+    <p class="note">Every four or five of a kind and every sequence ever seen. Jackpots are never removed.</p>
     <p id="slots-jackpots-empty" class="empty" hidden="@(_jackpots.Count > 0)">No jackpot yet.</p>
     <ol id="slots-jackpots" class="spins">
         @foreach (var result in _jackpots)

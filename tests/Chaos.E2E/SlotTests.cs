@@ -27,9 +27,10 @@ public sealed class SlotTests(BrowserFixture browser) : IClassFixture<BrowserFix
     }
 
     [Fact]
-    public async Task TenPressesUnlockAutoSpin()
+    public async Task TenPressesUnlockAutoSpinThatKeepsGoingInBackgroundTabs()
     {
         await using var context = await browser.NewContextAsync();
+        await context.AddInitScriptAsync("Object.defineProperty(document, 'visibilityState', { get: () => 'hidden' }); Object.defineProperty(document, 'hidden', { get: () => true });");
         var page = await context.NewPageAsync();
         await page.GotoAsync("/about");
         await page.EvaluateAsync("() => localStorage.setItem('chaos-slots-presses', '9')");

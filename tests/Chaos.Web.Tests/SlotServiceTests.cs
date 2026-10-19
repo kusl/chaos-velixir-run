@@ -247,6 +247,14 @@ public sealed class SlotServiceTests
     }
 
     [Fact]
+    public void SequencesAreKeptAsJackpots()
+    {
+        var slots = Create();
+        Assert.Equal(2, slots.OfferJackpots([Old(-3, "13AKZ"), Old(-2, "ABCDE"), Old(-1, "43210")]));
+        Assert.Equal(["43210", "ABCDE"], slots.Jackpots.Select(m => m.Text));
+    }
+
+    [Fact]
     public void OfferedJackpotsStopAtCapacityWithoutEvicting()
     {
         var slots = Create(o => o.SlotJackpotCapacity = 2);

@@ -8,4 +8,6 @@ internal enum SlotWin
     FiveOfAKind,
     StraightUp,
     StraightDown,
+    SequenceUp,
+    SequenceDown,
 }
