@@ -12,71 +12,71 @@ Build succeeded.
     0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:01.52
+Time Elapsed 00:00:04.87
 
 ==> Unit and integration tests
 Running tests from /home/kushal/src/dotnet/chaos-velixir-run/tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
-/home/kushal/src/dotnet/chaos-velixir-run/tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 200ms)
+/home/kushal/src/dotnet/chaos-velixir-run/tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 153ms)
 
   In process file artifacts produced:
     - /home/kushal/src/dotnet/chaos-velixir-run/artifacts/test-results/unit/coverage.cobertura.xml
 
 Test run summary: Passed!
-  total: 204
+  total: 216
   failed: 0
-  succeeded: 204
+  succeeded: 216
   skipped: 0
-  duration: 2s 026ms
-.NET line coverage: 79.7%
+  duration: 1s 984ms
+.NET line coverage: 79.8%
 
 ==> JavaScript unit tests
 
-added 49 packages in 487ms
+added 49 packages in 447ms
 
 [1m[30m[46m RUN [49m[39m[22m [36mv5.0.4 [39m[90m/home/kushal/src/dotnet/chaos-velixir-run/tests/js[39m
       [2mCoverage enabled with [22m[33mv8[39m
 
  [32m✓[39m app.test.js [2m([22m[2m13 tests[22m[2m)[22m[32m 5[2mms[22m[39m
  [32m✓[39m board.test.js [2m([22m[2m11 tests[22m[2m)[22m[32m 6[2mms[22m[39m
- [32m✓[39m canvas.test.js [2m([22m[2m21 tests[22m[2m)[22m[32m 9[2mms[22m[39m
- [32m✓[39m latency.test.js [2m([22m[2m26 tests[22m[2m)[22m[32m 10[2mms[22m[39m
- [32m✓[39m slots.test.js [2m([22m[2m38 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m canvas.test.js [2m([22m[2m21 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m latency.test.js [2m([22m[2m26 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m slots.test.js [2m([22m[2m49 tests[22m[2m)[22m[32m 20[2mms[22m[39m
 
 [2m Test Files [22m [1m[32m5 passed[39m[22m[90m (5)[39m
-[2m      Tests [22m [1m[32m109 passed[39m[22m[90m (109)[39m
-[2m   Start at [22m 01:15:47
-[2m   Duration [22m 275ms[2m (transform 52%, import 19%, worker 17%, tests 12%)[22m
+[2m      Tests [22m [1m[32m120 passed[39m[22m[90m (120)[39m
+[2m   Start at [22m 01:34:44
+[2m   Duration [22m 266ms[2m (transform 52%, import 19%, worker 17%, tests 12%)[22m
 
 [34m % [39m[2mCoverage report from [22m[33mv8[39m
 -------------------|---------|----------|---------|---------|-------------------
 File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
 -------------------|---------|----------|---------|---------|-------------------
-All files          |   20.86 |    26.53 |   24.63 |   21.07 |                   
+All files          |   21.72 |    27.69 |   25.24 |   21.86 |                   
  Components        |   16.76 |       24 |   26.47 |   17.05 |                   
   App.razor.js     |   16.76 |       24 |   26.47 |   17.05 | 64-311,315        
- ...onents/Islands |   21.28 |    26.91 |   24.47 |   21.51 |                   
+ ...onents/Islands |   22.22 |    28.19 |   25.13 |   22.36 |                   
   ...land.razor.js |   13.05 |    17.54 |   12.34 |   13.69 | 38,76-78,87-485   
   ...land.razor.js |   20.72 |    24.39 |   16.48 |   21.47 | ...58-278,303-691 
   ...land.razor.js |   26.94 |    33.61 |   26.25 |    27.4 | ...54,166,219-685 
-  ...land.razor.js |   21.69 |    27.19 |   36.71 |   21.19 | ...0,183,335-1117 
+  ...land.razor.js |   24.17 |    30.61 |   38.46 |   23.46 | ...4,211,372-1151 
  wwwroot           |       0 |        0 |     100 |       0 |                   
   theme-init.js    |       0 |        0 |     100 |       0 | 2-8               
 -------------------|---------|----------|---------|---------|-------------------
 
 ==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.63.0-noble
   Determining projects to restore...
-  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 1.38 sec).
+  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 324 ms).
   Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
   Chaos.Web -> /tmp/app/
 Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
-/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) passed (28s 961ms)
+/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) passed (29s 294ms)
 
 Test run summary: Passed!
   total: 19
   failed: 0
   succeeded: 19
   skipped: 0
-  duration: 29s 093ms
+  duration: 29s 427ms
 Starting project export...
 Project Path: /home/kushal/src/dotnet/chaos-velixir-run
 Output File:  /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
@@ -252,6 +252,6 @@ Processing (167/167): tests/js/vitest.config.mjs
 
 Export completed successfully!
 Output file: /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
-Total source size: 0.42 MB across 167 files
+Total source size: 0.43 MB across 167 files
 
 ==> All steps passed

@@ -1,8 +1,8 @@
 ===============================================================================
 PROJECT EXPORT
-Generated (UTC): 2026-10-19 05:16:25
+Generated (UTC): 2026-10-19 05:35:22
 Project Path:    /home/kushal/src/dotnet/chaos-velixir-run
-Git Commit:      7efdc5ae2698e7e43e7f01219c850fd97ca0366a
+Git Commit:      7056dcdb54283f9000b6f18c94e8d7c9fb6d61f7
 Git Branch:      main
 Git Dirty:       yes (uncommitted changes are included below)
 .NET SDK:        10.0.112
@@ -454,10 +454,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     README.md
-SIZE:     2.99 KB (3058 bytes)
+SIZE:     3.08 KB (3154 bytes)
 LINES:    46
-SHA256:   fd6884f316c5993acff44ad2fe7cc23727cdebefcffef500fd5dca2d61226925
-MODIFIED: 2026-10-16 10:38:19 (UTC)
+SHA256:   e6fe02cec0a4084214cb05dcc3c3717279b3771d88974ceadc5a3e160f36ad66
+MODIFIED: 2026-10-19 05:30:14 (UTC)
 ================================================================================
 
 # chaos-velixir-run
@@ -466,7 +466,7 @@ A message board, a shared drawing canvas, a shared slot machine and a shared lat
 
 - Board: the server keeps the newest 50 messages; each browser keeps up to 10,000 in IndexedDB and offers its newest 50 back after a server restart. Dotted border means the server no longer has it.
 - Canvas: one black pen on a shared square page, live for everyone, one reset button. Browsers keep finished strokes (10,000) and the latest reset, and offer back up to 500 strokes after a server restart.
-- Slots: one shared machine. A press draws five symbols (A–Z, 0–9) on the server and locks the button for everyone until the reels stop. Three of a kind or a five-symbol straight wins. Four or five of a kind is a jackpot: everyone watching sees a celebration, and jackpots are never deleted, on the server or in the browser. Results are kept like board messages, plus the newest 500 winners. Tapping a winner shows its odds and the probability behind them. Ten successful presses unlock auto spin.
+- Slots: one shared machine. A press draws five symbols (A–Z, 0–9) on the server and locks the button for everyone until the reels stop. Three of a kind or a five-symbol straight wins. Four or five of a kind, or an unbroken sequence along `0-9A-Z` (`ABCDE`, `43210`), is a jackpot: everyone watching sees a celebration, and jackpots are never deleted, on the server or in the browser. Results are kept like board messages, plus the newest 500 winners. Tapping a winner shows its odds and the probability behind them. Ten successful presses unlock auto spin, which also runs in background tabs.
 - Latency: one button times public endpoints from the browser and from the server. One test at a time, one per network every 5 minutes. Results are kept like board messages, without identity. Ten tests unlock auto run.
 - Every page footer shows the ticking server time.
 - No third-party code, no cookies, no accounts. Strict CSP with no inline scripts; `connect-src` also lists the latency endpoints.
@@ -917,10 +917,10 @@ Status: accepted
 
 ================================================================================
 FILE:     docs/adr/0019-slots.md
-SIZE:     3.47 KB (3557 bytes)
+SIZE:     3.82 KB (3907 bytes)
 LINES:    19
-SHA256:   4b9f5bc84dbdce5843a9042e7f61019ac5a37e67c1c7e7aaffb7861f61d5f7b7
-MODIFIED: 2026-10-16 10:38:19 (UTC)
+SHA256:   8551ff3a1e865728ce39827203bff685eb45cc5a6f5d2197c3c8e0f227062a38
+MODIFIED: 2026-10-19 05:30:14 (UTC)
 ================================================================================
 
 # 0019 Shared slot machine
@@ -932,15 +932,15 @@ Status: accepted
 - `SlotDrawSymbols` (default all 36) limits the symbols drawn. Tests only: `7` makes every spin `77777`. Invalid values fail options validation; the service falls back to all symbols.
 - The accepting delta and late-joiner snapshots carry `spin: { id, remaining }`. Clients animate for `remaining` ms from receipt, then add the result to the feed. Because receipt is later than the server clock, a client's button only re-enables after the server lock has expired.
 - A spin that arrives while an older animation runs finishes the older one at once.
-- Winners: three or more of one symbol anywhere, or five strictly ascending or descending in ASCII order (digits before letters). 1,201,320 of 36⁵ = 60,466,176, about 1 in 50.3. Rules exist in `SlotRules.cs` and `SlotIsland.razor.js`; both are tested with the same cases.
+- Winners: three or more of one symbol anywhere, or five strictly ascending or descending in ASCII order (digits before letters). 1,201,320 of 36⁵ = 60,466,176, about 1 in 50.3. Ascending or descending runs of neighbours in `0-9A-Z` with no gaps (`ABCDE`, `789AB`, `43210`) are sequences, not straights: 32 each way, 64 total, 1 in 944,784. No wraparound (`YZ012` loses). Straights are the remaining 376,960 each way. Rules exist in `SlotRules.cs` and `SlotIsland.razor.js`; both are tested with the same cases.
 - Winners window: newest `SlotWinnerCapacity` (default 500). Snapshots and deltas carry `winnersAdded` and `winnersRemoved` beside `added` and `removed`, under the same version. Clients hold back the spinning result from the winners list until its reels stop.
-- Jackpots: four or five of a kind, 6,336 results, about 1 in 9,543. Kept in a third list that never evicts. Drawn jackpots are always added. Offered jackpots are added only while the list holds fewer than `SlotJackpotCapacity` (default 10,000), so forged offers cannot grow it without bound. Snapshots carry every jackpot in `jackpotsAdded`; deltas carry new ones. There is no `jackpotsRemoved`.
+- Jackpots: four of a kind, five of a kind or a sequence, 6,400 results, about 1 in 9,448. Kept in a third list that never evicts. Drawn jackpots are always added. Offered jackpots are added only while the list holds fewer than `SlotJackpotCapacity` (default 10,000), so forged offers cannot grow it without bound. Snapshots carry every jackpot in `jackpotsAdded`; deltas carry new ones. There is no `jackpotsRemoved`.
 - A jackpot that settles on screen adds `jackpot` to the machine for 8 s: verdict `Jackpot! <kind>`, cabinet glow, fast lights, CSS confetti (24 prerendered spans). Reduced motion keeps the glow and verdict only. Screen readers hear `Jackpot!`. Late joiners and instant finishes do not celebrate.
 - After restarts, clients offer their newest 500 local winners through `OfferWinners` (winners and jackpots only) and up to 500 local jackpots through `OfferJackpots` (jackpots only), each with its own per-circuit budget. Chunks stay under 24 KB.
 - Local storage: IndexedDB `chaos-slots` v2. `spins` is capped at 10,000 like the board. `jackpots` (added by migration 2) is never pruned. On each visit jackpots found in `spins` are copied into it, which also migrates v1 data.
-- Every winner is a `<details>`. Its odds panel is built in the browser on first open from `lesson()` in `SlotIsland.razor.js`, the only place the probability text lives. Counts are formulas checked against an exhaustive search over a six-symbol alphabet.
+- Every winner is a `<details>`. Its odds panel is built in the browser on first open from `lesson()` in `SlotIsland.razor.js`, the only place the probability text lives. Counts are formulas checked against an exhaustive search over a contiguous six-symbol alphabet (`89ABCD`), so sequences occur.
 - No identity. `Press` returns the new id, `busy` or `slow` to the caller only. The browser marks its own results as `mine` in IndexedDB.
-- Successful presses are counted in `localStorage` (`chaos-slots-presses`). At 10 the auto spin toggle appears; it presses 200–1,000 ms after each settle, pauses while the tab is hidden, and is off on every page load.
+- Successful presses are counted in `localStorage` (`chaos-slots-presses`). At 10 the auto spin toggle appears; it presses 200–1,000 ms after each settle, keeps going while the tab is hidden (browsers may throttle its timers there), and is off on every page load.
 - Reels are DOM strips moved with the Web Animations API by percentage of their own height, so no layout reads. Reduced motion swaps symbols without movement. Nothing uses inline style attributes, so the CSP is unchanged.
 
 
@@ -5171,10 +5171,10 @@ MODIFIED: 2026-10-16 10:30:20 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/SlotIsland.razor.js
-SIZE:     38.55 KB (39474 bytes)
-LINES:    1119
-SHA256:   d9c79112ae26cc1891f2c7f5ea118383a5d76be6ca96a29947ae2f12f8c8e11e
-MODIFIED: 2026-10-16 10:30:29 (UTC)
+SIZE:     40.52 KB (41495 bytes)
+LINES:    1153
+SHA256:   e7007bd561dab4de95e34021d0afbfab8e9368695bac9346e72826efbc4da03f
+MODIFIED: 2026-10-19 05:28:54 (UTC)
 ================================================================================
 
 import { LocalHistory, OFFER_LIMIT, PAGE_SIZE, announce, chunkOffers, isoOf, labelOf, needsResync, newestFirst } from './BoardIsland.razor.js';
@@ -5208,7 +5208,12 @@ export const LABELS = Object.freeze({
     five: 'Five of a kind',
     up: 'Straight up',
     down: 'Straight down',
+    sequenceUp: 'Sequence up',
+    sequenceDown: 'Sequence down',
 });
+
+export const SEQUENCE_KINDS = Object.freeze(['sequenceUp', 'sequenceDown']);
+export const JACKPOT_KINDS = Object.freeze(['four', 'five', ...SEQUENCE_KINDS]);
 
 export function isValid(text) {
     return typeof text === 'string' && /^[0-9A-Z]{5}$/.test(text);
@@ -5231,6 +5236,15 @@ function ordered(text, direction) {
     return true;
 }
 
+function consecutive(text, direction) {
+    for (let index = 1; index < text.length; index += 1) {
+        if (SYMBOLS.indexOf(text[index]) - SYMBOLS.indexOf(text[index - 1]) !== direction) {
+            return false;
+        }
+    }
+    return true;
+}
+
 export function classify(text) {
     if (!isValid(text)) {
         return 'none';
@@ -5245,6 +5259,12 @@ export function classify(text) {
     if (most === 3) {
         return 'three';
     }
+    if (consecutive(text, 1)) {
+        return 'sequenceUp';
+    }
+    if (consecutive(text, -1)) {
+        return 'sequenceDown';
+    }
     if (ordered(text, 1)) {
         return 'up';
     }
@@ -5252,8 +5272,7 @@ export function classify(text) {
 }
 
 export function isJackpot(text) {
-    const kind = classify(text);
-    return kind === 'four' || kind === 'five';
+    return JACKPOT_KINDS.includes(classify(text));
 }
 
 export function hits(text) {
@@ -5261,7 +5280,7 @@ export function hits(text) {
     if (win === 'none') {
         return Array(LENGTH).fill(false);
     }
-    if (win === 'up' || win === 'down') {
+    if (win === 'up' || win === 'down' || SEQUENCE_KINDS.includes(win)) {
         return Array(LENGTH).fill(true);
     }
     const [top] = [...tally(text)].reduce((best, entry) => (entry[1] > best[1] ? entry : best));
@@ -5287,9 +5306,12 @@ export function waysOf(kind, symbols = SYMBOLS.length) {
             return symbols * choose(LENGTH, 4) * (symbols - 1);
         case 'three':
             return symbols * choose(LENGTH, 3) * (symbols - 1) ** 2;
+        case 'sequenceUp':
+        case 'sequenceDown':
+            return Math.max(0, symbols - LENGTH + 1);
         case 'up':
         case 'down':
-            return choose(symbols, LENGTH);
+            return choose(symbols, LENGTH) - waysOf('sequenceUp', symbols);
         default:
             return 0;
     }
@@ -5297,6 +5319,8 @@ export function waysOf(kind, symbols = SYMBOLS.length) {
 
 export const OUTCOMES = SYMBOLS.length ** LENGTH;
 export const WINNING = Object.keys(LABELS).reduce((sum, kind) => sum + waysOf(kind), 0);
+export const JACKPOT_WAYS = JACKPOT_KINDS.reduce((sum, kind) => sum + waysOf(kind), 0);
+export const SEQUENCES = SEQUENCE_KINDS.reduce((sum, kind) => sum + waysOf(kind), 0);
 export const FULL_HOUSE = SYMBOLS.length * choose(LENGTH, 3) * (SYMBOLS.length - 1);
 export const ALL_DIFFERENT = Array.from({ length: LENGTH }, (_, index) => SYMBOLS.length - index).reduce((product, value) => product * value, 1);
 
@@ -5351,8 +5375,12 @@ function counting(kind) {
             return `${n} symbols × ${choose(LENGTH, 4)} places for the odd reel × ${n - 1} choices for it = ${grouped(waysOf('four'))}.`;
         case 'three':
             return `${n} symbols × ${choose(LENGTH, 3)} ways to pick its three reels × ${n - 1} × ${n - 1} for the other two = ${grouped(waysOf('three'))}.`;
+        case 'sequenceUp':
+            return `A rising sequence is fixed by its first symbol, which can be 0 to ${SYMBOLS[n - LENGTH]}: ${grouped(waysOf(kind))} ways, ${SYMBOLS.slice(0, LENGTH)} to ${SYMBOLS.slice(-LENGTH)}. It does not wrap from Z to 0.`;
+        case 'sequenceDown':
+            return `A falling sequence is fixed by its first symbol, which can be Z down to ${SYMBOLS[LENGTH - 1]}: ${grouped(waysOf(kind))} ways, ${[...SYMBOLS.slice(-LENGTH)].reverse().join('')} to ${[...SYMBOLS.slice(0, LENGTH)].reverse().join('')}. It does not wrap from 0 to Z.`;
         default:
-            return `Pick any ${LENGTH} different symbols: ${n} choose ${LENGTH} = ${grouped(choose(n, LENGTH))} ways. Each set ${kind === 'up' ? 'climbs in exactly one order, 0 to 9 then A to Z' : 'falls in exactly one order, Z to A then 9 to 0'}.`;
+            return `Pick any ${LENGTH} different symbols: ${n} choose ${LENGTH} = ${grouped(choose(n, LENGTH))} ways. Each set ${kind === 'up' ? 'climbs in exactly one order, 0 to 9 then A to Z' : 'falls in exactly one order, Z to A then 9 to 0'}. The ${grouped(waysOf('sequenceUp'))} sets with no gaps are sequences, which are jackpots, leaving ${grouped(waysOf(kind))}.`;
     }
 }
 
@@ -5364,6 +5392,9 @@ function idea(kind) {
             return `Counting: when every result is equally likely, chance = ways to get it ÷ all results = ${grouped(waysOf('four'))} ÷ ${grouped(OUTCOMES)}.`;
         case 'three':
             return `Combinations: "5 choose 3" counts ways to pick 3 reels of 5 when order does not matter: (5 × 4 × 3) ÷ (3 × 2 × 1) = 10. Some repeat is common: ${percent(1 - ALL_DIFFERENT / OUTCOMES)} of spins have at least two matching symbols, because five reels form 10 pairs. That is the birthday problem.`;
+        case 'sequenceUp':
+        case 'sequenceDown':
+            return `A sequence is a straight with no gaps. Of the ${grouped(choose(SYMBOLS.length, LENGTH))} sets of ${LENGTH} different symbols, only ${grouped(waysOf(kind))} have no gaps, so either direction comes up 1 in ${oneIn(SEQUENCES)}, rarer than five of a kind (1 in ${oneIn(waysOf('five'))}).`;
         default:
             return `Order versus choice: ${LENGTH} different symbols can be lined up 5! = 120 ways, and only one climbs and one falls. Even so, straights (${grouped(waysOf('up') * 2)} ways both directions) are more common than three or more of a kind (${grouped(waysOf('three') + waysOf('four') + waysOf('five'))}).`;
     }
@@ -5386,6 +5417,12 @@ export function lesson(text, spinMs = SPIN_MS) {
         ['About as likely as', `${heads} coin ${heads === 1 ? 'flip' : 'flips'} all heads (1 in ${grouped(2 ** heads)})`],
         ['Share of all wins', percent(ways / WINNING)],
     ];
+    if (SEQUENCE_KINDS.includes(kind)) {
+        facts.push(['Either direction', `${grouped(SEQUENCES)} ways, 1 in ${oneIn(SEQUENCES)}`]);
+    }
+    if (isJackpot(text)) {
+        facts.push(['Any jackpot', `${grouped(JACKPOT_WAYS)} ways, 1 in ${oneIn(JACKPOT_WAYS)}`]);
+    }
     if (isFullHouse(text)) {
         facts.push(['Three with a pair', `${grouped(FULL_HOUSE)} ways, 1 in ${oneIn(FULL_HOUSE)}`]);
     }
@@ -5556,7 +5593,6 @@ class SlotClient {
         this.onAuto = () => this.toggleAuto();
         this.onOlder = () => this.loadOlder();
         this.onReconnected = () => this.join();
-        this.onVisibility = () => this.scheduleAuto();
         this.onToggle = event => this.explain(event.target);
     }
 
@@ -5565,7 +5601,6 @@ class SlotClient {
         this.autoButton?.addEventListener('click', this.onAuto);
         this.older?.addEventListener('click', this.onOlder);
         this.win.addEventListener('chaos:reconnected', this.onReconnected);
-        this.doc.addEventListener('visibilitychange', this.onVisibility);
         this.doc.addEventListener('toggle', this.onToggle, true);
         this.timer = this.win.setInterval(() => this.ping(), PING_MS);
         this.updateControls();
@@ -5994,7 +6029,7 @@ class SlotClient {
             return;
         }
         this.auto = !this.auto;
-        this.setStatus(this.auto ? 'Auto spin is on. It pauses while this tab is hidden.' : 'Auto spin is off.');
+        this.setStatus(this.auto ? 'Auto spin is on. It keeps going in background tabs.' : 'Auto spin is off.');
         this.updateControls();
         this.scheduleAuto();
     }
@@ -6002,7 +6037,7 @@ class SlotClient {
     scheduleAuto() {
         this.win.clearTimeout(this.autoTimer);
         this.autoTimer = 0;
-        if (!this.auto || !this.ready || this.spin || this.pressing || this.disposed || this.doc.visibilityState !== 'visible') {
+        if (!this.auto || !this.ready || this.spin || this.pressing || this.disposed) {
             return;
         }
         this.autoTimer = this.win.setTimeout(() => {
@@ -6275,7 +6310,6 @@ class SlotClient {
         this.autoButton?.removeEventListener('click', this.onAuto);
         this.older?.removeEventListener('click', this.onOlder);
         this.win.removeEventListener('chaos:reconnected', this.onReconnected);
-        this.doc.removeEventListener('visibilitychange', this.onVisibility);
         this.doc.removeEventListener('toggle', this.onToggle, true);
     }
 }
@@ -6573,10 +6607,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Pages/About.razor
-SIZE:     7.17 KB (7340 bytes)
-LINES:    57
-SHA256:   c8c8c11f9d55a382eb2000eacb8e3ac20da9743a85f5befcc9b4ca8e95cceaf2
-MODIFIED: 2026-10-16 10:31:14 (UTC)
+SIZE:     7.65 KB (7834 bytes)
+LINES:    58
+SHA256:   34cc2cd6b3bc8d6ecfce4cb995bc369adf9c600a55914bd67a8dcf93879a465a
+MODIFIED: 2026-10-19 05:30:14 (UTC)
 ================================================================================
 
 @page "/about"
@@ -6596,7 +6630,7 @@ MODIFIED: 2026-10-16 10:31:14 (UTC)
     <dt><a href="canvas">Canvas</a></dt>
     <dd>Draw with a mouse, a finger or a stylus. Everyone sees each stroke as it is drawn. Anyone can reset the page for everyone. This browser keeps up to 10,000 finished strokes, so after a server restart the drawing comes back from the browsers that saw it, unless someone had pressed reset since.</dd>
     <dt><a href="slots">Slots</a></dt>
-    <dd>Press the button and the shared machine spins for everyone watching. Nobody can press again until the reels stop, and then whoever presses first goes next. Nobody knows who pressed, but you are told whether your own press worked. After ten successful presses from this browser you get an auto spin button that presses for you each time the reels stop. Four or five of a kind is a jackpot: the machine celebrates, and every jackpot is kept forever in its own list. The newest 500 winners stay in their own list below the results. Tap any winner to see how rare it was and the probability behind it. No money or prizes are involved; it is just for fun.</dd>
+    <dd>Press the button and the shared machine spins for everyone watching. Nobody can press again until the reels stop, and then whoever presses first goes next. Nobody knows who pressed, but you are told whether your own press worked. After ten successful presses from this browser you get an auto spin button that presses for you each time the reels stop, even while the tab is in the background. Four or five of a kind, or five symbols in an unbroken sequence like <code>ABCDE</code>, is a jackpot: the machine celebrates, and every jackpot is kept forever in its own list. The newest 500 winners stay in their own list below the results. Tap any winner to see how rare it was and the probability behind it. No money or prizes are involved; it is just for fun.</dd>
     <dt><a href="latency">Latency</a></dt>
     <dd>Press the button and your browser times how long a list of public endpoints takes to answer, while this server times the same endpoints from its data centre. Each endpoint gets one warm-up request and then the fastest of three is kept. Everyone sees every result, with no name or address attached. Each network can start a test every five minutes, so phones and computers on the same Wi-Fi share that limit. After ten tests from this browser an auto run button appears.</dd>
 </dl>
@@ -6605,10 +6639,11 @@ MODIFIED: 2026-10-16 10:31:14 (UTC)
 <p>Each spin is five symbols, each one of the letters A to Z or the digits 0 to 9. A spin is a winner if:</p>
 <ul>
     <li><strong>Three, four or five of a kind:</strong> the same symbol appears at least three times, anywhere. <code>7Q7A7</code> wins.</li>
-    <li><strong>Straight up or down:</strong> all five symbols climb or all five fall, with no repeats, in the order 0 to 9 and then A to Z. <code>13AKZ</code> and <code>ZKA80</code> win; <code>ZK8A0</code> does not.</li>
+    <li><strong>Sequence up or down:</strong> five neighbours in a row along 0 to 9 and then A to Z, with no gaps. <code>ABCDE</code>, <code>789AB</code>, <code>43210</code> and <code>VWXYZ</code> win. It does not wrap around, so <code>YZ012</code> does not.</li>
+    <li><strong>Straight up or down:</strong> all five symbols climb or all five fall, with no repeats but with gaps, in the same order. <code>13AKZ</code> and <code>ZKA80</code> win; <code>ZK8A0</code> does not.</li>
 </ul>
-<p>Winners have a gold border and a star badge in the results, and their winning symbols are highlighted. About one spin in fifty wins: 1,201,320 of the 60,466,176 possible results. Straights are the most common win and five of a kind the rarest, 1 in 1,679,616.</p>
-<p>Four or five of a kind is a <strong>jackpot</strong>, about 1 in 9,543. Jackpots get a red border and a crown badge, and they are never removed: not by the server, not by your browser's 10,000 limit.</p>
+<p>Winners have a gold border and a star badge in the results, and their winning symbols are highlighted. About one spin in fifty wins: 1,201,320 of the 60,466,176 possible results. Straights are the most common win, 753,920 results. Five of a kind is 1 in 1,679,616. A sequence in either direction is 1 in 944,784: only 32 runs go up and 32 come down.</p>
+<p>Four of a kind, five of a kind and sequences are <strong>jackpots</strong>: 6,400 results, about 1 in 9,448. Jackpots get a red border and a crown badge, and they are never removed: not by the server, not by your browser's 10,000 limit.</p>
 
 <h2>How it works</h2>
 <ul>
@@ -7301,10 +7336,10 @@ MODIFIED: 2026-10-16 10:28:43 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Pages/SlotsPage.razor
-SIZE:     2.95 KB (3019 bytes)
+SIZE:     3.01 KB (3084 bytes)
 LINES:    69
-SHA256:   812839f2e720a8afc76a3388f56a379372ae7bd1ea969bd25039cf94853ba7bd
-MODIFIED: 2026-10-16 10:28:43 (UTC)
+SHA256:   ec751bfc35b6454552e7dbf2110a8247d1868176b03d5c375e1e338a7f7f78a1
+MODIFIED: 2026-10-19 05:30:14 (UTC)
 ================================================================================
 
 @page "/slots"
@@ -7314,13 +7349,13 @@ MODIFIED: 2026-10-16 10:28:43 (UTC)
 <PageTitle>Chaos slots</PageTitle>
 
 <h1>Slots</h1>
-<p class="lede">One shared machine and one big button. Whoever presses first spins for everyone, and nobody can press again until the reels stop. Three or more of a kind, or five in a row up or down, is a winner. Four or five of a kind is a jackpot. Tap a winner to see how rare it was and why. Nothing is at stake.</p>
+<p class="lede">One shared machine and one big button. Whoever presses first spins for everyone, and nobody can press again until the reels stop. Three or more of a kind, or five climbing or falling, is a winner. Four or five of a kind, or an unbroken sequence like ABCDE or 43210, is a jackpot. Tap a winner to see how rare it was and why. Nothing is at stake.</p>
 
 <SlotIsland Client="@_client" Face="@_face" @rendermode="InteractiveServer" />
 
 <section class="feed" data-permanent="slots-jackpots-feed" aria-labelledby="jackpots-title">
     <h2 id="jackpots-title">Jackpots</h2>
-    <p class="note">Every four or five of a kind ever seen. Jackpots are never removed.</p>
+    <p class="note">Every four or five of a kind and every sequence ever seen. Jackpots are never removed.</p>
     <p id="slots-jackpots-empty" class="empty" hidden="@(_jackpots.Count > 0)">No jackpot yet.</p>
     <ol id="slots-jackpots" class="spins">
         @foreach (var result in _jackpots)
@@ -10582,10 +10617,10 @@ internal sealed record SlotPress(PressResult Result, Guid Id)
 
 ================================================================================
 FILE:     src/Chaos.Web/Slots/SlotRules.cs
-SIZE:     3.24 KB (3319 bytes)
-LINES:    126
-SHA256:   108321213b83ba7d0f508a3dd0693ca4bc51bde959d1d54d5aeb35703cb149cd
-MODIFIED: 2026-10-16 10:27:35 (UTC)
+SIZE:     3.97 KB (4063 bytes)
+LINES:    151
+SHA256:   faf9a74c80ff3980794e84184be91a5a097697ef3fb81e224b4d07b8108272f8
+MODIFIED: 2026-10-19 05:28:11 (UTC)
 ================================================================================
 
 using System.Diagnostics.CodeAnalysis;
@@ -10605,7 +10640,7 @@ internal static class SlotRules
     public static bool IsAlphabet([NotNullWhen(true)] string? alphabet) =>
         !string.IsNullOrEmpty(alphabet) && alphabet.Length <= Symbols.Length && alphabet.All(c => Symbols.Contains(c, StringComparison.Ordinal));
 
-    public static bool IsJackpot(SlotWin win) => win is SlotWin.FourOfAKind or SlotWin.FiveOfAKind;
+    public static bool IsJackpot(SlotWin win) => win is SlotWin.FourOfAKind or SlotWin.FiveOfAKind or SlotWin.SequenceUp or SlotWin.SequenceDown;
 
     public static bool IsJackpot(string? text) => IsJackpot(Classify(text));
 
@@ -10650,6 +10685,16 @@ internal static class SlotRules
             return SlotWin.ThreeOfAKind;
         }
 
+        if (IsConsecutive(text, 1))
+        {
+            return SlotWin.SequenceUp;
+        }
+
+        if (IsConsecutive(text, -1))
+        {
+            return SlotWin.SequenceDown;
+        }
+
         if (IsOrdered(text, 1))
         {
             return SlotWin.StraightUp;
@@ -10672,7 +10717,7 @@ internal static class SlotRules
             return hits;
         }
 
-        if (win is SlotWin.StraightUp or SlotWin.StraightDown)
+        if (win is SlotWin.StraightUp or SlotWin.StraightDown or SlotWin.SequenceUp or SlotWin.SequenceDown)
         {
             Array.Fill(hits, true);
             return hits;
@@ -10694,12 +10739,27 @@ internal static class SlotRules
         SlotWin.FiveOfAKind => "Five of a kind",
         SlotWin.StraightUp => "Straight up",
         SlotWin.StraightDown => "Straight down",
+        SlotWin.SequenceUp => "Sequence up",
+        SlotWin.SequenceDown => "Sequence down",
         _ => "",
     };
 
     public static char Above(char symbol) => Symbols[(Symbols.IndexOf(symbol, StringComparison.Ordinal) + 1) % Symbols.Length];
 
     public static char Below(char symbol) => Symbols[(Symbols.IndexOf(symbol, StringComparison.Ordinal) + Symbols.Length - 1) % Symbols.Length];
+
+    private static bool IsConsecutive(string text, int direction)
+    {
+        for (var i = 1; i < text.Length; i++)
+        {
+            if (Symbols.IndexOf(text[i], StringComparison.Ordinal) - Symbols.IndexOf(text[i - 1], StringComparison.Ordinal) != direction)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     private static bool IsOrdered(string text, int direction)
     {
@@ -11022,10 +11082,10 @@ internal sealed record SlotUpdate(
 
 ================================================================================
 FILE:     src/Chaos.Web/Slots/SlotWin.cs
-SIZE:     0.15 KB (150 bytes)
-LINES:    11
-SHA256:   f3696f64303f4075a66af2169a5433264af8c604b624447a49467408cf2b435d
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     0.18 KB (184 bytes)
+LINES:    13
+SHA256:   a90c65fe5b919572b57aa1a92a06ddf0dca02b0f7d334b20e98b06261cf15d9b
+MODIFIED: 2026-10-19 05:28:11 (UTC)
 ================================================================================
 
 namespace Chaos.Web.Slots;
@@ -11038,6 +11098,8 @@ internal enum SlotWin
     FiveOfAKind,
     StraightUp,
     StraightDown,
+    SequenceUp,
+    SequenceDown,
 }
 
 
@@ -11791,10 +11853,10 @@ public sealed partial class SiteTests(BrowserFixture browser) : IClassFixture<Br
 
 ================================================================================
 FILE:     tests/Chaos.E2E/SlotTests.cs
-SIZE:     9.18 KB (9401 bytes)
-LINES:    207
-SHA256:   a7f4df900efa074ba6139d8afe06cf4fc7632fe491111f32218c89eb0d497ad6
-MODIFIED: 2026-10-16 10:32:26 (UTC)
+SIZE:     9.39 KB (9617 bytes)
+LINES:    208
+SHA256:   8624ec4be60607f3d92b8385ddd12a4c9007d2365971b3a8d6156841d40d3ceb
+MODIFIED: 2026-10-19 05:29:58 (UTC)
 ================================================================================
 
 using Microsoft.Playwright;
@@ -11826,9 +11888,10 @@ public sealed class SlotTests(BrowserFixture browser) : IClassFixture<BrowserFix
     }
 
     [Fact]
-    public async Task TenPressesUnlockAutoSpin()
+    public async Task TenPressesUnlockAutoSpinThatKeepsGoingInBackgroundTabs()
     {
         await using var context = await browser.NewContextAsync();
+        await context.AddInitScriptAsync("Object.defineProperty(document, 'visibilityState', { get: () => 'hidden' }); Object.defineProperty(document, 'hidden', { get: () => true });");
         var page = await context.NewPageAsync();
         await page.GotoAsync("/about");
         await page.EvaluateAsync("() => localStorage.setItem('chaos-slots-presses', '9')");
@@ -13498,10 +13561,10 @@ public sealed class OutboxTests
 
 ================================================================================
 FILE:     tests/Chaos.Web.Tests/SlotRulesTests.cs
-SIZE:     2.80 KB (2867 bytes)
-LINES:    98
-SHA256:   8b1d9f5ed42ce464ba72165cae11a86efb8b42d7e0af910cf0ff42475d575f35
-MODIFIED: 2026-10-16 10:32:59 (UTC)
+SIZE:     3.37 KB (3451 bytes)
+LINES:    110
+SHA256:   d2e99866323ce426ab70e08b50bbbb97814a1e981243893109b2cd9b864a701e
+MODIFIED: 2026-10-19 05:29:52 (UTC)
 ================================================================================
 
 using Chaos.Web.Slots;
@@ -13516,6 +13579,13 @@ public sealed class SlotRulesTests
     [InlineData("KKKKK", nameof(SlotWin.FiveOfAKind))]
     [InlineData("13AKZ", nameof(SlotWin.StraightUp))]
     [InlineData("ZKA80", nameof(SlotWin.StraightDown))]
+    [InlineData("ABCDF", nameof(SlotWin.StraightUp))]
+    [InlineData("ABCDE", nameof(SlotWin.SequenceUp))]
+    [InlineData("789AB", nameof(SlotWin.SequenceUp))]
+    [InlineData("VWXYZ", nameof(SlotWin.SequenceUp))]
+    [InlineData("43210", nameof(SlotWin.SequenceDown))]
+    [InlineData("BA987", nameof(SlotWin.SequenceDown))]
+    [InlineData("YZ012", nameof(SlotWin.None))]
     [InlineData("ZK8A0", nameof(SlotWin.None))]
     [InlineData("AABBC", nameof(SlotWin.None))]
     [InlineData("ABCDD", nameof(SlotWin.None))]
@@ -13541,7 +13611,11 @@ public sealed class SlotRulesTests
     [InlineData("XXXXB", true)]
     [InlineData("KKKKK", true)]
     [InlineData("7Q7A7", false)]
+    [InlineData("ABCDE", true)]
+    [InlineData("43210", true)]
+    [InlineData("VWXYZ", true)]
     [InlineData("13AKZ", false)]
+    [InlineData("YZ012", false)]
     [InlineData("ZK8A0", false)]
     [InlineData("kkkkk", false)]
     [InlineData(null, false)]
@@ -13582,6 +13656,7 @@ public sealed class SlotRulesTests
     {
         Assert.Equal([true, false, true, false, true], SlotRules.Hits("7Q7A7"));
         Assert.Equal([true, true, true, true, true], SlotRules.Hits("ABCDE"));
+        Assert.Equal([true, true, true, true, true], SlotRules.Hits("43210"));
         Assert.Equal([false, false, false, false, false], SlotRules.Hits("AABBC"));
     }
 
@@ -13606,10 +13681,10 @@ public sealed class SlotRulesTests
 
 ================================================================================
 FILE:     tests/Chaos.Web.Tests/SlotServiceTests.cs
-SIZE:     10.87 KB (11132 bytes)
-LINES:    314
-SHA256:   67a6153786e5a56f1a4b1d1bcefe9769ef6f76a4879072c59885053a5e560a83
-MODIFIED: 2026-10-16 10:47:24 (UTC)
+SIZE:     11.14 KB (11411 bytes)
+LINES:    322
+SHA256:   f76c0b87fff714a8751600b2741afb88800e3adee6ecec5e777f9306e950ae4e
+MODIFIED: 2026-10-19 05:29:46 (UTC)
 ================================================================================
 
 using Chaos.Web.Infrastructure;
@@ -13858,6 +13933,14 @@ public sealed class SlotServiceTests
         Assert.Empty(delta.WinnersAdded);
         Assert.Equal("QQQQ7", Assert.Single(delta.JackpotsAdded).Text);
         Assert.Equal(0, slots.OfferJackpots([jackpot]));
+    }
+
+    [Fact]
+    public void SequencesAreKeptAsJackpots()
+    {
+        var slots = Create();
+        Assert.Equal(2, slots.OfferJackpots([Old(-3, "13AKZ"), Old(-2, "ABCDE"), Old(-1, "43210")]));
+        Assert.Equal(["43210", "ABCDE"], slots.Jackpots.Select(m => m.Text));
     }
 
     [Fact]
@@ -14697,10 +14780,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     tests/js/slots.test.js
-SIZE:     10.66 KB (10913 bytes)
-LINES:    298
-SHA256:   8d0fd7026abecc92079900b4af2f311514b7ccd187c1b09b11d45af4a0d19756
-MODIFIED: 2026-10-16 10:33:35 (UTC)
+SIZE:     12.15 KB (12442 bytes)
+LINES:    329
+SHA256:   2e7637f814ca13b67bb111ebb07c5e5eba3cd3d83b2e2dd80e0bae13cb61df56
+MODIFIED: 2026-10-19 05:28:54 (UTC)
 ================================================================================
 
 import { describe, expect, it } from 'vitest';
@@ -14712,10 +14795,12 @@ import {
     DB_VERSION,
     FULL_HOUSE,
     JACKPOTS,
+    JACKPOT_WAYS,
     JACKPOT_OFFERS,
     LABELS,
     OUTCOMES,
     PRESS_KEY,
+    SEQUENCES,
     SYMBOLS,
     STORE,
     WINNER_OFFERS,
@@ -14774,6 +14859,13 @@ describe('winners', () => {
         ['KKKKK', 'five'],
         ['13AKZ', 'up'],
         ['ZKA80', 'down'],
+        ['ABCDE', 'sequenceUp'],
+        ['789AB', 'sequenceUp'],
+        ['VWXYZ', 'sequenceUp'],
+        ['43210', 'sequenceDown'],
+        ['BA987', 'sequenceDown'],
+        ['YZ012', 'none'],
+        ['ABCDF', 'up'],
         ['ZK8A0', 'none'],
         ['AABBC', 'none'],
         ['ABCDD', 'none'],
@@ -14782,12 +14874,13 @@ describe('winners', () => {
     });
 
     it('labels every kind of win', () => {
-        expect(Object.keys(LABELS).sort()).toEqual(['down', 'five', 'four', 'three', 'up']);
+        expect(Object.keys(LABELS).sort()).toEqual(['down', 'five', 'four', 'sequenceDown', 'sequenceUp', 'three', 'up']);
     });
 
     it('marks the symbols that won', () => {
         expect(hits('7Q7A7')).toEqual([true, false, true, false, true]);
         expect(hits('ABCDE')).toEqual([true, true, true, true, true]);
+        expect(hits('43210')).toEqual([true, true, true, true, true]);
         expect(hits('AABBC')).toEqual([false, false, false, false, false]);
     });
 });
@@ -14844,8 +14937,8 @@ describe('presses', () => {
 
 describe('odds', () => {
     it('counts every kind the same way an exhaustive search does', () => {
-        const symbols = '05AKPZ';
-        const counts = { none: 0, three: 0, four: 0, five: 0, up: 0, down: 0 };
+        const symbols = '89ABCD';
+        const counts = { none: 0, three: 0, four: 0, five: 0, up: 0, down: 0, sequenceUp: 0, sequenceDown: 0 };
         const total = symbols.length ** 5;
         for (let index = 0; index < total; index += 1) {
             let text = '';
@@ -14864,8 +14957,12 @@ describe('odds', () => {
         expect(waysOf('five')).toBe(36);
         expect(waysOf('four')).toBe(6_300);
         expect(waysOf('three')).toBe(441_000);
-        expect(waysOf('up')).toBe(376_992);
-        expect(waysOf('down')).toBe(376_992);
+        expect(waysOf('up')).toBe(376_960);
+        expect(waysOf('down')).toBe(376_960);
+        expect(waysOf('sequenceUp')).toBe(32);
+        expect(waysOf('sequenceDown')).toBe(32);
+        expect(SEQUENCES).toBe(64);
+        expect(JACKPOT_WAYS).toBe(6_400);
         expect(waysOf('none')).toBe(0);
         expect(WINNING).toBe(1_201_320);
         expect(FULL_HOUSE).toBe(12_600);
@@ -14877,6 +14974,8 @@ describe('odds', () => {
     it('formats chances for people', () => {
         expect(oneIn(WINNING)).toBe('50.3');
         expect(oneIn(waysOf('four'))).toBe('9,598');
+        expect(oneIn(SEQUENCES)).toBe('944,784');
+        expect(oneIn(JACKPOT_WAYS)).toBe('9,448');
         expect(percent(waysOf('three') / OUTCOMES)).toBe('0.729%');
         expect(percent(waysOf('five') / OUTCOMES)).toBe('0.0000595%');
         expect(duration(4000)).toBe('4 seconds');
@@ -14907,6 +15006,12 @@ describe('odds', () => {
         expect(four.sections.some(([, text]) => text.includes('XXXXB'))).toBe(true);
         expect(lesson('77QQ7').facts.at(-1)[1]).toBe('12,600 ways, 1 in 4,799');
         expect(lesson('ZKA80').sections[0][1]).toContain('falls');
+        const run = lesson('ABCDE');
+        expect(run.kind).toBe('sequenceUp');
+        expect(run.facts).toContainEqual(['Either direction', '64 ways, 1 in 944,784']);
+        expect(run.facts).toContainEqual(['Any jackpot', '6,400 ways, 1 in 9,448']);
+        expect(lesson('43210').sections[0][1]).toContain('43210');
+        expect(lesson('13AKZ').facts.map(([term]) => term)).not.toContain('Any jackpot');
     });
 
     it('offers the newest winners from local history', () => {
@@ -14926,7 +15031,11 @@ describe('jackpots', () => {
         ['XXXXB', true],
         ['KKKKK', true],
         ['7Q7A7', false],
+        ['ABCDE', true],
+        ['43210', true],
+        ['VWXYZ', true],
         ['13AKZ', false],
+        ['YZ012', false],
         ['ZK8A0', false],
         ['kkkkk', false],
         [null, false],
@@ -14937,6 +15046,9 @@ describe('jackpots', () => {
     it('shouts about jackpots in the verdict', () => {
         expect(verdictText('KKKKK')).toBe('Jackpot! Five of a kind');
         expect(verdictText('XXXXB')).toBe('Jackpot! Four of a kind');
+        expect(verdictText('ABCDE')).toBe('Jackpot! Sequence up');
+        expect(verdictText('43210')).toBe('Jackpot! Sequence down');
+        expect(verdictText('13AKZ')).toBe('Straight up');
         expect(verdictText('7Q7A7')).toBe('Three of a kind');
         expect(verdictText('ZK8A0')).toBe('');
     });
@@ -14956,8 +15068,10 @@ describe('jackpots', () => {
             { id: '0199a000-0000-7000-8000-000000000002', text: 'AAAB1' },
             { id: '0199a000-0000-7000-8000-000000000003', text: 'KKKKK' },
             { id: '0199a000-0000-7000-8000-000000000004', text: 'kkkkk' },
+            { id: '0199a000-0000-7000-8000-000000000005', text: '13AKZ' },
+            { id: '0199a000-0000-7000-8000-000000000006', text: '43210' },
         ];
-        expect(newestJackpots(records).map(record => record.text)).toEqual(['KKKKK', 'XXXXB']);
+        expect(newestJackpots(records).map(record => record.text)).toEqual(['43210', 'KKKKK', 'XXXXB']);
         expect(newestJackpots(records, 1)).toHaveLength(1);
         expect(JACKPOT_OFFERS).toBe(500);
         expect(WINNER_OFFERS).toBe(500);
@@ -15037,9 +15151,9 @@ export default defineConfig({
 
 
 ===============================================================================
-EXPORT COMPLETED (UTC): 2026-10-19 05:16:27
+EXPORT COMPLETED (UTC): 2026-10-19 05:35:24
 Total Files Exported:   167
-Total Source Size:      0.42 MB (445585 bytes)
+Total Source Size:      0.43 MB (451997 bytes)
 Output File:            /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
 ===============================================================================
-DUMP SHA256 (of all lines above this one): b804fcda9031453ec6e839702a5a68fe9529eb91f9aa938b7edf28eb5fd63eb9
+DUMP SHA256 (of all lines above this one): 7a7c82d623cb05ee479509769f45e33d5b8acd1f2a10a7e318a593e8f3f4bc5d
