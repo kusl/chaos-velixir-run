@@ -1,0 +1,32 @@
+00
+71
+
+**Feature Request: Add leaderboards for latency test**
+
+Please update the slot machine win rules to classify **strict consecutive sequences** as Jackpots:
+
+* **Requirement:** 
+I would like to add leaerboards for the latency test
+for example, a client when it connects already sends the latest so many results 
+in addition, I think the client should also send its ten best (lowest latency) 
+and ten worst (highest latency) for both browser median and server median
+the server will then make two lists 
+- jackpots winners and losers 
+    one single digit median which I think is almost impossible so it will likely never happen 
+    three digit or more median which I hope never happens either 
+- select winners and losers something like top one percent or top ten or something like that both high and low 
+
+and please update all documentation accordingly as well.
+these winners and losers should go at the bottom after recent results  
+
+Use your best judgment
+
+If only a few files (under five or there about) need to change, give me the full path of the files that need to change and the FULL file 
+if there are a lot of files that need to change 
+    Delivery
+    Whole project as one tar.gz, unambiguous file placement
+    do not include any file that has not changed 
+    Any files to delete on updates called out explicitly
+    No bespoke sed/patch scripts — full files only for anything that changes
+    Docs updated alongside code changes
+    Low verbosity, no code comments
