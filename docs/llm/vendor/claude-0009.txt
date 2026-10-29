@@ -30,3 +30,173 @@ if there are a lot of files that need to change
     No bespoke sed/patch scripts — full files only for anything that changes
     Docs updated alongside code changes
     Low verbosity, no code comments
+
+
+
+
+
+
+
+
+Claude
+/
+**Feature Request: Add leaderboards for latency test**
+
+Please update the slot machine win rules to classify **strict consecutive sequences** as Jackpots:
+
+**Requirement:** I would like to add leaerboards for the latency test for example, a client when it connects already sends the latest so many results in addition, I think the client should also send its ten best (lowest latency) and ten worst (highest latency) for both browser median and server median the server will then make two lists
+jackpots winners and losers one single digit median which I think is almost impossible so it will likely never happen three digit or more median which I hope never happens either
+select winners and losers something like top one percent or top ten or something like that both high and low
+and please update all documentation accordingly as well.
+these winners and losers should go at the bottom after recent results  
+
+Use your best judgment
+
+If only a few files (under five or there about) need to change, give me the full path of the files that need to change and the FULL file 
+if there are a lot of files that need to change 
+    Delivery
+    Whole project as one tar.gz, unambiguous file placement
+    do not include any file that has not changed 
+    Any files to delete on updates called out explicitly
+    No bespoke sed/patch scripts — full files only for anything that changes
+    Docs updated alongside code changes
+    Low verbosity, no code comments
+
+Ran 49 commands, read memory
+Planning a feature using project files.
+Noting a stray slot-machine header in the request.
+Checking the project docs for design decisions.
+Comparing slot leaderboard patterns with the offers feature.
+Checking the SDK version required by global.json.
+Checking whether the package source is allowed.
+Working out how to restore the web project offline.
+Building a local stub package for the build.
+Now writing the server code.
+Checking a lifted comparison against nullable integers.
+Checking how the stylesheet's content rule fits the page's security policy.
+Now the C# tests.
+I ran out of tool budget before packaging, so there’s no tar.gz yet. The code is mostly written in my sandbox, but the docs aren’t updated and the .NET tests haven’t been run. Reply “continue” and I’ll finish the docs, run the tests, and hand over the archive.
+
+I ignored the leftover “slot machine strict consecutive sequences” heading at the top of your message. I treated this as the latency leaderboard request only.
+
+What it does
+
+Jackpots: a run is a winner if its browser or server median is under 10 ms, and a loser if either is 100 ms or more. The server keeps the newest 50 of each.
+Leaderboard: the 10 lowest and 10 highest browser medians, and the same for server medians. Ties go to the older run.
+Quorum: a median only counts when at least half the run’s endpoints answered on that side. Without this, a browser that only reached /time would win the jackpot.
+What the client sends: on connect it still sends its latest 50 results. It now also reads all its local runs and sends its 10 best and 10 worst for each median through a new OfferLeaders call, capped at 40 per connection.
+Server restarts: leader runs the client receives are saved to local history, so any browser can restore the leaderboard after a restart.
+Page layout: after Results come Jackpots (Winners in gold, Losers in red), then Leaderboard (fastest and slowest browsers, fastest and slowest server runs). Ranked entries show their place.
+Settings: two new options, LatencyRankCapacity (default 10) and LatencyJackpotCapacity (default 50).
+Sync: snapshots and deltas carry a boards object with six ordered id lists plus the text of any runs the client hasn’t seen yet. Deltas only include it when a list changes.
+Trust: offered runs are trusted the same way slot jackpots are, so a forged offer could reach a list. The caps keep that bounded.
+Verified so far
+
+The Chaos.Web project builds in Release with 0 warnings, using SDK 10.0.401 and a stub for the one package I couldn’t download.
+All 127 JavaScript tests pass, including 7 new latency ones.
+The new .NET tests are written but not compiled or run, because nuget.org isn’t reachable from my environment.
+Files changed or added
+
+src/Chaos.Web/Latency/LatencyLeaders.cs (new)
+src/Chaos.Web/Latency/LatencyRun.cs
+src/Chaos.Web/Latency/LatencyUpdate.cs
+src/Chaos.Web/Latency/LatencyService.cs
+src/Chaos.Web/Infrastructure/ChaosOptions.cs
+src/Chaos.Web/Components/Islands/LatencyIsland.razor
+src/Chaos.Web/Components/Islands/LatencyIsland.razor.js
+src/Chaos.Web/Components/Pages/LatencyPage.razor
+src/Chaos.Web/Components/Pages/LatencyPage.razor.css
+tests/Chaos.Web.Tests/LatencyRunTests.cs
+tests/Chaos.Web.Tests/LatencyServiceTests.cs
+tests/Chaos.Web.Tests/ClockAndCooldownTests.cs
+tests/Chaos.Web.Tests/HttpPipelineTests.cs
+tests/js/latency.test.js
+Still to do
+
+Update the docs: README.md, ADR 0020 (latency), 0008 (limits table), 0007 (the boards field) and About.razor.
+Add an end-to-end check in tests/Chaos.E2E/LatencyTests.cs that the leaderboards stay empty when browser runs don’t reach quorum.
+Package everything as one tar.gz. No files need deleting.
+This response ended early.
+
+
+
+
+Claude is AI and can make mistakes. Please double-check responses.
+
+
+
+
+Claude finished the response
+
+17
+72
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+please continue 
+
