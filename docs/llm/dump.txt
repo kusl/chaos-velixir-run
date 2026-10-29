@@ -1,12 +1,12 @@
 ===============================================================================
 PROJECT EXPORT
-Generated (UTC): 2026-10-29 19:26:31
+Generated (UTC): 2026-10-29 20:20:26
 Project Path:    /home/kushal/src/dotnet/chaos-velixir-run
-Git Commit:      e35ac23ff61e8c11887aeee6fc2fd84f4517961c
+Git Commit:      490d680d99ce0843d351098aac63db0030a3e366
 Git Branch:      main
 Git Dirty:       yes (uncommitted changes are included below)
 .NET SDK:        10.0.113
-Files Exported:  167
+Files Exported:  168
 ===============================================================================
 
 DIRECTORY STRUCTURE (exported files only):
@@ -137,6 +137,7 @@ DIRECTORY STRUCTURE (exported files only):
                 ILatencySubscriber.cs
                 LatencyCatalog.cs
                 LatencyEndpoint.cs
+                LatencyLeaders.cs
                 LatencyRun.cs
                 LatencyService.cs
                 LatencyStart.cs
@@ -454,10 +455,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     README.md
-SIZE:     3.08 KB (3154 bytes)
+SIZE:     3.28 KB (3357 bytes)
 LINES:    46
-SHA256:   e6fe02cec0a4084214cb05dcc3c3717279b3771d88974ceadc5a3e160f36ad66
-MODIFIED: 2026-10-19 05:30:14 (UTC)
+SHA256:   676ad0b59f4e223648d2774ffd44c84e1cec0e5665e225a110cfd745eb671740
+MODIFIED: 2026-10-29 20:03:06 (UTC)
 ================================================================================
 
 # chaos-velixir-run
@@ -467,7 +468,7 @@ A message board, a shared drawing canvas, a shared slot machine and a shared lat
 - Board: the server keeps the newest 50 messages; each browser keeps up to 10,000 in IndexedDB and offers its newest 50 back after a server restart. Dotted border means the server no longer has it.
 - Canvas: one black pen on a shared square page, live for everyone, one reset button. Browsers keep finished strokes (10,000) and the latest reset, and offer back up to 500 strokes after a server restart.
 - Slots: one shared machine. A press draws five symbols (A–Z, 0–9) on the server and locks the button for everyone until the reels stop. Three of a kind or a five-symbol straight wins. Four or five of a kind, or an unbroken sequence along `0-9A-Z` (`ABCDE`, `43210`), is a jackpot: everyone watching sees a celebration, and jackpots are never deleted, on the server or in the browser. Results are kept like board messages, plus the newest 500 winners. Tapping a winner shows its odds and the probability behind them. Ten successful presses unlock auto spin, which also runs in background tabs.
-- Latency: one button times public endpoints from the browser and from the server. One test at a time, one per network every 5 minutes. Results are kept like board messages, without identity. Ten tests unlock auto run.
+- Latency: one button times public endpoints from the browser and from the server. One test at a time, one per network every 5 minutes. Results are kept like board messages, without identity. Below them: jackpots (a median under 10 ms wins, 100 ms or more loses) and the 10 fastest and slowest browser and server medians. Browsers offer back their own 10 best and worst of each after a restart. Ten tests unlock auto run.
 - Every page footer shows the ticking server time.
 - No third-party code, no cookies, no accounts. Strict CSP with no inline scripts; `connect-src` also lists the latency endpoints.
 
@@ -670,10 +671,10 @@ Status: accepted
 
 ================================================================================
 FILE:     docs/adr/0007-realtime-delivery.md
-SIZE:     1.07 KB (1097 bytes)
+SIZE:     1.14 KB (1165 bytes)
 LINES:    10
-SHA256:   f4e13347ccf75a27441ef2133d56c572c84cf1507e58cf336ad25a12b4623804
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SHA256:   423c4277a2bf0cebc1947e949c5718d379804e9fb3bb82cc1b96736ddac281e4
+MODIFIED: 2026-10-29 20:03:06 (UTC)
 ================================================================================
 
 # 0007 Per-client outboxes over the circuit
@@ -684,16 +685,16 @@ Status: accepted
 - Each island owns a bounded channel (`Outbox<T>`) drained by one pump that sends batches in order and waits for the browser to finish each batch. A full outbox, a failed call or a 20 s stall drops the subscriber.
 - The pump waits until the island's module has been attached. JavaScript can call `Join` before `attach` has returned to .NET, and an earlier send would fault the outbox.
 - Subscribing enqueues a snapshot under the same lock as updates, so nothing is missed or duplicated.
-- Board deltas carry `version` and `previous`; a gap triggers a fresh snapshot. Canvas updates carry an offset per stroke; a gap triggers a fresh snapshot. Slots and latency deltas use the board rules; a latency `state` update only carries `running`.
+- Board deltas carry `version` and `previous`; a gap triggers a fresh snapshot. Canvas updates carry an offset per stroke; a gap triggers a fresh snapshot. Slots and latency deltas use the board rules; a latency `state` update only carries `running`, and latency snapshots and changed deltas carry `boards` (ADR 0020).
 - The browser pings every 25 s and resubscribes when the server says it was dropped, and resubscribes after every reconnect.
 
 
 ================================================================================
 FILE:     docs/adr/0008-abuse-limits.md
-SIZE:     1.81 KB (1849 bytes)
-LINES:    30
-SHA256:   5b127b6e67e7135b454dd9441dd9555129d600545980c94f0f782739b89cd70f
-MODIFIED: 2026-10-16 10:38:19 (UTC)
+SIZE:     1.92 KB (1963 bytes)
+LINES:    31
+SHA256:   7cf696b72c5347dbd69dbf73e7477a38174916a9cec3a47556a581ad827ff9e3
+MODIFIED: 2026-10-29 20:03:06 (UTC)
 ================================================================================
 
 # 0008 Rate and connection limits
@@ -718,7 +719,8 @@ Defaults live in `ChaosOptions` and can be overridden with `Chaos__*` environmen
 | Slot winner and jackpot offers per circuit | 500 each |
 | Canvas offers per circuit | 500 strokes, 20,000 points, 4 resets |
 | Latency tests | one at a time, 10 s apart, one per client every 300 s, 30 s probe budget |
-| Latency results kept | 50 |
+| Latency results kept | 50 recent, 50 jackpot winners, 50 losers, 10 fastest and slowest per side |
+| Latency leader offers per circuit | 40 |
 
 - A client is its IP after `X-Forwarded-For`, or its /64 for IPv6. Keys live in memory only and are never logged or shown. Devices behind one NAT are one client.
 - The hub (`/_blazor`) only accepts WebSocket connections, so connection counts are real. Clients behind proxies that block WebSockets cannot use the board, canvas or slots.
@@ -946,10 +948,10 @@ Status: accepted
 
 ================================================================================
 FILE:     docs/adr/0020-latency.md
-SIZE:     1.55 KB (1591 bytes)
-LINES:    10
-SHA256:   8488f25ade4237ea5012320c5cab6a312598c5af6d7d491414cc53972ff75dbd
-MODIFIED: 2026-10-16 10:38:19 (UTC)
+SIZE:     2.65 KB (2714 bytes)
+LINES:    15
+SHA256:   27be3bc3a89dcf2aeefb4f8b6fa6f76e9bbca587e65d40b803594419d98a9393
+MODIFIED: 2026-10-29 20:03:06 (UTC)
 ================================================================================
 
 # 0020 Shared latency test
@@ -961,6 +963,11 @@ Status: accepted
 - The server probes in the background (`HttpLatencyProbe`): one warm-up request, then the fastest of 3 time-to-headers, 6 endpoints at a time, 4 s per request, `LatencyBudgetSeconds` overall. `LatencyServerProbe=false` turns it off.
 - The browser does the same with `fetch` (`no-cors`, `no-store`, no credentials, no referrer) and sends `Finish(id, ms[])`, -1 for failures. The server waits up to the budget plus 15 s, then publishes either way.
 - A result is `{ id, text }` with text `key=browser,server;…` in integer ms, empty for none. Offers must re-serialize to the same text. Server keeps 50, browsers 10,000 (`chaos-latency`), same merge rules as slots.
+- Ranking: a run's browser or server median counts only when at least half its endpoints answered on that side (`LatencyRun.Rank`, `rank()` in JS, tested with the same cases).
+- Leaderboards (`LatencyLeaders`): jackpot winners (a counted median under 10 ms) and losers (100 ms or more), newest `LatencyJackpotCapacity` (default 50) each; and the `LatencyRankCapacity` (default 10) lowest and highest counted medians per side, ties to the older run. Every measured or offered run is a candidate.
+- Snapshots carry `boards`: six ordered id lists (`fastJackpots`, `slowJackpots`, `browserFastest`, `browserSlowest`, `serverFastest`, `serverSlowest`) and `runs`, the texts the client has not seen. Deltas carry `boards` only when a list changes, with only new texts. Browsers save leader runs to local history.
+- After a restart, browsers read every local run and offer their 10 best and 10 worst counted medians per side through `OfferLeaders` (40 per circuit, boards only, same validation as offers). Offers are trusted like slot jackpots; the caps bound forgeries.
+- The page lists Results, then Jackpots, then Leaderboard.
 - No identity: results hold only timings. The browser marks its own as `mine`. Test count (`chaos-latency-runs`) and next allowed time (`chaos-latency-next`) are in `localStorage`; 10 tests unlock auto run, which tests whenever allowed, including in hidden tabs.
 
 
@@ -3628,10 +3635,10 @@ export function attach(canvas, dotnet) {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/LatencyIsland.razor
-SIZE:     4.84 KB (4960 bytes)
-LINES:    147
-SHA256:   fcb18038c4fe1e6d45faadec6cd4ad709a3cae3b294e612679c27fe81be70648
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     5.18 KB (5306 bytes)
+LINES:    153
+SHA256:   2af393b66f77e9f78eb06a402fd8197640db67e8d992e347c7bdcb4ffa1022f8
+MODIFIED: 2026-10-29 19:41:59 (UTC)
 ================================================================================
 
 @implements IAsyncDisposable
@@ -3681,6 +3688,7 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
     private Outbox<LatencyUpdate>? _outbox;
     private Subscriber? _subscriber;
     private int _offered;
+    private int _offeredLeaders;
 
     [Parameter, EditorRequired]
     public string Client { get; set; } = ClientAddress.Unknown;
@@ -3699,31 +3707,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
     }
 
     [JSInvokable]
-    public int Offer(string[] ids, string[] texts)
-    {
-        if (ids is null || texts is null || ids.Length != texts.Length)
-        {
-            return 0;
-        }
+    public int Offer(string[] ids, string[] texts) => Latency.Offer(Parse(ids, texts, LatencyService.MaxOffers, ref _offered));
 
-        var count = Math.Min(LatencyService.MaxOffers - _offered, ids.Length);
-        if (count <= 0)
-        {
-            return 0;
-        }
-
-        _offered += count;
-        var offered = new List<BoardMessage>(count);
-        for (var i = 0; i < count; i++)
-        {
-            if (Guid.TryParseExact(ids[i], "D", out var id) && texts[i] is { } text)
-            {
-                offered.Add(new BoardMessage(id, text));
-            }
-        }
-
-        return Latency.Offer(offered);
-    }
+    [JSInvokable]
+    public int OfferLeaders(string[] ids, string[] texts) => Latency.OfferLeaders(Parse(ids, texts, LatencyService.MaxLeaderOffers, ref _offeredLeaders));
 
     [JSInvokable]
     public async Task Join()
@@ -3751,6 +3738,32 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
         await JsCleanup.DisposeAsync(_client, "dispose");
         await JsCleanup.DisposeAsync(_module, null);
         _self?.Dispose();
+    }
+
+    private static List<BoardMessage> Parse(string[]? ids, string[]? texts, int limit, ref int used)
+    {
+        if (ids is null || texts is null || ids.Length != texts.Length)
+        {
+            return [];
+        }
+
+        var count = Math.Min(limit - used, ids.Length);
+        if (count <= 0)
+        {
+            return [];
+        }
+
+        used += count;
+        var offered = new List<BoardMessage>(count);
+        for (var i = 0; i < count; i++)
+        {
+            if (Guid.TryParseExact(ids[i], "D", out var id) && texts[i] is { } text)
+            {
+                offered.Add(new BoardMessage(id, text));
+            }
+        }
+
+        return offered;
     }
 
     private async Task SendAsync(IReadOnlyList<LatencyUpdate> batch, CancellationToken cancellationToken)
@@ -3891,10 +3904,10 @@ tbody th {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/LatencyIsland.razor.js
-SIZE:     23.23 KB (23785 bytes)
-LINES:    687
-SHA256:   6f74d50c2e113d84d84e6fc0ef5bbe3903d135b405cd70c40ac44cf7c6456a1b
-MODIFIED: 2026-10-16 10:30:51 (UTC)
+SIZE:     29.28 KB (29978 bytes)
+LINES:    853
+SHA256:   d5bf28fe48967432dc484aa72ebdcded05c4ac8a0538d937458c488c1d0736a0
+MODIFIED: 2026-10-29 19:43:14 (UTC)
 ================================================================================
 
 import { LocalHistory, OFFER_LIMIT, PAGE_SIZE, announce, chunkOffers, isoOf, labelOf, needsResync, newestFirst } from './BoardIsland.razor.js';
@@ -3911,6 +3924,20 @@ export const SAMPLES = 3;
 export const PARALLEL = 6;
 export const REQUEST_MS = 4000;
 export const MAX_MS = 60000;
+export const LEADER_OFFERS = 10;
+export const FAST_BELOW = 10;
+export const SLOW_FROM = 100;
+export const SIDES = Object.freeze(['browser', 'server']);
+export const SIDE_LABELS = Object.freeze({ browser: 'Browser', server: 'Server' });
+
+export const BOARDS = Object.freeze([
+    { key: 'fastJackpots', id: 'latency-jackpot-winners', jackpot: 'fast' },
+    { key: 'slowJackpots', id: 'latency-jackpot-losers', jackpot: 'slow' },
+    { key: 'browserFastest', id: 'latency-browser-fastest', side: 'browser' },
+    { key: 'browserSlowest', id: 'latency-browser-slowest', side: 'browser' },
+    { key: 'serverFastest', id: 'latency-server-fastest', side: 'server' },
+    { key: 'serverSlowest', id: 'latency-server-slowest', side: 'server' },
+]);
 
 export const migrations = [
     db => db.createObjectStore(STORE, { keyPath: 'id' }),
@@ -3979,6 +4006,63 @@ export function summarize(results) {
         answered: results.filter(result => result.browser !== null || result.server !== null).length,
         total: results.length,
     };
+}
+
+export function rank(results) {
+    const quorum = Math.ceil(results.length / 2);
+    const counted = values => (values.filter(item => Number.isInteger(item)).length >= quorum ? median(values) : null);
+    return {
+        browser: counted(results.map(result => result.browser)),
+        server: counted(results.map(result => result.server)),
+    };
+}
+
+export function isFast(value) {
+    return Number.isInteger(value) && value < FAST_BELOW;
+}
+
+export function isSlow(value) {
+    return Number.isInteger(value) && value >= SLOW_FROM;
+}
+
+export function qualifies(value, jackpot) {
+    return jackpot === 'fast' ? isFast(value) : isSlow(value);
+}
+
+function byId(a, b) {
+    return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+}
+
+export function leadersOf(records, limit = LEADER_OFFERS) {
+    const scored = [];
+    for (const record of records) {
+        const results = typeof record?.id === 'string' ? parseRun(record.text) : null;
+        if (results) {
+            scored.push({ id: record.id, record, rank: rank(results) });
+        }
+    }
+    const chosen = new Map();
+    for (const side of SIDES) {
+        const ranked = scored.filter(item => item.rank[side] !== null);
+        const fastest = [...ranked].sort((a, b) => a.rank[side] - b.rank[side] || byId(a, b));
+        const slowest = [...ranked].sort((a, b) => b.rank[side] - a.rank[side] || byId(a, b));
+        for (const item of [...fastest.slice(0, limit), ...slowest.slice(0, limit)]) {
+            chosen.set(item.id, item.record);
+        }
+    }
+    return [...chosen.values()];
+}
+
+export function boardIds(boards) {
+    return Object.fromEntries(BOARDS.map(board => [board.key, Array.isArray(boards?.[board.key]) ? boards[board.key] : []]));
+}
+
+export function readAll(db, store) {
+    return new Promise((resolve, reject) => {
+        const request = db.transaction(store, 'readonly').objectStore(store).getAll();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
 }
 
 export function ms(value) {
@@ -4137,6 +4221,11 @@ class LatencyClient {
         this.feed = doc.getElementById('latency-feed');
         this.empty = doc.getElementById('latency-empty');
         this.older = doc.getElementById('latency-older');
+        this.boardLists = BOARDS.map(board => ({
+            ...board,
+            list: doc.getElementById(board.id),
+            empty: doc.getElementById(`${board.id}-empty`),
+        }));
         this.cooldown = (Number.parseInt(panel.dataset.cooldown, 10) || 300) * 1000;
         this.budget = (Number.parseInt(panel.dataset.budget, 10) || 30) * 1000;
         this.runs = readNumber(win.localStorage, RUNS_KEY);
@@ -4146,6 +4235,9 @@ class LatencyClient {
         this.live = new Map();
         this.shown = new Map();
         this.mine = new Set();
+        this.leaders = new Map();
+        this.boards = boardIds(null);
+        this.drawn = new Map();
         this.cursor = null;
         this.ready = false;
         this.running = false;
@@ -4174,6 +4266,10 @@ class LatencyClient {
             await this.offer();
         } catch {
         }
+        try {
+            await this.offerLeaders();
+        } catch {
+        }
         await this.join();
     }
 
@@ -4189,6 +4285,25 @@ class LatencyClient {
                 return;
             }
             await this.dotnet.invokeMethodAsync('Offer', chunk.map(record => record.id), chunk.map(record => record.text));
+        }
+    }
+
+    async offerLeaders() {
+        const db = await this.history.database();
+        if (!db || this.disposed) {
+            return;
+        }
+        const records = await readAll(db, STORE);
+        for (const record of records) {
+            if (record.mine) {
+                this.mine.add(record.id);
+            }
+        }
+        for (const chunk of chunkOffers(leadersOf(records), undefined, LEADER_OFFERS * 4)) {
+            if (this.disposed) {
+                return;
+            }
+            await this.dotnet.invokeMethodAsync('OfferLeaders', chunk.map(record => record.id), chunk.map(record => record.text));
         }
     }
 
@@ -4225,12 +4340,16 @@ class LatencyClient {
             this.running = update.running === true;
             if (update.kind === 'snapshot') {
                 await this.snapshot(update);
+                await this.board(update.boards, true);
             } else if (update.kind === 'delta' && this.version >= 0) {
                 if (needsResync(this.version, update)) {
                     this.join();
                     return;
                 }
                 await this.delta(update);
+                if (update.boards) {
+                    await this.board(update.boards, false);
+                }
             }
             this.updateControls();
         }
@@ -4292,6 +4411,66 @@ class LatencyClient {
             announce(this.doc, `New latency result: browser median ${ms(summary.browser)}, server median ${ms(summary.server)}.`);
         }
         await this.save(update.added);
+    }
+
+    async board(boards, reset) {
+        if (reset) {
+            this.leaders.clear();
+            this.drawn.clear();
+        }
+        const runs = Array.isArray(boards?.runs) ? boards.runs : [];
+        for (const message of runs) {
+            this.leaders.set(message.id, message);
+        }
+        this.boards = boardIds(boards);
+        const keep = new Set(Object.values(this.boards).flat());
+        for (const id of [...this.leaders.keys()]) {
+            if (!keep.has(id)) {
+                this.leaders.delete(id);
+            }
+        }
+        this.renderBoards();
+        await this.save(runs);
+    }
+
+    renderBoards() {
+        for (const board of this.boardLists) {
+            if (!board.list) {
+                continue;
+            }
+            const ids = this.boards[board.key].filter(id => this.leaders.has(id));
+            const signature = ids.map(id => `${id}${this.mine.has(id) ? '*' : ''}`).join();
+            if (this.drawn.get(board.key) === signature) {
+                continue;
+            }
+            this.drawn.set(board.key, signature);
+            const fragment = this.doc.createDocumentFragment();
+            ids.forEach((id, index) => fragment.append(this.leader(this.leaders.get(id), board, index + 1)));
+            board.list.replaceChildren(fragment);
+            if (board.empty) {
+                board.empty.hidden = ids.length > 0;
+            }
+        }
+    }
+
+    leader(message, board, place) {
+        const element = this.item(message, false);
+        element.classList.remove('archived');
+        element.classList.add('leader');
+        const ranks = rank(parseRun(message.text) ?? []);
+        const headline = this.element('p', 'headline');
+        if (board.side) {
+            headline.append(this.element('span', 'place', String(place)), this.element('strong', null, ms(ranks[board.side])));
+        } else {
+            element.classList.add(board.jackpot);
+            for (const side of SIDES) {
+                if (qualifies(ranks[side], board.jackpot)) {
+                    headline.append(this.element('strong', null, `${SIDE_LABELS[side]} ${ms(ranks[side])}`));
+                }
+            }
+        }
+        element.prepend(headline);
+        return element;
     }
 
     landed(message) {
@@ -6607,10 +6786,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Pages/About.razor
-SIZE:     7.65 KB (7834 bytes)
+SIZE:     7.92 KB (8110 bytes)
 LINES:    58
-SHA256:   34cc2cd6b3bc8d6ecfce4cb995bc369adf9c600a55914bd67a8dcf93879a465a
-MODIFIED: 2026-10-19 05:30:14 (UTC)
+SHA256:   36b18ee850d3899d37f2e0044078b97f6b25d5ad6e335a92dcfceac6f2882c84
+MODIFIED: 2026-10-29 20:03:06 (UTC)
 ================================================================================
 
 @page "/about"
@@ -6632,7 +6811,7 @@ MODIFIED: 2026-10-19 05:30:14 (UTC)
     <dt><a href="slots">Slots</a></dt>
     <dd>Press the button and the shared machine spins for everyone watching. Nobody can press again until the reels stop, and then whoever presses first goes next. Nobody knows who pressed, but you are told whether your own press worked. After ten successful presses from this browser you get an auto spin button that presses for you each time the reels stop, even while the tab is in the background. Four or five of a kind, or five symbols in an unbroken sequence like <code>ABCDE</code>, is a jackpot: the machine celebrates, and every jackpot is kept forever in its own list. The newest 500 winners stay in their own list below the results. Tap any winner to see how rare it was and the probability behind it. No money or prizes are involved; it is just for fun.</dd>
     <dt><a href="latency">Latency</a></dt>
-    <dd>Press the button and your browser times how long a list of public endpoints takes to answer, while this server times the same endpoints from its data centre. Each endpoint gets one warm-up request and then the fastest of three is kept. Everyone sees every result, with no name or address attached. Each network can start a test every five minutes, so phones and computers on the same Wi-Fi share that limit. After ten tests from this browser an auto run button appears.</dd>
+    <dd>Press the button and your browser times how long a list of public endpoints takes to answer, while this server times the same endpoints from its data centre. Each endpoint gets one warm-up request and then the fastest of three is kept. Everyone sees every result, with no name or address attached. Each network can start a test every five minutes, so phones and computers on the same Wi-Fi share that limit. After ten tests from this browser an auto run button appears. Below the results, a browser or server median under 10 ms is a jackpot winner and 100 ms or more a jackpot loser, and a leaderboard shows the ten fastest and slowest medians from browsers and from the server. A median only counts when at least half of the endpoints answered.</dd>
 </dl>
 
 <h2>Winners</h2>
@@ -7035,10 +7214,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Pages/LatencyPage.razor
-SIZE:     3.22 KB (3294 bytes)
-LINES:    77
-SHA256:   41d6b9a976d12fe88da76df3b7add9c94eae30a934ba32a4d692eb76dc3a5773
-MODIFIED: 2026-10-16 10:30:51 (UTC)
+SIZE:     6.48 KB (6634 bytes)
+LINES:    139
+SHA256:   5cd24a00429ecbc122157f6c9ea3295b39cde43da49e1826327983c07cd37b01
+MODIFIED: 2026-10-29 19:42:36 (UTC)
 ================================================================================
 
 @page "/latency"
@@ -7058,51 +7237,35 @@ MODIFIED: 2026-10-16 10:30:51 (UTC)
     <ol id="latency-feed" class="runs">
         @foreach (var run in _runs)
         {
-            if (!LatencyRun.TryParse(run.Text, out var results))
-            {
-                continue;
-            }
-
-            var summary = LatencyRun.Summarize(results);
-            <li @key="run.Id" class="msg" data-id="@run.Id">
-                <time datetime="@MessageFormat.Iso(run.Id)">@MessageFormat.Label(run.Id, _now)</time>
-                <p class="summary">
-                    <span>Browser median <strong>@LatencyRun.Milliseconds(summary.Browser)</strong></span>
-                    <span>Server median <strong>@LatencyRun.Milliseconds(summary.Server)</strong></span>
-                    <span>@summary.Answered of @summary.Total answered</span>
-                </p>
-                <details>
-                    <summary>All endpoints</summary>
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Endpoint</th>
-                                    <th scope="col">Browser</th>
-                                    <th scope="col">Server</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var result in results)
-                                {
-                                    <tr>
-                                        <th scope="row">@LatencyCatalog.LabelOf(result.Key)</th>
-                                        <td>@LatencyRun.Milliseconds(result.Browser)</td>
-                                        <td>@LatencyRun.Milliseconds(result.Server)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </details>
-            </li>
+            @Item(run, null, null, 0)
         }
     </ol>
     <button type="button" id="latency-older" class="older" hidden>Show older results</button>
 </section>
 
+<section class="feed" data-permanent="latency-jackpots" aria-labelledby="jackpots-title">
+    <h2 id="jackpots-title">Jackpots</h2>
+    <p class="note">A browser or server median under @LatencyLeaders.FastBelow ms wins; @LatencyLeaders.SlowFrom ms or more loses. The newest @Latency.JackpotCapacity of each are kept.</p>
+    <div class="boards">
+        @Board("latency-jackpot-winners", "Winners", "Nobody yet. Probably nobody ever.", _leaders.FastJackpots, "fast", null)
+        @Board("latency-jackpot-losers", "Losers", "Nobody yet. Hopefully nobody ever.", _leaders.SlowJackpots, "slow", null)
+    </div>
+</section>
+
+<section class="feed" data-permanent="latency-leaders" aria-labelledby="leaders-title">
+    <h2 id="leaders-title">Leaderboard</h2>
+    <p class="note">The @Latency.RankCapacity lowest and highest medians seen. A median only counts when at least half of the endpoints answered on that side.</p>
+    <div class="boards">
+        @Board("latency-browser-fastest", "Fastest browsers", "No browser results yet.", _leaders.BrowserFastest, null, LatencySide.Browser)
+        @Board("latency-browser-slowest", "Slowest browsers", "No browser results yet.", _leaders.BrowserSlowest, null, LatencySide.Browser)
+        @Board("latency-server-fastest", "Fastest server runs", "No server results yet.", _leaders.ServerFastest, null, LatencySide.Server)
+        @Board("latency-server-slowest", "Slowest server runs", "No server results yet.", _leaders.ServerSlowest, null, LatencySide.Server)
+    </div>
+</section>
+
 @code {
     private IReadOnlyList<BoardMessage> _runs = [];
+    private LatencyLeaders _leaders = LatencyLeaders.Empty;
     private DateTimeOffset _now;
     private string _client = ClientAddress.Unknown;
 
@@ -7114,18 +7277,96 @@ MODIFIED: 2026-10-16 10:30:51 (UTC)
     protected override void OnInitialized()
     {
         _runs = Latency.Messages;
+        _leaders = Latency.Leaders;
         _now = Time.GetUtcNow();
         _client = ClientAddress.Key(HttpContext?.Connection.RemoteIpAddress);
     }
+
+    private static string SideLabel(LatencySide side) => side == LatencySide.Browser ? "Browser" : "Server";
+
+    private RenderFragment Board(string id, string title, string empty, IReadOnlyList<BoardMessage> runs, string? jackpot, LatencySide? side) =>
+        @<section class="board" aria-labelledby="@(id + "-title")">
+            <h3 id="@(id + "-title")">@title</h3>
+            <p id="@(id + "-empty")" class="empty" hidden="@(runs.Count > 0)">@empty</p>
+            <ol id="@id" class="runs leaders">
+                @for (var i = 0; i < runs.Count; i++)
+                {
+                    @Item(runs[i], jackpot, side, i + 1)
+                }
+            </ol>
+        </section>;
+
+    private RenderFragment Item(BoardMessage run, string? jackpot, LatencySide? side, int place) => __builder =>
+    {
+        if (!LatencyRun.TryParse(run.Text, out var results))
+        {
+            return;
+        }
+
+        var summary = LatencyRun.Summarize(results);
+        var rank = LatencyRun.Rank(results);
+        var css = jackpot is not null ? $"msg leader {jackpot}" : side is not null ? "msg leader" : "msg";
+        <li @key="run.Id" class="@css" data-id="@run.Id">
+            @if (side is { } ranked)
+            {
+                <p class="headline"><span class="place">@place</span><strong>@LatencyRun.Milliseconds(LatencyLeaders.Of(rank, ranked))</strong></p>
+            }
+            else if (jackpot is not null)
+            {
+                <p class="headline">
+                    @foreach (var each in Sides)
+                    {
+                        var median = LatencyLeaders.Of(rank, each);
+                        if (jackpot == "fast" ? LatencyLeaders.IsFast(median) : LatencyLeaders.IsSlow(median))
+                        {
+                            <strong>@SideLabel(each) @LatencyRun.Milliseconds(median)</strong>
+                        }
+                    }
+                </p>
+            }
+            <time datetime="@MessageFormat.Iso(run.Id)">@MessageFormat.Label(run.Id, _now)</time>
+            <p class="summary">
+                <span>Browser median <strong>@LatencyRun.Milliseconds(summary.Browser)</strong></span>
+                <span>Server median <strong>@LatencyRun.Milliseconds(summary.Server)</strong></span>
+                <span>@summary.Answered of @summary.Total answered</span>
+            </p>
+            <details>
+                <summary>All endpoints</summary>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">Endpoint</th>
+                                <th scope="col">Browser</th>
+                                <th scope="col">Server</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var result in results)
+                            {
+                                <tr>
+                                    <th scope="row">@LatencyCatalog.LabelOf(result.Key)</th>
+                                    <td>@LatencyRun.Milliseconds(result.Browser)</td>
+                                    <td>@LatencyRun.Milliseconds(result.Server)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+        </li>
+    };
+
+    private static readonly LatencySide[] Sides = [LatencySide.Browser, LatencySide.Server];
 }
 
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Pages/LatencyPage.razor.css
-SIZE:     1.95 KB (1999 bytes)
-LINES:    117
-SHA256:   f3bcc981a0fda10e69f53cb66a5f8ed272666387a1762fb62b904142bb2db210
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     2.86 KB (2926 bytes)
+LINES:    170
+SHA256:   9f60e1274af52b88c77be83d1799d86da69bb1e23fad98b271c9221ad61c5619
+MODIFIED: 2026-10-29 19:42:52 (UTC)
 ================================================================================
 
 .feed {
@@ -7220,6 +7461,59 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 .runs ::deep tbody th {
     font-weight: 500;
+}
+
+.runs ::deep .headline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .25rem .75rem;
+    margin: 0;
+    font-size: 1.1rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.runs ::deep .place {
+    min-inline-size: 1.6rem;
+    color: var(--muted);
+    font-weight: 800;
+}
+
+.runs ::deep .place::after {
+    content: ".";
+}
+
+.runs ::deep .msg.fast {
+    border-color: var(--gold);
+    background: color-mix(in oklab, var(--gold) 10%, var(--bg));
+}
+
+.runs ::deep .msg.slow {
+    border-color: var(--danger);
+    background: color-mix(in oklab, var(--danger) 8%, var(--bg));
+}
+
+.boards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+    gap: 1rem 1.25rem;
+    align-items: start;
+}
+
+.board {
+    display: grid;
+    gap: .6rem;
+}
+
+.board h3 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.note {
+    margin: 0;
+    color: var(--muted);
+    font-size: .875rem;
 }
 
 .empty {
@@ -8332,10 +8626,10 @@ internal sealed record StrokeOffer(Guid Id, IReadOnlyList<int> Points);
 
 ================================================================================
 FILE:     src/Chaos.Web/Infrastructure/ChaosOptions.cs
-SIZE:     2.42 KB (2482 bytes)
-LINES:    84
-SHA256:   7c2164cd06f737a973007745fca58c282c376802aed2f1527a7d1f862f8f23fb
-MODIFIED: 2026-10-16 10:27:29 (UTC)
+SIZE:     2.64 KB (2702 bytes)
+LINES:    90
+SHA256:   438ef00a9bf786ce7a7df3d51595668025264ca63682b42e09d7fe55a53bf1be
+MODIFIED: 2026-10-29 19:41:53 (UTC)
 ================================================================================
 
 using Chaos.Web.Drawing;
@@ -8389,6 +8683,10 @@ internal sealed class ChaosOptions
 
     public int LatencyCapacity { get; set; } = 50;
 
+    public int LatencyRankCapacity { get; set; } = 10;
+
+    public int LatencyJackpotCapacity { get; set; } = 50;
+
     public int LatencyCooldownSeconds { get; set; } = 300;
 
     public int LatencyGapSeconds { get; set; } = 10;
@@ -8418,6 +8716,8 @@ internal sealed class ChaosOptions
         && PressesPerSecond > 0
         && SpinMilliseconds is >= 1000 and <= 15000
         && LatencyCapacity > 0
+        && LatencyRankCapacity is >= 1 and <= 100
+        && LatencyJackpotCapacity is >= 1 and <= 1_000
         && LatencyCooldownSeconds is >= 1 and <= 86_400
         && LatencyGapSeconds is >= 0 and <= 3_600
         && LatencyBudgetSeconds is >= 5 and <= 120;
@@ -9473,11 +9773,143 @@ internal sealed record LatencyEndpoint(string Key, string Label, string Url, boo
 
 
 ================================================================================
+FILE:     src/Chaos.Web/Latency/LatencyLeaders.cs
+SIZE:     4.79 KB (4909 bytes)
+LINES:    122
+SHA256:   cf37bc6b74c24ba99f0f987cb38116a35d3ef87c76b7d9246c6181ef03ee4e6e
+MODIFIED: 2026-10-29 19:41:38 (UTC)
+================================================================================
+
+using Chaos.Web.Messages;
+
+namespace Chaos.Web.Latency;
+
+internal enum LatencySide
+{
+    Browser,
+    Server,
+}
+
+internal sealed record LatencyBoards(
+    IReadOnlyList<Guid> FastJackpots,
+    IReadOnlyList<Guid> SlowJackpots,
+    IReadOnlyList<Guid> BrowserFastest,
+    IReadOnlyList<Guid> BrowserSlowest,
+    IReadOnlyList<Guid> ServerFastest,
+    IReadOnlyList<Guid> ServerSlowest,
+    IReadOnlyList<BoardMessage> Runs);
+
+internal sealed class LatencyLeaders
+{
+    public const int FastBelow = 10;
+    public const int SlowFrom = 100;
+
+    private LatencyLeaders(
+        BoardMessage[] fastJackpots,
+        BoardMessage[] slowJackpots,
+        BoardMessage[] browserFastest,
+        BoardMessage[] browserSlowest,
+        BoardMessage[] serverFastest,
+        BoardMessage[] serverSlowest)
+    {
+        FastJackpots = fastJackpots;
+        SlowJackpots = slowJackpots;
+        BrowserFastest = browserFastest;
+        BrowserSlowest = browserSlowest;
+        ServerFastest = serverFastest;
+        ServerSlowest = serverSlowest;
+    }
+
+    public static LatencyLeaders Empty { get; } = new([], [], [], [], [], []);
+
+    public BoardMessage[] FastJackpots { get; }
+
+    public BoardMessage[] SlowJackpots { get; }
+
+    public BoardMessage[] BrowserFastest { get; }
+
+    public BoardMessage[] BrowserSlowest { get; }
+
+    public BoardMessage[] ServerFastest { get; }
+
+    public BoardMessage[] ServerSlowest { get; }
+
+    private IEnumerable<BoardMessage[]> Lists => [FastJackpots, SlowJackpots, BrowserFastest, BrowserSlowest, ServerFastest, ServerSlowest];
+
+    public static int? Of(LatencyRank rank, LatencySide side) => side == LatencySide.Browser ? rank.Browser : rank.Server;
+
+    public static bool IsFast(int? median) => median < FastBelow;
+
+    public static bool IsSlow(int? median) => median >= SlowFrom;
+
+    public static bool IsFastJackpot(LatencyRank rank) => IsFast(rank.Browser) || IsFast(rank.Server);
+
+    public static bool IsSlowJackpot(LatencyRank rank) => IsSlow(rank.Browser) || IsSlow(rank.Server);
+
+    public LatencyLeaders? Merge(IEnumerable<BoardMessage> candidates, int rankCapacity, int jackpotCapacity)
+    {
+        ArgumentNullException.ThrowIfNull(candidates);
+        var scored = candidates.Select(Score).ToList();
+        var next = new LatencyLeaders(
+            Window(FastJackpots, scored.Where(entry => IsFastJackpot(entry.Rank)), jackpotCapacity),
+            Window(SlowJackpots, scored.Where(entry => IsSlowJackpot(entry.Rank)), jackpotCapacity),
+            Order(BrowserFastest, scored, LatencySide.Browser, fastest: true, rankCapacity),
+            Order(BrowserSlowest, scored, LatencySide.Browser, fastest: false, rankCapacity),
+            Order(ServerFastest, scored, LatencySide.Server, fastest: true, rankCapacity),
+            Order(ServerSlowest, scored, LatencySide.Server, fastest: false, rankCapacity));
+        return next.Lists.Zip(Lists).All(pair => pair.First.Select(run => run.Id).SequenceEqual(pair.Second.Select(run => run.Id))) ? null : next;
+    }
+
+    public IReadOnlyList<Guid> Entered(LatencyLeaders previous)
+    {
+        ArgumentNullException.ThrowIfNull(previous);
+        return [.. Lists.Zip(previous.Lists)
+            .SelectMany(pair => pair.First.Select(run => run.Id).Except(pair.Second.Select(run => run.Id)))
+            .Distinct()];
+    }
+
+    public LatencyBoards Boards(LatencyLeaders? previous)
+    {
+        var known = previous?.Lists.SelectMany(list => list).Select(run => run.Id).ToHashSet() ?? [];
+        return new LatencyBoards(
+            Ids(FastJackpots),
+            Ids(SlowJackpots),
+            Ids(BrowserFastest),
+            Ids(BrowserSlowest),
+            Ids(ServerFastest),
+            Ids(ServerSlowest),
+            [.. Lists.SelectMany(list => list).DistinctBy(run => run.Id).Where(run => !known.Contains(run.Id))]);
+    }
+
+    private static Guid[] Ids(BoardMessage[] runs) => [.. runs.Select(run => run.Id)];
+
+    private static Scored Score(BoardMessage run) => new(run, LatencyRun.Rank(run.Text));
+
+    private static BoardMessage[] Window(BoardMessage[] current, IEnumerable<Scored> candidates, int capacity) =>
+        MessageWindow.Merge(current, candidates.Select(entry => entry.Run), capacity)?.Next ?? current;
+
+    private static BoardMessage[] Order(BoardMessage[] current, IEnumerable<Scored> candidates, LatencySide side, bool fastest, int capacity)
+    {
+        var pool = current.Select(Score)
+            .Concat(candidates)
+            .Where(entry => Of(entry.Rank, side) is not null)
+            .DistinctBy(entry => entry.Run.Id);
+        var sorted = fastest
+            ? pool.OrderBy(entry => Of(entry.Rank, side))
+            : pool.OrderByDescending(entry => Of(entry.Rank, side));
+        return [.. sorted.ThenBy(entry => entry.Run.Id).Take(capacity).Select(entry => entry.Run)];
+    }
+
+    private sealed record Scored(BoardMessage Run, LatencyRank Rank);
+}
+
+
+================================================================================
 FILE:     src/Chaos.Web/Latency/LatencyRun.cs
-SIZE:     5.14 KB (5263 bytes)
-LINES:    166
-SHA256:   9cfb10b8a2d50e52ae75e58e892cbffa1bdfb2977876ffc7dad1dd1d0ee271a8
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     5.89 KB (6029 bytes)
+LINES:    185
+SHA256:   620f96d30d77e6b717207a6a9aefab7cc4a6891d98eaf2248b5e394a0411e328
+MODIFIED: 2026-10-29 19:41:38 (UTC)
 ================================================================================
 
 using System.Diagnostics.CodeAnalysis;
@@ -9489,6 +9921,11 @@ namespace Chaos.Web.Latency;
 internal sealed record LatencyResult(string Key, int? Browser, int? Server);
 
 internal sealed record LatencySummary(int? Browser, int? Server, int Answered, int Total);
+
+internal sealed record LatencyRank(int? Browser, int? Server)
+{
+    public static LatencyRank None { get; } = new(null, null);
+}
 
 internal static class LatencyRun
 {
@@ -9593,6 +10030,17 @@ internal static class LatencyRun
             results.Count);
     }
 
+    public static LatencyRank Rank(IReadOnlyList<LatencyResult> results)
+    {
+        ArgumentNullException.ThrowIfNull(results);
+        var quorum = (results.Count + 1) / 2;
+        return new LatencyRank(
+            Counted([.. results.Select(result => result.Browser)], quorum),
+            Counted([.. results.Select(result => result.Server)], quorum));
+    }
+
+    public static LatencyRank Rank(string? text) => TryParse(text, out var results) ? Rank(results) : LatencyRank.None;
+
     public static int? Median(IEnumerable<int?> values)
     {
         var sorted = values.OfType<int>().Order().ToArray();
@@ -9607,6 +10055,9 @@ internal static class LatencyRun
 
     public static string Milliseconds(int? value) =>
         value is { } milliseconds ? milliseconds.ToString(CultureInfo.InvariantCulture) + " ms" : "–";
+
+    private static int? Counted(int?[] values, int quorum) =>
+        values.Count(value => value is not null) >= quorum ? Median(values) : null;
 
     private static int? Clamp(int? value) => value is { } milliseconds and >= 0 ? Math.Min(milliseconds, MaxMilliseconds) : null;
 
@@ -9650,10 +10101,10 @@ internal static class LatencyRun
 
 ================================================================================
 FILE:     src/Chaos.Web/Latency/LatencyService.cs
-SIZE:     7.41 KB (7590 bytes)
-LINES:    259
-SHA256:   c777f626d06ce409684d94964c9fc39a462a929cce781295f2cced8530a73e60
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     8.58 KB (8791 bytes)
+LINES:    287
+SHA256:   626fb6dbf03ff7d30b956c4d9374546257b1ebf6183fe98807899abea6d2b08c
+MODIFIED: 2026-10-29 19:41:53 (UTC)
 ================================================================================
 
 using Chaos.Web.Infrastructure;
@@ -9665,6 +10116,7 @@ namespace Chaos.Web.Latency;
 internal sealed partial class LatencyService : IDisposable
 {
     public const int MaxOffers = 50;
+    public const int MaxLeaderOffers = 40;
 
     private readonly TimeProvider _time;
     private readonly ILatencyProbe _probe;
@@ -9676,6 +10128,7 @@ internal sealed partial class LatencyService : IDisposable
     private readonly bool _serverProbe;
     private readonly TimeSpan _gap;
     private BoardMessage[] _messages = [];
+    private LatencyLeaders _leaders = LatencyLeaders.Empty;
     private long _version;
     private Pending? _pending;
     private long? _lastStart;
@@ -9692,6 +10145,8 @@ internal sealed partial class LatencyService : IDisposable
         _probe = probe;
         _logger = logger;
         Capacity = limits.LatencyCapacity;
+        RankCapacity = limits.LatencyRankCapacity;
+        JackpotCapacity = limits.LatencyJackpotCapacity;
         Cooldown = TimeSpan.FromSeconds(limits.LatencyCooldownSeconds);
         Budget = TimeSpan.FromSeconds(limits.LatencyBudgetSeconds);
         BrowserWait = Budget + TimeSpan.FromSeconds(15);
@@ -9703,6 +10158,10 @@ internal sealed partial class LatencyService : IDisposable
 
     public int Capacity { get; }
 
+    public int RankCapacity { get; }
+
+    public int JackpotCapacity { get; }
+
     public TimeSpan Cooldown { get; }
 
     public TimeSpan Budget { get; }
@@ -9712,6 +10171,8 @@ internal sealed partial class LatencyService : IDisposable
     public DateTimeOffset StartedAt { get; }
 
     public IReadOnlyList<BoardMessage> Messages => Volatile.Read(ref _messages);
+
+    public LatencyLeaders Leaders => Volatile.Read(ref _leaders);
 
     public bool Running
     {
@@ -9777,31 +10238,16 @@ internal sealed partial class LatencyService : IDisposable
         }
     }
 
-    public int Offer(IEnumerable<BoardMessage> offered)
-    {
-        ArgumentNullException.ThrowIfNull(offered);
-        var now = _time.GetUtcNow();
-        var valid = offered
-            .Take(MaxOffers)
-            .Where(message => message is not null && MessageWindow.IsRestorable(message.Id, now, StartedAt) && LatencyRun.IsValid(message.Text))
-            .ToList();
-        if (valid.Count == 0)
-        {
-            return 0;
-        }
+    public int Offer(IEnumerable<BoardMessage> offered) => Restore(offered, MaxOffers, recent: true);
 
-        lock (_gate)
-        {
-            return Merge(valid);
-        }
-    }
+    public int OfferLeaders(IEnumerable<BoardMessage> offered) => Restore(offered, MaxLeaderOffers, recent: false);
 
     public void Subscribe(ILatencySubscriber subscriber)
     {
         ArgumentNullException.ThrowIfNull(subscriber);
         lock (_gate)
         {
-            if (subscriber.Deliver(LatencyUpdate.Snapshot(_version, _messages, _pending is not null)))
+            if (subscriber.Deliver(LatencyUpdate.Snapshot(_version, _messages, _pending is not null, _leaders.Boards(null))))
             {
                 _subscribers.Add(subscriber);
             }
@@ -9831,6 +10277,25 @@ internal sealed partial class LatencyService : IDisposable
     }
 
     private static int Seconds(TimeSpan span) => Math.Max(1, (int)Math.Ceiling(span.TotalSeconds));
+
+    private int Restore(IEnumerable<BoardMessage> offered, int limit, bool recent)
+    {
+        ArgumentNullException.ThrowIfNull(offered);
+        var now = _time.GetUtcNow();
+        var valid = offered
+            .Take(limit)
+            .Where(message => message is not null && MessageWindow.IsRestorable(message.Id, now, StartedAt) && LatencyRun.IsValid(message.Text))
+            .ToList();
+        if (valid.Count == 0)
+        {
+            return 0;
+        }
+
+        lock (_gate)
+        {
+            return Merge(valid, recent);
+        }
+    }
 
     private Guid LatestId() => _messages.Length > 0 ? _messages[0].Id : Guid.Empty;
 
@@ -9866,26 +10331,40 @@ internal sealed partial class LatencyService : IDisposable
         {
             _pending = null;
             var message = new BoardMessage(pending.Id, LatencyRun.Compose(endpoints, browser, server));
-            if (Merge([message]) == 0)
+            if (Merge([message], recent: true) == 0)
             {
                 Broadcast(LatencyUpdate.State(_version, false));
             }
         }
     }
 
-    private int Merge(IReadOnlyCollection<BoardMessage> candidates)
+    private int Merge(IReadOnlyCollection<BoardMessage> candidates, bool recent)
     {
-        var change = MessageWindow.Merge(_messages, candidates, Capacity);
-        if (change is null)
+        var change = recent ? MessageWindow.Merge(_messages, candidates, Capacity) : null;
+        var leaders = _leaders.Merge(candidates, RankCapacity, JackpotCapacity);
+        if (change is null && leaders is null)
         {
             return 0;
         }
 
         var previous = _version;
         _version++;
-        Volatile.Write(ref _messages, change.Next);
-        Broadcast(LatencyUpdate.Delta(_version, previous, change.Added, change.Removed, _pending is not null));
-        return change.Added.Length;
+        if (change is not null)
+        {
+            Volatile.Write(ref _messages, change.Next);
+        }
+
+        LatencyBoards? boards = null;
+        IReadOnlyList<Guid> entered = [];
+        if (leaders is not null)
+        {
+            boards = leaders.Boards(_leaders);
+            entered = leaders.Entered(_leaders);
+            Volatile.Write(ref _leaders, leaders);
+        }
+
+        Broadcast(LatencyUpdate.Delta(_version, previous, change?.Added ?? [], change?.Removed ?? [], _pending is not null, boards));
+        return (change?.Added ?? []).Select(message => message.Id).Concat(entered).Distinct().Count();
     }
 
     private void Broadcast(LatencyUpdate update)
@@ -9955,12 +10434,13 @@ internal sealed record LatencyStart(StartResult Result, Guid Id, int Seconds)
 
 ================================================================================
 FILE:     src/Chaos.Web/Latency/LatencyUpdate.cs
-SIZE:     0.74 KB (753 bytes)
-LINES:    20
-SHA256:   776bfbf3f9991544f9f9858e5c70889b3f70cc055f6a848b9a41f9f93f94b3bd
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     0.94 KB (964 bytes)
+LINES:    22
+SHA256:   62c262355b354e27639096c50f403aeec71721167bc8afd556b761192e9485ff
+MODIFIED: 2026-10-29 19:41:38 (UTC)
 ================================================================================
 
+using System.Text.Json.Serialization;
 using Chaos.Web.Messages;
 
 namespace Chaos.Web.Latency;
@@ -9971,15 +10451,16 @@ internal sealed record LatencyUpdate(
     long Previous,
     IReadOnlyList<BoardMessage> Added,
     IReadOnlyList<Guid> Removed,
-    bool Running)
+    bool Running,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] LatencyBoards? Boards)
 {
-    public static LatencyUpdate Snapshot(long version, IReadOnlyList<BoardMessage> messages, bool running) =>
-        new("snapshot", version, version, messages, [], running);
+    public static LatencyUpdate Snapshot(long version, IReadOnlyList<BoardMessage> messages, bool running, LatencyBoards boards) =>
+        new("snapshot", version, version, messages, [], running, boards);
 
-    public static LatencyUpdate Delta(long version, long previous, IReadOnlyList<BoardMessage> added, IReadOnlyList<Guid> removed, bool running) =>
-        new("delta", version, previous, added, removed, running);
+    public static LatencyUpdate Delta(long version, long previous, IReadOnlyList<BoardMessage> added, IReadOnlyList<Guid> removed, bool running, LatencyBoards? boards = null) =>
+        new("delta", version, previous, added, removed, running, boards);
 
-    public static LatencyUpdate State(long version, bool running) => new("state", version, version, [], [], running);
+    public static LatencyUpdate State(long version, bool running) => new("state", version, version, [], [], running, null);
 }
 
 
@@ -11678,10 +12159,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     tests/Chaos.E2E/LatencyTests.cs
-SIZE:     2.31 KB (2364 bytes)
-LINES:    50
-SHA256:   2d896e3343e21df926a7b02b3587ef97ca8d63a4238f1feb7804bdb2c2354f64
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     2.49 KB (2548 bytes)
+LINES:    52
+SHA256:   0508d4671efb22eb49f491a87903467fa23b5836896255e4d7593ae6ea27d8eb
+MODIFIED: 2026-10-29 20:03:06 (UTC)
 ================================================================================
 
 using Microsoft.Playwright;
@@ -11719,6 +12200,8 @@ public sealed class LatencyTests(BrowserFixture browser) : IClassFixture<Browser
         await Expect(seen.Locator(".yours")).ToHaveCountAsync(0);
         await seen.Locator("summary").ClickAsync();
         await Expect(seen.Locator("tbody tr")).ToHaveCountAsync(await tester.Locator(".probe tbody tr").CountAsync());
+        await Expect(watcher.Locator("#latency-browser-fastest-empty")).ToBeVisibleAsync();
+        await Expect(watcher.Locator("#latency-jackpot-winners-empty")).ToBeVisibleAsync();
     }
 
     private async Task<IBrowserContext> OfflineContextAsync()
@@ -12646,10 +13129,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     tests/Chaos.Web.Tests/ClockAndCooldownTests.cs
-SIZE:     2.91 KB (2984 bytes)
-LINES:    82
-SHA256:   b1cbdb68b98ff0c67c2b2545d5c639ae3b6e155f28d6d0ed1b6423a9a6e8748c
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     3.07 KB (3147 bytes)
+LINES:    84
+SHA256:   8b4b6ada2e6b4fb9fdd2f05e2944e2ff00cc0c831ead94eea3596a980914d7d7
+MODIFIED: 2026-10-29 19:44:46 (UTC)
 ================================================================================
 
 using Chaos.Web.Infrastructure;
@@ -12731,6 +13214,8 @@ public sealed class LatencyOptionsTests
         Assert.False(new ChaosOptions { LatencyCooldownSeconds = 0 }.IsValid());
         Assert.False(new ChaosOptions { LatencyGapSeconds = -1 }.IsValid());
         Assert.False(new ChaosOptions { LatencyBudgetSeconds = 1 }.IsValid());
+        Assert.False(new ChaosOptions { LatencyRankCapacity = 0 }.IsValid());
+        Assert.False(new ChaosOptions { LatencyJackpotCapacity = 1_001 }.IsValid());
         Assert.True(new ChaosOptions { LatencyCooldownSeconds = 1, LatencyGapSeconds = 0 }.IsValid());
     }
 }
@@ -12738,10 +13223,10 @@ public sealed class LatencyOptionsTests
 
 ================================================================================
 FILE:     tests/Chaos.Web.Tests/HttpPipelineTests.cs
-SIZE:     9.01 KB (9225 bytes)
-LINES:    216
-SHA256:   0add364f3968b085053d5fb9d33cb54477d284cd1090c63b679f541f2d288c3c
-MODIFIED: 2026-10-16 10:32:59 (UTC)
+SIZE:     9.71 KB (9941 bytes)
+LINES:    230
+SHA256:   1e236cc1a1f3b689d2c622cabf50d2db8d2587c769be15f849193c10866508fc
+MODIFIED: 2026-10-29 19:44:46 (UTC)
 ================================================================================
 
 using System.Net;
@@ -12877,6 +13362,20 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
         foreach (var endpoint in LatencyCatalog.Endpoints)
         {
             Assert.Contains($"data-key=\"{endpoint.Key}\"", html, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
+    public async Task LatencyPageHasEmptyLeaderboardsBelowTheResults()
+    {
+        using var client = CreateClient();
+        var html = await client.GetStringAsync("/latency", Cancellation);
+        var feed = html.IndexOf("id=\"latency-feed\"", StringComparison.Ordinal);
+        Assert.True(feed > 0);
+        foreach (var id in new[] { "latency-jackpot-winners", "latency-jackpot-losers", "latency-browser-fastest", "latency-browser-slowest", "latency-server-fastest", "latency-server-slowest" })
+        {
+            Assert.True(html.IndexOf($"id=\"{id}\"", StringComparison.Ordinal) > feed, id);
+            Assert.Contains($"id=\"{id}-empty\"", html, StringComparison.Ordinal);
         }
     }
 
@@ -13150,10 +13649,10 @@ public sealed class ChaosOptionsTests
 
 ================================================================================
 FILE:     tests/Chaos.Web.Tests/LatencyRunTests.cs
-SIZE:     2.41 KB (2465 bytes)
-LINES:    62
-SHA256:   32806201bd946fe79642aeca8b27da95e10ec7c935ded4c3d852a562682bd93e
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     2.88 KB (2952 bytes)
+LINES:    75
+SHA256:   165f88822be0cef76bb11b625bf0c9cec44445a2fd15ea0e2f6b412e3d0538e0
+MODIFIED: 2026-10-29 19:44:46 (UTC)
 ================================================================================
 
 using Chaos.Web.Latency;
@@ -13198,6 +13697,19 @@ public sealed class LatencyRunTests
         Assert.Null(LatencyRun.Median([null]));
     }
 
+    [Theory]
+    [InlineData("a=10,1;b=30,;c=,5;d=,", 20, 3)]
+    [InlineData("a=5,;b=,;c=,", null, null)]
+    [InlineData("a=5,200;b=7,150;c=,", 6, 175)]
+    [InlineData("chaos=3,", 3, null)]
+    public void RanksNeedHalfTheEndpointsToAnswer(string text, int? browser, int? server)
+    {
+        Assert.Equal(new LatencyRank(browser, server), LatencyRun.Rank(text));
+    }
+
+    [Fact]
+    public void InvalidRunsHaveNoRank() => Assert.Equal(LatencyRank.None, LatencyRun.Rank("nope"));
+
     [Fact]
     public void ComposeSkipsServerTimingsForBrowserOnlyEndpoints()
     {
@@ -13222,10 +13734,10 @@ public sealed class LatencyRunTests
 
 ================================================================================
 FILE:     tests/Chaos.Web.Tests/LatencyServiceTests.cs
-SIZE:     5.91 KB (6052 bytes)
-LINES:    129
-SHA256:   c07a04c822d5a2ad1a924baed6e25cd8fc25e25a3b099fbde4e27762394a0130
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     9.60 KB (9827 bytes)
+LINES:    204
+SHA256:   4d7d4faa8128cf44bdca092b7eae28bd2b2ec945991719225db858834cc6810e
+MODIFIED: 2026-10-29 19:45:04 (UTC)
 ================================================================================
 
 using Chaos.Web.Infrastructure;
@@ -13352,6 +13864,81 @@ public sealed class LatencyServiceTests
         var late = new LatencyRecorder();
         latency.Subscribe(late);
         Assert.True(Assert.Single(late.Updates).Running);
+    }
+
+    [Fact]
+    public async Task AMeasuredRunJoinsTheLeaderboards()
+    {
+        using var latency = Create(new FakeProbe(endpoints => [.. endpoints.Select(_ => (int?)150)]));
+        var viewer = new LatencyRecorder();
+        latency.Subscribe(viewer);
+        Assert.Empty(viewer.Updates[0].Boards!.Runs);
+
+        var start = latency.Begin("a");
+        latency.Finish(start.Id, [.. Enumerable.Repeat(8, Count)]);
+        await latency.WhenIdle().WaitAsync(TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken);
+
+        var leaders = latency.Leaders;
+        Assert.Equal(start.Id, Assert.Single(leaders.FastJackpots).Id);
+        Assert.Equal(start.Id, Assert.Single(leaders.SlowJackpots).Id);
+        Assert.Single(leaders.BrowserFastest);
+        Assert.Single(leaders.ServerSlowest);
+        var boards = viewer.Updates[^1].Boards!;
+        Assert.Equal(start.Id, Assert.Single(boards.Runs).Id);
+        Assert.Equal(new[] { start.Id }, boards.BrowserSlowest);
+    }
+
+    [Fact]
+    public void LeaderOffersFillTheBoardsButNotTheResults()
+    {
+        using var latency = Create(new FakeProbe(endpoints => new int?[endpoints.Count]), o => o.LatencyRankCapacity = 2);
+        var viewer = new LatencyRecorder();
+        latency.Subscribe(viewer);
+        var offered = Enumerable.Range(1, 5)
+            .Select(i => new BoardMessage(Guid.CreateVersion7(Start.AddMinutes(-i)), $"a={i * 10},;b=,"))
+            .ToList();
+
+        Assert.Equal(4, latency.OfferLeaders(offered));
+        Assert.Empty(latency.Messages);
+        var leaders = latency.Leaders;
+        Assert.Equal(new[] { offered[0].Id, offered[1].Id }, leaders.BrowserFastest.Select(run => run.Id));
+        Assert.Equal(new[] { offered[4].Id, offered[3].Id }, leaders.BrowserSlowest.Select(run => run.Id));
+        Assert.Empty(leaders.ServerFastest);
+        Assert.Empty(leaders.FastJackpots);
+        Assert.Empty(leaders.SlowJackpots);
+        Assert.Equal(0, latency.OfferLeaders(offered));
+        Assert.Equal(4, viewer.Updates[^1].Boards!.Runs.Count);
+    }
+
+    [Fact]
+    public void RunsWithoutAQuorumAreNotRanked()
+    {
+        using var latency = Create(new FakeProbe(endpoints => new int?[endpoints.Count]));
+        Assert.Equal(0, latency.OfferLeaders([new BoardMessage(Guid.CreateVersion7(Start.AddMinutes(-1)), "a=1,;b=,;c=,")]));
+        Assert.Equal(1, latency.Offer([new BoardMessage(Guid.CreateVersion7(Start.AddMinutes(-2)), "a=1,;b=,;c=,")]));
+        Assert.Empty(latency.Leaders.BrowserFastest);
+        Assert.Empty(latency.Leaders.FastJackpots);
+    }
+
+    [Fact]
+    public void JackpotsKeepTheNewestAndRanksBreakTiesByAge()
+    {
+        using var latency = Create(new FakeProbe(endpoints => new int?[endpoints.Count]), o => o.LatencyJackpotCapacity = 2);
+        var older = new BoardMessage(Guid.CreateVersion7(Start.AddMinutes(-3)), "a=5,");
+        var old = new BoardMessage(Guid.CreateVersion7(Start.AddMinutes(-2)), "a=5,");
+        var recent = new BoardMessage(Guid.CreateVersion7(Start.AddMinutes(-1)), "a=9,");
+        latency.OfferLeaders([old, recent, older]);
+        Assert.Equal(new[] { recent.Id, old.Id }, latency.Leaders.FastJackpots.Select(run => run.Id));
+        Assert.Equal(new[] { older.Id, old.Id, recent.Id }, latency.Leaders.BrowserFastest.Select(run => run.Id));
+    }
+
+    [Fact]
+    public void LeaderOffersAreLimitedPerCall()
+    {
+        using var latency = Create(new FakeProbe(endpoints => new int?[endpoints.Count]), o => o.LatencyRankCapacity = 100);
+        var offered = Enumerable.Range(1, LatencyService.MaxLeaderOffers + 5)
+            .Select(i => new BoardMessage(Guid.CreateVersion7(Start.AddMinutes(-i)), $"a={i},"));
+        Assert.Equal(LatencyService.MaxLeaderOffers, latency.OfferLeaders(offered));
     }
 
     private LatencyService Create(ILatencyProbe probe, Action<ChaosOptions>? configure = null) =>
@@ -14611,18 +15198,23 @@ describe('persistence', () => {
 
 ================================================================================
 FILE:     tests/js/latency.test.js
-SIZE:     5.00 KB (5122 bytes)
-LINES:    137
-SHA256:   ad96a98ccdaf59bd337190ee2e42b687757c489d0efe85cf3d5e5ea621ae02eb
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     6.79 KB (6951 bytes)
+LINES:    182
+SHA256:   480782d94bdc3dd43b15602f9838e27ddaef2413d8e66e4b163bd481bd396528
+MODIFIED: 2026-10-29 19:43:33 (UTC)
 ================================================================================
 
 import { describe, expect, it } from 'vitest';
 import {
     AUTO_UNLOCK,
+    BOARDS,
+    boardIds,
     cacheBusted,
     clockText,
     fetchOptions,
+    isFast,
+    isSlow,
+    leadersOf,
     measure,
     measureAll,
     median,
@@ -14630,6 +15222,8 @@ import {
     parseRun,
     parseStartReply,
     progressText,
+    qualifies,
+    rank,
     readNumber,
     summarize,
 } from '../../src/Chaos.Web/Components/Islands/LatencyIsland.razor.js';
@@ -14665,6 +15259,44 @@ describe('run text', () => {
     it('formats milliseconds', () => {
         expect(ms(12)).toBe('12 ms');
         expect(ms(null)).toBe('–');
+    });
+});
+
+const RANKS = [
+    ['a=10,1;b=30,;c=,5;d=,', { browser: 20, server: 3 }],
+    ['a=5,;b=,;c=,', { browser: null, server: null }],
+    ['a=5,200;b=7,150;c=,', { browser: 6, server: 175 }],
+    ['chaos=3,', { browser: 3, server: null }],
+];
+
+function run(index, browser, server = '') {
+    return { id: `0199e1aa-0000-7000-8000-${String(index).padStart(12, '0')}`, text: `a=${browser},${server}` };
+}
+
+describe('leaderboards', () => {
+    it.each(RANKS)('ranks %s only with a quorum', (text, expected) => {
+        expect(rank(parseRun(text))).toEqual(expected);
+    });
+
+    it('draws the jackpot lines at 10 and 100 ms', () => {
+        expect([isFast(9), isFast(10), isFast(null)]).toEqual([true, false, false]);
+        expect([isSlow(99), isSlow(100), isSlow(null)]).toEqual([false, true, false]);
+        expect([qualifies(0, 'fast'), qualifies(0, 'slow'), qualifies(250, 'slow')]).toEqual([true, false, true]);
+    });
+
+    it('offers the fastest and slowest runs on each side, once each', () => {
+        const records = [run(1, 50, 9), run(2, 40), run(3, 40), run(4, 70), run(5, 60, 300), { id: 'x', text: 'bad' }, { text: 'a=1,1' }];
+        const ids = leadersOf(records, 2).map(record => record.id);
+        expect(ids).toEqual([records[1].id, records[2].id, records[3].id, records[4].id, records[0].id]);
+        expect(leadersOf([])).toEqual([]);
+    });
+
+    it('reads board ids defensively', () => {
+        const ids = boardIds({ fastJackpots: ['a'], serverSlowest: 'nope' });
+        expect(Object.keys(ids)).toEqual(BOARDS.map(board => board.key));
+        expect(ids.fastJackpots).toEqual(['a']);
+        expect(ids.serverSlowest).toEqual([]);
+        expect(boardIds(undefined).browserFastest).toEqual([]);
     });
 });
 
@@ -15151,9 +15783,9 @@ export default defineConfig({
 
 
 ===============================================================================
-EXPORT COMPLETED (UTC): 2026-10-29 19:26:33
-Total Files Exported:   167
-Total Source Size:      0.43 MB (451997 bytes)
+EXPORT COMPLETED (UTC): 2026-10-29 20:20:28
+Total Files Exported:   168
+Total Source Size:      0.46 MB (479048 bytes)
 Output File:            /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
 ===============================================================================
-DUMP SHA256 (of all lines above this one): f48b2dec4af32363bc851d90a296e1c5543ef5da2904d562d5af58415635ae6b
+DUMP SHA256 (of all lines above this one): 680d2a39965b43d3cf429c41b809c2d044eb24934bf625cc7ce50482f4388c7c
