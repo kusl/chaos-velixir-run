@@ -1,0 +1,1 @@
+cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh > /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/vendor/terminal.txt
