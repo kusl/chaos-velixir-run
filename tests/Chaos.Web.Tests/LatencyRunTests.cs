@@ -40,6 +40,19 @@ public sealed class LatencyRunTests
         Assert.Null(LatencyRun.Median([null]));
     }
 
+    [Theory]
+    [InlineData("a=10,1;b=30,;c=,5;d=,", 20, 3)]
+    [InlineData("a=5,;b=,;c=,", null, null)]
+    [InlineData("a=5,200;b=7,150;c=,", 6, 175)]
+    [InlineData("chaos=3,", 3, null)]
+    public void RanksNeedHalfTheEndpointsToAnswer(string text, int? browser, int? server)
+    {
+        Assert.Equal(new LatencyRank(browser, server), LatencyRun.Rank(text));
+    }
+
+    [Fact]
+    public void InvalidRunsHaveNoRank() => Assert.Equal(LatencyRank.None, LatencyRun.Rank("nope"));
+
     [Fact]
     public void ComposeSkipsServerTimingsForBrowserOnlyEndpoints()
     {

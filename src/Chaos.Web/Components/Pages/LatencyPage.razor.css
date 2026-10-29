@@ -92,6 +92,59 @@
     font-weight: 500;
 }
 
+.runs ::deep .headline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .25rem .75rem;
+    margin: 0;
+    font-size: 1.1rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.runs ::deep .place {
+    min-inline-size: 1.6rem;
+    color: var(--muted);
+    font-weight: 800;
+}
+
+.runs ::deep .place::after {
+    content: ".";
+}
+
+.runs ::deep .msg.fast {
+    border-color: var(--gold);
+    background: color-mix(in oklab, var(--gold) 10%, var(--bg));
+}
+
+.runs ::deep .msg.slow {
+    border-color: var(--danger);
+    background: color-mix(in oklab, var(--danger) 8%, var(--bg));
+}
+
+.boards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+    gap: 1rem 1.25rem;
+    align-items: start;
+}
+
+.board {
+    display: grid;
+    gap: .6rem;
+}
+
+.board h3 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.note {
+    margin: 0;
+    color: var(--muted);
+    font-size: .875rem;
+}
+
 .empty {
     margin: 0;
     color: var(--muted);

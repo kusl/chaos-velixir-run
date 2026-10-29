@@ -49,6 +49,10 @@ internal sealed class ChaosOptions
 
     public int LatencyCapacity { get; set; } = 50;
 
+    public int LatencyRankCapacity { get; set; } = 10;
+
+    public int LatencyJackpotCapacity { get; set; } = 50;
+
     public int LatencyCooldownSeconds { get; set; } = 300;
 
     public int LatencyGapSeconds { get; set; } = 10;
@@ -78,6 +82,8 @@ internal sealed class ChaosOptions
         && PressesPerSecond > 0
         && SpinMilliseconds is >= 1000 and <= 15000
         && LatencyCapacity > 0
+        && LatencyRankCapacity is >= 1 and <= 100
+        && LatencyJackpotCapacity is >= 1 and <= 1_000
         && LatencyCooldownSeconds is >= 1 and <= 86_400
         && LatencyGapSeconds is >= 0 and <= 3_600
         && LatencyBudgetSeconds is >= 5 and <= 120;

@@ -135,6 +135,20 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
     }
 
     [Fact]
+    public async Task LatencyPageHasEmptyLeaderboardsBelowTheResults()
+    {
+        using var client = CreateClient();
+        var html = await client.GetStringAsync("/latency", Cancellation);
+        var feed = html.IndexOf("id=\"latency-feed\"", StringComparison.Ordinal);
+        Assert.True(feed > 0);
+        foreach (var id in new[] { "latency-jackpot-winners", "latency-jackpot-losers", "latency-browser-fastest", "latency-browser-slowest", "latency-server-fastest", "latency-server-slowest" })
+        {
+            Assert.True(html.IndexOf($"id=\"{id}\"", StringComparison.Ordinal) > feed, id);
+            Assert.Contains($"id=\"{id}-empty\"", html, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
     public async Task ThePolicyAllowsTheLatencyEndpoints()
     {
         using var client = CreateClient();

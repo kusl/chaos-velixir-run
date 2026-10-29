@@ -7,6 +7,7 @@ namespace Chaos.Web.Latency;
 internal sealed partial class LatencyService : IDisposable
 {
     public const int MaxOffers = 50;
+    public const int MaxLeaderOffers = 40;
 
     private readonly TimeProvider _time;
     private readonly ILatencyProbe _probe;
@@ -18,6 +19,7 @@ internal sealed partial class LatencyService : IDisposable
     private readonly bool _serverProbe;
     private readonly TimeSpan _gap;
     private BoardMessage[] _messages = [];
+    private LatencyLeaders _leaders = LatencyLeaders.Empty;
     private long _version;
     private Pending? _pending;
     private long? _lastStart;
@@ -34,6 +36,8 @@ internal sealed partial class LatencyService : IDisposable
         _probe = probe;
         _logger = logger;
         Capacity = limits.LatencyCapacity;
+        RankCapacity = limits.LatencyRankCapacity;
+        JackpotCapacity = limits.LatencyJackpotCapacity;
         Cooldown = TimeSpan.FromSeconds(limits.LatencyCooldownSeconds);
         Budget = TimeSpan.FromSeconds(limits.LatencyBudgetSeconds);
         BrowserWait = Budget + TimeSpan.FromSeconds(15);
@@ -45,6 +49,10 @@ internal sealed partial class LatencyService : IDisposable
 
     public int Capacity { get; }
 
+    public int RankCapacity { get; }
+
+    public int JackpotCapacity { get; }
+
     public TimeSpan Cooldown { get; }
 
     public TimeSpan Budget { get; }
@@ -54,6 +62,8 @@ internal sealed partial class LatencyService : IDisposable
     public DateTimeOffset StartedAt { get; }
 
     public IReadOnlyList<BoardMessage> Messages => Volatile.Read(ref _messages);
+
+    public LatencyLeaders Leaders => Volatile.Read(ref _leaders);
 
     public bool Running
     {
@@ -119,31 +129,16 @@ internal sealed partial class LatencyService : IDisposable
         }
     }
 
-    public int Offer(IEnumerable<BoardMessage> offered)
-    {
-        ArgumentNullException.ThrowIfNull(offered);
-        var now = _time.GetUtcNow();
-        var valid = offered
-            .Take(MaxOffers)
-            .Where(message => message is not null && MessageWindow.IsRestorable(message.Id, now, StartedAt) && LatencyRun.IsValid(message.Text))
-            .ToList();
-        if (valid.Count == 0)
-        {
-            return 0;
-        }
+    public int Offer(IEnumerable<BoardMessage> offered) => Restore(offered, MaxOffers, recent: true);
 
-        lock (_gate)
-        {
-            return Merge(valid);
-        }
-    }
+    public int OfferLeaders(IEnumerable<BoardMessage> offered) => Restore(offered, MaxLeaderOffers, recent: false);
 
     public void Subscribe(ILatencySubscriber subscriber)
     {
         ArgumentNullException.ThrowIfNull(subscriber);
         lock (_gate)
         {
-            if (subscriber.Deliver(LatencyUpdate.Snapshot(_version, _messages, _pending is not null)))
+            if (subscriber.Deliver(LatencyUpdate.Snapshot(_version, _messages, _pending is not null, _leaders.Boards(null))))
             {
                 _subscribers.Add(subscriber);
             }
@@ -173,6 +168,25 @@ internal sealed partial class LatencyService : IDisposable
     }
 
     private static int Seconds(TimeSpan span) => Math.Max(1, (int)Math.Ceiling(span.TotalSeconds));
+
+    private int Restore(IEnumerable<BoardMessage> offered, int limit, bool recent)
+    {
+        ArgumentNullException.ThrowIfNull(offered);
+        var now = _time.GetUtcNow();
+        var valid = offered
+            .Take(limit)
+            .Where(message => message is not null && MessageWindow.IsRestorable(message.Id, now, StartedAt) && LatencyRun.IsValid(message.Text))
+            .ToList();
+        if (valid.Count == 0)
+        {
+            return 0;
+        }
+
+        lock (_gate)
+        {
+            return Merge(valid, recent);
+        }
+    }
 
     private Guid LatestId() => _messages.Length > 0 ? _messages[0].Id : Guid.Empty;
 
@@ -208,26 +222,40 @@ internal sealed partial class LatencyService : IDisposable
         {
             _pending = null;
             var message = new BoardMessage(pending.Id, LatencyRun.Compose(endpoints, browser, server));
-            if (Merge([message]) == 0)
+            if (Merge([message], recent: true) == 0)
             {
                 Broadcast(LatencyUpdate.State(_version, false));
             }
         }
     }
 
-    private int Merge(IReadOnlyCollection<BoardMessage> candidates)
+    private int Merge(IReadOnlyCollection<BoardMessage> candidates, bool recent)
     {
-        var change = MessageWindow.Merge(_messages, candidates, Capacity);
-        if (change is null)
+        var change = recent ? MessageWindow.Merge(_messages, candidates, Capacity) : null;
+        var leaders = _leaders.Merge(candidates, RankCapacity, JackpotCapacity);
+        if (change is null && leaders is null)
         {
             return 0;
         }
 
         var previous = _version;
         _version++;
-        Volatile.Write(ref _messages, change.Next);
-        Broadcast(LatencyUpdate.Delta(_version, previous, change.Added, change.Removed, _pending is not null));
-        return change.Added.Length;
+        if (change is not null)
+        {
+            Volatile.Write(ref _messages, change.Next);
+        }
+
+        LatencyBoards? boards = null;
+        IReadOnlyList<Guid> entered = [];
+        if (leaders is not null)
+        {
+            boards = leaders.Boards(_leaders);
+            entered = leaders.Entered(_leaders);
+            Volatile.Write(ref _leaders, leaders);
+        }
+
+        Broadcast(LatencyUpdate.Delta(_version, previous, change?.Added ?? [], change?.Removed ?? [], _pending is not null, boards));
+        return (change?.Added ?? []).Select(message => message.Id).Concat(entered).Distinct().Count();
     }
 
     private void Broadcast(LatencyUpdate update)

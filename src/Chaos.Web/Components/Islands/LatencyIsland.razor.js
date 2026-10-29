@@ -12,6 +12,20 @@ export const SAMPLES = 3;
 export const PARALLEL = 6;
 export const REQUEST_MS = 4000;
 export const MAX_MS = 60000;
+export const LEADER_OFFERS = 10;
+export const FAST_BELOW = 10;
+export const SLOW_FROM = 100;
+export const SIDES = Object.freeze(['browser', 'server']);
+export const SIDE_LABELS = Object.freeze({ browser: 'Browser', server: 'Server' });
+
+export const BOARDS = Object.freeze([
+    { key: 'fastJackpots', id: 'latency-jackpot-winners', jackpot: 'fast' },
+    { key: 'slowJackpots', id: 'latency-jackpot-losers', jackpot: 'slow' },
+    { key: 'browserFastest', id: 'latency-browser-fastest', side: 'browser' },
+    { key: 'browserSlowest', id: 'latency-browser-slowest', side: 'browser' },
+    { key: 'serverFastest', id: 'latency-server-fastest', side: 'server' },
+    { key: 'serverSlowest', id: 'latency-server-slowest', side: 'server' },
+]);
 
 export const migrations = [
     db => db.createObjectStore(STORE, { keyPath: 'id' }),
@@ -80,6 +94,63 @@ export function summarize(results) {
         answered: results.filter(result => result.browser !== null || result.server !== null).length,
         total: results.length,
     };
+}
+
+export function rank(results) {
+    const quorum = Math.ceil(results.length / 2);
+    const counted = values => (values.filter(item => Number.isInteger(item)).length >= quorum ? median(values) : null);
+    return {
+        browser: counted(results.map(result => result.browser)),
+        server: counted(results.map(result => result.server)),
+    };
+}
+
+export function isFast(value) {
+    return Number.isInteger(value) && value < FAST_BELOW;
+}
+
+export function isSlow(value) {
+    return Number.isInteger(value) && value >= SLOW_FROM;
+}
+
+export function qualifies(value, jackpot) {
+    return jackpot === 'fast' ? isFast(value) : isSlow(value);
+}
+
+function byId(a, b) {
+    return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+}
+
+export function leadersOf(records, limit = LEADER_OFFERS) {
+    const scored = [];
+    for (const record of records) {
+        const results = typeof record?.id === 'string' ? parseRun(record.text) : null;
+        if (results) {
+            scored.push({ id: record.id, record, rank: rank(results) });
+        }
+    }
+    const chosen = new Map();
+    for (const side of SIDES) {
+        const ranked = scored.filter(item => item.rank[side] !== null);
+        const fastest = [...ranked].sort((a, b) => a.rank[side] - b.rank[side] || byId(a, b));
+        const slowest = [...ranked].sort((a, b) => b.rank[side] - a.rank[side] || byId(a, b));
+        for (const item of [...fastest.slice(0, limit), ...slowest.slice(0, limit)]) {
+            chosen.set(item.id, item.record);
+        }
+    }
+    return [...chosen.values()];
+}
+
+export function boardIds(boards) {
+    return Object.fromEntries(BOARDS.map(board => [board.key, Array.isArray(boards?.[board.key]) ? boards[board.key] : []]));
+}
+
+export function readAll(db, store) {
+    return new Promise((resolve, reject) => {
+        const request = db.transaction(store, 'readonly').objectStore(store).getAll();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
 }
 
 export function ms(value) {
@@ -238,6 +309,11 @@ class LatencyClient {
         this.feed = doc.getElementById('latency-feed');
         this.empty = doc.getElementById('latency-empty');
         this.older = doc.getElementById('latency-older');
+        this.boardLists = BOARDS.map(board => ({
+            ...board,
+            list: doc.getElementById(board.id),
+            empty: doc.getElementById(`${board.id}-empty`),
+        }));
         this.cooldown = (Number.parseInt(panel.dataset.cooldown, 10) || 300) * 1000;
         this.budget = (Number.parseInt(panel.dataset.budget, 10) || 30) * 1000;
         this.runs = readNumber(win.localStorage, RUNS_KEY);
@@ -247,6 +323,9 @@ class LatencyClient {
         this.live = new Map();
         this.shown = new Map();
         this.mine = new Set();
+        this.leaders = new Map();
+        this.boards = boardIds(null);
+        this.drawn = new Map();
         this.cursor = null;
         this.ready = false;
         this.running = false;
@@ -275,6 +354,10 @@ class LatencyClient {
             await this.offer();
         } catch {
         }
+        try {
+            await this.offerLeaders();
+        } catch {
+        }
         await this.join();
     }
 
@@ -290,6 +373,25 @@ class LatencyClient {
                 return;
             }
             await this.dotnet.invokeMethodAsync('Offer', chunk.map(record => record.id), chunk.map(record => record.text));
+        }
+    }
+
+    async offerLeaders() {
+        const db = await this.history.database();
+        if (!db || this.disposed) {
+            return;
+        }
+        const records = await readAll(db, STORE);
+        for (const record of records) {
+            if (record.mine) {
+                this.mine.add(record.id);
+            }
+        }
+        for (const chunk of chunkOffers(leadersOf(records), undefined, LEADER_OFFERS * 4)) {
+            if (this.disposed) {
+                return;
+            }
+            await this.dotnet.invokeMethodAsync('OfferLeaders', chunk.map(record => record.id), chunk.map(record => record.text));
         }
     }
 
@@ -326,12 +428,16 @@ class LatencyClient {
             this.running = update.running === true;
             if (update.kind === 'snapshot') {
                 await this.snapshot(update);
+                await this.board(update.boards, true);
             } else if (update.kind === 'delta' && this.version >= 0) {
                 if (needsResync(this.version, update)) {
                     this.join();
                     return;
                 }
                 await this.delta(update);
+                if (update.boards) {
+                    await this.board(update.boards, false);
+                }
             }
             this.updateControls();
         }
@@ -393,6 +499,66 @@ class LatencyClient {
             announce(this.doc, `New latency result: browser median ${ms(summary.browser)}, server median ${ms(summary.server)}.`);
         }
         await this.save(update.added);
+    }
+
+    async board(boards, reset) {
+        if (reset) {
+            this.leaders.clear();
+            this.drawn.clear();
+        }
+        const runs = Array.isArray(boards?.runs) ? boards.runs : [];
+        for (const message of runs) {
+            this.leaders.set(message.id, message);
+        }
+        this.boards = boardIds(boards);
+        const keep = new Set(Object.values(this.boards).flat());
+        for (const id of [...this.leaders.keys()]) {
+            if (!keep.has(id)) {
+                this.leaders.delete(id);
+            }
+        }
+        this.renderBoards();
+        await this.save(runs);
+    }
+
+    renderBoards() {
+        for (const board of this.boardLists) {
+            if (!board.list) {
+                continue;
+            }
+            const ids = this.boards[board.key].filter(id => this.leaders.has(id));
+            const signature = ids.map(id => `${id}${this.mine.has(id) ? '*' : ''}`).join();
+            if (this.drawn.get(board.key) === signature) {
+                continue;
+            }
+            this.drawn.set(board.key, signature);
+            const fragment = this.doc.createDocumentFragment();
+            ids.forEach((id, index) => fragment.append(this.leader(this.leaders.get(id), board, index + 1)));
+            board.list.replaceChildren(fragment);
+            if (board.empty) {
+                board.empty.hidden = ids.length > 0;
+            }
+        }
+    }
+
+    leader(message, board, place) {
+        const element = this.item(message, false);
+        element.classList.remove('archived');
+        element.classList.add('leader');
+        const ranks = rank(parseRun(message.text) ?? []);
+        const headline = this.element('p', 'headline');
+        if (board.side) {
+            headline.append(this.element('span', 'place', String(place)), this.element('strong', null, ms(ranks[board.side])));
+        } else {
+            element.classList.add(board.jackpot);
+            for (const side of SIDES) {
+                if (qualifies(ranks[side], board.jackpot)) {
+                    headline.append(this.element('strong', null, `${SIDE_LABELS[side]} ${ms(ranks[side])}`));
+                }
+            }
+        }
+        element.prepend(headline);
+        return element;
     }
 
     landed(message) {

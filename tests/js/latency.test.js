@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
     AUTO_UNLOCK,
+    BOARDS,
+    boardIds,
     cacheBusted,
     clockText,
     fetchOptions,
+    isFast,
+    isSlow,
+    leadersOf,
     measure,
     measureAll,
     median,
@@ -11,6 +16,8 @@ import {
     parseRun,
     parseStartReply,
     progressText,
+    qualifies,
+    rank,
     readNumber,
     summarize,
 } from '../../src/Chaos.Web/Components/Islands/LatencyIsland.razor.js';
@@ -46,6 +53,44 @@ describe('run text', () => {
     it('formats milliseconds', () => {
         expect(ms(12)).toBe('12 ms');
         expect(ms(null)).toBe('–');
+    });
+});
+
+const RANKS = [
+    ['a=10,1;b=30,;c=,5;d=,', { browser: 20, server: 3 }],
+    ['a=5,;b=,;c=,', { browser: null, server: null }],
+    ['a=5,200;b=7,150;c=,', { browser: 6, server: 175 }],
+    ['chaos=3,', { browser: 3, server: null }],
+];
+
+function run(index, browser, server = '') {
+    return { id: `0199e1aa-0000-7000-8000-${String(index).padStart(12, '0')}`, text: `a=${browser},${server}` };
+}
+
+describe('leaderboards', () => {
+    it.each(RANKS)('ranks %s only with a quorum', (text, expected) => {
+        expect(rank(parseRun(text))).toEqual(expected);
+    });
+
+    it('draws the jackpot lines at 10 and 100 ms', () => {
+        expect([isFast(9), isFast(10), isFast(null)]).toEqual([true, false, false]);
+        expect([isSlow(99), isSlow(100), isSlow(null)]).toEqual([false, true, false]);
+        expect([qualifies(0, 'fast'), qualifies(0, 'slow'), qualifies(250, 'slow')]).toEqual([true, false, true]);
+    });
+
+    it('offers the fastest and slowest runs on each side, once each', () => {
+        const records = [run(1, 50, 9), run(2, 40), run(3, 40), run(4, 70), run(5, 60, 300), { id: 'x', text: 'bad' }, { text: 'a=1,1' }];
+        const ids = leadersOf(records, 2).map(record => record.id);
+        expect(ids).toEqual([records[1].id, records[2].id, records[3].id, records[4].id, records[0].id]);
+        expect(leadersOf([])).toEqual([]);
+    });
+
+    it('reads board ids defensively', () => {
+        const ids = boardIds({ fastJackpots: ['a'], serverSlowest: 'nope' });
+        expect(Object.keys(ids)).toEqual(BOARDS.map(board => board.key));
+        expect(ids.fastJackpots).toEqual(['a']);
+        expect(ids.serverSlowest).toEqual([]);
+        expect(boardIds(undefined).browserFastest).toEqual([]);
     });
 });
 

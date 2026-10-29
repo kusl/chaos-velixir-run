@@ -45,6 +45,7 @@
     private Outbox<LatencyUpdate>? _outbox;
     private Subscriber? _subscriber;
     private int _offered;
+    private int _offeredLeaders;
 
     [Parameter, EditorRequired]
     public string Client { get; set; } = ClientAddress.Unknown;
@@ -63,31 +64,10 @@
     }
 
     [JSInvokable]
-    public int Offer(string[] ids, string[] texts)
-    {
-        if (ids is null || texts is null || ids.Length != texts.Length)
-        {
-            return 0;
-        }
+    public int Offer(string[] ids, string[] texts) => Latency.Offer(Parse(ids, texts, LatencyService.MaxOffers, ref _offered));
 
-        var count = Math.Min(LatencyService.MaxOffers - _offered, ids.Length);
-        if (count <= 0)
-        {
-            return 0;
-        }
-
-        _offered += count;
-        var offered = new List<BoardMessage>(count);
-        for (var i = 0; i < count; i++)
-        {
-            if (Guid.TryParseExact(ids[i], "D", out var id) && texts[i] is { } text)
-            {
-                offered.Add(new BoardMessage(id, text));
-            }
-        }
-
-        return Latency.Offer(offered);
-    }
+    [JSInvokable]
+    public int OfferLeaders(string[] ids, string[] texts) => Latency.OfferLeaders(Parse(ids, texts, LatencyService.MaxLeaderOffers, ref _offeredLeaders));
 
     [JSInvokable]
     public async Task Join()
@@ -115,6 +95,32 @@
         await JsCleanup.DisposeAsync(_client, "dispose");
         await JsCleanup.DisposeAsync(_module, null);
         _self?.Dispose();
+    }
+
+    private static List<BoardMessage> Parse(string[]? ids, string[]? texts, int limit, ref int used)
+    {
+        if (ids is null || texts is null || ids.Length != texts.Length)
+        {
+            return [];
+        }
+
+        var count = Math.Min(limit - used, ids.Length);
+        if (count <= 0)
+        {
+            return [];
+        }
+
+        used += count;
+        var offered = new List<BoardMessage>(count);
+        for (var i = 0; i < count; i++)
+        {
+            if (Guid.TryParseExact(ids[i], "D", out var id) && texts[i] is { } text)
+            {
+                offered.Add(new BoardMessage(id, text));
+            }
+        }
+
+        return offered;
     }
 
     private async Task SendAsync(IReadOnlyList<LatencyUpdate> batch, CancellationToken cancellationToken)

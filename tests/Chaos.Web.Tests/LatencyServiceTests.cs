@@ -124,6 +124,81 @@ public sealed class LatencyServiceTests
         Assert.True(Assert.Single(late.Updates).Running);
     }
 
+    [Fact]
+    public async Task AMeasuredRunJoinsTheLeaderboards()
+    {
+        using var latency = Create(new FakeProbe(endpoints => [.. endpoints.Select(_ => (int?)150)]));
+        var viewer = new LatencyRecorder();
+        latency.Subscribe(viewer);
+        Assert.Empty(viewer.Updates[0].Boards!.Runs);
+
+        var start = latency.Begin("a");
+        latency.Finish(start.Id, [.. Enumerable.Repeat(8, Count)]);
+        await latency.WhenIdle().WaitAsync(TimeSpan.FromSeconds(10), TestContext.Current.CancellationToken);
+
+        var leaders = latency.Leaders;
+        Assert.Equal(start.Id, Assert.Single(leaders.FastJackpots).Id);
+        Assert.Equal(start.Id, Assert.Single(leaders.SlowJackpots).Id);
+        Assert.Single(leaders.BrowserFastest);
+        Assert.Single(leaders.ServerSlowest);
+        var boards = viewer.Updates[^1].Boards!;
+        Assert.Equal(start.Id, Assert.Single(boards.Runs).Id);
+        Assert.Equal(new[] { start.Id }, boards.BrowserSlowest);
+    }
+
+    [Fact]
+    public void LeaderOffersFillTheBoardsButNotTheResults()
+    {
+        using var latency = Create(new FakeProbe(endpoints => new int?[endpoints.Count]), o => o.LatencyRankCapacity = 2);
+        var viewer = new LatencyRecorder();
+        latency.Subscribe(viewer);
+        var offered = Enumerable.Range(1, 5)
+            .Select(i => new BoardMessage(Guid.CreateVersion7(Start.AddMinutes(-i)), $"a={i * 10},;b=,"))
+            .ToList();
+
+        Assert.Equal(4, latency.OfferLeaders(offered));
+        Assert.Empty(latency.Messages);
+        var leaders = latency.Leaders;
+        Assert.Equal(new[] { offered[0].Id, offered[1].Id }, leaders.BrowserFastest.Select(run => run.Id));
+        Assert.Equal(new[] { offered[4].Id, offered[3].Id }, leaders.BrowserSlowest.Select(run => run.Id));
+        Assert.Empty(leaders.ServerFastest);
+        Assert.Empty(leaders.FastJackpots);
+        Assert.Empty(leaders.SlowJackpots);
+        Assert.Equal(0, latency.OfferLeaders(offered));
+        Assert.Equal(4, viewer.Updates[^1].Boards!.Runs.Count);
+    }
+
+    [Fact]
+    public void RunsWithoutAQuorumAreNotRanked()
+    {
+        using var latency = Create(new FakeProbe(endpoints => new int?[endpoints.Count]));
+        Assert.Equal(0, latency.OfferLeaders([new BoardMessage(Guid.CreateVersion7(Start.AddMinutes(-1)), "a=1,;b=,;c=,")]));
+        Assert.Equal(1, latency.Offer([new BoardMessage(Guid.CreateVersion7(Start.AddMinutes(-2)), "a=1,;b=,;c=,")]));
+        Assert.Empty(latency.Leaders.BrowserFastest);
+        Assert.Empty(latency.Leaders.FastJackpots);
+    }
+
+    [Fact]
+    public void JackpotsKeepTheNewestAndRanksBreakTiesByAge()
+    {
+        using var latency = Create(new FakeProbe(endpoints => new int?[endpoints.Count]), o => o.LatencyJackpotCapacity = 2);
+        var older = new BoardMessage(Guid.CreateVersion7(Start.AddMinutes(-3)), "a=5,");
+        var old = new BoardMessage(Guid.CreateVersion7(Start.AddMinutes(-2)), "a=5,");
+        var recent = new BoardMessage(Guid.CreateVersion7(Start.AddMinutes(-1)), "a=9,");
+        latency.OfferLeaders([old, recent, older]);
+        Assert.Equal(new[] { recent.Id, old.Id }, latency.Leaders.FastJackpots.Select(run => run.Id));
+        Assert.Equal(new[] { older.Id, old.Id, recent.Id }, latency.Leaders.BrowserFastest.Select(run => run.Id));
+    }
+
+    [Fact]
+    public void LeaderOffersAreLimitedPerCall()
+    {
+        using var latency = Create(new FakeProbe(endpoints => new int?[endpoints.Count]), o => o.LatencyRankCapacity = 100);
+        var offered = Enumerable.Range(1, LatencyService.MaxLeaderOffers + 5)
+            .Select(i => new BoardMessage(Guid.CreateVersion7(Start.AddMinutes(-i)), $"a={i},"));
+        Assert.Equal(LatencyService.MaxLeaderOffers, latency.OfferLeaders(offered));
+    }
+
     private LatencyService Create(ILatencyProbe probe, Action<ChaosOptions>? configure = null) =>
         new(_time, Limits.Create(configure), probe, NullLogger<LatencyService>.Instance);
 }

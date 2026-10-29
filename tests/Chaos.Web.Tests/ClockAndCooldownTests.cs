@@ -77,6 +77,8 @@ public sealed class LatencyOptionsTests
         Assert.False(new ChaosOptions { LatencyCooldownSeconds = 0 }.IsValid());
         Assert.False(new ChaosOptions { LatencyGapSeconds = -1 }.IsValid());
         Assert.False(new ChaosOptions { LatencyBudgetSeconds = 1 }.IsValid());
+        Assert.False(new ChaosOptions { LatencyRankCapacity = 0 }.IsValid());
+        Assert.False(new ChaosOptions { LatencyJackpotCapacity = 1_001 }.IsValid());
         Assert.True(new ChaosOptions { LatencyCooldownSeconds = 1, LatencyGapSeconds = 0 }.IsValid());
     }
 }

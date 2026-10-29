@@ -33,6 +33,8 @@ public sealed class LatencyTests(BrowserFixture browser) : IClassFixture<Browser
         await Expect(seen.Locator(".yours")).ToHaveCountAsync(0);
         await seen.Locator("summary").ClickAsync();
         await Expect(seen.Locator("tbody tr")).ToHaveCountAsync(await tester.Locator(".probe tbody tr").CountAsync());
+        await Expect(watcher.Locator("#latency-browser-fastest-empty")).ToBeVisibleAsync();
+        await Expect(watcher.Locator("#latency-jackpot-winners-empty")).ToBeVisibleAsync();
     }
 
     private async Task<IBrowserContext> OfflineContextAsync()

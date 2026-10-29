@@ -8,6 +8,11 @@ internal sealed record LatencyResult(string Key, int? Browser, int? Server);
 
 internal sealed record LatencySummary(int? Browser, int? Server, int Answered, int Total);
 
+internal sealed record LatencyRank(int? Browser, int? Server)
+{
+    public static LatencyRank None { get; } = new(null, null);
+}
+
 internal static class LatencyRun
 {
     public const int MaxMilliseconds = 60_000;
@@ -111,6 +116,17 @@ internal static class LatencyRun
             results.Count);
     }
 
+    public static LatencyRank Rank(IReadOnlyList<LatencyResult> results)
+    {
+        ArgumentNullException.ThrowIfNull(results);
+        var quorum = (results.Count + 1) / 2;
+        return new LatencyRank(
+            Counted([.. results.Select(result => result.Browser)], quorum),
+            Counted([.. results.Select(result => result.Server)], quorum));
+    }
+
+    public static LatencyRank Rank(string? text) => TryParse(text, out var results) ? Rank(results) : LatencyRank.None;
+
     public static int? Median(IEnumerable<int?> values)
     {
         var sorted = values.OfType<int>().Order().ToArray();
@@ -125,6 +141,9 @@ internal static class LatencyRun
 
     public static string Milliseconds(int? value) =>
         value is { } milliseconds ? milliseconds.ToString(CultureInfo.InvariantCulture) + " ms" : "–";
+
+    private static int? Counted(int?[] values, int quorum) =>
+        values.Count(value => value is not null) >= quorum ? Median(values) : null;
 
     private static int? Clamp(int? value) => value is { } milliseconds and >= 0 ? Math.Min(milliseconds, MaxMilliseconds) : null;
 

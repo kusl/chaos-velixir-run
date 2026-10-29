@@ -15,51 +15,35 @@
     <ol id="latency-feed" class="runs">
         @foreach (var run in _runs)
         {
-            if (!LatencyRun.TryParse(run.Text, out var results))
-            {
-                continue;
-            }
-
-            var summary = LatencyRun.Summarize(results);
-            <li @key="run.Id" class="msg" data-id="@run.Id">
-                <time datetime="@MessageFormat.Iso(run.Id)">@MessageFormat.Label(run.Id, _now)</time>
-                <p class="summary">
-                    <span>Browser median <strong>@LatencyRun.Milliseconds(summary.Browser)</strong></span>
-                    <span>Server median <strong>@LatencyRun.Milliseconds(summary.Server)</strong></span>
-                    <span>@summary.Answered of @summary.Total answered</span>
-                </p>
-                <details>
-                    <summary>All endpoints</summary>
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Endpoint</th>
-                                    <th scope="col">Browser</th>
-                                    <th scope="col">Server</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var result in results)
-                                {
-                                    <tr>
-                                        <th scope="row">@LatencyCatalog.LabelOf(result.Key)</th>
-                                        <td>@LatencyRun.Milliseconds(result.Browser)</td>
-                                        <td>@LatencyRun.Milliseconds(result.Server)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </details>
-            </li>
+            @Item(run, null, null, 0)
         }
     </ol>
     <button type="button" id="latency-older" class="older" hidden>Show older results</button>
 </section>
 
+<section class="feed" data-permanent="latency-jackpots" aria-labelledby="jackpots-title">
+    <h2 id="jackpots-title">Jackpots</h2>
+    <p class="note">A browser or server median under @LatencyLeaders.FastBelow ms wins; @LatencyLeaders.SlowFrom ms or more loses. The newest @Latency.JackpotCapacity of each are kept.</p>
+    <div class="boards">
+        @Board("latency-jackpot-winners", "Winners", "Nobody yet. Probably nobody ever.", _leaders.FastJackpots, "fast", null)
+        @Board("latency-jackpot-losers", "Losers", "Nobody yet. Hopefully nobody ever.", _leaders.SlowJackpots, "slow", null)
+    </div>
+</section>
+
+<section class="feed" data-permanent="latency-leaders" aria-labelledby="leaders-title">
+    <h2 id="leaders-title">Leaderboard</h2>
+    <p class="note">The @Latency.RankCapacity lowest and highest medians seen. A median only counts when at least half of the endpoints answered on that side.</p>
+    <div class="boards">
+        @Board("latency-browser-fastest", "Fastest browsers", "No browser results yet.", _leaders.BrowserFastest, null, LatencySide.Browser)
+        @Board("latency-browser-slowest", "Slowest browsers", "No browser results yet.", _leaders.BrowserSlowest, null, LatencySide.Browser)
+        @Board("latency-server-fastest", "Fastest server runs", "No server results yet.", _leaders.ServerFastest, null, LatencySide.Server)
+        @Board("latency-server-slowest", "Slowest server runs", "No server results yet.", _leaders.ServerSlowest, null, LatencySide.Server)
+    </div>
+</section>
+
 @code {
     private IReadOnlyList<BoardMessage> _runs = [];
+    private LatencyLeaders _leaders = LatencyLeaders.Empty;
     private DateTimeOffset _now;
     private string _client = ClientAddress.Unknown;
 
@@ -71,7 +55,85 @@
     protected override void OnInitialized()
     {
         _runs = Latency.Messages;
+        _leaders = Latency.Leaders;
         _now = Time.GetUtcNow();
         _client = ClientAddress.Key(HttpContext?.Connection.RemoteIpAddress);
     }
+
+    private static string SideLabel(LatencySide side) => side == LatencySide.Browser ? "Browser" : "Server";
+
+    private RenderFragment Board(string id, string title, string empty, IReadOnlyList<BoardMessage> runs, string? jackpot, LatencySide? side) =>
+        @<section class="board" aria-labelledby="@(id + "-title")">
+            <h3 id="@(id + "-title")">@title</h3>
+            <p id="@(id + "-empty")" class="empty" hidden="@(runs.Count > 0)">@empty</p>
+            <ol id="@id" class="runs leaders">
+                @for (var i = 0; i < runs.Count; i++)
+                {
+                    @Item(runs[i], jackpot, side, i + 1)
+                }
+            </ol>
+        </section>;
+
+    private RenderFragment Item(BoardMessage run, string? jackpot, LatencySide? side, int place) => __builder =>
+    {
+        if (!LatencyRun.TryParse(run.Text, out var results))
+        {
+            return;
+        }
+
+        var summary = LatencyRun.Summarize(results);
+        var rank = LatencyRun.Rank(results);
+        var css = jackpot is not null ? $"msg leader {jackpot}" : side is not null ? "msg leader" : "msg";
+        <li @key="run.Id" class="@css" data-id="@run.Id">
+            @if (side is { } ranked)
+            {
+                <p class="headline"><span class="place">@place</span><strong>@LatencyRun.Milliseconds(LatencyLeaders.Of(rank, ranked))</strong></p>
+            }
+            else if (jackpot is not null)
+            {
+                <p class="headline">
+                    @foreach (var each in Sides)
+                    {
+                        var median = LatencyLeaders.Of(rank, each);
+                        if (jackpot == "fast" ? LatencyLeaders.IsFast(median) : LatencyLeaders.IsSlow(median))
+                        {
+                            <strong>@SideLabel(each) @LatencyRun.Milliseconds(median)</strong>
+                        }
+                    }
+                </p>
+            }
+            <time datetime="@MessageFormat.Iso(run.Id)">@MessageFormat.Label(run.Id, _now)</time>
+            <p class="summary">
+                <span>Browser median <strong>@LatencyRun.Milliseconds(summary.Browser)</strong></span>
+                <span>Server median <strong>@LatencyRun.Milliseconds(summary.Server)</strong></span>
+                <span>@summary.Answered of @summary.Total answered</span>
+            </p>
+            <details>
+                <summary>All endpoints</summary>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">Endpoint</th>
+                                <th scope="col">Browser</th>
+                                <th scope="col">Server</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var result in results)
+                            {
+                                <tr>
+                                    <th scope="row">@LatencyCatalog.LabelOf(result.Key)</th>
+                                    <td>@LatencyRun.Milliseconds(result.Browser)</td>
+                                    <td>@LatencyRun.Milliseconds(result.Server)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+        </li>
+    };
+
+    private static readonly LatencySide[] Sides = [LatencySide.Browser, LatencySide.Server];
 }

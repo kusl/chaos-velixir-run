@@ -20,7 +20,8 @@ Defaults live in `ChaosOptions` and can be overridden with `Chaos__*` environmen
 | Slot winner and jackpot offers per circuit | 500 each |
 | Canvas offers per circuit | 500 strokes, 20,000 points, 4 resets |
 | Latency tests | one at a time, 10 s apart, one per client every 300 s, 30 s probe budget |
-| Latency results kept | 50 |
+| Latency results kept | 50 recent, 50 jackpot winners, 50 losers, 10 fastest and slowest per side |
+| Latency leader offers per circuit | 40 |
 
 - A client is its IP after `X-Forwarded-For`, or its /64 for IPv6. Keys live in memory only and are never logged or shown. Devices behind one NAT are one client.
 - The hub (`/_blazor`) only accepts WebSocket connections, so connection counts are real. Clients behind proxies that block WebSockets cannot use the board, canvas or slots.
