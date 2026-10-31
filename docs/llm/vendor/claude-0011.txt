@@ -29,3 +29,431 @@ if there are a lot of files that need to change
     No bespoke sed/patch scripts — full files only for anything that changes
     Docs updated alongside code changes
     Low verbosity, no code comments
+also I suspect a test is flaky or something 
+it does not fail every time but it has failed at least once before. worth taking a look. 
+
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
+
+==> Restore
+Restore complete (0.7s)
+
+Build succeeded in 0.8s
+
+==> Build (Release, warnings are errors)
+  Chaos.E2E net10.0 succeeded (0.4s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
+  Chaos.Web net10.0 succeeded (1.0s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web.Tests net10.0 succeeded (0.6s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
+
+Build succeeded in 2.0s
+Restore complete (0.5s)
+
+Build succeeded in 0.6s
+Project 'Chaos.Web' has the following package references
+   [net10.0]: 
+   Top-level Package                                  Requested     Resolved
+   > Microsoft.AspNetCore.App.Internal.Assets   (A)   [10.0.13, )   10.0.13 
+
+Project 'Chaos.E2E' has the following package references
+   [net10.0]: 
+   Top-level Package           Requested   Resolved
+   > Microsoft.Playwright      1.64.1      1.64.1  
+   > xunit.v3                  4.0.2       4.0.2   
+
+Project 'Chaos.Web.Tests' has the following package references
+   [net10.0]: 
+   Top-level Package                                Requested   Resolved
+   > Microsoft.AspNetCore.Mvc.Testing               10.0.14     10.0.14 
+   > Microsoft.Testing.Extensions.CodeCoverage      18.12.0     18.12.0 
+   > xunit.v3                                       4.0.2       4.0.2   
+
+(A) : Auto-referenced package.
+Restore complete (0.5s)
+
+Build succeeded in 0.6s
+
+The following sources were used:
+   https://api.nuget.org/v3/index.json
+
+The given project `Chaos.Web` has no updates given the current sources.
+The given project `Chaos.E2E` has no updates given the current sources.
+The given project `Chaos.Web.Tests` has no updates given the current sources.
+
+==> Unit and integration tests
+Running tests from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
+tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 337ms)
+
+  In process file artifacts produced:
+    - artifacts/test-results/unit/coverage.cobertura.xml
+
+Test run summary: Passed!
+  total: 241
+  failed: 0
+  succeeded: 241
+  skipped: 0
+  duration: 2s 305ms
+.NET line coverage: 70.1%
+
+==> JavaScript unit tests
+
+added 49 packages in 535ms
+
+ RUN  v5.0.4 /home/kushal/src/dotnet/chaos-velixir-run/tests/js
+      Coverage enabled with v8
+
+ ✓ app.test.js (13 tests) 6ms
+ ✓ canvas.test.js (21 tests) 7ms
+ ✓ latency.test.js (33 tests) 10ms
+ ✓ board.test.js (23 tests) 24ms
+ ✓ slots.test.js (49 tests) 25ms
+
+ Test Files  5 passed (5)
+      Tests  139 passed (139)
+   Start at  22:56:49
+   Duration  326ms (transform 58%, import 16%, worker 13%, tests 13%)
+
+ % Coverage report from v8
+-------------------------|---------|----------|---------|---------|-------------------------------------------
+File                     | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                         
+-------------------------|---------|----------|---------|---------|-------------------------------------------
+All files                |   23.21 |    30.92 |   28.81 |   23.23 |                                           
+ Components              |   16.76 |       24 |   26.47 |   17.05 |                                           
+  App.razor.js           |   16.76 |       24 |   26.47 |   17.05 | 64-311,315                                
+ Components/Islands      |   23.76 |    31.63 |   28.98 |   23.79 |                                           
+  BoardIsland.razor.js   |   20.97 |    36.69 |   24.34 |   21.53 | 88,127-129,194,203,299-873                
+  CanvasIsland.razor.js  |   20.72 |    24.39 |   16.48 |   21.47 | 22-23,158-278,303-691                     
+  LatencyIsland.razor.js |    28.1 |     34.7 |   33.02 |   28.13 | 31,56,149-152,199-200,221-225,237,290-851 
+  SlotIsland.razor.js    |   24.17 |    30.61 |   38.46 |   23.46 | 20,194,211,372-1151                       
+ wwwroot                 |       0 |        0 |     100 |       0 |                                           
+  theme-init.js          |       0 |        0 |     100 |       0 | 2-8                                       
+-------------------------|---------|----------|---------|---------|-------------------------------------------
+
+==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.64.1-noble
+  Determining projects to restore...
+  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 346 ms).
+  Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web -> /tmp/app/
+Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+failed Chaos.E2E.BoardTests.TheCharacterCountFollowsTypingPastingAndSending (5s 174ms)
+  from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Microsoft.Playwright.PlaywrightException : Locator expected to have text '0 / 500'
+  But was: '40 / 500' 
+  Call log:
+    - Expect "ToHaveTextAsync" Locator("#compose-count") with timeout 5000ms
+    - waiting for Locator("#compose-count")
+      14 × locator resolved to <span class="count" b-bs28gdz197="" id="compose-count">40 / 500</span>
+         - unexpected value "40 / 500"
+  Aria snapshot:
+  - text: 40 / 500
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, FrameExpectOptions expectOptions, Object expected, String message, String title) in /_/src/Playwright/Core/AssertionsBase.cs:97
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, ExpectedTextValue[] expectedText, Object expected, String message, String title, FrameExpectOptions options) in /_/src/Playwright/Core/AssertionsBase.cs:69
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, ExpectedTextValue textValue, Object expected, String message, String title, FrameExpectOptions options) in /_/src/Playwright/Core/AssertionsBase.cs:61
+    at Chaos.E2E.BoardTests.TheCharacterCountFollowsTypingPastingAndSending() in /work/tests/Chaos.E2E/BoardTests.cs:104
+    at Chaos.E2E.BoardTests.TheCharacterCountFollowsTypingPastingAndSending() in /work/tests/Chaos.E2E/BoardTests.cs:104
+    --- End of stack trace from previous location ---
+/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) failed with 1 error(s) (34s 706ms)
+Exit code: 2
+
+Test run summary: Failed!
+  total: 22
+  failed: 1
+  succeeded: 21
+  skipped: 0
+  duration: 34s 856ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
+
+==> Last 50 lines of the app log
+info: Microsoft.AspNetCore.Http.Result.JsonResult[3]
+      Writing value of type 'ServerTime' as Json.
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: GET /time'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5080/time?n=37 - 200 - application/json;+charset=utf-8 0.2133ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:5080/_blazor/initializers - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5080/_blazor/initializers - 200 - application/json;+charset=utf-8 0.1605ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:5080/_blazor/negotiate?negotiateVersion=1 - - 0
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:5080/_blazor/negotiate?negotiateVersion=1 - 200 - application/json 0.2557ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:5080/_blazor?id=HWS7jQovXX27RFWdL6ECvA - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/CanvasIsland.8wavzjs07i.razor.js - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
+      Sending file. Request path: 'Components/Islands/CanvasIsland.8wavzjs07i.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/CanvasIsland.razor.js.br'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/CanvasIsland.8wavzjs07i.razor.js - 200 4668 text/javascript 0.2602ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/BoardIsland.razor.js - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
+      Sending file. Request path: 'Components/Islands/BoardIsland.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/BoardIsland.razor.js.br'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/BoardIsland.razor.js - 200 6201 text/javascript 0.1575ms
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5080/_blazor?id=HWS7jQovXX27RFWdL6ECvA - 101 - - 269.0699ms
+
+==> Last 50 lines of the rigged app log
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5081/time?n=48 - 200 - application/json;+charset=utf-8 0.9336ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:5081/_blazor/initializers - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5081/_blazor/initializers - 200 - application/json;+charset=utf-8 0.4013ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:5081/_blazor/negotiate?negotiateVersion=1 - - 0
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:5081/_blazor/negotiate?negotiateVersion=1 - 200 - application/json 0.5891ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:5081/_blazor?id=MgQRaNgfPTAXkKx36eaN3Q - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:5081/Components/Islands/SlotIsland.ha6xp2ea2h.razor.js - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
+      Sending file. Request path: 'Components/Islands/SlotIsland.ha6xp2ea2h.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/SlotIsland.razor.js.br'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5081/Components/Islands/SlotIsland.ha6xp2ea2h.razor.js - 200 8477 text/javascript 0.4143ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:5081/Components/Islands/BoardIsland.razor.js - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
+      Sending file. Request path: 'Components/Islands/BoardIsland.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/BoardIsland.razor.js.br'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5081/Components/Islands/BoardIsland.razor.js - 200 6201 text/javascript 0.3521ms
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5081/_blazor?id=rxpuRpQZReFohEzUlQ1yPw - 101 - - 10089.7312ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5081/_blazor?id=MgQRaNgfPTAXkKx36eaN3Q - 101 - - 9824.5793ms
+
+real	0m53.833s
+user	0m11.269s
+sys	0m2.508s
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/export.sh 
+Starting project export...
+Project Path: /home/kushal/src/dotnet/chaos-velixir-run
+Output File:  /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
+Listing files via git...
+Found 174 files to export
+Processing (1/174): .editorconfig
+Processing (2/174): .gitattributes
+Processing (3/174): .github/dependabot.yml
+Processing (4/174): .github/workflows/ci.yml
+Processing (5/174): .github/workflows/velixir.yml
+Processing (6/174): .gitignore
+Processing (7/174): Directory.Build.props
+Processing (8/174): Directory.Packages.props
+Processing (9/174): README.md
+Processing (10/174): REUSE.toml
+Processing (11/174): chaos-velixir-run.slnx
+Processing (12/174): docs/adr/0001-record-decisions.md
+Processing (13/174): docs/adr/0002-rendering-model.md
+Processing (14/174): docs/adr/0003-deploy-only-the-web-project.md
+Processing (15/174): docs/adr/0004-message-ids-and-reconciliation.md
+Processing (16/174): docs/adr/0005-local-history.md
+Processing (17/174): docs/adr/0006-canvas-protocol.md
+Processing (18/174): docs/adr/0007-realtime-delivery.md
+Processing (19/174): docs/adr/0008-abuse-limits.md
+Processing (20/174): docs/adr/0009-security-headers.md
+Processing (21/174): docs/adr/0010-no-cookies.md
+Processing (22/174): docs/adr/0011-theme.md
+Processing (23/174): docs/adr/0012-reconnect-and-cold-start.md
+Processing (24/174): docs/adr/0013-runtime-footprint.md
+Processing (25/174): docs/adr/0014-testing.md
+Processing (26/174): docs/adr/0015-dependencies.md
+Processing (27/174): docs/adr/0016-licensing.md
+Processing (28/174): docs/adr/0017-scripts-and-ci.md
+Processing (29/174): docs/adr/0018-export.md
+Processing (30/174): docs/adr/0019-slots.md
+Processing (31/174): docs/adr/0020-latency.md
+Processing (32/174): docs/adr/0021-server-clock.md
+Processing (33/174): docs/adr/0022-message-details.md
+Processing (34/174): docs/adr/README.md
+Processing (35/174): global.json
+Processing (36/174): scripts/build.sh
+Processing (37/174): scripts/e2e-container.sh
+Processing (38/174): scripts/export.sh
+Processing (39/174): scripts/lib.sh
+Processing (40/174): scripts/run-all.sh
+Processing (41/174): scripts/test-e2e.sh
+Processing (42/174): scripts/test-js.sh
+Processing (43/174): scripts/test-unit.sh
+Processing (44/174): src/Chaos.Web/Chaos.Web.csproj
+Processing (45/174): src/Chaos.Web/Components/App.razor
+Processing (46/174): src/Chaos.Web/Components/App.razor.js
+Processing (47/174): src/Chaos.Web/Components/Islands/BoardIsland.razor
+Processing (48/174): src/Chaos.Web/Components/Islands/BoardIsland.razor.css
+Processing (49/174): src/Chaos.Web/Components/Islands/BoardIsland.razor.js
+Processing (50/174): src/Chaos.Web/Components/Islands/CanvasIsland.razor
+Processing (51/174): src/Chaos.Web/Components/Islands/CanvasIsland.razor.css
+Processing (52/174): src/Chaos.Web/Components/Islands/CanvasIsland.razor.js
+Processing (53/174): src/Chaos.Web/Components/Islands/LatencyIsland.razor
+Processing (54/174): src/Chaos.Web/Components/Islands/LatencyIsland.razor.css
+Processing (55/174): src/Chaos.Web/Components/Islands/LatencyIsland.razor.js
+Processing (56/174): src/Chaos.Web/Components/Islands/SlotIsland.razor
+Processing (57/174): src/Chaos.Web/Components/Islands/SlotIsland.razor.css
+Processing (58/174): src/Chaos.Web/Components/Islands/SlotIsland.razor.js
+Processing (59/174): src/Chaos.Web/Components/Layout/MainLayout.razor
+Processing (60/174): src/Chaos.Web/Components/Layout/MainLayout.razor.css
+Processing (61/174): src/Chaos.Web/Components/Layout/ReconnectBanner.razor
+Processing (62/174): src/Chaos.Web/Components/Layout/ReconnectBanner.razor.css
+Processing (63/174): src/Chaos.Web/Components/Layout/ThemeToggle.razor
+Processing (64/174): src/Chaos.Web/Components/Layout/ThemeToggle.razor.css
+Processing (65/174): src/Chaos.Web/Components/Pages/About.razor
+Processing (66/174): src/Chaos.Web/Components/Pages/About.razor.css
+Processing (67/174): src/Chaos.Web/Components/Pages/BoardPage.razor
+Processing (68/174): src/Chaos.Web/Components/Pages/BoardPage.razor.css
+Processing (69/174): src/Chaos.Web/Components/Pages/CanvasPage.razor
+Processing (70/174): src/Chaos.Web/Components/Pages/CanvasPage.razor.css
+Processing (71/174): src/Chaos.Web/Components/Pages/Error.razor
+Processing (72/174): src/Chaos.Web/Components/Pages/Error.razor.css
+Processing (73/174): src/Chaos.Web/Components/Pages/Home.razor
+Processing (74/174): src/Chaos.Web/Components/Pages/Home.razor.css
+Processing (75/174): src/Chaos.Web/Components/Pages/LatencyPage.razor
+Processing (76/174): src/Chaos.Web/Components/Pages/LatencyPage.razor.css
+Processing (77/174): src/Chaos.Web/Components/Pages/NotFound.razor
+Processing (78/174): src/Chaos.Web/Components/Pages/SlotResult.razor
+Processing (79/174): src/Chaos.Web/Components/Pages/SlotsPage.razor
+Processing (80/174): src/Chaos.Web/Components/Pages/SlotsPage.razor.css
+Processing (81/174): src/Chaos.Web/Components/Routes.razor
+Processing (82/174): src/Chaos.Web/Components/_Imports.razor
+Processing (83/174): src/Chaos.Web/Drawing/CanvasService.cs
+Processing (84/174): src/Chaos.Web/Drawing/CanvasSession.cs
+Processing (85/174): src/Chaos.Web/Drawing/CanvasUpdate.cs
+Processing (86/174): src/Chaos.Web/Drawing/DrawReply.cs
+Processing (87/174): src/Chaos.Web/Drawing/DrawResult.cs
+Processing (88/174): src/Chaos.Web/Drawing/ICanvasSubscriber.cs
+Processing (89/174): src/Chaos.Web/Drawing/ResetResult.cs
+Processing (90/174): src/Chaos.Web/Drawing/Stroke.cs
+Processing (91/174): src/Chaos.Web/Drawing/StrokeOffer.cs
+Processing (92/174): src/Chaos.Web/Infrastructure/ChaosOptions.cs
+Processing (93/174): src/Chaos.Web/Infrastructure/ClientAddress.cs
+Processing (94/174): src/Chaos.Web/Infrastructure/ConnectionTracker.cs
+Processing (95/174): src/Chaos.Web/Infrastructure/CookielessAntiforgery.cs
+Processing (96/174): src/Chaos.Web/Infrastructure/HubGuard.cs
+Processing (97/174): src/Chaos.Web/Infrastructure/JsCleanup.cs
+Processing (98/174): src/Chaos.Web/Infrastructure/KeyedCooldowns.cs
+Processing (99/174): src/Chaos.Web/Infrastructure/KeyedTokenBuckets.cs
+Processing (100/174): src/Chaos.Web/Infrastructure/ModulePath.cs
+Processing (101/174): src/Chaos.Web/Infrastructure/OriginPolicy.cs
+Processing (102/174): src/Chaos.Web/Infrastructure/Outbox.cs
+Processing (103/174): src/Chaos.Web/Infrastructure/RequestLimits.cs
+Processing (104/174): src/Chaos.Web/Infrastructure/SecurityHeaders.cs
+Processing (105/174): src/Chaos.Web/Infrastructure/ServerClock.cs
+Processing (106/174): src/Chaos.Web/Infrastructure/TokenBucket.cs
+Processing (107/174): src/Chaos.Web/Latency/HttpLatencyProbe.cs
+Processing (108/174): src/Chaos.Web/Latency/ILatencyProbe.cs
+Processing (109/174): src/Chaos.Web/Latency/ILatencySubscriber.cs
+Processing (110/174): src/Chaos.Web/Latency/LatencyCatalog.cs
+Processing (111/174): src/Chaos.Web/Latency/LatencyEndpoint.cs
+Processing (112/174): src/Chaos.Web/Latency/LatencyLeaders.cs
+Processing (113/174): src/Chaos.Web/Latency/LatencyRun.cs
+Processing (114/174): src/Chaos.Web/Latency/LatencyService.cs
+Processing (115/174): src/Chaos.Web/Latency/LatencyStart.cs
+Processing (116/174): src/Chaos.Web/Latency/LatencyUpdate.cs
+Processing (117/174): src/Chaos.Web/Messages/BoardMessage.cs
+Processing (118/174): src/Chaos.Web/Messages/BoardService.cs
+Processing (119/174): src/Chaos.Web/Messages/BoardUpdate.cs
+Processing (120/174): src/Chaos.Web/Messages/IBoardSubscriber.cs
+Processing (121/174): src/Chaos.Web/Messages/MessageFormat.cs
+Processing (122/174): src/Chaos.Web/Messages/MessageMeta.cs
+Processing (123/174): src/Chaos.Web/Messages/MessageText.cs
+Processing (124/174): src/Chaos.Web/Messages/MessageWindow.cs
+Processing (125/174): src/Chaos.Web/Messages/MetaEntry.cs
+Processing (126/174): src/Chaos.Web/Messages/MetaField.cs
+Processing (127/174): src/Chaos.Web/Messages/PostReply.cs
+Processing (128/174): src/Chaos.Web/Messages/PostResult.cs
+Processing (129/174): src/Chaos.Web/Messages/Uuid7.cs
+Processing (130/174): src/Chaos.Web/Program.cs
+Processing (131/174): src/Chaos.Web/Properties/launchSettings.json
+Processing (132/174): src/Chaos.Web/Slots/ISlotSubscriber.cs
+Processing (133/174): src/Chaos.Web/Slots/SlotPress.cs
+Processing (134/174): src/Chaos.Web/Slots/SlotRules.cs
+Processing (135/174): src/Chaos.Web/Slots/SlotService.cs
+Processing (136/174): src/Chaos.Web/Slots/SlotUpdate.cs
+Processing (137/174): src/Chaos.Web/Slots/SlotWin.cs
+Processing (138/174): src/Chaos.Web/appsettings.Development.json
+Processing (139/174): src/Chaos.Web/appsettings.json
+Processing (140/174): src/Chaos.Web/wwwroot/app.css
+Processing (141/174): src/Chaos.Web/wwwroot/favicon.svg
+Processing (142/174): src/Chaos.Web/wwwroot/theme-init.js
+Processing (143/174): tests/Chaos.E2E/BoardTests.cs
+Processing (144/174): tests/Chaos.E2E/BrowserFixture.cs
+Processing (145/174): tests/Chaos.E2E/CanvasTests.cs
+Processing (146/174): tests/Chaos.E2E/Chaos.E2E.csproj
+Processing (147/174): tests/Chaos.E2E/LatencyTests.cs
+Processing (148/174): tests/Chaos.E2E/SiteTests.cs
+Processing (149/174): tests/Chaos.E2E/SlotTests.cs
+Processing (150/174): tests/Chaos.Web.Tests/BoardServiceTests.cs
+Processing (151/174): tests/Chaos.Web.Tests/CanvasPersistenceTests.cs
+Processing (152/174): tests/Chaos.Web.Tests/CanvasServiceTests.cs
+Processing (153/174): tests/Chaos.Web.Tests/Chaos.Web.Tests.csproj
+Processing (154/174): tests/Chaos.Web.Tests/ClockAndCooldownTests.cs
+Processing (155/174): tests/Chaos.Web.Tests/HttpPipelineTests.cs
+Processing (156/174): tests/Chaos.Web.Tests/InfrastructureTests.cs
+Processing (157/174): tests/Chaos.Web.Tests/LatencyRunTests.cs
+Processing (158/174): tests/Chaos.Web.Tests/LatencyServiceTests.cs
+Processing (159/174): tests/Chaos.Web.Tests/MessageFormatTests.cs
+Processing (160/174): tests/Chaos.Web.Tests/MessageMetaTests.cs
+Processing (161/174): tests/Chaos.Web.Tests/MessageTextTests.cs
+Processing (162/174): tests/Chaos.Web.Tests/OutboxTests.cs
+Processing (163/174): tests/Chaos.Web.Tests/SlotRulesTests.cs
+Processing (164/174): tests/Chaos.Web.Tests/SlotServiceTests.cs
+Processing (165/174): tests/Chaos.Web.Tests/TestSupport.cs
+Processing (166/174): tests/Chaos.Web.Tests/Uuid7Tests.cs
+Processing (167/174): tests/Directory.Build.props
+Processing (168/174): tests/js/app.test.js
+Processing (169/174): tests/js/board.test.js
+Processing (170/174): tests/js/canvas.test.js
+Processing (171/174): tests/js/latency.test.js
+Processing (172/174): tests/js/package.json
+Processing (173/174): tests/js/slots.test.js
+Processing (174/174): tests/js/vitest.config.mjs
+
+Export completed successfully!
+Output file: /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
+Total source size: 0.50 MB across 174 files
+
+real	0m2.494s
+user	0m1.338s
+sys	0m1.616s
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ 

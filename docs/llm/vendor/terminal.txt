@@ -1,4 +1,4 @@
-kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
+kushal@fedora:~/src/ts/learnsignal.github.io$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
 
 ==> Restore
 Restore complete (0.7s)
@@ -6,14 +6,14 @@ Restore complete (0.7s)
 Build succeeded in 0.8s
 
 ==> Build (Release, warnings are errors)
-  Chaos.E2E net10.0 succeeded (0.4s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
-  Chaos.Web net10.0 succeeded (1.0s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.E2E net10.0 succeeded (3.0s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
+  Chaos.Web net10.0 succeeded (4.8s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
   Chaos.Web.Tests net10.0 succeeded (0.6s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
 
-Build succeeded in 1.9s
-Restore complete (0.5s)
+Build succeeded in 5.7s
+Restore complete (0.6s)
 
-Build succeeded in 0.6s
+Build succeeded in 0.7s
 Project 'Chaos.Web' has the following package references
    [net10.0]: 
    Top-level Package                                  Requested     Resolved
@@ -35,7 +35,7 @@ Project 'Chaos.Web.Tests' has the following package references
 (A) : Auto-referenced package.
 Restore complete (0.5s)
 
-Build succeeded in 0.6s
+Build succeeded in 0.7s
 
 The following sources were used:
    https://api.nuget.org/v3/index.json
@@ -46,7 +46,7 @@ The given project `Chaos.Web.Tests` has no updates given the current sources.
 
 ==> Unit and integration tests
 Running tests from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
-tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 326ms)
+tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 522ms)
 
   In process file artifacts produced:
     - artifacts/test-results/unit/coverage.cobertura.xml
@@ -56,26 +56,26 @@ Test run summary: Passed!
   failed: 0
   succeeded: 241
   skipped: 0
-  duration: 2s 287ms
+  duration: 2s 544ms
 .NET line coverage: 70.1%
 
 ==> JavaScript unit tests
 
-added 49 packages in 530ms
+added 49 packages in 644ms
 
  RUN  v5.0.4 /home/kushal/src/dotnet/chaos-velixir-run/tests/js
       Coverage enabled with v8
 
- ✓ app.test.js (13 tests) 6ms
+ ✓ app.test.js (13 tests) 7ms
  ✓ canvas.test.js (21 tests) 7ms
- ✓ latency.test.js (33 tests) 10ms
- ✓ board.test.js (23 tests) 34ms
- ✓ slots.test.js (49 tests) 22ms
+ ✓ latency.test.js (33 tests) 9ms
+ ✓ board.test.js (23 tests) 43ms
+ ✓ slots.test.js (49 tests) 23ms
 
  Test Files  5 passed (5)
       Tests  139 passed (139)
-   Start at  22:59:18
-   Duration  335ms (transform 56%, import 18%, tests 13%, worker 12%)
+   Start at  18:27:52
+   Duration  337ms (transform 57%, import 15%, tests 15%, worker 13%)
 
  % Coverage report from v8
 -------------------------|---------|----------|---------|---------|-------------------------------------------
@@ -95,18 +95,18 @@ All files                |   23.21 |    30.92 |   28.81 |   23.23 |
 
 ==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.64.1-noble
   Determining projects to restore...
-  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 290 ms).
+  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 318 ms).
   Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
   Chaos.Web -> /tmp/app/
 Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
-/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) passed (30s 180ms)
+/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) passed (30s 310ms)
 
 Test run summary: Passed!
   total: 22
   failed: 0
   succeeded: 22
   skipped: 0
-  duration: 30s 335ms
+  duration: 30s 465ms
 Starting project export...
 Project Path: /home/kushal/src/dotnet/chaos-velixir-run
 Output File:  /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
@@ -293,7 +293,7 @@ Total source size: 0.50 MB across 174 files
 
 ==> All steps passed
 
-real	0m51.274s
-user	0m12.233s
-sys	0m4.217s
+real	0m57.586s
+user	0m13.308s
+sys	0m4.565s
 kushal@fedora:~/src/dotnet/chaos-velixir-run$ 
