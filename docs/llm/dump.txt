@@ -1,8 +1,8 @@
 ===============================================================================
 PROJECT EXPORT
-Generated (UTC): 2026-10-31 02:47:46
+Generated (UTC): 2026-10-31 02:51:21
 Project Path:    /home/kushal/src/dotnet/chaos-velixir-run
-Git Commit:      2a5ea27a8de760b948267242848c4b50f29df937
+Git Commit:      a821da46071fd5d19259d7ddbadf301df20f0935
 Git Branch:      main
 Git Dirty:       no
 .NET SDK:        10.0.113
@@ -439,8 +439,8 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 FILE:     Directory.Packages.props
 SIZE:     0.46 KB (470 bytes)
 LINES:    14
-SHA256:   ca31fe52cccfa9221de5dacdbdf11bd4a55a20aa930ee5c6debdd2708482dbf4
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SHA256:   fd9d84037abff14ce712df7149aa265aecf8d34949efe1c3be252026d49ba259
+MODIFIED: 2026-10-31 02:50:52 (UTC)
 ================================================================================
 
 <Project>
@@ -450,8 +450,8 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.12" />
-    <PackageVersion Include="Microsoft.Playwright" Version="1.63.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.14" />
+    <PackageVersion Include="Microsoft.Playwright" Version="1.64.1" />
     <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.12.0" />
     <PackageVersion Include="xunit.v3" Version="4.0.2" />
   </ItemGroup>
@@ -17064,9 +17064,9 @@ export default defineConfig({
 
 
 ===============================================================================
-EXPORT COMPLETED (UTC): 2026-10-31 02:47:48
+EXPORT COMPLETED (UTC): 2026-10-31 02:51:23
 Total Files Exported:   174
 Total Source Size:      0.50 MB (527445 bytes)
 Output File:            /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
 ===============================================================================
-DUMP SHA256 (of all lines above this one): ece92ea9e7b5055670de00ceecad9fe931e63465afe21aba8cedc40420451b88
+DUMP SHA256 (of all lines above this one): 8757111596bf2c31ae30c4e1fc9c1c06bf46961bc406231220f1a992e452d869
