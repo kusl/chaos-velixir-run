@@ -1,0 +1,38 @@
+00
+77
+
+here is another big one 
+and this one will be strictly optional 
+everything should still continue to work properly 
+even if the user declines to give us these permissions 
+but if the user gives us permission for location 
+then we add a collapsed by default field to every message they send to the board 
+in which we include all the metadata we got from the user 
+including geolocation API 
+we will NOT query any third party API such as Google Maps or Open Stret Maps 
+and we will NOT store and save IP addresses on the server for example 
+but just like we can show `your press` on the slots 
+we will now show `your message` on the message board as well 
+if it is your message 
+I understand this won't work for existing messages and that's ok 
+also there will be a collapsed by default field in the board message list
+with text size as small and subtle as the timestamp is now 
+that displays all the metadata we have about that particular message 
+for example geo location API, metadata, browser time zone 
+anything else we can capture 
+but ONLY if the browser gave us geolocation permission 
+
+and please update all documentation accordingly as well.
+these winners and losers should go at the bottom after recent results  
+
+Use your best judgment
+
+If only a few files (under five or there about) need to change, give me the full path of the files that need to change and the FULL file 
+if there are a lot of files that need to change 
+    Delivery
+    Whole project as one tar.gz, unambiguous file placement
+    do not include any file that has not changed 
+    Any files to delete on updates called out explicitly
+    No bespoke sed/patch scripts — full files only for anything that changes
+    Docs updated alongside code changes
+    Low verbosity, no code comments
