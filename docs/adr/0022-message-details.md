@@ -2,6 +2,8 @@
 
 Status: accepted
 
+- Postcards use the same fields, rules and setting (ADR 0023).
+
 - Opt-in. `#compose-share` appears only when `navigator.geolocation` exists. Ticking it calls `getCurrentPosition`; the browser prompt is the consent. Without permission nothing changes.
 - Default state: on when the Permissions API reports `granted` and `localStorage` `chaos-board-share` is not `off`; off when denied. Unticking stores `off`. A permission change to `denied` unticks it. Clearing local history removes the key.
 - On send, `BoardIsland` asks the module for `meta()` (15 s server timeout, `maximumAge` 60 s, 10 s position timeout). Failure sends the message without details.
@@ -10,5 +12,5 @@ Status: accepted
 - Wire and storage: `BoardMessage.meta` is an ordered list of `{ key, value }` strings, omitted when null. `MessageMeta` keeps known keys only, in catalog order, first occurrence wins, strips control characters, trims, cuts to a per-key length and range-checks numeric keys. Without valid latitude and longitude the list is dropped. Offers carry `meta` and must already be normalized.
 - Values are self-reported and unverified.
 - Labels live in `MessageMeta.Fields` and `META_FIELDS`; tests pin the same key order in both.
-- `Submit` returns the new message; the island calls `own(id)` so the browser marks it `mine` in IndexedDB and shows `Your message`. The server keeps no ownership. Older messages are unaffected.
+- `Submit` returns the new message; the island calls `sent(id)`, which clears the composer and recounts in the browser before Blazor re-renders, then calls `own(id)` so the browser marks it `mine` in IndexedDB and shows `Your message`. The server keeps no ownership. Older messages are unaffected.
 - Rendering: collapsed `<details class="meta">` under the text, timestamp-sized and muted, both in the prerender and in the module.

@@ -1,0 +1,139 @@
+.compose {
+    display: grid;
+    gap: .5rem;
+    margin-block-end: 1.5rem;
+}
+
+textarea {
+    inline-size: 100%;
+    min-block-size: 5.5rem;
+    padding: .65rem .8rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg);
+    resize: vertical;
+}
+
+textarea:disabled {
+    opacity: .7;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem 1rem;
+}
+
+.status {
+    flex: 1;
+    color: var(--danger);
+    font-size: .875rem;
+}
+
+.hint {
+    color: var(--muted);
+    font-size: .8rem;
+}
+
+.count {
+    color: var(--muted);
+    font-size: .8rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.count.full {
+    color: var(--danger);
+    font-weight: 650;
+}
+
+.share {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem 1rem;
+    color: var(--muted);
+    font-size: .8rem;
+}
+
+.share[hidden] {
+    display: none;
+}
+
+.share label {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    cursor: pointer;
+}
+
+.share-status:empty {
+    display: none;
+}
+
+.attach {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem 1rem;
+}
+
+.pick {
+    padding: .35rem .9rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    font-size: .875rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+input[type="file"]:disabled + .pick {
+    opacity: .5;
+    cursor: default;
+}
+
+input[type="file"]:focus-visible + .pick {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+}
+
+.picked {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.picked:empty {
+    display: none;
+}
+
+.picked ::deep li {
+    display: grid;
+    gap: .25rem;
+    justify-items: center;
+    inline-size: 6.5rem;
+    font-size: .7rem;
+    color: var(--muted);
+}
+
+.picked ::deep img {
+    inline-size: 6.5rem;
+    block-size: 6.5rem;
+    border: 1px solid var(--line);
+    border-radius: calc(var(--radius) / 2);
+    object-fit: cover;
+    background: var(--surface);
+}
+
+.picked ::deep button {
+    padding: .1rem .5rem;
+    border-color: var(--line);
+    color: var(--fg);
+    background: var(--surface);
+    font-size: .7rem;
+    font-weight: 600;
+}

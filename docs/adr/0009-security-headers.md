@@ -2,7 +2,8 @@
 
 Status: accepted
 
-- CSP: `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' <latency origins>; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'`. No nonce is needed.
+- CSP: `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob:; font-src 'self'; connect-src 'self' <latency origins>; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'`. No nonce is needed.
+- `blob:` images are postcard images kept in IndexedDB (ADR 0023). Uploaded images are served from `/postcard/images` with their sniffed type and `nosniff`, after `ImageSanitizer` rebuilt them.
 - The latency origins come from `LatencyCatalog`, so the policy and the endpoint list cannot drift. They are allowed on every page because enhanced navigation keeps the first document's policy.
 - `<ImportMap />` is left out because it emits an inline script. Modules load from fingerprinted URLs through `Assets[...]` instead.
 - `Blazor.start` is called from `App.razor.js`, not an inline script. The reconnect UI is our own element, so Blazor injects no styles. No markup uses `style` attributes.

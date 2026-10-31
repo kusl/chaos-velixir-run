@@ -733,6 +733,14 @@ class BoardClient {
         await this.save(update.added);
     }
 
+    async sent(id) {
+        if (this.textarea && !this.disposed) {
+            this.textarea.value = '';
+        }
+        this.recount();
+        await this.own(id);
+    }
+
     async own(id) {
         if (this.disposed || typeof id !== 'string') {
             return;
@@ -867,9 +875,8 @@ export function attach(dotnet) {
     client.start();
     return {
         apply: updates => client.apply(updates),
-        recount: () => client.recount(),
         meta: () => client.meta(),
-        own: id => client.own(id),
+        sent: id => client.sent(id),
         dispose: () => client.dispose(),
     };
 }

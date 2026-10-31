@@ -163,6 +163,9 @@ public sealed class ChaosOptionsTests
     {
         Assert.False(new ChaosOptions { MaxConnections = 1, MaxConnectionsPerClient = 2 }.IsValid());
         Assert.False(new ChaosOptions { BoardCapacity = 0 }.IsValid());
+        Assert.False(new ChaosOptions { PostcardBurst = 0 }.IsValid());
+        Assert.False(new ChaosOptions { PostcardsPerSecond = 0 }.IsValid());
+        Assert.False(new ChaosOptions { PostcardUploads = 0 }.IsValid());
         Assert.False(new ChaosOptions { CanvasMaxPoints = 10 }.IsValid());
         Assert.False(new ChaosOptions { SlotCapacity = 0 }.IsValid());
         Assert.False(new ChaosOptions { SlotWinnerCapacity = 0 }.IsValid());

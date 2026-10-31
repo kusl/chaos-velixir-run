@@ -7,7 +7,7 @@ internal static partial class MessageText
 {
     public const int MaxLength = 500;
 
-    public static string Normalize(string? input)
+    public static string Normalize(string? input, int maxLength = MaxLength)
     {
         if (string.IsNullOrWhiteSpace(input))
         {
@@ -17,13 +17,13 @@ internal static partial class MessageText
         var text = string.Concat(input.ReplaceLineEndings("\n").Where(c => c == '\n' || !char.IsControl(c)));
         text = ExtraBlankLines().Replace(text, "\n\n").Trim();
 
-        if (text.Length > MaxLength)
+        if (text.Length > maxLength)
         {
             var cut = 0;
             while (cut < text.Length)
             {
                 var next = StringInfo.GetNextTextElementLength(text, cut);
-                if (cut + next > MaxLength)
+                if (cut + next > maxLength)
                 {
                     break;
                 }
@@ -37,8 +37,8 @@ internal static partial class MessageText
         return text.Any(IsVisible) ? text : "";
     }
 
-    public static bool IsNormalized(string? text) =>
-        !string.IsNullOrEmpty(text) && string.Equals(Normalize(text), text, StringComparison.Ordinal);
+    public static bool IsNormalized(string? text, int maxLength = MaxLength) =>
+        !string.IsNullOrEmpty(text) && string.Equals(Normalize(text, maxLength), text, StringComparison.Ordinal);
 
     private static bool IsVisible(char c) =>
         !char.IsWhiteSpace(c) && char.GetUnicodeCategory(c) != UnicodeCategory.Format;

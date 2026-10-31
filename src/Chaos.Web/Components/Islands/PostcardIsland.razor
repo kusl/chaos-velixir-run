@@ -1,0 +1,204 @@
+@implements IAsyncDisposable
+@inject PostcardService Postcards
+@inject IJSRuntime JS
+@inject ILogger<PostcardIsland> Logger
+
+<form id="postcard-form" class="compose" novalidate>
+    <label class="visually-hidden" for="postcard-text">Postcard</label>
+    <textarea id="postcard-text" maxlength="@PostcardRules.MaxTextLength" rows="8" aria-describedby="postcard-count"
+              placeholder="Write something long. Everyone here will see it until the next postcard replaces it." disabled></textarea>
+    <div class="attach">
+        <input type="file" id="postcard-files" class="visually-hidden" accept="image/png,image/jpeg,image/gif" multiple disabled />
+        <label for="postcard-files" class="pick">Add images</label>
+        <span class="hint">PNG, JPEG or GIF. Up to @PostcardRules.MaxImages, 2 MB each. Large photos are scaled down.</span>
+    </div>
+    <ul id="postcard-picked" class="picked" aria-label="Images to send"></ul>
+    <div class="actions">
+        <output id="postcard-status" class="status" for="postcard-text postcard-files"></output>
+        <span id="postcard-count" class="count"></span>
+        <span class="hint">Ctrl+Enter sends</span>
+        <button type="submit" id="postcard-send" disabled>Send</button>
+    </div>
+    <div id="postcard-share-box" class="share" hidden>
+        <label><input type="checkbox" id="postcard-share" /> Attach my location and browser details to my postcards</label>
+        <span id="postcard-share-status" class="share-status" role="status"></span>
+    </div>
+</form>
+
+@code {
+    private static readonly TimeSpan UploadTimeout = TimeSpan.FromSeconds(60);
+    private readonly TaskCompletionSource _attached = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private DotNetObjectReference<PostcardIsland>? _self;
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _client;
+    private Outbox<PostcardUpdate>? _outbox;
+    private Subscriber? _subscriber;
+    private bool _offered;
+
+    [Parameter, EditorRequired]
+    public string Client { get; set; } = ClientAddress.Unknown;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        _self = DotNetObjectReference.Create(this);
+        _module = await JS.InvokeAsync<IJSObjectReference>("import", ModulePath.Of(Assets["Components/Islands/PostcardIsland.razor.js"]));
+        _client = await _module.InvokeAsync<IJSObjectReference>("attach", _self);
+        _attached.TrySetResult();
+    }
+
+    [JSInvokable]
+    public async Task<PostcardSent> Send(string? text, IJSStreamReference[]? images, MetaEntry[]? meta)
+    {
+        var uploads = images ?? [];
+        try
+        {
+            var admitted = Postcards.Admit(text, [.. uploads.Select(upload => upload.Length)], Client);
+            if (admitted is not PostcardResult.Accepted)
+            {
+                return new PostcardSent(null, PostcardSent.StatusOf(admitted));
+            }
+
+            using var lease = uploads.Length == 0 ? null : Postcards.TryBeginUpload();
+            if (uploads.Length > 0 && lease is null)
+            {
+                return new PostcardSent(null, PostcardSent.StatusOf(PostcardResult.Busy));
+            }
+
+            var bytes = await ReadAsync(uploads);
+            return bytes is null
+                ? new PostcardSent(null, PostcardSent.StatusOf(PostcardResult.Failed))
+                : PostcardSent.From(Postcards.Publish(text, bytes, meta));
+        }
+        finally
+        {
+            await ReleaseAsync(uploads);
+        }
+    }
+
+    [JSInvokable]
+    public async Task<bool> Offer(string? id, string? text, MetaEntry[]? meta, IJSStreamReference[]? images)
+    {
+        var uploads = images ?? [];
+        try
+        {
+            if (_offered || !Guid.TryParseExact(id, "D", out var parsed) || !Postcards.WouldRestore(parsed))
+            {
+                return false;
+            }
+
+            _offered = true;
+            if (PostcardService.Check(text, [.. uploads.Select(upload => upload.Length)]) is not PostcardResult.Accepted)
+            {
+                return false;
+            }
+
+            using var lease = uploads.Length == 0 ? null : Postcards.TryBeginUpload();
+            if (uploads.Length > 0 && lease is null)
+            {
+                return false;
+            }
+
+            var bytes = await ReadAsync(uploads);
+            return bytes is not null && Postcards.Offer(parsed, text, bytes, meta);
+        }
+        finally
+        {
+            await ReleaseAsync(uploads);
+        }
+    }
+
+    [JSInvokable]
+    public async Task Join()
+    {
+        await StopAsync();
+        var outbox = new Outbox<PostcardUpdate>(16, 4, TimeSpan.FromSeconds(20), SendAsync, Logger);
+        _outbox = outbox;
+        _subscriber = new Subscriber(outbox);
+        Postcards.Subscribe(_subscriber);
+    }
+
+    [JSInvokable]
+    public bool Ping() => _subscriber is not null && _outbox is { IsFaulted: false } && Postcards.IsSubscribed(_subscriber);
+
+    public async ValueTask DisposeAsync()
+    {
+        await StopAsync();
+        await JsCleanup.DisposeAsync(_client, "dispose");
+        await JsCleanup.DisposeAsync(_module, null);
+        _self?.Dispose();
+    }
+
+    private static async Task<byte[][]?> ReadAsync(IJSStreamReference[] uploads)
+    {
+        var result = new byte[uploads.Length][];
+        try
+        {
+            using var timeout = new CancellationTokenSource(UploadTimeout);
+            for (var i = 0; i < uploads.Length; i++)
+            {
+                await using var stream = await uploads[i].OpenReadStreamAsync(PostcardRules.MaxImageBytes, timeout.Token);
+                using var buffer = new MemoryStream((int)uploads[i].Length);
+                await stream.CopyToAsync(buffer, timeout.Token);
+                if (buffer.Length != uploads[i].Length)
+                {
+                    return null;
+                }
+
+                result[i] = buffer.ToArray();
+            }
+
+            return result;
+        }
+        catch (Exception exception) when (exception is JSException or JSDisconnectedException or OperationCanceledException or IOException or ArgumentOutOfRangeException or InvalidOperationException)
+        {
+            return null;
+        }
+    }
+
+    private static async Task ReleaseAsync(IJSStreamReference[] uploads)
+    {
+        foreach (var upload in uploads)
+        {
+            try
+            {
+                await upload.DisposeAsync();
+            }
+            catch (Exception exception) when (exception is JSException or JSDisconnectedException or OperationCanceledException)
+            {
+            }
+        }
+    }
+
+    private async Task SendAsync(IReadOnlyList<PostcardUpdate> batch, CancellationToken cancellationToken)
+    {
+        await _attached.Task.WaitAsync(cancellationToken);
+        await InvokeAsync(() => _client is null
+            ? Task.FromException(new InvalidOperationException("The postcard module is not attached."))
+            : _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask());
+    }
+
+    private async Task StopAsync()
+    {
+        if (_subscriber is not null)
+        {
+            Postcards.Unsubscribe(_subscriber);
+            _subscriber = null;
+        }
+
+        if (_outbox is not null)
+        {
+            await _outbox.DisposeAsync();
+            _outbox = null;
+        }
+    }
+
+    private sealed class Subscriber(Outbox<PostcardUpdate> outbox) : IPostcardSubscriber
+    {
+        public bool Deliver(PostcardUpdate update) => outbox.TryPost(update);
+    }
+}

@@ -1,0 +1,66 @@
+@page "/postcard"
+@inject PostcardService Postcards
+@inject TimeProvider Time
+
+<PageTitle>Chaos postcard</PageTitle>
+
+<h1>Postcard</h1>
+<p class="lede">The server keeps one postcard: the newest. Write up to 5,000 characters and add up to four images; everyone here sees it at once, and the next postcard replaces it. This browser keeps what it has seen, images included. A dotted border marks a postcard the server has already let go.</p>
+
+<PostcardIsland Client="@_client" @rendermode="InteractiveServer" />
+
+<section class="feed" data-permanent="postcard-feed" aria-labelledby="postcard-feed-title">
+    <h2 id="postcard-feed-title" class="visually-hidden">Postcards</h2>
+    <p id="postcard-empty" class="empty" hidden="@(_card is not null)">No postcard yet. Send the first one.</p>
+    <ol id="postcard-feed" class="cards">
+        @if (_card is { } card)
+        {
+            <li @key="card.Id" class="card" data-id="@card.Id">
+                <div class="head"><time datetime="@MessageFormat.Iso(card.Id)">@MessageFormat.Label(card.Id, _now)</time></div>
+                @if (card.Text.Length > 0)
+                {
+                    <p class="text">@card.Text</p>
+                }
+                @if (card.Images.Count > 0)
+                {
+                    <div class="images">
+                        @for (var i = 0; i < card.Images.Count; i++)
+                        {
+                            var image = card.Images[i];
+                            <img src="@PostcardEndpoint.PathOf(card.Id, i)" width="@image.Width" height="@image.Height" alt="Image @(i + 1) of @card.Images.Count" decoding="async" />
+                        }
+                    </div>
+                }
+                @if (card.Meta is { Count: > 0 } meta)
+                {
+                    <details class="meta">
+                        <summary>Details</summary>
+                        <dl>
+                            @foreach (var entry in meta)
+                            {
+                                <div><dt>@MessageMeta.LabelOf(entry.Key)</dt><dd>@entry.Value</dd></div>
+                            }
+                        </dl>
+                    </details>
+                }
+            </li>
+        }
+    </ol>
+    <button type="button" id="postcard-older" class="older" hidden>Show older postcards</button>
+</section>
+
+@code {
+    private Postcard? _card;
+    private DateTimeOffset _now;
+    private string _client = ClientAddress.Unknown;
+
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _card = Postcards.Current;
+        _now = Time.GetUtcNow();
+        _client = ClientAddress.Key(HttpContext?.Connection.RemoteIpAddress);
+    }
+}

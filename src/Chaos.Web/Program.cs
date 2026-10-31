@@ -4,6 +4,7 @@ using Chaos.Web.Drawing;
 using Chaos.Web.Infrastructure;
 using Chaos.Web.Latency;
 using Chaos.Web.Messages;
+using Chaos.Web.Postcards;
 using Chaos.Web.Slots;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.DataProtection;
@@ -45,6 +46,7 @@ builder.Services.AddDataProtection().UseEphemeralDataProtectionProvider();
 builder.Services.AddSingleton<IAntiforgery>(new CookielessAntiforgery());
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<BoardService>();
+builder.Services.AddSingleton<PostcardService>();
 builder.Services.AddSingleton<CanvasService>();
 builder.Services.AddSingleton<SlotService>();
 builder.Services.AddSingleton<ILatencyProbe, HttpLatencyProbe>();
@@ -101,6 +103,7 @@ app.MapGet("/time", static (TimeProvider time, HttpResponse response) =>
     response.Headers.CacheControl = "no-store";
     return Results.Json(ServerTime.Now(time));
 });
+app.MapPostcardImages();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode(server => server.DisableWebSocketCompression = true);

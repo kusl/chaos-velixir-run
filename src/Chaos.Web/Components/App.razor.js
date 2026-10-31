@@ -227,13 +227,15 @@ export function boot(win) {
                 { DB_NAME: SLOTS_DB, PRESS_KEY },
                 { DB_NAME: CANVAS_DB },
                 { DB_NAME: LATENCY_DB, RUNS_KEY, NEXT_KEY },
+                { DB_NAME: POSTCARD_DB },
             ] = await Promise.all([
                 import('./Islands/BoardIsland.razor.js'),
                 import('./Islands/SlotIsland.razor.js'),
                 import('./Islands/CanvasIsland.razor.js'),
                 import('./Islands/LatencyIsland.razor.js'),
+                import('./Islands/PostcardIsland.razor.js'),
             ]);
-            const outcomes = await Promise.all([BOARD_DB, SLOTS_DB, CANVAS_DB, LATENCY_DB].map(name => deleteDatabase(win.indexedDB, name)));
+            const outcomes = await Promise.all([BOARD_DB, POSTCARD_DB, SLOTS_DB, CANVAS_DB, LATENCY_DB].map(name => deleteDatabase(win.indexedDB, name)));
             for (const key of [SHARE_KEY, PRESS_KEY, RUNS_KEY, NEXT_KEY]) {
                 try {
                     win.localStorage.removeItem(key);
@@ -242,7 +244,7 @@ export function boot(win) {
             }
             if (output) {
                 output.textContent = outcomes.includes('blocked')
-                    ? 'Close any other board, canvas, slots or latency tabs to finish clearing.'
+                    ? 'Close any other board, postcard, canvas, slots or latency tabs to finish clearing.'
                     : 'Local history cleared.';
             }
         } catch {

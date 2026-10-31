@@ -31,7 +31,6 @@
     private string? _status;
     private bool _ready;
     private bool _sending;
-    private bool _recount;
     private int _offered;
 
     [Parameter, EditorRequired]
@@ -41,12 +40,6 @@
     {
         if (!firstRender)
         {
-            if (_recount && _client is not null)
-            {
-                _recount = false;
-                await JsCleanup.InvokeAsync(_client, "recount");
-            }
-
             return;
         }
 
@@ -129,8 +122,7 @@
             if (reply.Message is { } message)
             {
                 _draft = null;
-                _recount = true;
-                await OwnAsync(message.Id);
+                await SentAsync(message.Id);
             }
         }
         finally
@@ -165,7 +157,7 @@
         }
     }
 
-    private async Task OwnAsync(Guid id)
+    private async Task SentAsync(Guid id)
     {
         if (_client is null)
         {
@@ -174,7 +166,7 @@
 
         try
         {
-            await _client.InvokeVoidAsync("own", id.ToString("D"));
+            await _client.InvokeVoidAsync("sent", id.ToString("D"));
         }
         catch (JSDisconnectedException)
         {

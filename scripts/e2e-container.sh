@@ -26,6 +26,9 @@ start() {
         Chaos__BoardCapacity=5 \
         Chaos__PostBurst=1000 \
         Chaos__PostsPerSecond=1000 \
+        Chaos__PostcardBurst=1000 \
+        Chaos__PostcardsPerSecond=1000 \
+        Chaos__PostcardUploads=16 \
         Chaos__ResetBurst=1000 \
         Chaos__ResetsPerSecond=1000 \
         Chaos__PressBurst=1000 \

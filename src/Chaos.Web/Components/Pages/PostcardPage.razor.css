@@ -1,0 +1,140 @@
+.feed {
+    display: grid;
+    gap: 1rem;
+}
+
+.cards {
+    display: grid;
+    gap: .6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.cards ::deep .card {
+    padding: .5rem .8rem .6rem;
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    background: var(--bg);
+    content-visibility: auto;
+    contain-intrinsic-size: auto 12rem;
+}
+
+.cards ::deep .card.archived {
+    border-style: dotted;
+    border-color: var(--muted);
+    color: var(--muted);
+}
+
+.cards ::deep .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem .6rem;
+}
+
+.cards ::deep time {
+    color: var(--muted);
+    font-size: .75rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.cards ::deep .yours {
+    padding: 0 .5rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: .7rem;
+}
+
+.cards ::deep .text {
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.cards ::deep .images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+    gap: .5rem;
+    margin-block-start: .5rem;
+}
+
+.cards ::deep .images > * {
+    border-radius: calc(var(--radius) / 2);
+    background: var(--surface);
+}
+
+.cards ::deep .images img {
+    display: block;
+    max-inline-size: 100%;
+    block-size: auto;
+}
+
+.cards ::deep .images .missing {
+    display: grid;
+    place-items: center;
+    min-block-size: 6rem;
+    inline-size: 100%;
+    padding: .5rem;
+    border: 1px dashed var(--line);
+    color: var(--muted);
+    font-size: .75rem;
+    text-align: center;
+}
+
+.cards ::deep .meta {
+    margin-block-start: .3rem;
+    color: var(--muted);
+    font-size: .75rem;
+}
+
+.cards ::deep .meta summary {
+    inline-size: fit-content;
+    cursor: pointer;
+}
+
+.cards ::deep .meta dl {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: .1rem .75rem;
+    margin: .35rem 0 0;
+}
+
+.cards ::deep .meta dl div {
+    display: contents;
+}
+
+.cards ::deep .meta dt {
+    font-weight: 600;
+}
+
+.cards ::deep .meta dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-variant-numeric: tabular-nums;
+}
+
+.empty {
+    margin: 0;
+    color: var(--muted);
+}
+
+.older {
+    justify-self: center;
+    border-color: var(--line);
+    color: var(--fg);
+    background: var(--surface);
+}
+
+@keyframes arrive {
+    from {
+        background: color-mix(in oklab, var(--ink) 20%, var(--bg));
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .cards ::deep .card.fresh {
+        animation: arrive .9s ease-out;
+    }
+}

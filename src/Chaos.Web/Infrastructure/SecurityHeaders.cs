@@ -5,7 +5,7 @@ namespace Chaos.Web.Infrastructure;
 internal static class SecurityHeaders
 {
     public static readonly string ContentSecurityPolicy =
-        "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' "
+        "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob:; font-src 'self'; connect-src 'self' "
         + string.Join(' ', LatencyCatalog.Origins)
         + "; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
 

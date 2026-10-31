@@ -11,6 +11,10 @@ Defaults live in `ChaosOptions` and can be overridden with `Chaos__*` environmen
 | WebSocket connections in total | 80, then 503 |
 | Posts per client | 3 burst, 1 every 2 s |
 | Message length | 500 |
+| Postcards per client | 2 burst, 1 every 10 s |
+| Postcard | 5,000 characters, 4 images, 2 MB each, 4 MB total, 4,096 px a side |
+| Postcard uploads at once | 2, then `busy` |
+| Postcard offers per circuit | 1 |
 | Message details | 43 known keys, values 8–512 characters by key |
 | Offered messages per circuit | 50 |
 | Stroke points per circuit | 4,000 burst, 1,500 per second |

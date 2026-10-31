@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using Chaos.Web.Infrastructure;
 using Chaos.Web.Latency;
 using Chaos.Web.Messages;
+using Chaos.Web.Postcards;
 using Chaos.Web.Slots;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -29,6 +30,7 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
     [Theory]
     [InlineData("/", "Chaos")]
     [InlineData("/board", "Chaos board")]
+    [InlineData("/postcard", "Chaos postcard")]
     [InlineData("/canvas", "Chaos canvas")]
     [InlineData("/slots", "Chaos slots")]
     [InlineData("/latency", "Chaos latency")]
@@ -68,6 +70,33 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
         Assert.Matches(">Latitude</dt><dd[^>]*>27.7172</dd>", item);
         Assert.Matches(">Time zone</dt><dd[^>]*>Asia/Kathmandu</dd>", item);
         Assert.Contains("id=\"compose-share\"", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task PostcardPageRendersTheCurrentPostcardAndServesItsImages()
+    {
+        var postcards = factory.Services.GetRequiredService<PostcardService>();
+        var text = $"postcard {Guid.NewGuid():N}";
+        var reply = postcards.Submit(text, [TestImages.Png(4, 3, "tEXt")], null, $"integration {Guid.NewGuid():N}");
+        Assert.Equal(PostcardResult.Accepted, reply.Result);
+        var id = reply.Card!.Id;
+        using var client = CreateClient();
+
+        var html = await client.GetStringAsync("/postcard", Cancellation);
+        Assert.Contains(text, html, StringComparison.Ordinal);
+        Assert.Contains($"src=\"postcard/images/{id}/0\" width=\"4\" height=\"3\"", html, StringComparison.Ordinal);
+        Assert.Contains("id=\"postcard-files\"", html, StringComparison.Ordinal);
+
+        using var image = await client.GetAsync($"/postcard/images/{id}/0", Cancellation);
+        Assert.Equal(HttpStatusCode.OK, image.StatusCode);
+        Assert.Equal("image/png", image.Content.Headers.ContentType?.MediaType);
+        Assert.True(image.Headers.CacheControl?.Private);
+        Assert.Equal(TestImages.Png(4, 3), await image.Content.ReadAsByteArrayAsync(Cancellation));
+
+        using var missingIndex = await client.GetAsync($"/postcard/images/{id}/1", Cancellation);
+        Assert.Equal(HttpStatusCode.NotFound, missingIndex.StatusCode);
+        using var missingCard = await client.GetAsync($"/postcard/images/{Guid.NewGuid()}/0", Cancellation);
+        Assert.Equal(HttpStatusCode.NotFound, missingCard.StatusCode);
     }
 
     [Fact]
@@ -190,6 +219,7 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
         Assert.StartsWith("default-src 'self'; script-src 'self'", policy, StringComparison.Ordinal);
         Assert.Contains("https://dynamodb.us-east-1.amazonaws.com", policy, StringComparison.Ordinal);
         Assert.Contains("object-src 'none'", policy, StringComparison.Ordinal);
+        Assert.Contains("img-src 'self' blob:;", policy, StringComparison.Ordinal);
     }
 
     [Fact]

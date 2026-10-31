@@ -24,3 +24,4 @@
 | [0020](0020-latency.md) | Shared latency test |
 | [0021](0021-server-clock.md) | Server clock in the footer |
 | [0022](0022-message-details.md) | Optional location and browser details on board messages |
+| [0023](0023-postcards.md) | Postcards: one long message with images |

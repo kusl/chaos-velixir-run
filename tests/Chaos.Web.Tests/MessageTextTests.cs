@@ -55,4 +55,14 @@ public sealed class MessageTextTests
     {
         Assert.Equal(expected, MessageText.IsNormalized(text));
     }
+
+    [Fact]
+    public void TakesALongerLimitWhenAsked()
+    {
+        var input = new string('x', 2000);
+        Assert.Equal(input, MessageText.Normalize(input, 5000));
+        Assert.True(MessageText.IsNormalized(input, 5000));
+        Assert.False(MessageText.IsNormalized(input));
+        Assert.Equal(MessageText.MaxLength, MessageText.Normalize(input).Length);
+    }
 }

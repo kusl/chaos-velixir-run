@@ -23,6 +23,12 @@ internal sealed class ChaosOptions
 
     public double PostsPerSecond { get; set; } = 0.5;
 
+    public double PostcardBurst { get; set; } = 2;
+
+    public double PostcardsPerSecond { get; set; } = 0.1;
+
+    public int PostcardUploads { get; set; } = 2;
+
     public int CanvasMaxPoints { get; set; } = 20_000;
 
     public double StrokePointBurst { get; set; } = 4_000;
@@ -69,6 +75,9 @@ internal sealed class ChaosOptions
         && BoardCapacity > 0
         && PostBurst >= 1
         && PostsPerSecond > 0
+        && PostcardBurst >= 1
+        && PostcardsPerSecond > 0
+        && PostcardUploads is >= 1 and <= 16
         && CanvasMaxPoints >= CanvasService.MaxStrokePoints
         && StrokePointBurst >= CanvasService.MaxBatchPoints
         && StrokePointsPerSecond > 0
