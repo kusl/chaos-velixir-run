@@ -1,12 +1,12 @@
 ===============================================================================
 PROJECT EXPORT
-Generated (UTC): 2026-10-31 22:28:32
+Generated (UTC): 2026-10-31 23:05:01
 Project Path:    /home/kushal/src/dotnet/chaos-velixir-run
-Git Commit:      511947d15093d170f3cacd02ede17feb637023d8
+Git Commit:      cf0e6cc30b1301dd603008e99964cca777b0d82f
 Git Branch:      main
 Git Dirty:       no
 .NET SDK:        10.0.113
-Files Exported:  174
+Files Exported:  196
 ===============================================================================
 
 DIRECTORY STRUCTURE (exported files only):
@@ -50,6 +50,7 @@ DIRECTORY STRUCTURE (exported files only):
             0020-latency.md
             0021-server-clock.md
             0022-message-details.md
+            0023-postcards.md
             README.md
     global.json
     scripts/
@@ -77,6 +78,9 @@ DIRECTORY STRUCTURE (exported files only):
                     LatencyIsland.razor
                     LatencyIsland.razor.css
                     LatencyIsland.razor.js
+                    PostcardIsland.razor
+                    PostcardIsland.razor.css
+                    PostcardIsland.razor.js
                     SlotIsland.razor
                     SlotIsland.razor.css
                     SlotIsland.razor.js
@@ -101,6 +105,8 @@ DIRECTORY STRUCTURE (exported files only):
                     LatencyPage.razor
                     LatencyPage.razor.css
                     NotFound.razor
+                    PostcardPage.razor
+                    PostcardPage.razor.css
                     SlotResult.razor
                     SlotsPage.razor
                     SlotsPage.razor.css
@@ -157,6 +163,19 @@ DIRECTORY STRUCTURE (exported files only):
                 PostReply.cs
                 PostResult.cs
                 Uuid7.cs
+            Postcards/
+                CleanImage.cs
+                IPostcardSubscriber.cs
+                ImageSanitizer.cs
+                Postcard.cs
+                PostcardEndpoint.cs
+                PostcardImage.cs
+                PostcardReply.cs
+                PostcardResult.cs
+                PostcardRules.cs
+                PostcardSent.cs
+                PostcardService.cs
+                PostcardUpdate.cs
             Program.cs
             Properties/
                 launchSettings.json
@@ -180,6 +199,7 @@ DIRECTORY STRUCTURE (exported files only):
             CanvasTests.cs
             Chaos.E2E.csproj
             LatencyTests.cs
+            PostcardTests.cs
             SiteTests.cs
             SlotTests.cs
         Chaos.Web.Tests/
@@ -189,6 +209,7 @@ DIRECTORY STRUCTURE (exported files only):
             Chaos.Web.Tests.csproj
             ClockAndCooldownTests.cs
             HttpPipelineTests.cs
+            ImageSanitizerTests.cs
             InfrastructureTests.cs
             LatencyRunTests.cs
             LatencyServiceTests.cs
@@ -196,6 +217,7 @@ DIRECTORY STRUCTURE (exported files only):
             MessageMetaTests.cs
             MessageTextTests.cs
             OutboxTests.cs
+            PostcardServiceTests.cs
             SlotRulesTests.cs
             SlotServiceTests.cs
             TestSupport.cs
@@ -207,6 +229,7 @@ DIRECTORY STRUCTURE (exported files only):
             canvas.test.js
             latency.test.js
             package.json
+            postcard.test.js
             slots.test.js
             vitest.config.mjs
 
@@ -461,22 +484,23 @@ MODIFIED: 2026-10-31 02:50:52 (UTC)
 
 ================================================================================
 FILE:     README.md
-SIZE:     3.54 KB (3622 bytes)
-LINES:    46
-SHA256:   1bf6b11f52856c7908378ac66bc10f5ef8e93d25c44483b71856ee6912fbd172
-MODIFIED: 2026-10-31 02:28:55 (UTC)
+SIZE:     4.02 KB (4116 bytes)
+LINES:    47
+SHA256:   a23babbd3ec776c87499db2088fe8165d5243f5e7219b34b6727ffeb6a57ab29
+MODIFIED: 2026-10-31 22:55:44 (UTC)
 ================================================================================
 
 # chaos-velixir-run
 
-A message board, a shared drawing canvas, a shared slot machine and a shared latency test that everyone sees live and nobody keeps. Blazor Server on .NET 10, on the [velixir](https://velixir.net) free plan (0.25 vCPU, 256 MB). Live at https://chaos.velixir.run/.
+A message board, a one-at-a-time postcard, a shared drawing canvas, a shared slot machine and a shared latency test that everyone sees live and nobody keeps. Blazor Server on .NET 10, on the [velixir](https://velixir.net) free plan (0.25 vCPU, 256 MB). Live at https://chaos.velixir.run/.
 
 - Board: the server keeps the newest 50 messages; each browser keeps up to 10,000 in IndexedDB and offers its newest 50 back after a server restart. Dotted border means the server no longer has it. Your own posts show `Your message` (this browser only). Optional: after the poster opts in and grants geolocation, each post carries a collapsed `Details` list with the browser's location, time zone and device details. No lookups, no third parties, no IP stored.
+- Postcard: the server keeps one postcard, the newest: up to 5,000 characters and up to 4 PNG, JPEG or GIF images (2 MB each, 4 MB total). The server strips image metadata except JPEG rotation; browsers scale big photos down first. Each browser keeps up to 10,000 postcards and 256 MB of their images in IndexedDB, and offers its newest back after a server restart. Location details and `Your message` as on the board.
 - Canvas: one black pen on a shared square page, live for everyone, one reset button. Browsers keep finished strokes (10,000) and the latest reset, and offer back up to 500 strokes after a server restart.
 - Slots: one shared machine. A press draws five symbols (A–Z, 0–9) on the server and locks the button for everyone until the reels stop. Three of a kind or a five-symbol straight wins. Four or five of a kind, or an unbroken sequence along `0-9A-Z` (`ABCDE`, `43210`), is a jackpot: everyone watching sees a celebration, and jackpots are never deleted, on the server or in the browser. Results are kept like board messages, plus the newest 500 winners. Tapping a winner shows its odds and the probability behind them. Ten successful presses unlock auto spin, which also runs in background tabs.
 - Latency: one button times public endpoints from the browser and from the server. One test at a time, one per network every 5 minutes. Results are kept like board messages, without identity. Below them: the 10 fastest and slowest browser and server medians, then jackpots (a median under 10 ms wins, 100 ms or more loses). Browsers offer back their own 10 best and worst of each after a restart. Ten tests unlock auto run.
 - Every page footer shows the ticking server time.
-- No third-party code, no cookies, no accounts. Strict CSP with no inline scripts; `connect-src` also lists the latency endpoints.
+- No third-party code, no cookies, no accounts. Strict CSP with no inline scripts; `img-src` adds `blob:` for stored postcard images and `connect-src` lists the latency endpoints.
 
 ## Requirements
 
@@ -629,23 +653,23 @@ Status: accepted
 
 ================================================================================
 FILE:     docs/adr/0005-local-history.md
-SIZE:     1.30 KB (1336 bytes)
+SIZE:     1.36 KB (1397 bytes)
 LINES:    12
-SHA256:   28bf69904c579c304f14befcb97e438bd13a0c9422a536c01bd42784791ad4c3
-MODIFIED: 2026-10-31 02:28:55 (UTC)
+SHA256:   fda113d203445e5341c7237c06d830e4f921ac8bca0c3e83128d150fa45d0bd9
+MODIFIED: 2026-10-31 22:55:39 (UTC)
 ================================================================================
 
 # 0005 IndexedDB local history
 
 Status: accepted
 
-- Database `chaos-board`, store `messages`, key path `id`, values `{ id, text, meta?, mine? }` (ADR 0022). Slots use `chaos-slots` (v2), store `spins`, values `{ id, text, mine }`, plus an uncapped `jackpots` store (ADR 0019), and latency uses `chaos-latency`, store `runs`, same shape, through the same `LocalHistory` exported by `BoardIsland.razor.js`. The canvas uses `chaos-canvas` (ADR 0006).
+- Database `chaos-board`, store `messages`, key path `id`, values `{ id, text, meta?, mine? }` (ADR 0022). Slots use `chaos-slots` (v2), store `spins`, values `{ id, text, mine }`, plus an uncapped `jackpots` store (ADR 0019), and latency uses `chaos-latency`, store `runs`, same shape, through the same `LocalHistory` exported by `BoardIsland.razor.js`. The canvas uses `chaos-canvas` (ADR 0006). Postcards use `chaos-postcards` with image blobs (ADR 0023).
 - Schema changes are numbered migrations in `BoardIsland.razor.js`; `onupgradeneeded` runs every step from the stored version. A database from a newer schema (`VersionError`) is deleted and recreated, since the server can refill it.
 - Other tabs close their connection on `versionchange`, so upgrades and deletes are not blocked for long.
 - Cap: 10,000 messages. After each write, the oldest are deleted with one key-range delete.
 - The feed shows the server window plus 100 archived messages, with a button for 100 more. Items use `content-visibility: auto`.
 - Live messages have a solid border, messages the server no longer has a dotted one.
-- The About page deletes all four databases and the slot and latency counters without touching the theme. The next visit to the board recreates it from the server snapshot.
+- The About page deletes all five databases and the slot and latency counters without touching the theme. The next visit to the board recreates it from the server snapshot.
 - If IndexedDB is unavailable the board still works, without history.
 
 
@@ -697,10 +721,10 @@ Status: accepted
 
 ================================================================================
 FILE:     docs/adr/0008-abuse-limits.md
-SIZE:     1.99 KB (2033 bytes)
-LINES:    32
-SHA256:   a6cf021fd0f10b6ac37d37871e39d5af2fa4540b6e36f5aacd3c15ea857f2b46
-MODIFIED: 2026-10-31 02:28:55 (UTC)
+SIZE:     2.19 KB (2246 bytes)
+LINES:    36
+SHA256:   a0fdce81557b5a31b94ef161d9d457e3a4b7e3521ae046971c2f48fe25924000
+MODIFIED: 2026-10-31 22:55:39 (UTC)
 ================================================================================
 
 # 0008 Rate and connection limits
@@ -716,6 +740,10 @@ Defaults live in `ChaosOptions` and can be overridden with `Chaos__*` environmen
 | WebSocket connections in total | 80, then 503 |
 | Posts per client | 3 burst, 1 every 2 s |
 | Message length | 500 |
+| Postcards per client | 2 burst, 1 every 10 s |
+| Postcard | 5,000 characters, 4 images, 2 MB each, 4 MB total, 4,096 px a side |
+| Postcard uploads at once | 2, then `busy` |
+| Postcard offers per circuit | 1 |
 | Message details | 43 known keys, values 8–512 characters by key |
 | Offered messages per circuit | 50 |
 | Stroke points per circuit | 4,000 burst, 1,500 per second |
@@ -739,17 +767,18 @@ Defaults live in `ChaosOptions` and can be overridden with `Chaos__*` environmen
 
 ================================================================================
 FILE:     docs/adr/0009-security-headers.md
-SIZE:     1.37 KB (1398 bytes)
-LINES:    11
-SHA256:   eb1fb6b1bad94dadad098c659df71aa38dba86dea4b9c04e657b3e0ae0f637a1
-MODIFIED: 2026-10-31 02:28:55 (UTC)
+SIZE:     1.56 KB (1598 bytes)
+LINES:    12
+SHA256:   601101c5c1c238d322e5cd92c5e67c62b7a4e74c912a0127f229853ca79e47cf
+MODIFIED: 2026-10-31 22:55:39 (UTC)
 ================================================================================
 
 # 0009 Security headers, CSP, origin check
 
 Status: accepted
 
-- CSP: `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' <latency origins>; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'`. No nonce is needed.
+- CSP: `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob:; font-src 'self'; connect-src 'self' <latency origins>; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'`. No nonce is needed.
+- `blob:` images are postcard images kept in IndexedDB (ADR 0023). Uploaded images are served from `/postcard/images` with their sniffed type and `nosniff`, after `ImageSanitizer` rebuilt them.
 - The latency origins come from `LatencyCatalog`, so the policy and the endpoint list cannot drift. They are allowed on every page because enhanced navigation keeps the first document's policy.
 - `<ImportMap />` is left out because it emits an inline script. Modules load from fingerprinted URLs through `Assets[...]` instead.
 - `Blazor.start` is called from `App.razor.js`, not an inline script. The reconnect UI is our own element, so Blazor injects no styles. No markup uses `style` attributes.
@@ -834,10 +863,10 @@ Status: accepted
 
 ================================================================================
 FILE:     docs/adr/0014-testing.md
-SIZE:     1.52 KB (1560 bytes)
+SIZE:     1.54 KB (1581 bytes)
 LINES:    10
-SHA256:   456241424549cbd1b8800d5f033d099d5fa9c3ec1fca4480ee221275f56b9107
-MODIFIED: 2026-10-16 10:38:19 (UTC)
+SHA256:   595f6d9c1ac0106857a6cd90f821c468ca33df8de93023ea17e22a71607119f4
+MODIFIED: 2026-10-31 22:55:39 (UTC)
 ================================================================================
 
 # 0014 Test strategy
@@ -846,7 +875,7 @@ Status: accepted
 
 - .NET: xUnit v3 (package `xunit.v3` 4.x) on Microsoft Testing Platform v2, enabled for `dotnet test` in `global.json`. Unit tests cover services and helpers; integration tests use `WebApplicationFactory` for pages, headers, cookies, the hub guard and compression.
 - JavaScript: Vitest in Node tests the pure exports of each module. DOM, IndexedDB, canvas and WebSocket behaviour is covered by Playwright, so no DOM library is installed.
-- End to end: Playwright .NET in `mcr.microsoft.com/playwright/dotnet:v<version>-noble`, which ships the .NET 10 SDK and browsers. The version comes from `Directory.Packages.props` only. The app is published and run inside the same container on localhost, in Production mode with relaxed limits and the server latency probe off. A second copy on port 5081 runs with `SlotDrawSymbols=7` so every spin is a jackpot (`CHAOS_RIGGED_URL`); browser requests to other sites are aborted by Playwright routes. It is started from the source copy, not its publish folder, like velixir starts it. The app log is printed when tests fail and kept in `artifacts/e2e/app.log`.
+- End to end: Playwright .NET in `mcr.microsoft.com/playwright/dotnet:v<version>-noble`, which ships the .NET 10 SDK and browsers. The version comes from `Directory.Packages.props` only. The app is published and run inside the same container on localhost, in Production mode with relaxed limits (postcards included) and the server latency probe off. A second copy on port 5081 runs with `SlotDrawSymbols=7` so every spin is a jackpot (`CHAOS_RIGGED_URL`); browser requests to other sites are aborted by Playwright routes. It is started from the source copy, not its publish folder, like velixir starts it. The app log is printed when tests fail and kept in `artifacts/e2e/app.log`.
 - End-to-end tests run serially (`[assembly: Parallelization(Mode = ParallelMode.None)]`) because they share one server's board, canvas and slot machine. `CollectionBehavior.DisableTestParallelization` is obsolete in xUnit v3 4.x.
 - Coverage is reported (Cobertura for .NET and JavaScript) with no threshold.
 - Test projects use the default analyzer set; the app uses the recommended set. Warnings are errors everywhere.
@@ -997,15 +1026,17 @@ Status: accepted
 
 ================================================================================
 FILE:     docs/adr/0022-message-details.md
-SIZE:     2.06 KB (2110 bytes)
-LINES:    14
-SHA256:   2e5fe0afd6aba40624f4ca0749d028b6b125c4b8ed3f1e280646ee5d8336501d
-MODIFIED: 2026-10-31 02:28:55 (UTC)
+SIZE:     2.22 KB (2277 bytes)
+LINES:    16
+SHA256:   01e82f574a945454d7fd07326ddfb354d6d48008446d15574a6f17393723e8b4
+MODIFIED: 2026-10-31 22:55:39 (UTC)
 ================================================================================
 
 # 0022 Optional location and browser details on board messages
 
 Status: accepted
+
+- Postcards use the same fields, rules and setting (ADR 0023).
 
 - Opt-in. `#compose-share` appears only when `navigator.geolocation` exists. Ticking it calls `getCurrentPosition`; the browser prompt is the consent. Without permission nothing changes.
 - Default state: on when the Permissions API reports `granted` and `localStorage` `chaos-board-share` is not `off`; off when denied. Unticking stores `off`. A permission change to `denied` unticks it. Clearing local history removes the key.
@@ -1015,16 +1046,43 @@ Status: accepted
 - Wire and storage: `BoardMessage.meta` is an ordered list of `{ key, value }` strings, omitted when null. `MessageMeta` keeps known keys only, in catalog order, first occurrence wins, strips control characters, trims, cuts to a per-key length and range-checks numeric keys. Without valid latitude and longitude the list is dropped. Offers carry `meta` and must already be normalized.
 - Values are self-reported and unverified.
 - Labels live in `MessageMeta.Fields` and `META_FIELDS`; tests pin the same key order in both.
-- `Submit` returns the new message; the island calls `own(id)` so the browser marks it `mine` in IndexedDB and shows `Your message`. The server keeps no ownership. Older messages are unaffected.
+- `Submit` returns the new message; the island calls `sent(id)`, which clears the composer and recounts in the browser before Blazor re-renders, then calls `own(id)` so the browser marks it `mine` in IndexedDB and shows `Your message`. The server keeps no ownership. Older messages are unaffected.
 - Rendering: collapsed `<details class="meta">` under the text, timestamp-sized and muted, both in the prerender and in the module.
 
 
 ================================================================================
+FILE:     docs/adr/0023-postcards.md
+SIZE:     3.52 KB (3601 bytes)
+LINES:    17
+SHA256:   2724c87b44fea07d53360cf7fb7f1a15aaa4846f8096049c3738a58ab5557bfa
+MODIFIED: 2026-10-31 22:55:38 (UTC)
+================================================================================
+
+# 0023 Postcards: one long message with images
+
+Status: accepted
+
+- `/postcard` hosts `PostcardIsland`. The server keeps one postcard, the newest; each accepted one replaces it. No jackpots, no winners.
+- Limits (`PostcardRules`, mirrored in `PostcardIsland.razor.js`): 5,000 characters (`MessageText` with a longer limit), up to 4 images, PNG, JPEG or GIF, 2 MB each, 4 MB together, at most 4,096 px a side and 4,096² px, GIFs at most 1,000 frames. Text or at least one image is required. A postcard identical to the current one (text and image bytes) is refused.
+- Why these numbers: one postcard is at most 4 MB in memory, plus at most `PostcardUploads` (default 2) uploads in flight, well inside 256 MB; 5,000 characters stay under the 32 KB hub message limit even as 3-byte UTF-8.
+- Rate: `PostcardBurst` 2, `PostcardsPerSecond` 0.1 per client. Size and count are checked before the rate bucket and before any upload. When every upload slot is taken, image postcards get `busy`.
+- Upload: the module handles submit itself and calls `Send(text, images, meta)`. Images go as `DotNet.createJSStreamReference(blob)` and are read with `OpenReadStreamAsync`, chunked under the hub limit. No HTTP upload endpoint, so origin checks and limits stay on the circuit.
+- The browser drops control characters and lone surrogates before sending. JPEG and PNG over 2 MB or 4,096 px are redrawn on a canvas to 2,048 px JPEG at 0.85, which also applies EXIF rotation. GIFs are sent as they are or refused.
+- `ImageSanitizer` decides the type from the bytes, never the name or MIME type, walks the file structure, and rebuilds it: PNG keeps rendering chunks only (no `tEXt`, `zTXt`, `iTXt`, `eXIf`, `tIME`) and refuses unknown critical chunks; JPEG drops `APP1`–`APP15` except ICC and Adobe, and `COM`, then writes a 34-byte EXIF with only the orientation when it was not 1; GIF drops comments, plain text and application extensions other than looping. Anything truncated, unknown or out of range is refused.
+- Wire: `PostcardUpdate { kind, version, card }`, `kind` `snapshot` on join and `change` after. A card is `{ id, text, images: [{ type, width, height, length }], meta? }`. Bytes never travel over the circuit to viewers.
+- Images: `GET /postcard/images/{id}/{index}` serves the current postcard only, `private, max-age=31536000, immutable`, 404 otherwise. The prerender uses these URLs; the module fetches each image once, checks its length and stores it.
+- Local history: database `chaos-postcards` v1, stores `cards` (`{ id, text, images, meta?, mine? }`), `images` (`{ key: "<id>/<index>", id, blob }`) and `state` (`bytes`). 10,000 cards; images up to 256 MB, oldest images evicted first while their text stays. On a quota error the card is saved without images. Missing images show `Image n of m was not kept`. Images are shown from `blob:` URLs, so the CSP allows `img-src 'self' blob:`; URLs are revoked when the feed is redrawn or the island is disposed.
+- Feed: the live postcard plus 20 stored ones, a button for 20 more. Every postcard but the live one has a dotted border.
+- After a restart (snapshot without a card) the browser offers its newest postcard once per circuit, images included, if all of them are stored. `WouldRestore` checks the UUIDv7 before any upload; the server accepts it only if it is older than the server start and newer than the current postcard, with normalized text and details and clean images.
+- Details and `Your message` work as on the board (ADR 0022) and share the `chaos-board-share` setting. The browser marks its own postcards `mine` from the `Send` reply.
+
+
+================================================================================
 FILE:     docs/adr/README.md
-SIZE:     1.42 KB (1458 bytes)
-LINES:    26
-SHA256:   c2d9dbb4932de623489798637753145142a6f8e3fa758fef21e15ef7b9a66cca
-MODIFIED: 2026-10-31 02:28:55 (UTC)
+SIZE:     1.49 KB (1530 bytes)
+LINES:    27
+SHA256:   671cd8c68768677ee7e3b9d84e99291d42656745281a5d4b15d598dd3c5b7307
+MODIFIED: 2026-10-31 22:55:39 (UTC)
 ================================================================================
 
 # Architecture decision records
@@ -1053,6 +1111,7 @@ MODIFIED: 2026-10-31 02:28:55 (UTC)
 | [0020](0020-latency.md) | Shared latency test |
 | [0021](0021-server-clock.md) | Server clock in the footer |
 | [0022](0022-message-details.md) | Optional location and browser details on board messages |
+| [0023](0023-postcards.md) | Postcards: one long message with images |
 
 
 ================================================================================
@@ -1100,10 +1159,10 @@ dotnet list package --outdated
 
 ================================================================================
 FILE:     scripts/e2e-container.sh
-SIZE:     2.08 KB (2135 bytes)
-LINES:    78
-SHA256:   ee5390352373ca27487d493c812ec951f1ddf62991d98a61fdca1fcc772a6c4a
-MODIFIED: 2026-10-16 10:31:32 (UTC)
+SIZE:     2.20 KB (2248 bytes)
+LINES:    81
+SHA256:   7532ec8556dca56e51346c0f7ee06db4d895b5b1ba9e63b1ba23cf6734906f08
+MODIFIED: 2026-10-31 22:55:06 (UTC)
 ================================================================================
 
 #!/usr/bin/env bash
@@ -1134,6 +1193,9 @@ start() {
         Chaos__BoardCapacity=5 \
         Chaos__PostBurst=1000 \
         Chaos__PostsPerSecond=1000 \
+        Chaos__PostcardBurst=1000 \
+        Chaos__PostcardsPerSecond=1000 \
+        Chaos__PostcardUploads=16 \
         Chaos__ResetBurst=1000 \
         Chaos__ResetsPerSecond=1000 \
         Chaos__PressBurst=1000 \
@@ -1666,10 +1728,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/App.razor
-SIZE:     0.83 KB (850 bytes)
+SIZE:     0.86 KB (876 bytes)
 LINES:    23
-SHA256:   f5089ba3efc204c1217764063f5437b4a879be629281839fc86f15a22b681a27
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SHA256:   087281ee224921000ed25d6aa9d2619495e90e0e9ae54340db59ee952d9e3c02
+MODIFIED: 2026-10-31 22:45:41 (UTC)
 ================================================================================
 
 <!DOCTYPE html>
@@ -1679,7 +1741,7 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <meta name="description" content="A message board, a drawing canvas, a slot machine and a latency test that everyone shares and nobody keeps." />
+    <meta name="description" content="A message board, a one-at-a-time postcard, a drawing canvas, a slot machine and a latency test that everyone shares and nobody keeps." />
     <base href="/" />
     <script src="@Assets["theme-init.js"]"></script>
     <link rel="stylesheet" href="@Assets["app.css"]" />
@@ -1699,10 +1761,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/App.razor.js
-SIZE:     10.11 KB (10351 bytes)
-LINES:    316
-SHA256:   ee23bae4afc3024123cfe302778f1f22ffc4e1a80c2ce5dd9e03a0b06f35dfc4
-MODIFIED: 2026-10-31 02:28:25 (UTC)
+SIZE:     10.23 KB (10477 bytes)
+LINES:    318
+SHA256:   88f45962bd3ecd32a0f045e616d88cc5242ca5ac5d00b3a0cbaf6f1d2f95b87f
+MODIFIED: 2026-10-31 22:45:31 (UTC)
 ================================================================================
 
 export const THEME_KEY = 'chaos-theme';
@@ -1934,13 +1996,15 @@ export function boot(win) {
                 { DB_NAME: SLOTS_DB, PRESS_KEY },
                 { DB_NAME: CANVAS_DB },
                 { DB_NAME: LATENCY_DB, RUNS_KEY, NEXT_KEY },
+                { DB_NAME: POSTCARD_DB },
             ] = await Promise.all([
                 import('./Islands/BoardIsland.razor.js'),
                 import('./Islands/SlotIsland.razor.js'),
                 import('./Islands/CanvasIsland.razor.js'),
                 import('./Islands/LatencyIsland.razor.js'),
+                import('./Islands/PostcardIsland.razor.js'),
             ]);
-            const outcomes = await Promise.all([BOARD_DB, SLOTS_DB, CANVAS_DB, LATENCY_DB].map(name => deleteDatabase(win.indexedDB, name)));
+            const outcomes = await Promise.all([BOARD_DB, POSTCARD_DB, SLOTS_DB, CANVAS_DB, LATENCY_DB].map(name => deleteDatabase(win.indexedDB, name)));
             for (const key of [SHARE_KEY, PRESS_KEY, RUNS_KEY, NEXT_KEY]) {
                 try {
                     win.localStorage.removeItem(key);
@@ -1949,7 +2013,7 @@ export function boot(win) {
             }
             if (output) {
                 output.textContent = outcomes.includes('blocked')
-                    ? 'Close any other board, canvas, slots or latency tabs to finish clearing.'
+                    ? 'Close any other board, postcard, canvas, slots or latency tabs to finish clearing.'
                     : 'Local history cleared.';
             }
         } catch {
@@ -2025,10 +2089,10 @@ if (typeof window !== 'undefined' && window.Blazor) {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/BoardIsland.razor
-SIZE:     6.39 KB (6545 bytes)
-LINES:    217
-SHA256:   50665de42483c2596ca53f77b1a084a57c3e7833e36763d5035b885d306e9609
-MODIFIED: 2026-10-31 02:26:24 (UTC)
+SIZE:     6.16 KB (6311 bytes)
+LINES:    209
+SHA256:   6cd886188ebbfb01aa9590099aad246dcbe2575162c26faea1d28ff952bcfa5a
+MODIFIED: 2026-10-31 22:39:36 (UTC)
 ================================================================================
 
 @implements IAsyncDisposable
@@ -2064,7 +2128,6 @@ MODIFIED: 2026-10-31 02:26:24 (UTC)
     private string? _status;
     private bool _ready;
     private bool _sending;
-    private bool _recount;
     private int _offered;
 
     [Parameter, EditorRequired]
@@ -2074,12 +2137,6 @@ MODIFIED: 2026-10-31 02:26:24 (UTC)
     {
         if (!firstRender)
         {
-            if (_recount && _client is not null)
-            {
-                _recount = false;
-                await JsCleanup.InvokeAsync(_client, "recount");
-            }
-
             return;
         }
 
@@ -2162,8 +2219,7 @@ MODIFIED: 2026-10-31 02:26:24 (UTC)
             if (reply.Message is { } message)
             {
                 _draft = null;
-                _recount = true;
-                await OwnAsync(message.Id);
+                await SentAsync(message.Id);
             }
         }
         finally
@@ -2198,7 +2254,7 @@ MODIFIED: 2026-10-31 02:26:24 (UTC)
         }
     }
 
-    private async Task OwnAsync(Guid id)
+    private async Task SentAsync(Guid id)
     {
         if (_client is null)
         {
@@ -2207,7 +2263,7 @@ MODIFIED: 2026-10-31 02:26:24 (UTC)
 
         try
         {
-            await _client.InvokeVoidAsync("own", id.ToString("D"));
+            await _client.InvokeVoidAsync("sent", id.ToString("D"));
         }
         catch (JSDisconnectedException)
         {
@@ -2334,10 +2390,10 @@ textarea:disabled {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/BoardIsland.razor.js
-SIZE:     28.11 KB (28783 bytes)
-LINES:    875
-SHA256:   e90f6cd957ae1ef07595a3bffdb162c9b0dcb80a35a343fbbf81b8d1d8046798
-MODIFIED: 2026-10-31 02:28:17 (UTC)
+SIZE:     28.24 KB (28919 bytes)
+LINES:    882
+SHA256:   843de9e73fd34552b8860e89a2d1962ae8e142fc531db095a6b046b3c86bee89
+MODIFIED: 2026-10-31 22:39:36 (UTC)
 ================================================================================
 
 export const DB_NAME = 'chaos-board';
@@ -3075,6 +3131,14 @@ class BoardClient {
         await this.save(update.added);
     }
 
+    async sent(id) {
+        if (this.textarea && !this.disposed) {
+            this.textarea.value = '';
+        }
+        this.recount();
+        await this.own(id);
+    }
+
     async own(id) {
         if (this.disposed || typeof id !== 'string') {
             return;
@@ -3209,9 +3273,8 @@ export function attach(dotnet) {
     client.start();
     return {
         apply: updates => client.apply(updates),
-        recount: () => client.recount(),
         meta: () => client.meta(),
-        own: id => client.own(id),
+        sent: id => client.sent(id),
         dispose: () => client.dispose(),
     };
 }
@@ -5281,6 +5344,1306 @@ export function attach(panel, dotnet) {
 
 
 ================================================================================
+FILE:     src/Chaos.Web/Components/Islands/PostcardIsland.razor
+SIZE:     7.42 KB (7594 bytes)
+LINES:    204
+SHA256:   1a628dd5883834488f343712d6e5d9d5304090da4270822d31faacd91a892a52
+MODIFIED: 2026-10-31 22:43:26 (UTC)
+================================================================================
+
+@implements IAsyncDisposable
+@inject PostcardService Postcards
+@inject IJSRuntime JS
+@inject ILogger<PostcardIsland> Logger
+
+<form id="postcard-form" class="compose" novalidate>
+    <label class="visually-hidden" for="postcard-text">Postcard</label>
+    <textarea id="postcard-text" maxlength="@PostcardRules.MaxTextLength" rows="8" aria-describedby="postcard-count"
+              placeholder="Write something long. Everyone here will see it until the next postcard replaces it." disabled></textarea>
+    <div class="attach">
+        <input type="file" id="postcard-files" class="visually-hidden" accept="image/png,image/jpeg,image/gif" multiple disabled />
+        <label for="postcard-files" class="pick">Add images</label>
+        <span class="hint">PNG, JPEG or GIF. Up to @PostcardRules.MaxImages, 2 MB each. Large photos are scaled down.</span>
+    </div>
+    <ul id="postcard-picked" class="picked" aria-label="Images to send"></ul>
+    <div class="actions">
+        <output id="postcard-status" class="status" for="postcard-text postcard-files"></output>
+        <span id="postcard-count" class="count"></span>
+        <span class="hint">Ctrl+Enter sends</span>
+        <button type="submit" id="postcard-send" disabled>Send</button>
+    </div>
+    <div id="postcard-share-box" class="share" hidden>
+        <label><input type="checkbox" id="postcard-share" /> Attach my location and browser details to my postcards</label>
+        <span id="postcard-share-status" class="share-status" role="status"></span>
+    </div>
+</form>
+
+@code {
+    private static readonly TimeSpan UploadTimeout = TimeSpan.FromSeconds(60);
+    private readonly TaskCompletionSource _attached = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private DotNetObjectReference<PostcardIsland>? _self;
+    private IJSObjectReference? _module;
+    private IJSObjectReference? _client;
+    private Outbox<PostcardUpdate>? _outbox;
+    private Subscriber? _subscriber;
+    private bool _offered;
+
+    [Parameter, EditorRequired]
+    public string Client { get; set; } = ClientAddress.Unknown;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        _self = DotNetObjectReference.Create(this);
+        _module = await JS.InvokeAsync<IJSObjectReference>("import", ModulePath.Of(Assets["Components/Islands/PostcardIsland.razor.js"]));
+        _client = await _module.InvokeAsync<IJSObjectReference>("attach", _self);
+        _attached.TrySetResult();
+    }
+
+    [JSInvokable]
+    public async Task<PostcardSent> Send(string? text, IJSStreamReference[]? images, MetaEntry[]? meta)
+    {
+        var uploads = images ?? [];
+        try
+        {
+            var admitted = Postcards.Admit(text, [.. uploads.Select(upload => upload.Length)], Client);
+            if (admitted is not PostcardResult.Accepted)
+            {
+                return new PostcardSent(null, PostcardSent.StatusOf(admitted));
+            }
+
+            using var lease = uploads.Length == 0 ? null : Postcards.TryBeginUpload();
+            if (uploads.Length > 0 && lease is null)
+            {
+                return new PostcardSent(null, PostcardSent.StatusOf(PostcardResult.Busy));
+            }
+
+            var bytes = await ReadAsync(uploads);
+            return bytes is null
+                ? new PostcardSent(null, PostcardSent.StatusOf(PostcardResult.Failed))
+                : PostcardSent.From(Postcards.Publish(text, bytes, meta));
+        }
+        finally
+        {
+            await ReleaseAsync(uploads);
+        }
+    }
+
+    [JSInvokable]
+    public async Task<bool> Offer(string? id, string? text, MetaEntry[]? meta, IJSStreamReference[]? images)
+    {
+        var uploads = images ?? [];
+        try
+        {
+            if (_offered || !Guid.TryParseExact(id, "D", out var parsed) || !Postcards.WouldRestore(parsed))
+            {
+                return false;
+            }
+
+            _offered = true;
+            if (PostcardService.Check(text, [.. uploads.Select(upload => upload.Length)]) is not PostcardResult.Accepted)
+            {
+                return false;
+            }
+
+            using var lease = uploads.Length == 0 ? null : Postcards.TryBeginUpload();
+            if (uploads.Length > 0 && lease is null)
+            {
+                return false;
+            }
+
+            var bytes = await ReadAsync(uploads);
+            return bytes is not null && Postcards.Offer(parsed, text, bytes, meta);
+        }
+        finally
+        {
+            await ReleaseAsync(uploads);
+        }
+    }
+
+    [JSInvokable]
+    public async Task Join()
+    {
+        await StopAsync();
+        var outbox = new Outbox<PostcardUpdate>(16, 4, TimeSpan.FromSeconds(20), SendAsync, Logger);
+        _outbox = outbox;
+        _subscriber = new Subscriber(outbox);
+        Postcards.Subscribe(_subscriber);
+    }
+
+    [JSInvokable]
+    public bool Ping() => _subscriber is not null && _outbox is { IsFaulted: false } && Postcards.IsSubscribed(_subscriber);
+
+    public async ValueTask DisposeAsync()
+    {
+        await StopAsync();
+        await JsCleanup.DisposeAsync(_client, "dispose");
+        await JsCleanup.DisposeAsync(_module, null);
+        _self?.Dispose();
+    }
+
+    private static async Task<byte[][]?> ReadAsync(IJSStreamReference[] uploads)
+    {
+        var result = new byte[uploads.Length][];
+        try
+        {
+            using var timeout = new CancellationTokenSource(UploadTimeout);
+            for (var i = 0; i < uploads.Length; i++)
+            {
+                await using var stream = await uploads[i].OpenReadStreamAsync(PostcardRules.MaxImageBytes, timeout.Token);
+                using var buffer = new MemoryStream((int)uploads[i].Length);
+                await stream.CopyToAsync(buffer, timeout.Token);
+                if (buffer.Length != uploads[i].Length)
+                {
+                    return null;
+                }
+
+                result[i] = buffer.ToArray();
+            }
+
+            return result;
+        }
+        catch (Exception exception) when (exception is JSException or JSDisconnectedException or OperationCanceledException or IOException or ArgumentOutOfRangeException or InvalidOperationException)
+        {
+            return null;
+        }
+    }
+
+    private static async Task ReleaseAsync(IJSStreamReference[] uploads)
+    {
+        foreach (var upload in uploads)
+        {
+            try
+            {
+                await upload.DisposeAsync();
+            }
+            catch (Exception exception) when (exception is JSException or JSDisconnectedException or OperationCanceledException)
+            {
+            }
+        }
+    }
+
+    private async Task SendAsync(IReadOnlyList<PostcardUpdate> batch, CancellationToken cancellationToken)
+    {
+        await _attached.Task.WaitAsync(cancellationToken);
+        await InvokeAsync(() => _client is null
+            ? Task.FromException(new InvalidOperationException("The postcard module is not attached."))
+            : _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask());
+    }
+
+    private async Task StopAsync()
+    {
+        if (_subscriber is not null)
+        {
+            Postcards.Unsubscribe(_subscriber);
+            _subscriber = null;
+        }
+
+        if (_outbox is not null)
+        {
+            await _outbox.DisposeAsync();
+            _outbox = null;
+        }
+    }
+
+    private sealed class Subscriber(Outbox<PostcardUpdate> outbox) : IPostcardSubscriber
+    {
+        public bool Deliver(PostcardUpdate update) => outbox.TryPost(update);
+    }
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Components/Islands/PostcardIsland.razor.css
+SIZE:     2.21 KB (2259 bytes)
+LINES:    139
+SHA256:   48d5a5a0133fc46d5adc79e31bf6ab13e16026e9c37115d042233b692cc5be9f
+MODIFIED: 2026-10-31 22:43:55 (UTC)
+================================================================================
+
+.compose {
+    display: grid;
+    gap: .5rem;
+    margin-block-end: 1.5rem;
+}
+
+textarea {
+    inline-size: 100%;
+    min-block-size: 5.5rem;
+    padding: .65rem .8rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg);
+    resize: vertical;
+}
+
+textarea:disabled {
+    opacity: .7;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem 1rem;
+}
+
+.status {
+    flex: 1;
+    color: var(--danger);
+    font-size: .875rem;
+}
+
+.hint {
+    color: var(--muted);
+    font-size: .8rem;
+}
+
+.count {
+    color: var(--muted);
+    font-size: .8rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.count.full {
+    color: var(--danger);
+    font-weight: 650;
+}
+
+.share {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem 1rem;
+    color: var(--muted);
+    font-size: .8rem;
+}
+
+.share[hidden] {
+    display: none;
+}
+
+.share label {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    cursor: pointer;
+}
+
+.share-status:empty {
+    display: none;
+}
+
+.attach {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem 1rem;
+}
+
+.pick {
+    padding: .35rem .9rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    font-size: .875rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+input[type="file"]:disabled + .pick {
+    opacity: .5;
+    cursor: default;
+}
+
+input[type="file"]:focus-visible + .pick {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+}
+
+.picked {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.picked:empty {
+    display: none;
+}
+
+.picked ::deep li {
+    display: grid;
+    gap: .25rem;
+    justify-items: center;
+    inline-size: 6.5rem;
+    font-size: .7rem;
+    color: var(--muted);
+}
+
+.picked ::deep img {
+    inline-size: 6.5rem;
+    block-size: 6.5rem;
+    border: 1px solid var(--line);
+    border-radius: calc(var(--radius) / 2);
+    object-fit: cover;
+    background: var(--surface);
+}
+
+.picked ::deep button {
+    padding: .1rem .5rem;
+    border-color: var(--line);
+    color: var(--fg);
+    background: var(--surface);
+    font-size: .7rem;
+    font-weight: 600;
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Components/Islands/PostcardIsland.razor.js
+SIZE:     30.42 KB (31149 bytes)
+LINES:    927
+SHA256:   2a3ee2b62efd69f16f6aa9343406de996280a47595795086ccc7f4f0baaab5a8
+MODIFIED: 2026-10-31 22:52:59 (UTC)
+================================================================================
+
+import { LocalHistory, POSITION_OPTIONS, announce, collectMeta, countText, excessOf, isoOf, labelOf, metaElement, newestFirst, readShare, shareDefault, writeShare } from './BoardIsland.razor.js';
+
+export const DB_NAME = 'chaos-postcards';
+export const DB_VERSION = 1;
+export const CARDS = 'cards';
+export const IMAGES = 'images';
+export const STATE = 'state';
+export const LOCAL_CAP = 10000;
+export const IMAGE_BUDGET = 256 * 1024 * 1024;
+export const PAGE_SIZE = 20;
+export const PING_MS = 25000;
+export const MAX_TEXT = 5000;
+export const MAX_IMAGES = 4;
+export const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
+export const MAX_TOTAL_BYTES = 4 * 1024 * 1024;
+export const MAX_SIDE = 4096;
+export const RESIZE_SIDE = 2048;
+export const JPEG_QUALITY = 0.85;
+export const TYPES = Object.freeze(['image/png', 'image/jpeg', 'image/gif']);
+export const IMAGE_PATH = 'postcard/images';
+
+export const migrations = [
+    db => {
+        db.createObjectStore(CARDS, { keyPath: 'id' });
+        db.createObjectStore(IMAGES, { keyPath: 'key' });
+        db.createObjectStore(STATE, { keyPath: 'key' });
+    },
+];
+
+export const SCHEMA = Object.freeze({ name: DB_NAME, version: DB_VERSION, store: CARDS, migrations, cap: LOCAL_CAP });
+
+export function imageKey(id, index) {
+    return `${id}/${index}`;
+}
+
+export function imageRange(id) {
+    return [`${id}/`, `${id}/￿`];
+}
+
+export function imageUrl(id, index) {
+    return `${IMAGE_PATH}/${id}/${index}`;
+}
+
+export function cleanText(text) {
+    const value = String(text ?? '').replace(/\r\n?/g, '\n').replace(/[\u0000-\u0009\u000b-\u001f\u007f-\u009f]/g, '');
+    return typeof value.toWellFormed === 'function' ? value.toWellFormed() : value;
+}
+
+export function hasText(text) {
+    return /[^\s​-‏⁠﻿]/.test(text);
+}
+
+export function fitSize(width, height, max = RESIZE_SIDE) {
+    const longest = Math.max(width, height);
+    if (longest <= max) {
+        return { width, height };
+    }
+    const scale = max / longest;
+    return { width: Math.max(1, Math.round(width * scale)), height: Math.max(1, Math.round(height * scale)) };
+}
+
+export function needsResize(type, size, width, height) {
+    return type !== 'image/gif' && (size > MAX_IMAGE_BYTES || Math.max(width, height) > MAX_SIDE);
+}
+
+export function pickProblem(type, size, count, total) {
+    if (count >= MAX_IMAGES) {
+        return `Attach at most ${MAX_IMAGES} images.`;
+    }
+    if (!TYPES.includes(type)) {
+        return 'Only PNG, JPEG and GIF images can be attached.';
+    }
+    if (type === 'image/gif' && size > MAX_IMAGE_BYTES) {
+        return 'GIFs must be 2 MB or smaller.';
+    }
+    if (size !== null && total + size > MAX_TOTAL_BYTES) {
+        return 'All images together can be 4 MB.';
+    }
+    return null;
+}
+
+export function toRecord(card, mine) {
+    const record = {
+        id: card.id,
+        text: typeof card.text === 'string' ? card.text : '',
+        images: Array.isArray(card.images)
+            ? card.images.map(image => ({ type: image.type, width: image.width, height: image.height, length: image.length }))
+            : [],
+    };
+    if (Array.isArray(card.meta) && card.meta.length > 0) {
+        record.meta = card.meta;
+    }
+    if (mine) {
+        record.mine = true;
+    }
+    return record;
+}
+
+export function merge(existing, record) {
+    const merged = { ...record };
+    if (existing?.mine || record.mine) {
+        merged.mine = true;
+    } else {
+        delete merged.mine;
+    }
+    return merged;
+}
+
+export function isComplete(record, blobs) {
+    return record.images.every((image, index) => blobs[index] instanceof Blob && blobs[index].size === image.length);
+}
+
+export function isStale(version, update) {
+    return update.kind !== 'snapshot' && update.version <= version;
+}
+
+function settle(request) {
+    return new Promise((resolve, reject) => {
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function finished(transaction) {
+    return new Promise((resolve, reject) => {
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+        transaction.onabort = () => reject(transaction.error);
+    });
+}
+
+function walk(request, visit) {
+    return new Promise((resolve, reject) => {
+        request.onsuccess = () => {
+            const cursor = request.result;
+            if (!cursor || visit(cursor) === false) {
+                resolve();
+                return;
+            }
+            cursor.continue();
+        };
+        request.onerror = () => reject(request.error);
+    });
+}
+
+export class PostcardHistory extends LocalHistory {
+    constructor(factory, schema = SCHEMA, budget = IMAGE_BUDGET) {
+        super(factory, schema);
+        this.budget = budget;
+    }
+
+    async blobs(record) {
+        const db = await this.database();
+        if (!db || record.images.length === 0) {
+            return [];
+        }
+        const store = db.transaction(IMAGES, 'readonly').objectStore(IMAGES);
+        const values = await Promise.all(record.images.map((_, index) => settle(store.get(imageKey(record.id, index)))));
+        return values.map(value => (value?.blob instanceof Blob ? value.blob : null));
+    }
+
+    async get(id) {
+        const db = await this.database();
+        if (!db) {
+            return null;
+        }
+        return (await settle(db.transaction(CARDS, 'readonly').objectStore(CARDS).get(id))) ?? null;
+    }
+
+    async save(record, blobs = []) {
+        const db = await this.database();
+        if (!db) {
+            return;
+        }
+        const transaction = db.transaction([CARDS, IMAGES, STATE], 'readwrite');
+        const done = finished(transaction);
+        const cards = transaction.objectStore(CARDS);
+        const images = transaction.objectStore(IMAGES);
+        const state = transaction.objectStore(STATE);
+        const existing = await settle(cards.get(record.id));
+        cards.put(merge(existing, record));
+        let bytes = (await settle(state.get('bytes')))?.value ?? 0;
+        for (let index = 0; index < blobs.length; index += 1) {
+            const blob = blobs[index];
+            if (!(blob instanceof Blob)) {
+                continue;
+            }
+            const key = imageKey(record.id, index);
+            if ((await settle(images.count(key))) === 0) {
+                images.put({ key, id: record.id, blob });
+                bytes += blob.size;
+            }
+        }
+        const excess = excessOf(await settle(cards.count()), this.schema.cap);
+        if (excess > 0) {
+            const keys = await settle(cards.getAllKeys(null, excess));
+            const last = keys[keys.length - 1];
+            await walk(images.openCursor(IDBKeyRange.upperBound(`${last}/￿`)), cursor => {
+                bytes -= cursor.value?.blob?.size ?? 0;
+                cursor.delete();
+            });
+            cards.delete(IDBKeyRange.upperBound(last));
+        }
+        if (bytes > this.budget) {
+            const [keep] = imageRange(record.id);
+            await walk(images.openCursor(IDBKeyRange.upperBound(keep, true)), cursor => {
+                if (bytes <= this.budget) {
+                    return false;
+                }
+                bytes -= cursor.value?.blob?.size ?? 0;
+                cursor.delete();
+                return true;
+            });
+        }
+        state.put({ key: 'bytes', value: Math.max(0, bytes) });
+        await done;
+    }
+}
+
+class ShareControl {
+    constructor(win, box, input, status) {
+        this.win = win;
+        this.box = box;
+        this.input = input;
+        this.status = status;
+        this.permission = null;
+        this.disposed = false;
+        this.onChange = () => this.toggle();
+        this.onPermission = () => this.permissionChanged();
+    }
+
+    geolocation() {
+        return this.win.navigator?.geolocation ?? null;
+    }
+
+    async setup() {
+        if (!this.input || !this.box || !this.geolocation()) {
+            return;
+        }
+        let state = null;
+        try {
+            this.permission = await this.win.navigator.permissions?.query({ name: 'geolocation' }) ?? null;
+            state = this.permission?.state ?? null;
+        } catch {
+            this.permission = null;
+        }
+        if (this.disposed) {
+            return;
+        }
+        this.permission?.addEventListener('change', this.onPermission);
+        this.input.checked = shareDefault(readShare(this.win.localStorage), state);
+        this.input.addEventListener('change', this.onChange);
+        this.box.hidden = false;
+    }
+
+    say(text) {
+        if (this.status) {
+            this.status.textContent = text;
+        }
+    }
+
+    permissionChanged() {
+        if (this.permission?.state === 'denied' && this.input?.checked) {
+            this.input.checked = false;
+            this.say('Location permission was turned off, so nothing is attached.');
+        }
+    }
+
+    position() {
+        return new Promise((resolve, reject) => {
+            const geolocation = this.geolocation();
+            if (!geolocation) {
+                reject(new Error('Geolocation is not available.'));
+                return;
+            }
+            geolocation.getCurrentPosition(resolve, reject, POSITION_OPTIONS);
+        });
+    }
+
+    async toggle() {
+        if (!this.input.checked) {
+            writeShare(this.win.localStorage, 'off');
+            this.say('Nothing is attached to your postcards.');
+            return;
+        }
+        this.input.disabled = true;
+        this.say('Asking for your location.');
+        try {
+            await this.position();
+            writeShare(this.win.localStorage, 'on');
+            this.say('Your location and browser details will be attached to your postcards.');
+        } catch {
+            this.input.checked = false;
+            this.say('No location permission, so nothing is attached.');
+        } finally {
+            this.input.disabled = false;
+        }
+    }
+
+    async meta() {
+        if (this.disposed || !this.input?.checked) {
+            return null;
+        }
+        try {
+            return collectMeta(await this.position(), this.win);
+        } catch (error) {
+            if (error?.code === 1) {
+                this.input.checked = false;
+            }
+            this.say('Could not read your location, so that postcard has no details.');
+            return null;
+        }
+    }
+
+    dispose() {
+        this.disposed = true;
+        this.input?.removeEventListener('change', this.onChange);
+        this.permission?.removeEventListener('change', this.onPermission);
+    }
+}
+
+class PostcardClient {
+    constructor(dotnet, doc, win) {
+        this.dotnet = dotnet;
+        this.doc = doc;
+        this.win = win;
+        this.history = new PostcardHistory(win.indexedDB);
+        this.form = doc.getElementById('postcard-form');
+        this.textarea = doc.getElementById('postcard-text');
+        this.files = doc.getElementById('postcard-files');
+        this.picked = doc.getElementById('postcard-picked');
+        this.status = doc.getElementById('postcard-status');
+        this.count = doc.getElementById('postcard-count');
+        this.button = doc.getElementById('postcard-send');
+        this.feed = doc.getElementById('postcard-feed');
+        this.empty = doc.getElementById('postcard-empty');
+        this.older = doc.getElementById('postcard-older');
+        this.share = new ShareControl(win, doc.getElementById('postcard-share-box'), doc.getElementById('postcard-share'), doc.getElementById('postcard-share-status'));
+        this.attachments = [];
+        this.version = -1;
+        this.live = null;
+        this.shown = new Map();
+        this.records = new Map();
+        this.urls = new Map();
+        this.mine = new Set();
+        this.cursor = null;
+        this.joining = null;
+        this.offered = false;
+        this.sending = false;
+        this.timer = 0;
+        this.disposed = false;
+        this.onSubmit = event => this.submit(event);
+        this.onKeyDown = event => this.keyDown(event);
+        this.onInput = () => this.recount();
+        this.onFiles = () => this.addFiles();
+        this.onPicked = event => this.removePicked(event);
+        this.onOlder = () => this.loadOlder();
+        this.onReconnected = () => this.join();
+    }
+
+    async start() {
+        this.form?.addEventListener('submit', this.onSubmit);
+        this.textarea?.addEventListener('keydown', this.onKeyDown);
+        this.textarea?.addEventListener('input', this.onInput);
+        this.files?.addEventListener('change', this.onFiles);
+        this.picked?.addEventListener('click', this.onPicked);
+        this.older?.addEventListener('click', this.onOlder);
+        this.win.addEventListener('chaos:reconnected', this.onReconnected);
+        this.timer = this.win.setInterval(() => this.ping(), PING_MS);
+        this.recount();
+        for (const control of [this.textarea, this.files, this.button]) {
+            if (control) {
+                control.disabled = false;
+            }
+        }
+        try {
+            await this.share.setup();
+        } catch {
+        }
+        await this.join();
+    }
+
+    say(text) {
+        if (this.status && !this.disposed) {
+            this.status.textContent = text ?? '';
+        }
+    }
+
+    recount() {
+        if (!this.count || !this.textarea || this.disposed) {
+            return;
+        }
+        const max = this.textarea.maxLength;
+        const length = this.textarea.value.length;
+        this.count.textContent = countText(length, max);
+        this.count.classList.toggle('full', max > 0 && length >= max);
+    }
+
+    keyDown(event) {
+        if (event.key !== 'Enter' || !(event.ctrlKey || event.metaKey)) {
+            return;
+        }
+        event.preventDefault();
+        this.form?.requestSubmit();
+    }
+
+    totalBytes() {
+        return this.attachments.reduce((sum, item) => sum + item.blob.size, 0);
+    }
+
+    async prepare(file) {
+        const problem = pickProblem(file.type, file.type === 'image/gif' ? file.size : null, this.attachments.length, this.totalBytes());
+        if (problem) {
+            return { problem };
+        }
+        if (file.type === 'image/gif') {
+            return { blob: file };
+        }
+        let bitmap;
+        try {
+            bitmap = await this.win.createImageBitmap(file);
+        } catch {
+            return { problem: 'That file is not an image this browser can read.' };
+        }
+        try {
+            if (!needsResize(file.type, file.size, bitmap.width, bitmap.height)) {
+                return this.checkTotal(file);
+            }
+            const size = fitSize(bitmap.width, bitmap.height);
+            const canvas = this.doc.createElement('canvas');
+            canvas.width = size.width;
+            canvas.height = size.height;
+            const context = canvas.getContext('2d');
+            context.fillStyle = '#ffffff';
+            context.fillRect(0, 0, size.width, size.height);
+            context.drawImage(bitmap, 0, 0, size.width, size.height);
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', JPEG_QUALITY));
+            if (!blob || blob.size > MAX_IMAGE_BYTES) {
+                return { problem: 'That image is too large even after scaling it down.' };
+            }
+            return this.checkTotal(blob);
+        } finally {
+            bitmap.close();
+        }
+    }
+
+    checkTotal(blob) {
+        return this.totalBytes() + blob.size > MAX_TOTAL_BYTES ? { problem: 'All images together can be 4 MB.' } : { blob };
+    }
+
+    async addFiles() {
+        const files = [...(this.files?.files ?? [])];
+        if (this.files) {
+            this.files.value = '';
+        }
+        let problem = null;
+        for (const file of files) {
+            const result = await this.prepare(file);
+            if (this.disposed) {
+                return;
+            }
+            if (result.blob) {
+                this.attachments.push({ blob: result.blob, name: file.name, url: this.win.URL.createObjectURL(result.blob) });
+            } else {
+                problem ??= result.problem;
+            }
+        }
+        this.renderPicked();
+        this.say(problem);
+    }
+
+    renderPicked() {
+        if (!this.picked) {
+            return;
+        }
+        const items = this.attachments.map((item, index) => {
+            const row = this.doc.createElement('li');
+            const image = this.doc.createElement('img');
+            image.src = item.url;
+            image.alt = item.name;
+            const remove = this.doc.createElement('button');
+            remove.type = 'button';
+            remove.dataset.index = String(index);
+            remove.textContent = 'Remove';
+            remove.setAttribute('aria-label', `Remove image ${index + 1}`);
+            row.append(image, remove);
+            return row;
+        });
+        this.picked.replaceChildren(...items);
+    }
+
+    removePicked(event) {
+        const button = event.target instanceof this.win.Element ? event.target.closest('button[data-index]') : null;
+        if (!button || this.sending) {
+            return;
+        }
+        const [removed] = this.attachments.splice(Number(button.dataset.index), 1);
+        if (removed) {
+            this.win.URL.revokeObjectURL(removed.url);
+        }
+        this.renderPicked();
+        this.say('');
+    }
+
+    clearComposer() {
+        for (const item of this.attachments) {
+            this.win.URL.revokeObjectURL(item.url);
+        }
+        this.attachments = [];
+        this.renderPicked();
+        if (this.textarea) {
+            this.textarea.value = '';
+        }
+        this.recount();
+    }
+
+    async submit(event) {
+        event.preventDefault();
+        if (this.sending || this.disposed || !this.textarea) {
+            return;
+        }
+        const text = cleanText(this.textarea.value);
+        if (!hasText(text) && this.attachments.length === 0) {
+            this.say('Write something or add an image first.');
+            return;
+        }
+        this.sending = true;
+        if (this.button) {
+            this.button.disabled = true;
+        }
+        this.say(this.attachments.length > 0 ? 'Sending your postcard and its images.' : 'Sending your postcard.');
+        let streams = [];
+        try {
+            const meta = await this.share.meta();
+            streams = this.attachments.map(item => this.win.DotNet.createJSStreamReference(item.blob));
+            const reply = await this.dotnet.invokeMethodAsync('Send', text, streams, meta);
+            if (typeof reply?.id === 'string') {
+                this.clearComposer();
+                this.say('');
+                await this.own(reply.id);
+            } else {
+                this.say(reply?.status ?? 'Could not send. Try again.');
+            }
+        } catch {
+            this.say('Could not send. Try again.');
+        } finally {
+            this.sending = false;
+            if (this.button && !this.disposed) {
+                this.button.disabled = false;
+            }
+        }
+    }
+
+    join() {
+        if (this.disposed) {
+            return Promise.resolve();
+        }
+        this.version = -1;
+        this.joining ??= this.dotnet.invokeMethodAsync('Join')
+            .catch(() => {})
+            .finally(() => {
+                this.joining = null;
+            });
+        return this.joining;
+    }
+
+    async ping() {
+        if (this.disposed || this.joining) {
+            return;
+        }
+        try {
+            if (!(await this.dotnet.invokeMethodAsync('Ping'))) {
+                await this.join();
+            }
+        } catch {
+        }
+    }
+
+    async apply(updates) {
+        for (const update of updates) {
+            if (this.disposed) {
+                return;
+            }
+            if (isStale(this.version, update) || (update.kind !== 'snapshot' && this.version < 0)) {
+                continue;
+            }
+            this.version = update.version;
+            if (update.kind === 'snapshot') {
+                await this.snapshot(update.card ?? null);
+            } else {
+                await this.change(update.card ?? null);
+            }
+        }
+    }
+
+    async stored(id) {
+        try {
+            return await this.history.get(id);
+        } catch {
+            return null;
+        }
+    }
+
+    async storedBlobs(record) {
+        try {
+            return await this.history.blobs(record);
+        } catch {
+            return [];
+        }
+    }
+
+    async save(record, blobs) {
+        try {
+            await this.history.save(record, blobs);
+        } catch {
+            try {
+                await this.history.save(record, []);
+            } catch {
+            }
+        }
+    }
+
+    async snapshot(card) {
+        this.live = card?.id ?? null;
+        let liveRecord = null;
+        if (card) {
+            const existing = await this.stored(card.id);
+            liveRecord = merge(existing, toRecord(card, this.mine.has(card.id)));
+            await this.save(liveRecord, []);
+        }
+        let archive = { items: [], last: null, done: true };
+        try {
+            archive = await this.history.page(null, PAGE_SIZE, new Set(this.live ? [this.live] : []));
+        } catch {
+        }
+        this.cursor = archive.last;
+        const records = liveRecord ? [liveRecord, ...archive.items] : archive.items;
+        this.remember(records);
+        await this.render(records.sort(newestFirst), archive.done);
+        if (liveRecord) {
+            this.complete(liveRecord).catch(() => {});
+        } else {
+            await this.offerBack(archive.items[0] ?? null);
+        }
+    }
+
+    async change(card) {
+        const previous = this.live;
+        this.live = card?.id ?? null;
+        if (previous && previous !== this.live) {
+            this.shown.get(previous)?.classList.add('archived');
+        }
+        if (!card) {
+            return;
+        }
+        const record = merge(await this.stored(card.id), toRecord(card, this.mine.has(card.id)));
+        this.remember([record]);
+        const existing = this.shown.get(card.id);
+        if (existing) {
+            existing.classList.remove('archived');
+        } else {
+            await this.insert(record, true);
+            this.announce(record);
+        }
+        this.updateEmpty();
+        await this.save(record, []);
+        this.complete(record).catch(() => {});
+    }
+
+    async complete(record) {
+        const blobs = await this.storedBlobs(record);
+        if (isComplete(record, blobs)) {
+            return;
+        }
+        const fetched = await Promise.all(record.images.map((image, index) => (blobs[index] ? Promise.resolve(blobs[index]) : this.download(record.id, index, image))));
+        await this.save(record, fetched);
+        if (this.disposed) {
+            return;
+        }
+        const element = this.shown.get(record.id);
+        if (element) {
+            this.paint(element, record, fetched);
+        }
+    }
+
+    async download(id, index, image) {
+        try {
+            const response = await this.win.fetch(new URL(imageUrl(id, index), this.doc.baseURI), { cache: 'force-cache', credentials: 'omit' });
+            if (!response.ok) {
+                return null;
+            }
+            const blob = await response.blob();
+            return blob.size === image.length ? new Blob([blob], { type: image.type }) : null;
+        } catch {
+            return null;
+        }
+    }
+
+    async offerBack(newest) {
+        if (this.offered || !newest || this.disposed) {
+            return;
+        }
+        this.offered = true;
+        const blobs = await this.storedBlobs(newest);
+        if (!isComplete(newest, blobs)) {
+            return;
+        }
+        try {
+            const streams = newest.images.map((_, index) => this.win.DotNet.createJSStreamReference(blobs[index]));
+            await this.dotnet.invokeMethodAsync('Offer', newest.id, newest.text, newest.meta ?? null, streams);
+        } catch {
+        }
+    }
+
+    async own(id) {
+        if (this.disposed || typeof id !== 'string') {
+            return;
+        }
+        this.mine.add(id);
+        const record = this.records.get(id) ?? (await this.stored(id));
+        if (!record) {
+            return;
+        }
+        const mine = { ...record, mine: true };
+        this.records.set(id, mine);
+        const existing = this.shown.get(id);
+        if (existing && !existing.classList.contains('mine')) {
+            existing.classList.add('mine');
+            existing.querySelector('.head')?.append(this.yours());
+        }
+        await this.save(mine, []);
+    }
+
+    remember(records) {
+        for (const record of records) {
+            this.records.set(record.id, record);
+            if (record.mine) {
+                this.mine.add(record.id);
+            }
+        }
+    }
+
+    async loadOlder() {
+        if (!this.older) {
+            return;
+        }
+        this.older.disabled = true;
+        try {
+            const archive = await this.history.page(this.cursor, PAGE_SIZE, new Set(this.live ? [this.live] : []));
+            this.cursor = archive.last ?? this.cursor;
+            this.remember(archive.items);
+            for (const record of archive.items) {
+                if (!this.shown.has(record.id)) {
+                    await this.insert(record, false);
+                }
+            }
+            this.older.hidden = archive.done;
+        } catch {
+            this.older.hidden = true;
+        } finally {
+            this.older.disabled = false;
+        }
+    }
+
+    revoke(id) {
+        for (const url of this.urls.get(id) ?? []) {
+            this.win.URL.revokeObjectURL(url);
+        }
+        this.urls.delete(id);
+    }
+
+    paint(element, record, blobs) {
+        const box = element.querySelector('.images');
+        if (!box) {
+            return;
+        }
+        this.revoke(record.id);
+        const urls = [];
+        const total = record.images.length;
+        const children = record.images.map((image, index) => {
+            const blob = blobs[index];
+            if (blob instanceof Blob) {
+                const img = this.doc.createElement('img');
+                const url = this.win.URL.createObjectURL(blob);
+                urls.push(url);
+                img.src = url;
+                img.width = image.width;
+                img.height = image.height;
+                img.alt = `Image ${index + 1} of ${total}`;
+                img.decoding = 'async';
+                return img;
+            }
+            const missing = this.doc.createElement('span');
+            missing.className = 'missing';
+            missing.textContent = blob === undefined && record.id === this.live
+                ? `Loading image ${index + 1} of ${total}`
+                : `Image ${index + 1} of ${total} was not kept`;
+            return missing;
+        });
+        this.urls.set(record.id, urls);
+        box.replaceChildren(...children);
+    }
+
+    yours() {
+        const yours = this.doc.createElement('span');
+        yours.className = 'yours';
+        yours.textContent = 'Your message';
+        return yours;
+    }
+
+    async item(record, fresh) {
+        const mine = this.mine.has(record.id) || record.mine === true;
+        const element = this.doc.createElement('li');
+        element.className = 'card';
+        element.classList.toggle('archived', record.id !== this.live);
+        element.classList.toggle('fresh', fresh);
+        element.classList.toggle('mine', mine);
+        element.dataset.id = record.id;
+        const head = this.doc.createElement('div');
+        head.className = 'head';
+        const time = this.doc.createElement('time');
+        time.dateTime = isoOf(record.id);
+        time.textContent = labelOf(record.id);
+        head.append(time);
+        if (mine) {
+            head.append(this.yours());
+        }
+        element.append(head);
+        if (record.text) {
+            const text = this.doc.createElement('p');
+            text.className = 'text';
+            text.textContent = record.text;
+            element.append(text);
+        }
+        if (record.images.length > 0) {
+            const box = this.doc.createElement('div');
+            box.className = 'images';
+            element.append(box);
+            const blobs = await this.storedBlobs(record);
+            this.paint(element, record, record.images.map((_, index) => blobs[index] ?? (record.id === this.live ? undefined : null)));
+        }
+        const details = metaElement(this.doc, record.meta);
+        if (details) {
+            element.append(details);
+        }
+        return element;
+    }
+
+    async insert(record, fresh) {
+        const element = await this.item(record, fresh);
+        if (this.shown.has(record.id) || this.disposed) {
+            this.revoke(record.id);
+            return;
+        }
+        let next = this.feed.firstElementChild;
+        while (next && next.dataset.id > record.id) {
+            next = next.nextElementSibling;
+        }
+        this.feed.insertBefore(element, next);
+        this.shown.set(record.id, element);
+        this.updateEmpty();
+    }
+
+    async render(records, done) {
+        for (const id of [...this.urls.keys()]) {
+            this.revoke(id);
+        }
+        this.shown.clear();
+        const elements = [];
+        for (const record of records) {
+            const element = await this.item(record, false);
+            this.shown.set(record.id, element);
+            elements.push(element);
+        }
+        if (this.disposed) {
+            return;
+        }
+        this.feed.replaceChildren(...elements);
+        if (this.older) {
+            this.older.hidden = done;
+        }
+        this.updateEmpty();
+    }
+
+    announce(record) {
+        if (this.disposed || !this.feed?.isConnected) {
+            return;
+        }
+        const images = record.images.length;
+        const suffix = images === 0 ? '' : images === 1 ? ' (1 image)' : ` (${images} images)`;
+        announce(this.doc, `New postcard${suffix}: ${record.text.slice(0, 140)}`);
+    }
+
+    updateEmpty() {
+        if (this.empty) {
+            this.empty.hidden = this.shown.size > 0;
+        }
+    }
+
+    dispose() {
+        this.disposed = true;
+        this.win.clearInterval(this.timer);
+        this.share.dispose();
+        this.form?.removeEventListener('submit', this.onSubmit);
+        this.textarea?.removeEventListener('keydown', this.onKeyDown);
+        this.textarea?.removeEventListener('input', this.onInput);
+        this.files?.removeEventListener('change', this.onFiles);
+        this.picked?.removeEventListener('click', this.onPicked);
+        this.older?.removeEventListener('click', this.onOlder);
+        this.win.removeEventListener('chaos:reconnected', this.onReconnected);
+        for (const item of this.attachments) {
+            this.win.URL.revokeObjectURL(item.url);
+        }
+        for (const id of [...this.urls.keys()]) {
+            this.revoke(id);
+        }
+    }
+}
+
+export function attach(dotnet) {
+    const client = new PostcardClient(dotnet, document, window);
+    client.start();
+    return {
+        apply: updates => client.apply(updates),
+        dispose: () => client.dispose(),
+    };
+}
+
+
+================================================================================
 FILE:     src/Chaos.Web/Components/Islands/SlotIsland.razor
 SIZE:     5.19 KB (5314 bytes)
 LINES:    159
@@ -7028,10 +8391,10 @@ export function attach(machine, dotnet) {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Layout/MainLayout.razor
-SIZE:     1.22 KB (1250 bytes)
-LINES:    40
-SHA256:   03db73ed2964dc64f603500b22906249094355528590f3278f39d88637ec0dcc
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     1.27 KB (1302 bytes)
+LINES:    41
+SHA256:   d337582e5d0a15030fca06c6fc8cd2f1c97349f7ea0c4bf77fef9c6878c224de
+MODIFIED: 2026-10-31 22:45:31 (UTC)
 ================================================================================
 
 @inherits LayoutComponentBase
@@ -7041,6 +8404,7 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
     <a class="brand" href="">chaos</a>
     <nav aria-label="Main">
         <NavLink href="board">Board</NavLink>
+        <NavLink href="postcard">Postcard</NavLink>
         <NavLink href="canvas">Canvas</NavLink>
         <NavLink href="slots">Slots</NavLink>
         <NavLink href="latency">Latency</NavLink>
@@ -7301,10 +8665,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Pages/About.razor
-SIZE:     9.13 KB (9353 bytes)
-LINES:    60
-SHA256:   a133612f257815ffa599100f7842d09133cb4250df398f915402197d17350210
-MODIFIED: 2026-10-31 02:28:55 (UTC)
+SIZE:     10.07 KB (10312 bytes)
+LINES:    62
+SHA256:   9a648e14002adfba7b8bd5eeb636b3d28a234e9fb22db2417ad37cfa56c9784e
+MODIFIED: 2026-10-31 22:45:47 (UTC)
 ================================================================================
 
 @page "/about"
@@ -7312,7 +8676,7 @@ MODIFIED: 2026-10-31 02:28:55 (UTC)
 <PageTitle>About chaos</PageTitle>
 
 <h1>About</h1>
-<p class="lede">Chaos is a small public experiment: a message board, a drawing canvas, a slot machine and a latency test that anyone can use, with no accounts and nothing kept for long.</p>
+<p class="lede">Chaos is a small public experiment: a message board, a postcard, a drawing canvas, a slot machine and a latency test that anyone can use, with no accounts and nothing kept for long.</p>
 
 <h2>Why it exists</h2>
 <p>To show how much a plain Blazor Server app can do on a free hosting plan with a quarter of a CPU and 256 MB of memory, with no database, no cookies and no third-party code. The HTML, the CSS and the small amount of JavaScript are all written by hand.</p>
@@ -7321,6 +8685,8 @@ MODIFIED: 2026-10-31 02:28:55 (UTC)
 <dl>
     <dt><a href="board">Board</a></dt>
     <dd>Post a message of up to 500 characters. Everyone on the board sees it at once. The server keeps the newest 50. This browser keeps up to 10,000 on your device, so you still see messages after the server has forgotten them. Those have a dotted border. Your own messages are marked <em>Your message</em> in this browser only. You can choose to attach your location and some browser details to your messages; see <a href="about#location">Location and details</a>.</dd>
+    <dt><a href="postcard">Postcard</a></dt>
+    <dd>Send a postcard of up to 5,000 characters with up to four PNG, JPEG or GIF images, each up to 2 MB and 4,096 pixels on a side, 4 MB in all. Larger photos are scaled down in your browser before sending. The server keeps only the newest postcard; the next one replaces it for everyone. This browser keeps up to 10,000 postcards and up to 256 MB of their images; when images go over that, the oldest images are dropped first and their text stays. The server removes metadata such as camera details and GPS coordinates from the images, keeping only the rotation. Location and details work as on the board.</dd>
     <dt><a href="canvas">Canvas</a></dt>
     <dd>Draw with a mouse, a finger or a stylus. Everyone sees each stroke as it is drawn. Anyone can reset the page for everyone. This browser keeps up to 10,000 finished strokes, so after a server restart the drawing comes back from the browsers that saw it, unless someone had pressed reset since.</dd>
     <dt><a href="slots">Slots</a></dt>
@@ -7341,29 +8707,29 @@ MODIFIED: 2026-10-31 02:28:55 (UTC)
 
 <h2>How it works</h2>
 <ul>
-    <li>Pages are rendered on the server and arrive as plain HTML. Only the board, the canvas, the slot machine and the latency test open a live connection, over a WebSocket.</li>
+    <li>Pages are rendered on the server and arrive as plain HTML. Only the board, the postcard, the canvas, the slot machine and the latency test open a live connection, over a WebSocket.</li>
     <li>The clock at the bottom of every page shows the server's time, not your device's. The page measures how far its own clock is from the server's and keeps ticking from there.</li>
     <li>Every message and every spin gets a UUIDv7 from the server clock, so its ID also records when it happened. Anything that claims to come from the future is rejected.</li>
-    <li>The server can restart at any time and then remembers nothing. When you open the board or the slots, your browser offers its 50 newest entries back, and the server keeps the ones that fit among its newest 50. The slots page also offers its 500 newest winners back for the winners list and up to 500 jackpots for the jackpot list.</li>
+    <li>The server can restart at any time and then remembers nothing. When you open the board or the slots, your browser offers its 50 newest entries back; the postcard page offers its newest postcard, images included, when the server has none, and the server keeps the ones that fit among its newest 50. The slots page also offers its 500 newest winners back for the winners list and up to 500 jackpots for the jackpot list.</li>
     <li>The canvas sends strokes in small batches of points measured from 0 to 1 across a square page, so phones and desktops draw the same picture. Each reset starts a new round, and strokes still in flight from the old one are dropped. Every finished stroke and every reset gets a UUIDv7, so after a restart the server takes back only strokes drawn after the newest reset anyone remembers.</li>
     <li>The latency test from your browser uses plain requests whose answers it cannot read, only time. It cannot see anything those sites send back, and they see a request with no cookies and no referrer.</li>
     <li>The slot result is drawn on the server with a cryptographic random number generator the moment a press is accepted. The server then refuses every press until the spin time has passed, so only one spin runs at a time. Your browser plays the reels for the time the server says is left, then adds the result to the list; your own button stays off until your reels stop, so a spin always settles on your screen before you can press again.</li>
     <li>The reels are plain HTML animated with the Web Animations API. If your device asks for reduced motion, the symbols change without spinning.</li>
-    <li>A strict Content Security Policy only allows scripts and styles from this site, and connections only to this site and the latency test endpoints. There are no inline scripts.</li>
+    <li>A strict Content Security Policy only allows scripts, styles and images from this site (postcard images are shown from your browser's own copy), and connections only to this site and the latency test endpoints. There are no inline scripts.</li>
 </ul>
 
 <h2>Before you post</h2>
-<p class="warning">Anything you post or draw goes to every connected browser at once and is stored on their devices. It can't be edited, deleted or recalled. Nothing is moderated. Don't share anything private.</p>
+<p class="warning">Anything you post, attach or draw goes to every connected browser at once and is stored on their devices. It can't be edited, deleted or recalled. Nothing is moderated. Don't share anything private.</p>
 
 <h2>Your data</h2>
-<p>There are no accounts, no cookies and no tracking. Your theme choice, your count of successful slot presses and latency tests, and when your next test is allowed are kept in this browser's local storage. Board messages, canvas strokes, slot results and latency results are kept in this browser's IndexedDB, up to 10,000 of each, with the oldest removed first. Slot jackpots are kept separately and never removed unless you clear local history. Messages you posted and results you started are marked as yours only in this browser. Latency results carry only timings: no address, no name and no device details. Rate limits count by network address in the server's memory only; addresses are never saved or shown, and devices sharing one internet connection share one limit.</p>
+<p>There are no accounts, no cookies and no tracking. Your theme choice, your count of successful slot presses and latency tests, and when your next test is allowed are kept in this browser's local storage. Board messages, postcards, canvas strokes, slot results and latency results are kept in this browser's IndexedDB, up to 10,000 of each, with the oldest removed first. Postcard images are kept up to 256 MB. Slot jackpots are kept separately and never removed unless you clear local history. Messages you posted and results you started are marked as yours only in this browser. Latency results carry only timings: no address, no name and no device details. Rate limits count by network address in the server's memory only; addresses are never saved or shown, and devices sharing one internet connection share one limit.</p>
 <h3 id="location">Location and details</h3>
-<p>This is optional and off unless you turn it on. The board works the same either way. If you tick <em>Attach my location and browser details</em> and your browser grants location permission, every message you send carries what your browser reports at that moment: latitude, longitude and accuracy, plus altitude, heading and speed when known, your time zone, UTC offset and local time, language, user agent, platform, screen and window size, CPU threads, memory, touch points, color scheme, motion and contrast settings, and connection type. Anyone can open it under the message with <em>Details</em>, and it is kept and offered back like the message itself. Nothing is looked up from it: no maps, no address, no third-party service. The server does not add your network address. Your browser reports these values and the server cannot check them. Untick the box, or block location for this site, to stop. Messages already sent keep their details.</p>
+<p>This is optional and off unless you turn it on. The board and the postcard work the same either way, and share one setting. If you tick <em>Attach my location and browser details</em> and your browser grants location permission, every message or postcard you send carries what your browser reports at that moment: latitude, longitude and accuracy, plus altitude, heading and speed when known, your time zone, UTC offset and local time, language, user agent, platform, screen and window size, CPU threads, memory, touch points, color scheme, motion and contrast settings, and connection type. Anyone can open it under the message with <em>Details</em>, and it is kept and offered back like the message itself. Nothing is looked up from it: no maps, no address, no third-party service. The server does not add your network address. Your browser reports these values and the server cannot check them. Untick the box, or block location for this site, to stop. Messages already sent keep their details.</p>
 <p class="clear">
     <button type="button" data-clear-history="clear-status">Clear local history</button>
     <output id="clear-status"></output>
 </p>
-<p>This removes the board, canvas, slot and latency history and your counts on this device. The next time you open those pages, they fill up again from the server.</p>
+<p>This removes the board, postcard, canvas, slot and latency history and your counts on this device. The next time you open those pages, they fill up again from the server.</p>
 
 <h2>Source code</h2>
 <p>The code is on <a href="https://github.com/kusl/chaos-velixir-run">GitHub</a> under the GNU Affero General Public License, version 3 or later. If you run a modified copy for other people, you have to offer them its source too.</p>
@@ -7694,24 +9060,30 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Pages/Home.razor
-SIZE:     1.19 KB (1223 bytes)
-LINES:    39
-SHA256:   24588eae8ebeb2b5bf3ee19ccf0d7e0837550f6dc92994b087377ebbbfedd4cf
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     1.43 KB (1460 bytes)
+LINES:    45
+SHA256:   d16be27301f77b6e55a77dfa3246a5e6a3366a09f216f1e58d150b1ccb8d886e
+MODIFIED: 2026-10-31 22:45:31 (UTC)
 ================================================================================
 
 @page "/"
 
 <PageTitle>Chaos</PageTitle>
 
-<h1>Four shared spaces that forget</h1>
-<p class="lede">Post a message, draw a line, pull the lever or time the internet and everyone here sees it at once. The server keeps very little, and only until it restarts.</p>
+<h1>Five shared spaces that forget</h1>
+<p class="lede">Post a message, send a postcard, draw a line, pull the lever or time the internet and everyone here sees it at once. The server keeps very little, and only until it restarts.</p>
 
 <ul class="entries">
     <li>
         <a href="board">
             <strong>Board</strong>
             <span>Messages for everyone, kept on your device after the server forgets them.</span>
+        </a>
+    </li>
+    <li>
+        <a href="postcard">
+            <strong>Postcard</strong>
+            <span>One long postcard with images at a time. The next one replaces it everywhere but on your device.</span>
         </a>
     </li>
     <li>
@@ -8134,6 +9506,232 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 <h1>Nothing here</h1>
 <p class="lede">This page doesn't exist. Try the <a href="board">board</a> or the <a href="canvas">canvas</a>.</p>
+
+
+================================================================================
+FILE:     src/Chaos.Web/Components/Pages/PostcardPage.razor
+SIZE:     2.68 KB (2748 bytes)
+LINES:    66
+SHA256:   393841c451d4daaeb80a3adc2f8f5b17c8cd21c3db7aca0ed550932611243681
+MODIFIED: 2026-10-31 22:43:42 (UTC)
+================================================================================
+
+@page "/postcard"
+@inject PostcardService Postcards
+@inject TimeProvider Time
+
+<PageTitle>Chaos postcard</PageTitle>
+
+<h1>Postcard</h1>
+<p class="lede">The server keeps one postcard: the newest. Write up to 5,000 characters and add up to four images; everyone here sees it at once, and the next postcard replaces it. This browser keeps what it has seen, images included. A dotted border marks a postcard the server has already let go.</p>
+
+<PostcardIsland Client="@_client" @rendermode="InteractiveServer" />
+
+<section class="feed" data-permanent="postcard-feed" aria-labelledby="postcard-feed-title">
+    <h2 id="postcard-feed-title" class="visually-hidden">Postcards</h2>
+    <p id="postcard-empty" class="empty" hidden="@(_card is not null)">No postcard yet. Send the first one.</p>
+    <ol id="postcard-feed" class="cards">
+        @if (_card is { } card)
+        {
+            <li @key="card.Id" class="card" data-id="@card.Id">
+                <div class="head"><time datetime="@MessageFormat.Iso(card.Id)">@MessageFormat.Label(card.Id, _now)</time></div>
+                @if (card.Text.Length > 0)
+                {
+                    <p class="text">@card.Text</p>
+                }
+                @if (card.Images.Count > 0)
+                {
+                    <div class="images">
+                        @for (var i = 0; i < card.Images.Count; i++)
+                        {
+                            var image = card.Images[i];
+                            <img src="@PostcardEndpoint.PathOf(card.Id, i)" width="@image.Width" height="@image.Height" alt="Image @(i + 1) of @card.Images.Count" decoding="async" />
+                        }
+                    </div>
+                }
+                @if (card.Meta is { Count: > 0 } meta)
+                {
+                    <details class="meta">
+                        <summary>Details</summary>
+                        <dl>
+                            @foreach (var entry in meta)
+                            {
+                                <div><dt>@MessageMeta.LabelOf(entry.Key)</dt><dd>@entry.Value</dd></div>
+                            }
+                        </dl>
+                    </details>
+                }
+            </li>
+        }
+    </ol>
+    <button type="button" id="postcard-older" class="older" hidden>Show older postcards</button>
+</section>
+
+@code {
+    private Postcard? _card;
+    private DateTimeOffset _now;
+    private string _client = ClientAddress.Unknown;
+
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _card = Postcards.Current;
+        _now = Time.GetUtcNow();
+        _client = ClientAddress.Key(HttpContext?.Connection.RemoteIpAddress);
+    }
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Components/Pages/PostcardPage.razor.css
+SIZE:     2.50 KB (2561 bytes)
+LINES:    140
+SHA256:   a43383c160f4dddf0c28abd023ef582d2cceffe44c69300499773094b982f04b
+MODIFIED: 2026-10-31 22:43:55 (UTC)
+================================================================================
+
+.feed {
+    display: grid;
+    gap: 1rem;
+}
+
+.cards {
+    display: grid;
+    gap: .6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.cards ::deep .card {
+    padding: .5rem .8rem .6rem;
+    border: 2px solid var(--ink);
+    border-radius: var(--radius);
+    background: var(--bg);
+    content-visibility: auto;
+    contain-intrinsic-size: auto 12rem;
+}
+
+.cards ::deep .card.archived {
+    border-style: dotted;
+    border-color: var(--muted);
+    color: var(--muted);
+}
+
+.cards ::deep .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem .6rem;
+}
+
+.cards ::deep time {
+    color: var(--muted);
+    font-size: .75rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.cards ::deep .yours {
+    padding: 0 .5rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: .7rem;
+}
+
+.cards ::deep .text {
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.cards ::deep .images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+    gap: .5rem;
+    margin-block-start: .5rem;
+}
+
+.cards ::deep .images > * {
+    border-radius: calc(var(--radius) / 2);
+    background: var(--surface);
+}
+
+.cards ::deep .images img {
+    display: block;
+    max-inline-size: 100%;
+    block-size: auto;
+}
+
+.cards ::deep .images .missing {
+    display: grid;
+    place-items: center;
+    min-block-size: 6rem;
+    inline-size: 100%;
+    padding: .5rem;
+    border: 1px dashed var(--line);
+    color: var(--muted);
+    font-size: .75rem;
+    text-align: center;
+}
+
+.cards ::deep .meta {
+    margin-block-start: .3rem;
+    color: var(--muted);
+    font-size: .75rem;
+}
+
+.cards ::deep .meta summary {
+    inline-size: fit-content;
+    cursor: pointer;
+}
+
+.cards ::deep .meta dl {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: .1rem .75rem;
+    margin: .35rem 0 0;
+}
+
+.cards ::deep .meta dl div {
+    display: contents;
+}
+
+.cards ::deep .meta dt {
+    font-weight: 600;
+}
+
+.cards ::deep .meta dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-variant-numeric: tabular-nums;
+}
+
+.empty {
+    margin: 0;
+    color: var(--muted);
+}
+
+.older {
+    justify-self: center;
+    border-color: var(--line);
+    color: var(--fg);
+    background: var(--surface);
+}
+
+@keyframes arrive {
+    from {
+        background: color-mix(in oklab, var(--ink) 20%, var(--bg));
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .cards ::deep .card.fresh {
+        animation: arrive .9s ease-out;
+    }
+}
 
 
 ================================================================================
@@ -8572,10 +10170,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/_Imports.razor
-SIZE:     0.40 KB (408 bytes)
-LINES:    12
-SHA256:   376f6edb060b4b21cb3c68680f45c475651415ab28cd01ffa7830f39420f6096
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     0.42 KB (435 bytes)
+LINES:    13
+SHA256:   e4c18aae451b4d819da89ae7cd8a35e31b5c5ae38c97e4ed8d03b8dae5403bf3
+MODIFIED: 2026-10-31 22:42:53 (UTC)
 ================================================================================
 
 @using Microsoft.AspNetCore.Components.Routing
@@ -8589,6 +10187,7 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 @using Chaos.Web.Infrastructure
 @using Chaos.Web.Latency
 @using Chaos.Web.Messages
+@using Chaos.Web.Postcards
 @using Chaos.Web.Slots
 
 
@@ -9204,10 +10803,10 @@ internal sealed record StrokeOffer(Guid Id, IReadOnlyList<int> Points);
 
 ================================================================================
 FILE:     src/Chaos.Web/Infrastructure/ChaosOptions.cs
-SIZE:     2.64 KB (2702 bytes)
-LINES:    90
-SHA256:   438ef00a9bf786ce7a7df3d51595668025264ca63682b42e09d7fe55a53bf1be
-MODIFIED: 2026-10-29 19:41:53 (UTC)
+SIZE:     2.90 KB (2973 bytes)
+LINES:    99
+SHA256:   dfd05e786399542572ff8e5d3000e8ed9c52545b585303d37659773980233094
+MODIFIED: 2026-10-31 22:42:53 (UTC)
 ================================================================================
 
 using Chaos.Web.Drawing;
@@ -9234,6 +10833,12 @@ internal sealed class ChaosOptions
     public double PostBurst { get; set; } = 3;
 
     public double PostsPerSecond { get; set; } = 0.5;
+
+    public double PostcardBurst { get; set; } = 2;
+
+    public double PostcardsPerSecond { get; set; } = 0.1;
+
+    public int PostcardUploads { get; set; } = 2;
 
     public int CanvasMaxPoints { get; set; } = 20_000;
 
@@ -9281,6 +10886,9 @@ internal sealed class ChaosOptions
         && BoardCapacity > 0
         && PostBurst >= 1
         && PostsPerSecond > 0
+        && PostcardBurst >= 1
+        && PostcardsPerSecond > 0
+        && PostcardUploads is >= 1 and <= 16
         && CanvasMaxPoints >= CanvasService.MaxStrokePoints
         && StrokePointBurst >= CanvasService.MaxBatchPoints
         && StrokePointsPerSecond > 0
@@ -9967,10 +11575,10 @@ internal static class RequestLimits
 
 ================================================================================
 FILE:     src/Chaos.Web/Infrastructure/SecurityHeaders.cs
-SIZE:     1.25 KB (1284 bytes)
+SIZE:     1.26 KB (1290 bytes)
 LINES:    32
-SHA256:   25db9d6c9e6e9bdb045f3ff8ac3d234148a2c23ea6e292a4a19077a8146f01b2
-MODIFIED: 2026-10-31 02:26:46 (UTC)
+SHA256:   6a2cdefbfd3defe1f5a1bdc83af2ef9fe60c8a67ccbf4d70f569ae6578780ebd
+MODIFIED: 2026-10-31 22:42:53 (UTC)
 ================================================================================
 
 using Chaos.Web.Latency;
@@ -9980,7 +11588,7 @@ namespace Chaos.Web.Infrastructure;
 internal static class SecurityHeaders
 {
     public static readonly string ContentSecurityPolicy =
-        "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' "
+        "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob:; font-src 'self'; connect-src 'self' "
         + string.Join(' ', LatencyCatalog.Origins)
         + "; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
 
@@ -11467,10 +13075,10 @@ internal static class MessageMeta
 
 ================================================================================
 FILE:     src/Chaos.Web/Messages/MessageText.cs
-SIZE:     1.30 KB (1336 bytes)
+SIZE:     1.37 KB (1401 bytes)
 LINES:    48
-SHA256:   940c9ce9c46f6ffce8f69081a188057db615bd91942ec584f7dba60a81f78600
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SHA256:   8f0f49397f37554c7386888f21046244cfa71a2604f6c8bb1e7ef172bf92ebe6
+MODIFIED: 2026-10-31 22:41:28 (UTC)
 ================================================================================
 
 using System.Globalization;
@@ -11482,7 +13090,7 @@ internal static partial class MessageText
 {
     public const int MaxLength = 500;
 
-    public static string Normalize(string? input)
+    public static string Normalize(string? input, int maxLength = MaxLength)
     {
         if (string.IsNullOrWhiteSpace(input))
         {
@@ -11492,13 +13100,13 @@ internal static partial class MessageText
         var text = string.Concat(input.ReplaceLineEndings("\n").Where(c => c == '\n' || !char.IsControl(c)));
         text = ExtraBlankLines().Replace(text, "\n\n").Trim();
 
-        if (text.Length > MaxLength)
+        if (text.Length > maxLength)
         {
             var cut = 0;
             while (cut < text.Length)
             {
                 var next = StringInfo.GetNextTextElementLength(text, cut);
-                if (cut + next > MaxLength)
+                if (cut + next > maxLength)
                 {
                     break;
                 }
@@ -11512,8 +13120,8 @@ internal static partial class MessageText
         return text.Any(IsVisible) ? text : "";
     }
 
-    public static bool IsNormalized(string? text) =>
-        !string.IsNullOrEmpty(text) && string.Equals(Normalize(text), text, StringComparison.Ordinal);
+    public static bool IsNormalized(string? text, int maxLength = MaxLength) =>
+        !string.IsNullOrEmpty(text) && string.Equals(Normalize(text, maxLength), text, StringComparison.Ordinal);
 
     private static bool IsVisible(char c) =>
         !char.IsWhiteSpace(c) && char.GetUnicodeCategory(c) != UnicodeCategory.Format;
@@ -11696,11 +13304,951 @@ internal static class Uuid7
 
 
 ================================================================================
+FILE:     src/Chaos.Web/Postcards/CleanImage.cs
+SIZE:     0.10 KB (101 bytes)
+LINES:    3
+SHA256:   f5656c6dd7d3ac5b8d4187c286451a1a2218a06bc014503125d0c7ca816c9c22
+MODIFIED: 2026-10-31 22:41:40 (UTC)
+================================================================================
+
+namespace Chaos.Web.Postcards;
+
+internal sealed record CleanImage(PostcardImage Info, byte[] Bytes);
+
+
+================================================================================
+FILE:     src/Chaos.Web/Postcards/IPostcardSubscriber.cs
+SIZE:     0.11 KB (116 bytes)
+LINES:    6
+SHA256:   87a01cd3a348e9714e984c90e889b6e86a2007c8032d0b54b1fe3694069a9d84
+MODIFIED: 2026-10-31 22:41:40 (UTC)
+================================================================================
+
+namespace Chaos.Web.Postcards;
+
+internal interface IPostcardSubscriber
+{
+    bool Deliver(PostcardUpdate update);
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Postcards/ImageSanitizer.cs
+SIZE:     12.14 KB (12432 bytes)
+LINES:    436
+SHA256:   e1c05a1fcacd9d33b8b88bd9f4a13fd76fe3620aba6cc3f15933a387e4d2f9dd
+MODIFIED: 2026-10-31 22:42:12 (UTC)
+================================================================================
+
+using System.Buffers.Binary;
+
+namespace Chaos.Web.Postcards;
+
+internal static class ImageSanitizer
+{
+    public const string Png = "image/png";
+    public const string Jpeg = "image/jpeg";
+    public const string Gif = "image/gif";
+
+    private static readonly byte[] PngSignature = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+
+    private static readonly HashSet<string> PngKept = new(StringComparer.Ordinal)
+    {
+        "IHDR", "PLTE", "IDAT", "IEND", "tRNS", "cHRM", "gAMA", "iCCP", "sBIT", "sRGB", "cICP", "mDCV", "cLLI", "pHYs", "bKGD", "hIST", "acTL", "fcTL", "fdAT",
+    };
+
+    public static CleanImage? Clean(ReadOnlySpan<byte> data)
+    {
+        if (data.Length == 0 || data.Length > PostcardRules.MaxImageBytes)
+        {
+            return null;
+        }
+
+        if (data.StartsWith(PngSignature))
+        {
+            return CleanPng(data);
+        }
+
+        if (data.Length >= 3 && data[0] == 0xFF && data[1] == 0xD8 && data[2] == 0xFF)
+        {
+            return CleanJpeg(data);
+        }
+
+        if (data.StartsWith("GIF87a"u8) || data.StartsWith("GIF89a"u8))
+        {
+            return CleanGif(data);
+        }
+
+        return null;
+    }
+
+    private static CleanImage? Finish(string type, int width, int height, MemoryStream output)
+    {
+        if (!PostcardRules.FitsSize(width, height))
+        {
+            return null;
+        }
+
+        var bytes = output.ToArray();
+        return new CleanImage(new PostcardImage(type, width, height, bytes.Length), bytes);
+    }
+
+    private static CleanImage? CleanPng(ReadOnlySpan<byte> data)
+    {
+        using var output = new MemoryStream(data.Length);
+        output.Write(PngSignature);
+        var position = PngSignature.Length;
+        var width = 0;
+        var height = 0;
+        var first = true;
+        var hasData = false;
+        while (true)
+        {
+            if (data.Length - position < 12)
+            {
+                return null;
+            }
+
+            var length = BinaryPrimitives.ReadUInt32BigEndian(data[position..]);
+            if (length > (uint)(data.Length - position - 12))
+            {
+                return null;
+            }
+
+            var type = data.Slice(position + 4, 4);
+            if (!IsChunkType(type))
+            {
+                return null;
+            }
+
+            var name = System.Text.Encoding.ASCII.GetString(type);
+            var chunk = data.Slice(position, (int)length + 12);
+            if (first)
+            {
+                if (name != "IHDR" || length != 13)
+                {
+                    return null;
+                }
+
+                width = ToInt(BinaryPrimitives.ReadUInt32BigEndian(data[(position + 8)..]));
+                height = ToInt(BinaryPrimitives.ReadUInt32BigEndian(data[(position + 12)..]));
+                first = false;
+            }
+            else if (name == "IHDR")
+            {
+                return null;
+            }
+
+            var critical = (type[0] & 0x20) == 0;
+            if (PngKept.Contains(name))
+            {
+                output.Write(chunk);
+                hasData |= name == "IDAT";
+            }
+            else if (critical)
+            {
+                return null;
+            }
+
+            position += chunk.Length;
+            if (name == "IEND")
+            {
+                return hasData ? Finish(Png, width, height, output) : null;
+            }
+        }
+    }
+
+    private static bool IsChunkType(ReadOnlySpan<byte> type)
+    {
+        foreach (var b in type)
+        {
+            if (!char.IsAsciiLetter((char)b))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static int ToInt(uint value) => value > int.MaxValue ? 0 : (int)value;
+
+    private static CleanImage? CleanJpeg(ReadOnlySpan<byte> data)
+    {
+        using var output = new MemoryStream(data.Length);
+        output.Write([0xFF, 0xD8]);
+        var position = 2;
+        var width = 0;
+        var height = 0;
+        var orientation = 0;
+        var sawFrame = false;
+        var wroteOrientation = false;
+        while (true)
+        {
+            if (position >= data.Length || data[position] != 0xFF)
+            {
+                return null;
+            }
+
+            while (position < data.Length && data[position] == 0xFF)
+            {
+                position++;
+            }
+
+            if (position >= data.Length)
+            {
+                return null;
+            }
+
+            var marker = data[position];
+            position++;
+            if (marker is 0xD8 or 0xD9 or 0x00)
+            {
+                return null;
+            }
+
+            if (marker is (>= 0xD0 and <= 0xD7) or 0x01)
+            {
+                output.Write([0xFF, marker]);
+                continue;
+            }
+
+            if (data.Length - position < 2)
+            {
+                return null;
+            }
+
+            var length = BinaryPrimitives.ReadUInt16BigEndian(data[position..]);
+            if (length < 2 || length > data.Length - position)
+            {
+                return null;
+            }
+
+            var body = data.Slice(position + 2, length - 2);
+            if (marker == 0xDA)
+            {
+                if (!sawFrame)
+                {
+                    return null;
+                }
+
+                if (orientation is > 1 and <= 8 && !wroteOrientation)
+                {
+                    WriteOrientation(output, orientation);
+                }
+
+                output.Write([0xFF, marker]);
+                output.Write(data[position..]);
+                return Finish(Jpeg, width, height, output);
+            }
+
+            if (IsFrame(marker))
+            {
+                if (body.Length < 6 || sawFrame)
+                {
+                    return null;
+                }
+
+                height = BinaryPrimitives.ReadUInt16BigEndian(body[1..]);
+                width = BinaryPrimitives.ReadUInt16BigEndian(body[3..]);
+                sawFrame = true;
+            }
+
+            if (marker == 0xE1 && orientation == 0)
+            {
+                orientation = ReadOrientation(body);
+            }
+
+            if (KeepsJpegSegment(marker, body))
+            {
+                if (marker != 0xE0 && orientation is > 1 and <= 8 && !wroteOrientation)
+                {
+                    WriteOrientation(output, orientation);
+                    wroteOrientation = true;
+                }
+
+                output.Write([0xFF, marker]);
+                output.Write(data.Slice(position, length));
+            }
+
+            position += length;
+        }
+    }
+
+    private static bool IsFrame(byte marker) =>
+        marker is >= 0xC0 and <= 0xCF && marker is not (0xC4 or 0xC8 or 0xCC);
+
+    private static bool KeepsJpegSegment(byte marker, ReadOnlySpan<byte> body) => marker switch
+    {
+        0xE0 => true,
+        0xE2 => body.StartsWith("ICC_PROFILE\0"u8),
+        0xEE => body.StartsWith("Adobe"u8),
+        >= 0xE1 and <= 0xEF => false,
+        0xFE => false,
+        _ => true,
+    };
+
+    private static int ReadOrientation(ReadOnlySpan<byte> body)
+    {
+        if (!body.StartsWith("Exif\0\0"u8))
+        {
+            return 0;
+        }
+
+        var tiff = body[6..];
+        if (tiff.Length < 8)
+        {
+            return 0;
+        }
+
+        bool little;
+        if (tiff.StartsWith("II*\0"u8))
+        {
+            little = true;
+        }
+        else if (tiff.StartsWith("MM\0*"u8))
+        {
+            little = false;
+        }
+        else
+        {
+            return 0;
+        }
+
+        var ifd = ReadUInt32(tiff[4..], little);
+        if (ifd > (uint)(tiff.Length - 2))
+        {
+            return 0;
+        }
+
+        var count = ReadUInt16(tiff[(int)ifd..], little);
+        var entries = (int)ifd + 2;
+        for (var i = 0; i < count; i++)
+        {
+            var at = entries + (i * 12);
+            if (at + 12 > tiff.Length)
+            {
+                return 0;
+            }
+
+            if (ReadUInt16(tiff[at..], little) == 0x0112 && ReadUInt16(tiff[(at + 2)..], little) == 3)
+            {
+                var value = ReadUInt16(tiff[(at + 8)..], little);
+                return value is >= 1 and <= 8 ? value : 0;
+            }
+        }
+
+        return 0;
+    }
+
+    private static ushort ReadUInt16(ReadOnlySpan<byte> data, bool little) =>
+        little ? BinaryPrimitives.ReadUInt16LittleEndian(data) : BinaryPrimitives.ReadUInt16BigEndian(data);
+
+    private static uint ReadUInt32(ReadOnlySpan<byte> data, bool little) =>
+        little ? BinaryPrimitives.ReadUInt32LittleEndian(data) : BinaryPrimitives.ReadUInt32BigEndian(data);
+
+    private static void WriteOrientation(MemoryStream output, int orientation)
+    {
+        output.Write(
+        [
+            0xFF, 0xE1, 0x00, 0x22,
+            (byte)'E', (byte)'x', (byte)'i', (byte)'f', 0x00, 0x00,
+            (byte)'M', (byte)'M', 0x00, 0x2A, 0x00, 0x00, 0x00, 0x08,
+            0x00, 0x01,
+            0x01, 0x12, 0x00, 0x03, 0x00, 0x00, 0x00, 0x01, 0x00, (byte)orientation, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00,
+        ]);
+    }
+
+    private static CleanImage? CleanGif(ReadOnlySpan<byte> data)
+    {
+        if (data.Length < 13)
+        {
+            return null;
+        }
+
+        var width = BinaryPrimitives.ReadUInt16LittleEndian(data[6..]);
+        var height = BinaryPrimitives.ReadUInt16LittleEndian(data[8..]);
+        var packed = data[10];
+        var position = 13;
+        if ((packed & 0x80) != 0)
+        {
+            position += 3 * (1 << ((packed & 0x07) + 1));
+        }
+
+        if (position > data.Length)
+        {
+            return null;
+        }
+
+        using var output = new MemoryStream(data.Length);
+        output.Write(data[..position]);
+        var frames = 0;
+        while (position < data.Length)
+        {
+            var start = position;
+            var block = data[position];
+            switch (block)
+            {
+                case 0x3B:
+                    output.WriteByte(0x3B);
+                    return frames > 0 ? Finish(Gif, width, height, output) : null;
+                case 0x21:
+                {
+                    if (data.Length - position < 2)
+                    {
+                        return null;
+                    }
+
+                    var label = data[position + 1];
+                    var end = SkipSubBlocks(data, position + 2);
+                    if (end < 0)
+                    {
+                        return null;
+                    }
+
+                    if (KeepsGifExtension(label, data[(position + 2)..end]))
+                    {
+                        output.Write(data[start..end]);
+                    }
+
+                    position = end;
+                    break;
+                }
+
+                case 0x2C:
+                {
+                    if (data.Length - position < 11 || ++frames > PostcardRules.MaxFrames)
+                    {
+                        return null;
+                    }
+
+                    var local = data[position + 9];
+                    var after = position + 10;
+                    if ((local & 0x80) != 0)
+                    {
+                        after += 3 * (1 << ((local & 0x07) + 1));
+                    }
+
+                    if (after >= data.Length)
+                    {
+                        return null;
+                    }
+
+                    var end = SkipSubBlocks(data, after + 1);
+                    if (end < 0)
+                    {
+                        return null;
+                    }
+
+                    output.Write(data[start..end]);
+                    position = end;
+                    break;
+                }
+
+                default:
+                    return null;
+            }
+        }
+
+        return null;
+    }
+
+    private static int SkipSubBlocks(ReadOnlySpan<byte> data, int position)
+    {
+        while (position < data.Length)
+        {
+            var size = data[position];
+            position += 1 + size;
+            if (size == 0)
+            {
+                return position <= data.Length ? position : -1;
+            }
+        }
+
+        return -1;
+    }
+
+    private static bool KeepsGifExtension(byte label, ReadOnlySpan<byte> blocks) => label switch
+    {
+        0xF9 => true,
+        0xFF => blocks.Length >= 12 && blocks[0] == 11 && (blocks[1..12].SequenceEqual("NETSCAPE2.0"u8) || blocks[1..12].SequenceEqual("ANIMEXTS1.0"u8)),
+        _ => false,
+    };
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Postcards/Postcard.cs
+SIZE:     0.31 KB (317 bytes)
+LINES:    10
+SHA256:   5bd110e776a9ec84e1cded00a9f7f9b2baef64636eb60abd92045b980047a3ec
+MODIFIED: 2026-10-31 22:41:40 (UTC)
+================================================================================
+
+using System.Text.Json.Serialization;
+using Chaos.Web.Messages;
+
+namespace Chaos.Web.Postcards;
+
+internal sealed record Postcard(
+    Guid Id,
+    string Text,
+    IReadOnlyList<PostcardImage> Images,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<MetaEntry>? Meta = null);
+
+
+================================================================================
+FILE:     src/Chaos.Web/Postcards/PostcardEndpoint.cs
+SIZE:     1.17 KB (1203 bytes)
+LINES:    33
+SHA256:   fe29a850358387dad39470ecf35ea9b2c07f260a400821f3fc7fd2a9da8361da
+MODIFIED: 2026-10-31 22:42:53 (UTC)
+================================================================================
+
+namespace Chaos.Web.Postcards;
+
+internal static class PostcardEndpoint
+{
+    public const string Prefix = "postcard/images";
+
+    public static string PathOf(Guid id, int index) => $"{Prefix}/{id:D}/{index}";
+
+    public static IEndpointRouteBuilder MapPostcardImages(this IEndpointRouteBuilder app)
+    {
+        ArgumentNullException.ThrowIfNull(app);
+        app.MapGet($"/{Prefix}/{{id:guid}}/{{index:int}}", static (Guid id, int index, PostcardService postcards, HttpResponse response) =>
+        {
+            if (!postcards.TryGetImage(id, index, out var image, out var bytes) || image is null)
+            {
+                response.Headers.CacheControl = "no-store";
+                return Results.NotFound();
+            }
+
+            response.Headers.CacheControl = "private, max-age=31536000, immutable";
+            response.Headers.ContentDisposition = $"inline; filename=\"postcard-{index + 1}.{Extension(image.Type)}\"";
+            return Results.Bytes(bytes, image.Type);
+        });
+        return app;
+    }
+
+    private static string Extension(string type) => type switch
+    {
+        ImageSanitizer.Png => "png",
+        ImageSanitizer.Gif => "gif",
+        _ => "jpg",
+    };
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Postcards/PostcardImage.cs
+SIZE:     0.12 KB (118 bytes)
+LINES:    3
+SHA256:   1291b1272b69e4f92e8e7913aa40d6809724409b8d3e3e9243d3073bf99f6387
+MODIFIED: 2026-10-31 22:41:40 (UTC)
+================================================================================
+
+namespace Chaos.Web.Postcards;
+
+internal sealed record PostcardImage(string Type, int Width, int Height, int Length);
+
+
+================================================================================
+FILE:     src/Chaos.Web/Postcards/PostcardReply.cs
+SIZE:     0.11 KB (116 bytes)
+LINES:    3
+SHA256:   0aea4a72f6813c70e5169db46f0c2b235959c035e056ca58f5f0e5b2582ea662
+MODIFIED: 2026-10-31 22:41:40 (UTC)
+================================================================================
+
+namespace Chaos.Web.Postcards;
+
+internal sealed record PostcardReply(PostcardResult Result, Postcard? Card = null);
+
+
+================================================================================
+FILE:     src/Chaos.Web/Postcards/PostcardResult.cs
+SIZE:     0.18 KB (184 bytes)
+LINES:    14
+SHA256:   52c0884bdff8eafe7ddc6d6ac2d273d746c2ed9355adc01acb97251531644d8b
+MODIFIED: 2026-10-31 22:41:40 (UTC)
+================================================================================
+
+namespace Chaos.Web.Postcards;
+
+internal enum PostcardResult
+{
+    Accepted,
+    Empty,
+    TooFast,
+    Repeat,
+    TooManyImages,
+    TooLarge,
+    BadImage,
+    Busy,
+    Failed,
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Postcards/PostcardRules.cs
+SIZE:     0.55 KB (559 bytes)
+LINES:    15
+SHA256:   3b785b7a94b5135b851295f5ad5397f3dac5d95165ce65d74b2cfe99d1aa196e
+MODIFIED: 2026-10-31 22:41:40 (UTC)
+================================================================================
+
+namespace Chaos.Web.Postcards;
+
+internal static class PostcardRules
+{
+    public const int MaxTextLength = 5000;
+    public const int MaxImages = 4;
+    public const int MaxImageBytes = 2 * 1024 * 1024;
+    public const int MaxTotalBytes = 4 * 1024 * 1024;
+    public const int MaxSide = 4096;
+    public const long MaxPixels = (long)MaxSide * MaxSide;
+    public const int MaxFrames = 1000;
+
+    public static bool FitsSize(int width, int height) =>
+        width is > 0 and <= MaxSide && height is > 0 and <= MaxSide && (long)width * height <= MaxPixels;
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Postcards/PostcardSent.cs
+SIZE:     1.09 KB (1119 bytes)
+LINES:    23
+SHA256:   59a6fe049f8e56ceffaaf31b21df5ef278b524aea9abe870a80bcfff68e04ccd
+MODIFIED: 2026-10-31 22:45:53 (UTC)
+================================================================================
+
+namespace Chaos.Web.Postcards;
+
+public sealed record PostcardSent(string? Id, string? Status)
+{
+    internal static PostcardSent From(PostcardReply reply)
+    {
+        ArgumentNullException.ThrowIfNull(reply);
+        return new(reply.Card?.Id.ToString("D"), StatusOf(reply.Result));
+    }
+
+    internal static string? StatusOf(PostcardResult result) => result switch
+    {
+        PostcardResult.Accepted => null,
+        PostcardResult.Empty => "Write something or add an image first.",
+        PostcardResult.TooFast => "Slow down. You can send another postcard in a moment.",
+        PostcardResult.Repeat => "That postcard is already up.",
+        PostcardResult.TooManyImages => $"Attach at most {PostcardRules.MaxImages} images.",
+        PostcardResult.TooLarge => "Each image can be 2 MB and all of them 4 MB.",
+        PostcardResult.BadImage => "One of the images is not a PNG, JPEG or GIF this site accepts, or it is larger than 4096 pixels on a side.",
+        PostcardResult.Busy => "Other people are sending images right now. Try again in a moment.",
+        _ => "Could not send. Try again.",
+    };
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Postcards/PostcardService.cs
+SIZE:     7.83 KB (8021 bytes)
+LINES:    266
+SHA256:   7cb1dc6af3b7bf58897d5a86be29ecf11558ff862dd7d2594c65fd358056f958
+MODIFIED: 2026-10-31 22:42:53 (UTC)
+================================================================================
+
+using Chaos.Web.Infrastructure;
+using Chaos.Web.Messages;
+using Microsoft.Extensions.Options;
+
+namespace Chaos.Web.Postcards;
+
+internal sealed class PostcardService : IDisposable
+{
+    private readonly TimeProvider _time;
+    private readonly KeyedTokenBuckets _posts;
+    private readonly SemaphoreSlim _uploads;
+    private readonly Lock _gate = new();
+    private readonly HashSet<IPostcardSubscriber> _subscribers = [];
+    private Stored? _current;
+    private long _version;
+
+    public PostcardService(TimeProvider time, IOptions<ChaosOptions> options)
+    {
+        ArgumentNullException.ThrowIfNull(time);
+        ArgumentNullException.ThrowIfNull(options);
+        var limits = options.Value;
+        _time = time;
+        _posts = new KeyedTokenBuckets(limits.PostcardBurst, limits.PostcardsPerSecond, time);
+        _uploads = new SemaphoreSlim(limits.PostcardUploads, limits.PostcardUploads);
+        StartedAt = time.GetUtcNow();
+    }
+
+    public DateTimeOffset StartedAt { get; }
+
+    public Postcard? Current => Volatile.Read(ref _current)?.Card;
+
+    public long Version
+    {
+        get
+        {
+            lock (_gate)
+            {
+                return _version;
+            }
+        }
+    }
+
+    public void Dispose() => _uploads.Dispose();
+
+    public static PostcardResult Check(string? text, IReadOnlyList<long> lengths)
+    {
+        ArgumentNullException.ThrowIfNull(lengths);
+        if (lengths.Count > PostcardRules.MaxImages)
+        {
+            return PostcardResult.TooManyImages;
+        }
+
+        long total = 0;
+        foreach (var length in lengths)
+        {
+            if (length is <= 0 or > PostcardRules.MaxImageBytes)
+            {
+                return PostcardResult.TooLarge;
+            }
+
+            total += length;
+        }
+
+        if (total > PostcardRules.MaxTotalBytes)
+        {
+            return PostcardResult.TooLarge;
+        }
+
+        return lengths.Count == 0 && MessageText.Normalize(text, PostcardRules.MaxTextLength).Length == 0
+            ? PostcardResult.Empty
+            : PostcardResult.Accepted;
+    }
+
+    public PostcardResult Admit(string? text, IReadOnlyList<long> lengths, string client)
+    {
+        var check = Check(text, lengths);
+        if (check is not PostcardResult.Accepted)
+        {
+            return check;
+        }
+
+        return _posts.TryTake(client) ? PostcardResult.Accepted : PostcardResult.TooFast;
+    }
+
+    public IDisposable? TryBeginUpload() => _uploads.Wait(0) ? new UploadLease(_uploads) : null;
+
+    public PostcardReply Submit(string? text, IReadOnlyList<byte[]> images, IEnumerable<MetaEntry?>? meta, string client)
+    {
+        ArgumentNullException.ThrowIfNull(images);
+        var admitted = Admit(text, [.. images.Select(image => (long)image.Length)], client);
+        return admitted is PostcardResult.Accepted ? Publish(text, images, meta) : new PostcardReply(admitted);
+    }
+
+    public PostcardReply Publish(string? input, IReadOnlyList<byte[]> images, IEnumerable<MetaEntry?>? meta)
+    {
+        ArgumentNullException.ThrowIfNull(images);
+        var text = MessageText.Normalize(input, PostcardRules.MaxTextLength);
+        var check = Check(text, [.. images.Select(image => (long)image.Length)]);
+        if (check is not PostcardResult.Accepted)
+        {
+            return new PostcardReply(check);
+        }
+
+        var clean = Clean(images);
+        if (clean is null)
+        {
+            return new PostcardReply(PostcardResult.BadImage);
+        }
+
+        lock (_gate)
+        {
+            if (_current is { } current && current.Matches(text, clean))
+            {
+                return new PostcardReply(PostcardResult.Repeat);
+            }
+
+            var id = Uuid7.After(_current?.Card.Id ?? Guid.Empty, _time.GetUtcNow());
+            var card = new Postcard(id, text, [.. clean.Select(image => image.Info)], MessageMeta.Normalize(meta));
+            Replace(new Stored(card, clean));
+            return new PostcardReply(PostcardResult.Accepted, card);
+        }
+    }
+
+    public bool WouldRestore(Guid id)
+    {
+        if (!MessageWindow.IsRestorable(id, _time.GetUtcNow(), StartedAt))
+        {
+            return false;
+        }
+
+        lock (_gate)
+        {
+            return _current is null || _current.Card.Id.CompareTo(id) < 0;
+        }
+    }
+
+    public bool Offer(Guid id, string? text, IReadOnlyList<byte[]> images, IReadOnlyList<MetaEntry>? meta)
+    {
+        ArgumentNullException.ThrowIfNull(images);
+        text ??= "";
+        if (!WouldRestore(id)
+            || (text.Length > 0 && !MessageText.IsNormalized(text, PostcardRules.MaxTextLength))
+            || Check(text, [.. images.Select(image => (long)image.Length)]) is not PostcardResult.Accepted
+            || !MessageMeta.IsNormalized(meta))
+        {
+            return false;
+        }
+
+        var clean = Clean(images);
+        if (clean is null)
+        {
+            return false;
+        }
+
+        lock (_gate)
+        {
+            if (_current is not null && _current.Card.Id.CompareTo(id) >= 0)
+            {
+                return false;
+            }
+
+            Replace(new Stored(new Postcard(id, text, [.. clean.Select(image => image.Info)], meta is { Count: > 0 } ? [.. meta] : null), clean));
+            return true;
+        }
+    }
+
+    public bool TryGetImage(Guid id, int index, out PostcardImage? info, out ReadOnlyMemory<byte> bytes)
+    {
+        var current = Volatile.Read(ref _current);
+        if (current is not null && current.Card.Id == id && index >= 0 && index < current.Images.Length)
+        {
+            info = current.Images[index].Info;
+            bytes = current.Images[index].Bytes;
+            return true;
+        }
+
+        info = null;
+        bytes = default;
+        return false;
+    }
+
+    public void Subscribe(IPostcardSubscriber subscriber)
+    {
+        ArgumentNullException.ThrowIfNull(subscriber);
+        lock (_gate)
+        {
+            if (subscriber.Deliver(PostcardUpdate.Snapshot(_version, _current?.Card)))
+            {
+                _subscribers.Add(subscriber);
+            }
+        }
+    }
+
+    public void Unsubscribe(IPostcardSubscriber subscriber)
+    {
+        lock (_gate)
+        {
+            _subscribers.Remove(subscriber);
+        }
+    }
+
+    public bool IsSubscribed(IPostcardSubscriber subscriber)
+    {
+        lock (_gate)
+        {
+            return _subscribers.Contains(subscriber);
+        }
+    }
+
+    private static CleanImage[]? Clean(IReadOnlyList<byte[]> images)
+    {
+        var clean = new CleanImage[images.Count];
+        for (var i = 0; i < images.Count; i++)
+        {
+            if (images[i] is not { } bytes || ImageSanitizer.Clean(bytes) is not { } image)
+            {
+                return null;
+            }
+
+            clean[i] = image;
+        }
+
+        return clean;
+    }
+
+    private void Replace(Stored next)
+    {
+        _version++;
+        Volatile.Write(ref _current, next);
+        var update = PostcardUpdate.Change(_version, next.Card);
+        List<IPostcardSubscriber>? dropped = null;
+        foreach (var subscriber in _subscribers)
+        {
+            if (!subscriber.Deliver(update))
+            {
+                (dropped ??= []).Add(subscriber);
+            }
+        }
+
+        if (dropped is not null)
+        {
+            _subscribers.ExceptWith(dropped);
+        }
+    }
+
+    private sealed record Stored(Postcard Card, CleanImage[] Images)
+    {
+        public bool Matches(string text, CleanImage[] images) =>
+            string.Equals(Card.Text, text, StringComparison.Ordinal)
+            && Images.Length == images.Length
+            && Images.Zip(images).All(pair => pair.First.Bytes.AsSpan().SequenceEqual(pair.Second.Bytes));
+    }
+
+    private sealed class UploadLease(SemaphoreSlim gate) : IDisposable
+    {
+        private int _released;
+
+        public void Dispose()
+        {
+            if (Interlocked.Exchange(ref _released, 1) == 0)
+            {
+                gate.Release();
+            }
+        }
+    }
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Postcards/PostcardUpdate.cs
+SIZE:     0.32 KB (328 bytes)
+LINES:    8
+SHA256:   2422d6c71eb8ac5476984c0e27fb3fa5230f03b781736d2220ac6735276e913d
+MODIFIED: 2026-10-31 22:41:40 (UTC)
+================================================================================
+
+namespace Chaos.Web.Postcards;
+
+internal sealed record PostcardUpdate(string Kind, long Version, Postcard? Card)
+{
+    public static PostcardUpdate Snapshot(long version, Postcard? card) => new("snapshot", version, card);
+
+    public static PostcardUpdate Change(long version, Postcard? card) => new("change", version, card);
+}
+
+
+================================================================================
 FILE:     src/Chaos.Web/Program.cs
-SIZE:     3.94 KB (4035 bytes)
-LINES:    110
-SHA256:   1197558b84a60e2d0bff4c6a3dc1be612fa85352226af98ae8599a0fbe2a2295
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     4.04 KB (4137 bytes)
+LINES:    113
+SHA256:   53ea4eb461c2f91af0d5540e624853aeca8a0dd4f7014ba83f82548f6ca2c8bb
+MODIFIED: 2026-10-31 22:42:53 (UTC)
 ================================================================================
 
 using System.IO.Compression;
@@ -11709,6 +14257,7 @@ using Chaos.Web.Drawing;
 using Chaos.Web.Infrastructure;
 using Chaos.Web.Latency;
 using Chaos.Web.Messages;
+using Chaos.Web.Postcards;
 using Chaos.Web.Slots;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.DataProtection;
@@ -11750,6 +14299,7 @@ builder.Services.AddDataProtection().UseEphemeralDataProtectionProvider();
 builder.Services.AddSingleton<IAntiforgery>(new CookielessAntiforgery());
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<BoardService>();
+builder.Services.AddSingleton<PostcardService>();
 builder.Services.AddSingleton<CanvasService>();
 builder.Services.AddSingleton<SlotService>();
 builder.Services.AddSingleton<ILatencyProbe, HttpLatencyProbe>();
@@ -11806,6 +14356,7 @@ app.MapGet("/time", static (TimeProvider time, HttpResponse response) =>
     response.Headers.CacheControl = "no-store";
     return Results.Json(ServerTime.Now(time));
 });
+app.MapPostcardImages();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode(server => server.DisableWebSocketCompression = true);
@@ -13110,11 +15661,195 @@ public sealed class LatencyTests(BrowserFixture browser) : IClassFixture<Browser
 
 
 ================================================================================
+FILE:     tests/Chaos.E2E/PostcardTests.cs
+SIZE:     7.90 KB (8087 bytes)
+LINES:    174
+SHA256:   79a5a011fe92bbae9a2cda226f0f4f8de28566d7812cc1828568ddfdb9d2ccaf
+MODIFIED: 2026-10-31 22:54:53 (UTC)
+================================================================================
+
+using System.Text.RegularExpressions;
+using Microsoft.Playwright;
+using static Microsoft.Playwright.Assertions;
+
+namespace Chaos.E2E;
+
+public sealed partial class PostcardTests(BrowserFixture browser) : IClassFixture<BrowserFixture>
+{
+    private static readonly byte[] Png = Convert.FromBase64String(
+        "iVBORw0KGgoAAAANSUhEUgAAAAQAAAADCAIAAAA7ljmRAAAADnRFWHRDb21tZW50AHNlY3JldGSqxSkAAAAQSURBVHicY7hgYABHDDg5AB2WDkENblrqAAAAAElFTkSuQmCC");
+
+    private const string StoredImages = """
+        id => new Promise((resolve, reject) => {
+            const request = indexedDB.open('chaos-postcards');
+            request.onsuccess = () => {
+                const db = request.result;
+                const all = db.transaction('images', 'readonly').objectStore('images').getAll(IDBKeyRange.bound(`${id}/`, `${id}/￿`));
+                all.onsuccess = () => { db.close(); resolve(all.result.length); };
+                all.onerror = () => reject(all.error);
+            };
+            request.onerror = () => reject(request.error);
+        })
+        """;
+
+    [Fact]
+    public async Task PostcardsReachOtherBrowsersWithTheirImages()
+    {
+        await using var first = await browser.NewContextAsync();
+        await using var second = await browser.NewContextAsync();
+        var writer = await OpenAsync(first);
+        var reader = await OpenAsync(second);
+        var text = $"postcard {Guid.NewGuid():N}\n\nwith a second paragraph";
+
+        var id = await SendAsync(writer, text, Png);
+
+        var mine = writer.Locator($"#postcard-feed .card[data-id='{id}']");
+        await Expect(mine.Locator(".yours")).ToHaveTextAsync("Your message");
+        var theirs = reader.Locator($"#postcard-feed .card[data-id='{id}']");
+        await Expect(theirs.Locator(".text")).ToHaveTextAsync(text);
+        await Expect(theirs.Locator(".yours")).ToHaveCountAsync(0);
+        await Expect(theirs).Not.ToHaveClassAsync(Archived());
+        await Expect(theirs.Locator(".images img")).ToHaveJSPropertyAsync("naturalWidth", 4);
+        await Expect(theirs.Locator(".images img")).ToHaveAttributeAsync("src", BlobUrl());
+        await EventuallyAsync(async () => await reader.EvaluateAsync<int>(StoredImages, id) == 1);
+    }
+
+    [Fact]
+    public async Task TheServerKeepsOnlyTheNewestPostcardButBrowsersKeepTheRest()
+    {
+        await using var context = await browser.NewContextAsync();
+        var page = await OpenAsync(context);
+        var older = await SendAsync(page, $"older {Guid.NewGuid():N}", Png);
+        await EventuallyAsync(async () => await page.EvaluateAsync<int>(StoredImages, older) == 1);
+        var newer = await SendAsync(page, $"newer {Guid.NewGuid():N}");
+
+        var old = page.Locator($"#postcard-feed .card[data-id='{older}']");
+        await Expect(old).ToHaveClassAsync(Archived());
+        await Expect(page.Locator($"#postcard-feed .card[data-id='{newer}']")).Not.ToHaveClassAsync(Archived());
+        var gone = await page.APIRequest.GetAsync($"/postcard/images/{older}/0");
+        Assert.Equal(404, gone.Status);
+
+        await page.ReloadAsync();
+        await Expect(page.Locator("#postcard-text")).ToBeEnabledAsync();
+        await Expect(old).ToHaveClassAsync(Archived());
+        await Expect(old.Locator(".yours")).ToHaveTextAsync("Your message");
+        await Expect(old.Locator(".images img")).ToHaveJSPropertyAsync("naturalWidth", 4);
+    }
+
+    [Fact]
+    public async Task ImagesAreCleanedOnTheServer()
+    {
+        await using var context = await browser.NewContextAsync();
+        var page = await OpenAsync(context);
+        var id = await SendAsync(page, "", Png);
+
+        var image = await page.APIRequest.GetAsync($"/postcard/images/{id}/0");
+        Assert.Equal(200, image.Status);
+        Assert.Equal("image/png", image.Headers["content-type"]);
+        var body = await image.BodyAsync();
+        Assert.True(body.Length < Png.Length);
+        Assert.DoesNotContain("secret", System.Text.Encoding.ASCII.GetString(body), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task TheComposerCountsAndOnlyTakesImages()
+    {
+        await using var context = await browser.NewContextAsync();
+        var page = await OpenAsync(context);
+        var count = page.Locator("#postcard-count");
+        await Expect(count).ToHaveTextAsync("0 / 5000");
+
+        await page.Locator("#postcard-text").PressSequentiallyAsync("abc");
+        await Expect(count).ToHaveTextAsync("3 / 5000");
+
+        await page.Locator("#postcard-files").SetInputFilesAsync(new FilePayload { Name = "notes.txt", MimeType = "text/plain", Buffer = "hello"u8.ToArray() });
+        await Expect(page.Locator("#postcard-status")).ToHaveTextAsync("Only PNG, JPEG and GIF images can be attached.");
+        await Expect(page.Locator("#postcard-picked li")).ToHaveCountAsync(0);
+
+        await page.Locator("#postcard-files").SetInputFilesAsync(new FilePayload { Name = "dot.png", MimeType = "image/png", Buffer = Png });
+        await Expect(page.Locator("#postcard-picked li")).ToHaveCountAsync(1);
+        await page.GetByRole(AriaRole.Button, new() { Name = "Remove image 1" }).ClickAsync();
+        await Expect(page.Locator("#postcard-picked li")).ToHaveCountAsync(0);
+
+        await page.Locator("#postcard-text").FillAsync($"counted {Guid.NewGuid():N}");
+        await page.Locator("#postcard-text").PressAsync("Control+Enter");
+        await Expect(page.Locator("#postcard-text")).ToHaveValueAsync("");
+        await Expect(count).ToHaveTextAsync("0 / 5000");
+    }
+
+    [Fact]
+    public async Task ClearingLocalHistoryDeletesThePostcards()
+    {
+        await using var context = await browser.NewContextAsync();
+        var page = await OpenAsync(context);
+        await SendAsync(page, $"to be cleared {Guid.NewGuid():N}");
+
+        await page.GotoAsync("/about");
+        await page.GetByRole(AriaRole.Button, new() { Name = "Clear local history" }).ClickAsync();
+        await Expect(page.Locator("#clear-status")).ToHaveTextAsync("Local history cleared.");
+
+        var names = await page.EvaluateAsync<string[]>("async () => (await indexedDB.databases()).map(d => d.name)");
+        Assert.DoesNotContain("chaos-postcards", names);
+    }
+
+    private static async Task<IPage> OpenAsync(IBrowserContext context)
+    {
+        var page = await context.NewPageAsync();
+        await page.GotoAsync("/postcard");
+        await Expect(page.Locator("#postcard-text")).ToBeEnabledAsync();
+        return page;
+    }
+
+    private static async Task<string> SendAsync(IPage page, string text, byte[]? image = null)
+    {
+        await page.Locator("#postcard-text").FillAsync(text);
+        if (image is not null)
+        {
+            await page.Locator("#postcard-files").SetInputFilesAsync(new FilePayload { Name = "dot.png", MimeType = "image/png", Buffer = image });
+            await Expect(page.Locator("#postcard-picked li")).ToHaveCountAsync(1);
+        }
+
+        var before = await page.Locator("#postcard-feed .card.mine").CountAsync();
+        await page.GetByRole(AriaRole.Button, new() { Name = "Send" }).ClickAsync();
+        await Expect(page.Locator("#postcard-text")).ToHaveValueAsync("");
+        await Expect(page.Locator("#postcard-feed .card.mine")).ToHaveCountAsync(before + 1);
+        var card = page.Locator("#postcard-feed .card").First;
+        await Expect(card).ToHaveClassAsync(Mine());
+        return await card.GetAttributeAsync("data-id") ?? throw new InvalidOperationException("The postcard has no id.");
+    }
+
+    private static async Task EventuallyAsync(Func<Task<bool>> condition)
+    {
+        for (var attempt = 0; attempt < 50; attempt++)
+        {
+            if (await condition())
+            {
+                return;
+            }
+
+            await Task.Delay(100, TestContext.Current.CancellationToken);
+        }
+
+        Assert.True(await condition());
+    }
+
+    [GeneratedRegex("archived")]
+    private static partial Regex Archived();
+
+    [GeneratedRegex(@"\bmine\b")]
+    private static partial Regex Mine();
+
+    [GeneratedRegex("^blob:")]
+    private static partial Regex BlobUrl();
+}
+
+
+================================================================================
 FILE:     tests/Chaos.E2E/SiteTests.cs
-SIZE:     3.96 KB (4056 bytes)
+SIZE:     3.97 KB (4069 bytes)
 LINES:    105
-SHA256:   3e441ed0d21c030ce08195f33750b706167ebd23a9f53a9651c8d95d181ced59
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SHA256:   17719143be0c6b84b87918045bdcf9a0c386f07f489ecbc3da6c8b21bdbb684a
+MODIFIED: 2026-10-31 22:55:06 (UTC)
 ================================================================================
 
 using System.Text.RegularExpressions;
@@ -13140,7 +15875,7 @@ public sealed partial class SiteTests(BrowserFixture browser) : IClassFixture<Br
         };
         page.PageError += (_, error) => errors.Add(error);
 
-        foreach (var path in new[] { "/", "/about", "/board", "/slots", "/latency", "/canvas" })
+        foreach (var path in new[] { "/", "/about", "/board", "/postcard", "/slots", "/latency", "/canvas" })
         {
             await page.GotoAsync(path);
         }
@@ -14171,10 +16906,10 @@ public sealed class LatencyOptionsTests
 
 ================================================================================
 FILE:     tests/Chaos.Web.Tests/HttpPipelineTests.cs
-SIZE:     11.60 KB (11876 bytes)
-LINES:    263
-SHA256:   44e22134ce9840b83c938ef034ba42cc9defb6bf7f7d7dbb7dacb98f77ea2e3e
-MODIFIED: 2026-10-31 02:33:30 (UTC)
+SIZE:     13.28 KB (13603 bytes)
+LINES:    293
+SHA256:   86a81689be31fcaf22fd052a00ad94c61553404e18603afdf61c24236fd8e111
+MODIFIED: 2026-10-31 22:47:34 (UTC)
 ================================================================================
 
 using System.Net;
@@ -14183,6 +16918,7 @@ using System.Text.RegularExpressions;
 using Chaos.Web.Infrastructure;
 using Chaos.Web.Latency;
 using Chaos.Web.Messages;
+using Chaos.Web.Postcards;
 using Chaos.Web.Slots;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -14208,6 +16944,7 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
     [Theory]
     [InlineData("/", "Chaos")]
     [InlineData("/board", "Chaos board")]
+    [InlineData("/postcard", "Chaos postcard")]
     [InlineData("/canvas", "Chaos canvas")]
     [InlineData("/slots", "Chaos slots")]
     [InlineData("/latency", "Chaos latency")]
@@ -14247,6 +16984,33 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
         Assert.Matches(">Latitude</dt><dd[^>]*>27.7172</dd>", item);
         Assert.Matches(">Time zone</dt><dd[^>]*>Asia/Kathmandu</dd>", item);
         Assert.Contains("id=\"compose-share\"", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task PostcardPageRendersTheCurrentPostcardAndServesItsImages()
+    {
+        var postcards = factory.Services.GetRequiredService<PostcardService>();
+        var text = $"postcard {Guid.NewGuid():N}";
+        var reply = postcards.Submit(text, [TestImages.Png(4, 3, "tEXt")], null, $"integration {Guid.NewGuid():N}");
+        Assert.Equal(PostcardResult.Accepted, reply.Result);
+        var id = reply.Card!.Id;
+        using var client = CreateClient();
+
+        var html = await client.GetStringAsync("/postcard", Cancellation);
+        Assert.Contains(text, html, StringComparison.Ordinal);
+        Assert.Contains($"src=\"postcard/images/{id}/0\" width=\"4\" height=\"3\"", html, StringComparison.Ordinal);
+        Assert.Contains("id=\"postcard-files\"", html, StringComparison.Ordinal);
+
+        using var image = await client.GetAsync($"/postcard/images/{id}/0", Cancellation);
+        Assert.Equal(HttpStatusCode.OK, image.StatusCode);
+        Assert.Equal("image/png", image.Content.Headers.ContentType?.MediaType);
+        Assert.True(image.Headers.CacheControl?.Private);
+        Assert.Equal(TestImages.Png(4, 3), await image.Content.ReadAsByteArrayAsync(Cancellation));
+
+        using var missingIndex = await client.GetAsync($"/postcard/images/{id}/1", Cancellation);
+        Assert.Equal(HttpStatusCode.NotFound, missingIndex.StatusCode);
+        using var missingCard = await client.GetAsync($"/postcard/images/{Guid.NewGuid()}/0", Cancellation);
+        Assert.Equal(HttpStatusCode.NotFound, missingCard.StatusCode);
     }
 
     [Fact]
@@ -14369,6 +17133,7 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
         Assert.StartsWith("default-src 'self'; script-src 'self'", policy, StringComparison.Ordinal);
         Assert.Contains("https://dynamodb.us-east-1.amazonaws.com", policy, StringComparison.Ordinal);
         Assert.Contains("object-src 'none'", policy, StringComparison.Ordinal);
+        Assert.Contains("img-src 'self' blob:;", policy, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -14443,11 +17208,121 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
 
 
 ================================================================================
+FILE:     tests/Chaos.Web.Tests/ImageSanitizerTests.cs
+SIZE:     3.67 KB (3761 bytes)
+LINES:    100
+SHA256:   28c7a9db6ccef3cff5ca34922ebb539e1ec931bfe326d569ad47c917a85d7ce8
+MODIFIED: 2026-10-31 22:47:16 (UTC)
+================================================================================
+
+using System.Text;
+using Chaos.Web.Postcards;
+
+namespace Chaos.Web.Tests;
+
+public sealed class ImageSanitizerTests
+{
+    [Fact]
+    public void AcceptsPngAndReadsItsSize()
+    {
+        var image = Assert.IsType<CleanImage>(ImageSanitizer.Clean(TestImages.Png(40, 30)));
+        Assert.Equal(new PostcardImage("image/png", 40, 30, image.Bytes.Length), image.Info);
+    }
+
+    [Fact]
+    public void DropsPngTextAndExifChunks()
+    {
+        var original = TestImages.Png(4, 3, "tEXt", "eXIf", "zTXt");
+        var image = Assert.IsType<CleanImage>(ImageSanitizer.Clean(original));
+        Assert.Equal(TestImages.Png(4, 3), image.Bytes);
+        Assert.DoesNotContain("secret", Encoding.ASCII.GetString(image.Bytes), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void RejectsPngWithUnknownCriticalChunks()
+    {
+        Assert.Null(ImageSanitizer.Clean(TestImages.Png(4, 3, "ZZZZ")));
+    }
+
+    [Fact]
+    public void AcceptsGifAndDropsComments()
+    {
+        var image = Assert.IsType<CleanImage>(ImageSanitizer.Clean(TestImages.Gif(2, 2, comment: true)));
+        Assert.Equal(new PostcardImage("image/gif", 2, 2, image.Bytes.Length), image.Info);
+        Assert.Equal(TestImages.Gif(2, 2), image.Bytes);
+    }
+
+    [Fact]
+    public void AcceptsJpegAndKeepsOnlyTheOrientation()
+    {
+        var image = Assert.IsType<CleanImage>(ImageSanitizer.Clean(TestImages.Jpeg(8, 6, orientation: 6, comment: true)));
+        Assert.Equal(new PostcardImage("image/jpeg", 8, 6, image.Bytes.Length), image.Info);
+        var text = Encoding.ASCII.GetString(image.Bytes);
+        Assert.DoesNotContain("secret", text, StringComparison.Ordinal);
+        Assert.Contains("Exif", text, StringComparison.Ordinal);
+        Assert.Equal(1, CountOf(image.Bytes, [0xFF, 0xE1]));
+        Assert.Equal(-1, image.Bytes.AsSpan().IndexOf([(byte)0x25, (byte)0x88]));
+        Assert.True(image.Bytes.AsSpan().IndexOf([(byte)0x01, (byte)0x12, (byte)0x00, (byte)0x03]) > 0);
+        Assert.Equal([0xFF, 0xD9], image.Bytes[^2..]);
+    }
+
+    [Fact]
+    public void JpegWithoutOrientationLosesItsExif()
+    {
+        var image = Assert.IsType<CleanImage>(ImageSanitizer.Clean(TestImages.Jpeg(8, 6, orientation: 1)));
+        Assert.DoesNotContain("Exif", Encoding.ASCII.GetString(image.Bytes), StringComparison.Ordinal);
+    }
+
+    [Theory]
+    [InlineData(0, 10)]
+    [InlineData(10, 0)]
+    [InlineData(PostcardRules.MaxSide + 1, 10)]
+    [InlineData(10, PostcardRules.MaxSide + 1)]
+    public void RejectsImpossibleSizes(int width, int height)
+    {
+        Assert.Null(ImageSanitizer.Clean(TestImages.Png(width, height)));
+        Assert.Null(ImageSanitizer.Clean(TestImages.Jpeg(width, height)));
+    }
+
+    [Fact]
+    public void RejectsOtherFormatsTruncationAndOversize()
+    {
+        Assert.Null(ImageSanitizer.Clean([]));
+        Assert.Null(ImageSanitizer.Clean("<svg xmlns=\"http://www.w3.org/2000/svg\"/>"u8));
+        Assert.Null(ImageSanitizer.Clean("RIFF0000WEBPVP8 "u8));
+        var png = TestImages.Png();
+        Assert.Null(ImageSanitizer.Clean(png.AsSpan(0, png.Length - 6)));
+        var gif = TestImages.Gif();
+        Assert.Null(ImageSanitizer.Clean(gif.AsSpan(0, gif.Length - 1)));
+        var jpeg = TestImages.Jpeg();
+        Assert.Null(ImageSanitizer.Clean(jpeg.AsSpan(0, 30)));
+        var huge = new byte[PostcardRules.MaxImageBytes + 1];
+        png.CopyTo(huge, 0);
+        Assert.Null(ImageSanitizer.Clean(huge));
+    }
+
+    private static int CountOf(byte[] bytes, byte[] pattern)
+    {
+        var count = 0;
+        var span = bytes.AsSpan();
+        int index;
+        while ((index = span.IndexOf(pattern)) >= 0)
+        {
+            count++;
+            span = span[(index + pattern.Length)..];
+        }
+
+        return count;
+    }
+}
+
+
+================================================================================
 FILE:     tests/Chaos.Web.Tests/InfrastructureTests.cs
-SIZE:     6.03 KB (6177 bytes)
-LINES:    176
-SHA256:   b06f53ebc48c7032c8ff457aebd16cbbacf88183d7b7f74aaf92eb53bddd2668
-MODIFIED: 2026-10-16 10:32:59 (UTC)
+SIZE:     6.25 KB (6400 bytes)
+LINES:    179
+SHA256:   f26eb9c946584576cdf955cda299af8ebcf24ff2ad7471463ce084b05c7d2271
+MODIFIED: 2026-10-31 22:47:17 (UTC)
 ================================================================================
 
 using System.Net;
@@ -14615,6 +17490,9 @@ public sealed class ChaosOptionsTests
     {
         Assert.False(new ChaosOptions { MaxConnections = 1, MaxConnectionsPerClient = 2 }.IsValid());
         Assert.False(new ChaosOptions { BoardCapacity = 0 }.IsValid());
+        Assert.False(new ChaosOptions { PostcardBurst = 0 }.IsValid());
+        Assert.False(new ChaosOptions { PostcardsPerSecond = 0 }.IsValid());
+        Assert.False(new ChaosOptions { PostcardUploads = 0 }.IsValid());
         Assert.False(new ChaosOptions { CanvasMaxPoints = 10 }.IsValid());
         Assert.False(new ChaosOptions { SlotCapacity = 0 }.IsValid());
         Assert.False(new ChaosOptions { SlotWinnerCapacity = 0 }.IsValid());
@@ -15090,10 +17968,10 @@ public sealed class MessageMetaTests
 
 ================================================================================
 FILE:     tests/Chaos.Web.Tests/MessageTextTests.cs
-SIZE:     1.43 KB (1462 bytes)
-LINES:    58
-SHA256:   52c8010696847c481d97f89f7064d58ba0197d9aeae392355222c4f550356848
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     1.79 KB (1836 bytes)
+LINES:    68
+SHA256:   8d0cbdf77c6fa19adb2bc28252db8112ef4801dcd507c3962ff3678ad8a87417
+MODIFIED: 2026-10-31 22:47:34 (UTC)
 ================================================================================
 
 using Chaos.Web.Messages;
@@ -15152,6 +18030,16 @@ public sealed class MessageTextTests
     public void RecognisesNormalizedText(string text, bool expected)
     {
         Assert.Equal(expected, MessageText.IsNormalized(text));
+    }
+
+    [Fact]
+    public void TakesALongerLimitWhenAsked()
+    {
+        var input = new string('x', 2000);
+        Assert.Equal(input, MessageText.Normalize(input, 5000));
+        Assert.True(MessageText.IsNormalized(input, 5000));
+        Assert.False(MessageText.IsNormalized(input));
+        Assert.Equal(MessageText.MaxLength, MessageText.Normalize(input).Length);
     }
 }
 
@@ -15248,6 +18136,227 @@ public sealed class OutboxTests
         }
 
         Assert.True(condition());
+    }
+}
+
+
+================================================================================
+FILE:     tests/Chaos.Web.Tests/PostcardServiceTests.cs
+SIZE:     8.57 KB (8774 bytes)
+LINES:    211
+SHA256:   760a3655bc6e96df5597a7a41eb653d63783aacdbf28c5b630aa33590670775d
+MODIFIED: 2026-10-31 22:47:16 (UTC)
+================================================================================
+
+using Chaos.Web.Infrastructure;
+using Chaos.Web.Messages;
+using Chaos.Web.Postcards;
+
+namespace Chaos.Web.Tests;
+
+public sealed class PostcardServiceTests : IDisposable
+{
+    private static readonly DateTimeOffset Start = new(2026, 10, 31, 12, 0, 0, TimeSpan.Zero);
+    private readonly ManualTimeProvider _time = new(Start);
+    private readonly List<PostcardService> _services = [];
+
+    public void Dispose()
+    {
+        foreach (var service in _services)
+        {
+            service.Dispose();
+        }
+    }
+
+    [Fact]
+    public void KeepsOnlyTheNewestPostcard()
+    {
+        var postcards = Create();
+        var first = postcards.Submit("first", [], null, "a");
+        _time.Advance(TimeSpan.FromSeconds(1));
+        var second = postcards.Submit("second", [TestImages.Png()], null, "b");
+
+        Assert.Equal(PostcardResult.Accepted, first.Result);
+        Assert.Equal(PostcardResult.Accepted, second.Result);
+        Assert.Equal(second.Card, postcards.Current);
+        Assert.False(postcards.TryGetImage(first.Card!.Id, 0, out _, out _));
+        Assert.True(postcards.TryGetImage(second.Card!.Id, 0, out var info, out var bytes));
+        Assert.Equal("image/png", info!.Type);
+        Assert.Equal(info.Length, bytes.Length);
+        Assert.False(postcards.TryGetImage(second.Card.Id, 1, out _, out _));
+        Assert.Equal(Start.AddSeconds(1), Uuid7.Timestamp(second.Card.Id));
+    }
+
+    [Fact]
+    public void AllowsLongTextAndCutsAtTheLimit()
+    {
+        var postcards = Create();
+        var reply = postcards.Submit(new string('x', PostcardRules.MaxTextLength + 50), [], null, "a");
+        Assert.Equal(PostcardRules.MaxTextLength, reply.Card!.Text.Length);
+        Assert.True(PostcardRules.MaxTextLength > MessageText.MaxLength);
+    }
+
+    [Fact]
+    public void ImagesAloneAreEnough()
+    {
+        var reply = Create().Submit("  ", [TestImages.Gif()], null, "a");
+        Assert.Equal(PostcardResult.Accepted, reply.Result);
+        Assert.Equal("", reply.Card!.Text);
+        Assert.Equal("image/gif", Assert.Single(reply.Card.Images).Type);
+    }
+
+    [Fact]
+    public void RejectsEmptyTooManyTooLargeAndBadImages()
+    {
+        var postcards = Create();
+        Assert.Equal(PostcardResult.Empty, postcards.Submit(" \n ", [], null, "a").Result);
+        Assert.Equal(PostcardResult.TooManyImages, postcards.Submit("x", [.. Enumerable.Repeat(TestImages.Png(), PostcardRules.MaxImages + 1)], null, "a").Result);
+        Assert.Equal(PostcardResult.TooLarge, postcards.Submit("x", [new byte[PostcardRules.MaxImageBytes + 1]], null, "a").Result);
+        Assert.Equal(PostcardResult.TooLarge, postcards.Submit("x", [.. Enumerable.Repeat(new byte[(PostcardRules.MaxTotalBytes / 3) + 1], 3)], null, "a").Result);
+        Assert.Equal(PostcardResult.BadImage, postcards.Submit("x", [TestImages.Png(), "not an image"u8.ToArray()], null, "a").Result);
+        Assert.Null(postcards.Current);
+    }
+
+    [Fact]
+    public void CheckRunsBeforeAnyUpload()
+    {
+        Assert.Equal(PostcardResult.Accepted, PostcardService.Check("hi", []));
+        Assert.Equal(PostcardResult.Accepted, PostcardService.Check(null, [10]));
+        Assert.Equal(PostcardResult.TooLarge, PostcardService.Check("hi", [0]));
+        Assert.Equal(PostcardResult.TooLarge, PostcardService.Check("hi", [-1]));
+        Assert.Equal(PostcardResult.Empty, PostcardService.Check("​", []));
+    }
+
+    [Fact]
+    public void IsRateLimitedPerClient()
+    {
+        var postcards = Create(o =>
+        {
+            o.PostcardBurst = 1;
+            o.PostcardsPerSecond = 0.1;
+        });
+        Assert.Equal(PostcardResult.Accepted, postcards.Admit("one", [], "a"));
+        Assert.Equal(PostcardResult.TooFast, postcards.Admit("two", [], "a"));
+        Assert.Equal(PostcardResult.Accepted, postcards.Admit("three", [], "b"));
+        _time.Advance(TimeSpan.FromSeconds(10));
+        Assert.Equal(PostcardResult.Accepted, postcards.Admit("four", [], "a"));
+    }
+
+    [Fact]
+    public void AnInvalidPostcardDoesNotSpendTheRateLimit()
+    {
+        var postcards = Create(o => o.PostcardBurst = 1);
+        Assert.Equal(PostcardResult.Empty, postcards.Admit(" ", [], "a"));
+        Assert.Equal(PostcardResult.Accepted, postcards.Admit("now", [], "a"));
+    }
+
+    [Fact]
+    public void RejectsARepeatOfTheCurrentPostcard()
+    {
+        var postcards = Create();
+        Assert.Equal(PostcardResult.Accepted, postcards.Submit("same", [TestImages.Png()], null, "a").Result);
+        Assert.Equal(PostcardResult.Repeat, postcards.Submit("same", [TestImages.Png()], null, "b").Result);
+        Assert.Equal(PostcardResult.Accepted, postcards.Submit("same", [], null, "c").Result);
+    }
+
+    [Fact]
+    public void UploadsAreLimitedAtOnce()
+    {
+        var postcards = Create(o => o.PostcardUploads = 1);
+        var first = postcards.TryBeginUpload();
+        Assert.NotNull(first);
+        Assert.Null(postcards.TryBeginUpload());
+        first.Dispose();
+        first.Dispose();
+        using var second = postcards.TryBeginUpload();
+        Assert.NotNull(second);
+    }
+
+    [Fact]
+    public void KeepsNormalizedDetails()
+    {
+        var reply = Create().Submit("located", [], [new("latitude", "27.7"), new("longitude", "85.3"), new("bogus", "x")], "a");
+        Assert.Equal(["latitude", "longitude"], reply.Card!.Meta!.Select(entry => entry.Key));
+    }
+
+    [Fact]
+    public void SubscribersGetTheCurrentPostcardThenEveryChange()
+    {
+        var postcards = Create();
+        var recorder = new PostcardRecorder();
+        postcards.Subscribe(recorder);
+        var reply = postcards.Submit("hello", [], null, "a");
+
+        Assert.Equal(2, recorder.Updates.Count);
+        Assert.Equal("snapshot", recorder.Updates[0].Kind);
+        Assert.Null(recorder.Updates[0].Card);
+        Assert.Equal("change", recorder.Updates[1].Kind);
+        Assert.Equal(recorder.Updates[0].Version + 1, recorder.Updates[1].Version);
+        Assert.Equal(reply.Card, recorder.Updates[1].Card);
+        Assert.Equal(postcards.Version, recorder.Updates[1].Version);
+    }
+
+    [Fact]
+    public void SubscribersThatCannotKeepUpAreDropped()
+    {
+        var postcards = Create();
+        var recorder = new PostcardRecorder(accept: false);
+        postcards.Subscribe(recorder);
+        Assert.False(postcards.IsSubscribed(recorder));
+    }
+
+    [Fact]
+    public void OfferRestoresAnOlderPostcardAfterARestart()
+    {
+        var postcards = Create();
+        var id = Guid.CreateVersion7(Start.AddDays(-1));
+        Assert.True(postcards.WouldRestore(id));
+        Assert.True(postcards.Offer(id, "back again", [TestImages.Png()], [new("latitude", "1"), new("longitude", "2")]));
+        Assert.Equal(id, postcards.Current!.Id);
+        Assert.True(postcards.TryGetImage(id, 0, out _, out _));
+        Assert.False(postcards.Offer(Guid.CreateVersion7(Start.AddDays(-2)), "older", [], null));
+        Assert.True(postcards.Offer(Guid.CreateVersion7(Start.AddHours(-1)), "newer", [], null));
+    }
+
+    [Fact]
+    public void OfferRejectsTheFutureForgeriesAndBadContent()
+    {
+        var postcards = Create();
+        Assert.False(postcards.Offer(Guid.CreateVersion7(Start.AddMinutes(1)), "future", [], null));
+        Assert.False(postcards.Offer(Guid.NewGuid(), "v4", [], null));
+        Assert.False(postcards.Offer(Guid.CreateVersion7(Start.AddDays(-1)), " padded", [], null));
+        Assert.False(postcards.Offer(Guid.CreateVersion7(Start.AddDays(-1)), "", [], null));
+        Assert.False(postcards.Offer(Guid.CreateVersion7(Start.AddDays(-1)), "bad image", [[1, 2, 3]], null));
+        Assert.False(postcards.Offer(Guid.CreateVersion7(Start.AddDays(-1)), "bad meta", [], [new("latitude", "1")]));
+        _time.Advance(TimeSpan.FromHours(1));
+        Assert.False(postcards.Offer(Guid.CreateVersion7(Start.AddMinutes(5)), "forged", [], null));
+        Assert.Null(postcards.Current);
+    }
+
+    [Fact]
+    public void OfferNeverReplacesANewerPostcard()
+    {
+        var postcards = Create();
+        postcards.Submit("live", [], null, "a");
+        Assert.False(postcards.WouldRestore(Guid.CreateVersion7(Start.AddDays(-1))));
+        Assert.False(postcards.Offer(Guid.CreateVersion7(Start.AddDays(-1)), "old", [], null));
+        Assert.Equal("live", postcards.Current!.Text);
+    }
+
+    [Fact]
+    public void StatusesExplainEveryRefusal()
+    {
+        foreach (var result in Enum.GetValues<PostcardResult>())
+        {
+            Assert.Equal(result == PostcardResult.Accepted, PostcardSent.StatusOf(result) is null);
+        }
+    }
+
+    private PostcardService Create(Action<ChaosOptions>? configure = null)
+    {
+        var service = new PostcardService(_time, Limits.Create(configure));
+        _services.Add(service);
+        return service;
     }
 }
 
@@ -15706,16 +18815,19 @@ public sealed class SlotServiceTests
 
 ================================================================================
 FILE:     tests/Chaos.Web.Tests/TestSupport.cs
-SIZE:     2.41 KB (2464 bytes)
-LINES:    110
-SHA256:   0321642aee4811888ba4e3adeebfa8212c6e0c7721e51865625d072149896606
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     5.85 KB (5990 bytes)
+LINES:    212
+SHA256:   528a4553bc7aa2b047542f9d8ab4ac0322d5a99a69949c4c0b4d565d0fed0ee0
+MODIFIED: 2026-10-31 22:46:28 (UTC)
 ================================================================================
 
+using System.Buffers.Binary;
+using System.Text;
 using Chaos.Web.Drawing;
 using Chaos.Web.Infrastructure;
 using Chaos.Web.Latency;
 using Chaos.Web.Messages;
+using Chaos.Web.Postcards;
 using Chaos.Web.Slots;
 using Microsoft.Extensions.Options;
 
@@ -15820,6 +18932,105 @@ internal sealed class FakeProbe(Func<IReadOnlyList<LatencyEndpoint>, int?[]> mea
     {
         Calls++;
         return Task.FromResult(measure(endpoints));
+    }
+}
+
+internal sealed class PostcardRecorder(bool accept = true) : IPostcardSubscriber
+{
+    public List<PostcardUpdate> Updates { get; } = [];
+
+    public bool Deliver(PostcardUpdate update)
+    {
+        if (accept)
+        {
+            Updates.Add(update);
+        }
+
+        return accept;
+    }
+}
+
+internal static class TestImages
+{
+    public static byte[] Png(int width = 4, int height = 3, params string[] extra)
+    {
+        var bytes = new List<byte>([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
+        var header = new byte[13];
+        BinaryPrimitives.WriteInt32BigEndian(header, width);
+        BinaryPrimitives.WriteInt32BigEndian(header.AsSpan(4), height);
+        header[8] = 8;
+        header[9] = 2;
+        Chunk(bytes, "IHDR", header);
+        foreach (var name in extra)
+        {
+            Chunk(bytes, name, Encoding.ASCII.GetBytes("Comment\0secret"));
+        }
+
+        Chunk(bytes, "IDAT", [0x78, 0x9C, 0x63, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01]);
+        Chunk(bytes, "IEND", []);
+        return [.. bytes];
+    }
+
+    public static byte[] Gif(int width = 2, int height = 2, bool comment = false)
+    {
+        var bytes = new List<byte>(Encoding.ASCII.GetBytes("GIF89a"));
+        bytes.AddRange([(byte)width, (byte)(width >> 8), (byte)height, (byte)(height >> 8), 0x80, 0, 0]);
+        bytes.AddRange([0, 0, 0, 255, 255, 255]);
+        bytes.AddRange([0x21, 0xFF, 11, .. Encoding.ASCII.GetBytes("NETSCAPE2.0"), 3, 1, 0, 0, 0]);
+        if (comment)
+        {
+            bytes.AddRange([0x21, 0xFE, 6, .. Encoding.ASCII.GetBytes("secret"), 0]);
+        }
+
+        bytes.AddRange([0x21, 0xF9, 4, 0, 0, 0, 0, 0]);
+        bytes.AddRange([0x2C, 0, 0, 0, 0, (byte)width, 0, (byte)height, 0, 0, 2, 2, 0x44, 0x01, 0]);
+        bytes.Add(0x3B);
+        return [.. bytes];
+    }
+
+    public static byte[] Jpeg(int width = 8, int height = 6, int orientation = 0, bool comment = false)
+    {
+        var bytes = new List<byte>([0xFF, 0xD8]);
+        Segment(bytes, 0xE0, [.. Encoding.ASCII.GetBytes("JFIF\0"), 1, 1, 0, 0, 1, 0, 1, 0, 0]);
+        if (orientation > 0)
+        {
+            Segment(bytes, 0xE1,
+            [
+                .. Encoding.ASCII.GetBytes("Exif\0\0"),
+                (byte)'I', (byte)'I', 0x2A, 0, 8, 0, 0, 0,
+                2, 0,
+                0x12, 0x01, 3, 0, 1, 0, 0, 0, (byte)orientation, 0, 0, 0,
+                0x25, 0x88, 4, 0, 1, 0, 0, 0, 0x26, 0, 0, 0,
+                0, 0, 0, 0,
+            ]);
+        }
+
+        if (comment)
+        {
+            Segment(bytes, 0xFE, Encoding.ASCII.GetBytes("secret"));
+        }
+
+        Segment(bytes, 0xDB, new byte[65]);
+        Segment(bytes, 0xC0, [8, (byte)(height >> 8), (byte)height, (byte)(width >> 8), (byte)width, 1, 1, 0x11, 0]);
+        Segment(bytes, 0xDA, [1, 1, 0, 0, 63, 0]);
+        bytes.AddRange([0x12, 0x34, 0x56, 0xFF, 0xD9]);
+        return [.. bytes];
+    }
+
+    private static void Chunk(List<byte> bytes, string name, byte[] data)
+    {
+        var length = new byte[4];
+        BinaryPrimitives.WriteInt32BigEndian(length, data.Length);
+        bytes.AddRange(length);
+        bytes.AddRange(Encoding.ASCII.GetBytes(name));
+        bytes.AddRange(data);
+        bytes.AddRange([0, 0, 0, 0]);
+    }
+
+    private static void Segment(List<byte> bytes, byte marker, byte[] data)
+    {
+        bytes.AddRange([0xFF, marker, (byte)((data.Length + 2) >> 8), (byte)(data.Length + 2)]);
+        bytes.AddRange(data);
     }
 }
 
@@ -16694,6 +19905,154 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 
 ================================================================================
+FILE:     tests/js/postcard.test.js
+SIZE:     5.21 KB (5339 bytes)
+LINES:    138
+SHA256:   51f50546c7b68dc3d4cc9bb462b7d64bc129bccf45fb416279d9685d20e64049
+MODIFIED: 2026-10-31 22:53:30 (UTC)
+================================================================================
+
+import { describe, expect, it } from 'vitest';
+import {
+    DB_NAME,
+    IMAGE_PATH,
+    LOCAL_CAP,
+    MAX_IMAGES,
+    MAX_IMAGE_BYTES,
+    MAX_SIDE,
+    MAX_TEXT,
+    MAX_TOTAL_BYTES,
+    RESIZE_SIDE,
+    cleanText,
+    fitSize,
+    hasText,
+    imageKey,
+    imageRange,
+    imageUrl,
+    isComplete,
+    isStale,
+    merge,
+    needsResize,
+    pickProblem,
+    toRecord,
+} from '../../src/Chaos.Web/Components/Islands/PostcardIsland.razor.js';
+import { DB_NAME as BOARD_DB } from '../../src/Chaos.Web/Components/Islands/BoardIsland.razor.js';
+
+const ID = '0199a000-0000-7000-8000-000000000001';
+
+describe('limits', () => {
+    it('matches the server rules', () => {
+        expect(MAX_TEXT).toBe(5000);
+        expect(MAX_IMAGES).toBe(4);
+        expect(MAX_IMAGE_BYTES).toBe(2 * 1024 * 1024);
+        expect(MAX_TOTAL_BYTES).toBe(4 * 1024 * 1024);
+        expect(MAX_SIDE).toBe(4096);
+        expect(LOCAL_CAP).toBe(10000);
+        expect(DB_NAME).not.toBe(BOARD_DB);
+    });
+});
+
+describe('image keys', () => {
+    it('sort with their postcard and stay inside its range', () => {
+        const [low, high] = imageRange(ID);
+        expect(imageKey(ID, 0) > low).toBe(true);
+        expect(imageKey(ID, 3) < high).toBe(true);
+        expect(imageKey('0199a000-0000-7000-8000-000000000002', 0) > high).toBe(true);
+    });
+
+    it('point at the server endpoint', () => {
+        expect(imageUrl(ID, 2)).toBe(`${IMAGE_PATH}/${ID}/2`);
+    });
+});
+
+describe('cleanText', () => {
+    it('keeps newlines and drops other control characters', () => {
+        expect(cleanText('a\r\nb\rc\u0000\u0007\td\u0085')).toBe('a\nb\ncd');
+    });
+
+    it('replaces lone surrogates so the payload stays small', () => {
+        expect(cleanText('x\ud800y')).toBe('x�y');
+    });
+
+    it('treats null as empty', () => {
+        expect(cleanText(null)).toBe('');
+    });
+});
+
+describe('hasText', () => {
+    it('ignores whitespace and zero-width characters', () => {
+        expect(hasText(' \n​ ')).toBe(false);
+        expect(hasText(' a ')).toBe(true);
+    });
+});
+
+describe('resizing', () => {
+    it('keeps small images and scales the longest side down', () => {
+        expect(fitSize(800, 600)).toEqual({ width: 800, height: 600 });
+        expect(fitSize(4000, 3000)).toEqual({ width: RESIZE_SIDE, height: 1536 });
+        expect(fitSize(3000, 4000)).toEqual({ width: 1536, height: RESIZE_SIDE });
+        expect(fitSize(10000, 1)).toEqual({ width: RESIZE_SIDE, height: 1 });
+    });
+
+    it('resizes large photos but never GIFs', () => {
+        expect(needsResize('image/jpeg', MAX_IMAGE_BYTES + 1, 100, 100)).toBe(true);
+        expect(needsResize('image/png', 100, MAX_SIDE + 1, 100)).toBe(true);
+        expect(needsResize('image/jpeg', 100, 100, 100)).toBe(false);
+        expect(needsResize('image/gif', MAX_IMAGE_BYTES + 1, MAX_SIDE + 1, 1)).toBe(false);
+    });
+});
+
+describe('pickProblem', () => {
+    it('accepts PNG, JPEG and GIF within the limits', () => {
+        expect(pickProblem('image/png', 10, 0, 0)).toBeNull();
+        expect(pickProblem('image/jpeg', null, 3, MAX_TOTAL_BYTES)).toBeNull();
+        expect(pickProblem('image/gif', MAX_IMAGE_BYTES, 0, 0)).toBeNull();
+    });
+
+    it('explains every refusal', () => {
+        expect(pickProblem('image/png', 10, MAX_IMAGES, 0)).toMatch(/at most 4/);
+        expect(pickProblem('image/webp', 10, 0, 0)).toMatch(/PNG, JPEG and GIF/);
+        expect(pickProblem('image/svg+xml', 10, 0, 0)).toMatch(/PNG, JPEG and GIF/);
+        expect(pickProblem('image/gif', MAX_IMAGE_BYTES + 1, 0, 0)).toMatch(/2 MB/);
+        expect(pickProblem('image/gif', 10, 1, MAX_TOTAL_BYTES)).toMatch(/4 MB/);
+    });
+});
+
+describe('records', () => {
+    const card = { id: ID, text: 'hi', images: [{ type: 'image/png', width: 4, height: 3, length: 99, extra: 1 }] };
+
+    it('keep only known fields and mark mine', () => {
+        expect(toRecord(card, false)).toEqual({ id: ID, text: 'hi', images: [{ type: 'image/png', width: 4, height: 3, length: 99 }] });
+        expect(toRecord({ ...card, meta: [{ key: 'latitude', value: '1' }] }, true)).toMatchObject({ mine: true, meta: [{ key: 'latitude', value: '1' }] });
+        expect(toRecord({ id: ID }, false)).toEqual({ id: ID, text: '', images: [] });
+    });
+
+    it('never forget that a postcard was mine', () => {
+        const record = toRecord(card, false);
+        expect(merge({ ...record, mine: true }, record).mine).toBe(true);
+        expect(merge(null, record)).not.toHaveProperty('mine');
+        expect(merge(record, { ...record, mine: true }).mine).toBe(true);
+    });
+
+    it('are complete only with every image at its size', () => {
+        const record = toRecord(card, false);
+        expect(isComplete(record, [new Blob([new Uint8Array(99)])])).toBe(true);
+        expect(isComplete(record, [new Blob([new Uint8Array(98)])])).toBe(false);
+        expect(isComplete(record, [null])).toBe(false);
+        expect(isComplete(toRecord({ id: ID, text: 'x' }, false), [])).toBe(true);
+    });
+});
+
+describe('isStale', () => {
+    it('drops changes older than what was shown but never snapshots', () => {
+        expect(isStale(3, { kind: 'change', version: 3 })).toBe(true);
+        expect(isStale(3, { kind: 'change', version: 4 })).toBe(false);
+        expect(isStale(3, { kind: 'snapshot', version: 1 })).toBe(false);
+    });
+});
+
+
+================================================================================
 FILE:     tests/js/slots.test.js
 SIZE:     12.15 KB (12442 bytes)
 LINES:    329
@@ -17066,9 +20425,9 @@ export default defineConfig({
 
 
 ===============================================================================
-EXPORT COMPLETED (UTC): 2026-10-31 22:28:34
-Total Files Exported:   174
-Total Source Size:      0.50 MB (527496 bytes)
+EXPORT COMPLETED (UTC): 2026-10-31 23:05:03
+Total Files Exported:   196
+Total Source Size:      0.61 MB (636960 bytes)
 Output File:            /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
 ===============================================================================
-DUMP SHA256 (of all lines above this one): 2f4e23266b68580533beb3d557a55caac910b84f656898ad2f3357172ac236df
+DUMP SHA256 (of all lines above this one): 196e2b73e59738c59b7ad033ad81cce69bf7a5208796a5880d0eaa6449656c8c
