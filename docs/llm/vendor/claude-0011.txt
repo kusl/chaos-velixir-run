@@ -702,3 +702,38 @@ Something isn't quite right.
 We have a failing test. 
 The application looks good though, 
 at least from what I can tell with a cursory look 
+I updated npm dependencies but I think that is unrelated 
+```bash
+==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.64.1-noble
+  Determining projects to restore...
+  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 308 ms).
+  Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web -> /tmp/app/
+Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+failed Chaos.E2E.PostcardTests.PostcardsReachOtherBrowsersWithTheirImages (5s 277ms)
+  from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Microsoft.Playwright.PlaywrightException : Locator expected to have count '1'
+  But was: '0' 
+  Call log:
+    - Expect "ToHaveCountAsync" Locator("#postcard-feed .card.mine") with timeout 5000ms
+    - waiting for Locator("#postcard-feed .card.mine")
+      14 × locator resolved to 0 elements
+         - unexpected value "0"
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, FrameExpectOptions expectOptions, Object expected, String message, String title) in /_/src/Playwright/Core/AssertionsBase.cs:97
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, ExpectedTextValue[] expectedText, Object expected, String message, String title, FrameExpectOptions options) in /_/src/Playwright/Core/AssertionsBase.cs:69
+    at Chaos.E2E.PostcardTests.SendAsync(IPage page, String text, Byte[] image) in /work/tests/Chaos.E2E/PostcardTests.cs:145
+    at Chaos.E2E.PostcardTests.PostcardsReachOtherBrowsersWithTheirImages() in /work/tests/Chaos.E2E/PostcardTests.cs:34
+    at Chaos.E2E.PostcardTests.PostcardsReachOtherBrowsersWithTheirImages() in /work/tests/Chaos.E2E/PostcardTests.cs:44
+    at Chaos.E2E.PostcardTests.PostcardsReachOtherBrowsersWithTheirImages() in /work/tests/Chaos.E2E/PostcardTests.cs:44
+    --- End of stack trace from previous location ---
+/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) failed with 1 error(s) (37s 025ms)
+Exit code: 2
+
+Test run summary: Failed!
+  total: 27
+  failed: 1
+  succeeded: 26
+  skipped: 0
+  duration: 37s 169ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
+```
