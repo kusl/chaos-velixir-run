@@ -21,15 +21,6 @@
     <button type="button" id="latency-older" class="older" hidden>Show older results</button>
 </section>
 
-<section class="feed" data-permanent="latency-jackpots" aria-labelledby="jackpots-title">
-    <h2 id="jackpots-title">Jackpots</h2>
-    <p class="note">A browser or server median under @LatencyLeaders.FastBelow ms wins; @LatencyLeaders.SlowFrom ms or more loses. The newest @Latency.JackpotCapacity of each are kept.</p>
-    <div class="boards">
-        @Board("latency-jackpot-winners", "Winners", "Nobody yet. Probably nobody ever.", _leaders.FastJackpots, "fast", null)
-        @Board("latency-jackpot-losers", "Losers", "Nobody yet. Hopefully nobody ever.", _leaders.SlowJackpots, "slow", null)
-    </div>
-</section>
-
 <section class="feed" data-permanent="latency-leaders" aria-labelledby="leaders-title">
     <h2 id="leaders-title">Leaderboard</h2>
     <p class="note">The @Latency.RankCapacity lowest and highest medians seen. A median only counts when at least half of the endpoints answered on that side.</p>
@@ -38,6 +29,15 @@
         @Board("latency-browser-slowest", "Slowest browsers", "No browser results yet.", _leaders.BrowserSlowest, null, LatencySide.Browser)
         @Board("latency-server-fastest", "Fastest server runs", "No server results yet.", _leaders.ServerFastest, null, LatencySide.Server)
         @Board("latency-server-slowest", "Slowest server runs", "No server results yet.", _leaders.ServerSlowest, null, LatencySide.Server)
+    </div>
+</section>
+
+<section class="feed" data-permanent="latency-jackpots" aria-labelledby="jackpots-title">
+    <h2 id="jackpots-title">Jackpots</h2>
+    <p class="note">A browser or server median under @LatencyLeaders.FastBelow ms wins; @LatencyLeaders.SlowFrom ms or more loses. The newest @Latency.JackpotCapacity of each are kept.</p>
+    <div class="boards">
+        @Board("latency-jackpot-winners", "Winners", "Nobody yet. Probably nobody ever.", _leaders.FastJackpots, "fast", null)
+        @Board("latency-jackpot-losers", "Losers", "Nobody yet. Hopefully nobody ever.", _leaders.SlowJackpots, "slow", null)
     </div>
 </section>
 

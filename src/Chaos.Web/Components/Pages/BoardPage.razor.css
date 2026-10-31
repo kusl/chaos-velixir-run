@@ -26,17 +26,63 @@
     color: var(--muted);
 }
 
+.messages ::deep .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem .6rem;
+}
+
 .messages ::deep time {
-    display: block;
     color: var(--muted);
     font-size: .75rem;
     font-variant-numeric: tabular-nums;
 }
 
-.messages ::deep p {
+.messages ::deep .yours {
+    padding: 0 .5rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: .7rem;
+}
+
+.messages ::deep .text {
     margin: 0;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
+}
+
+.messages ::deep .meta {
+    margin-block-start: .3rem;
+    color: var(--muted);
+    font-size: .75rem;
+}
+
+.messages ::deep .meta summary {
+    inline-size: fit-content;
+    cursor: pointer;
+}
+
+.messages ::deep .meta dl {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: .1rem .75rem;
+    margin: .35rem 0 0;
+}
+
+.messages ::deep .meta dl div {
+    display: contents;
+}
+
+.messages ::deep .meta dt {
+    font-weight: 600;
+}
+
+.messages ::deep .meta dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-variant-numeric: tabular-nums;
 }
 
 .empty {

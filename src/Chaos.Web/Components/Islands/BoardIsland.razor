@@ -11,11 +11,16 @@
         <output class="status" for="compose-text">@_status</output>
         <span id="compose-count" class="count"></span>
         <span class="hint">Ctrl+Enter sends</span>
-        <button type="submit" disabled="@(!_ready)">Send</button>
+        <button type="submit" disabled="@(!_ready || _sending)">Send</button>
+    </div>
+    <div id="compose-share-box" class="share" hidden>
+        <label><input type="checkbox" id="compose-share" /> Attach my location and browser details to my messages</label>
+        <span id="compose-share-status" class="share-status" role="status"></span>
     </div>
 </form>
 
 @code {
+    private static readonly TimeSpan MetaTimeout = TimeSpan.FromSeconds(15);
     private readonly TaskCompletionSource _attached = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private DotNetObjectReference<BoardIsland>? _self;
     private IJSObjectReference? _module;
@@ -25,6 +30,7 @@
     private string? _draft;
     private string? _status;
     private bool _ready;
+    private bool _sending;
     private bool _recount;
     private int _offered;
 
@@ -53,9 +59,9 @@
     }
 
     [JSInvokable]
-    public int Offer(string[] ids, string[] texts)
+    public int Offer(string[] ids, string[] texts, MetaEntry[]?[]? metas)
     {
-        if (ids is null || texts is null || ids.Length != texts.Length)
+        if (ids is null || texts is null || ids.Length != texts.Length || (metas is not null && metas.Length != ids.Length))
         {
             return 0;
         }
@@ -72,7 +78,7 @@
         {
             if (Guid.TryParseExact(ids[i], "D", out var id) && texts[i] is { } text)
             {
-                offered.Add(new BoardMessage(id, text));
+                offered.Add(new BoardMessage(id, text, metas?[i]));
             }
         }
 
@@ -100,21 +106,84 @@
         _self?.Dispose();
     }
 
-    private void Send()
+    private async Task Send()
     {
-        var result = Board.Post(_draft, Client);
-        _status = result switch
+        if (_sending)
         {
-            PostResult.Empty => "Type a message first.",
-            PostResult.TooFast => "Slow down. You can post again in a moment.",
-            PostResult.Repeat => "That message was just posted.",
-            _ => null,
-        };
+            return;
+        }
 
-        if (result is PostResult.Accepted)
+        _sending = true;
+        try
         {
-            _draft = null;
-            _recount = true;
+            var meta = await ReadMetaAsync();
+            var reply = Board.Submit(_draft, Client, meta);
+            _status = reply.Result switch
+            {
+                PostResult.Empty => "Type a message first.",
+                PostResult.TooFast => "Slow down. You can post again in a moment.",
+                PostResult.Repeat => "That message was just posted.",
+                _ => null,
+            };
+
+            if (reply.Message is { } message)
+            {
+                _draft = null;
+                _recount = true;
+                await OwnAsync(message.Id);
+            }
+        }
+        finally
+        {
+            _sending = false;
+        }
+    }
+
+    private async Task<MetaEntry[]?> ReadMetaAsync()
+    {
+        if (_client is null || MessageText.Normalize(_draft).Length == 0)
+        {
+            return null;
+        }
+
+        try
+        {
+            using var timeout = new CancellationTokenSource(MetaTimeout);
+            return await _client.InvokeAsync<MetaEntry[]?>("meta", timeout.Token);
+        }
+        catch (JSDisconnectedException)
+        {
+            return null;
+        }
+        catch (JSException)
+        {
+            return null;
+        }
+        catch (OperationCanceledException)
+        {
+            return null;
+        }
+    }
+
+    private async Task OwnAsync(Guid id)
+    {
+        if (_client is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _client.InvokeVoidAsync("own", id.ToString("D"));
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+        catch (JSException)
+        {
+        }
+        catch (OperationCanceledException)
+        {
         }
     }
 

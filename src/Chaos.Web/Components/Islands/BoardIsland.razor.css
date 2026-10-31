@@ -46,3 +46,27 @@ textarea:disabled {
     color: var(--danger);
     font-weight: 650;
 }
+
+.share {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem 1rem;
+    color: var(--muted);
+    font-size: .8rem;
+}
+
+.share[hidden] {
+    display: none;
+}
+
+.share label {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    cursor: pointer;
+}
+
+.share-status:empty {
+    display: none;
+}

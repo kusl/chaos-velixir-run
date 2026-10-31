@@ -9,7 +9,7 @@ internal static class SecurityHeaders
         + string.Join(' ', LatencyCatalog.Origins)
         + "; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
 
-    public const string PermissionsPolicy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()";
+    public const string PermissionsPolicy = "camera=(), microphone=(), geolocation=(self), payment=(), usb=()";
 
     public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app) =>
         app.Use((context, next) =>

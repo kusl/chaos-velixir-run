@@ -37,3 +37,164 @@ if there are a lot of files that need to change
     No bespoke sed/patch scripts — full files only for anything that changes
     Docs updated alongside code changes
     Low verbosity, no code comments
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Claude
+/
+here is another big one 
+and this one will be strictly optional 
+everything should still continue to work properly 
+even if the user declines to give us these permissions 
+but if the user gives us permission for location 
+then we add a collapsed by default field to every message they send to the board 
+in which we include all the metadata we got from the user 
+including geolocation API 
+we will NOT query any third party API such as Google Maps or Open Stret Maps 
+and we will NOT store and save IP addresses on the server for example 
+but just like we can show your press on the slots 
+we will now show your message on the message board as well 
+if it is your message 
+I understand this won't work for existing messages and that's ok 
+also there will be a collapsed by default field in the board message list
+with text size as small and subtle as the timestamp is now 
+that displays all the metadata we have about that particular message 
+for example geo location API, metadata, browser time zone 
+anything else we can capture 
+but ONLY if the browser gave us geolocation permission 
+and yes please add or update tests as necessary for this
+
+and please update all documentation accordingly as well.
+these winners and losers should go at the bottom after recent results  
+
+Use your best judgment
+
+If only a few files (under five or there about) need to change, give me the full path of the files that need to change and the FULL file 
+if there are a lot of files that need to change 
+    Delivery
+    Whole project as one tar.gz, unambiguous file placement
+    do not include any file that has not changed 
+    Any files to delete on updates called out explicitly
+    No bespoke sed/patch scripts — full files only for anything that changes
+    Docs updated alongside code changes
+    Low verbosity, no code comments
+
+Ran 94 commands, used 3 tools, and 3 more tools
+I’ve packaged the change as a tarball of 29 changed or new files. I haven’t run scripts/run-all.sh, the C# unit tests under real xUnit, or the C# end-to-end tests, because NuGet is blocked here. Please run run-all.sh before you push.
+
+There’s nothing to delete. Extract it at the repo root:
+
+cd ~/src/dotnet/chaos-velixir-run && tar -xzf chaos-velixir-run-message-details.tar.gz
+Location details
+
+Permission header fix: your Permissions-Policy header had geolocation=(), which would have blocked location on every page. It’s now geolocation=(self).
+Opt-in: a checkbox under the compose box, “Attach my location and browser details to my messages”. Ticking it is what triggers the browser’s permission prompt.
+If the browser already allows location for the site, the box starts ticked.
+Unticking is remembered, and “Clear local history” resets that choice.
+Without permission, or if the location lookup fails, the message sends normally with no details.
+What’s captured: 43 fields, all read from the browser. These are coordinates, accuracy, altitude, heading and speed, time zone, UTC offset and local time, locale and languages, user agent and platform, screen and window size, CPU threads, memory, touch, color scheme, motion and contrast settings, and connection type.
+Nothing is looked up from them and nothing goes to a third party.
+The server doesn’t add the IP address. It only accepts known fields, trims them to a length limit, and drops the whole set if latitude or longitude is missing or invalid.
+Display: each such message gets a collapsed “Details” list, the same size and colour as the timestamp. Details survive a server restart because the browser offers them back with the message.
+Your message: shown on your own posts whether or not location is on. Like the slots, ownership is remembered only in your browser.
+Latency page: Jackpots (winners and losers) now sit at the bottom: Results, then Leaderboard, then Jackpots.
+
+Tests: I added JavaScript tests (139 pass) and C# unit, integration and end-to-end tests for the new behaviour and the page order.
+
+The web project builds with warnings as errors.
+The C# unit tests and HttpPipelineTests compiled and passed against a stand-in for xUnit. The two new integration tests still need the real run.
+I ran the browser code in headless Chromium against the real board page and a fake server connection, with location allowed and with it denied. The opt-in, the details list, Your message and local storage all behaved correctly.
+The C# end-to-end tests haven’t been compiled or run.
+Docs: README, the About page, ADRs 0004, 0005, 0008, 0009 and 0020, and a new ADR 0022 are updated.
+
+
+Chaos velixir run message details.tar
+GZ 
+
+You’ve used 80% of your weekly limit
+Automatically approve is on. Claude runs on its own and pauses if anything looks unsafe. This includes using your connectors and Claude in Chrome, unless you turn them off. Learn more
+
+
+Claude finished the response
+
+
+chaos-velixir-run-message-details.tar.gz
+
+chaos-velixir-run
+2 documents read
+
+15
+80
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

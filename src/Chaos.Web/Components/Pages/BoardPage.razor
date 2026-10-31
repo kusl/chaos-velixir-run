@@ -5,7 +5,7 @@
 <PageTitle>Chaos board</PageTitle>
 
 <h1>Board</h1>
-<p class="lede">Say something. The server keeps the newest @Board.Capacity messages and this browser keeps what it has seen. A dotted border marks a message the server has already forgotten.</p>
+<p class="lede">Say something. The server keeps the newest @Board.Capacity messages and this browser keeps what it has seen. A dotted border marks a message the server has already forgotten. If you let this site see your location, your messages also carry it and some details about your browser, which anyone can open under the message.</p>
 
 <BoardIsland Client="@_client" @rendermode="InteractiveServer" />
 
@@ -15,7 +15,22 @@
     <ol id="board-feed" class="messages">
         @foreach (var message in _messages)
         {
-            <li @key="message.Id" class="msg" data-id="@message.Id"><time datetime="@MessageFormat.Iso(message.Id)">@MessageFormat.Label(message.Id, _now)</time><p>@message.Text</p></li>
+            <li @key="message.Id" class="msg" data-id="@message.Id">
+                <div class="head"><time datetime="@MessageFormat.Iso(message.Id)">@MessageFormat.Label(message.Id, _now)</time></div>
+                <p class="text">@message.Text</p>
+                @if (message.Meta is { Count: > 0 } meta)
+                {
+                    <details class="meta">
+                        <summary>Details</summary>
+                        <dl>
+                            @foreach (var entry in meta)
+                            {
+                                <div><dt>@MessageMeta.LabelOf(entry.Key)</dt><dd>@entry.Value</dd></div>
+                            }
+                        </dl>
+                    </details>
+                }
+            </li>
         }
     </ol>
     <button type="button" id="board-older" class="older" hidden>Show older messages</button>

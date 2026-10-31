@@ -223,7 +223,7 @@ export function boot(win) {
         button.disabled = true;
         try {
             const [
-                { DB_NAME: BOARD_DB, deleteDatabase },
+                { DB_NAME: BOARD_DB, SHARE_KEY, deleteDatabase },
                 { DB_NAME: SLOTS_DB, PRESS_KEY },
                 { DB_NAME: CANVAS_DB },
                 { DB_NAME: LATENCY_DB, RUNS_KEY, NEXT_KEY },
@@ -234,7 +234,7 @@ export function boot(win) {
                 import('./Islands/LatencyIsland.razor.js'),
             ]);
             const outcomes = await Promise.all([BOARD_DB, SLOTS_DB, CANVAS_DB, LATENCY_DB].map(name => deleteDatabase(win.indexedDB, name)));
-            for (const key of [PRESS_KEY, RUNS_KEY, NEXT_KEY]) {
+            for (const key of [SHARE_KEY, PRESS_KEY, RUNS_KEY, NEXT_KEY]) {
                 try {
                     win.localStorage.removeItem(key);
                 } catch {

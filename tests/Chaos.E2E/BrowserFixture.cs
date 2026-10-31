@@ -33,6 +33,18 @@ public sealed class BrowserFixture : IAsyncLifetime
 
     public Task<IBrowserContext> NewContextAsync(ColorScheme scheme = ColorScheme.Light) => NewContextAsync(BaseUrl, scheme);
 
+    public Task<IBrowserContext> NewLocatedContextAsync(float latitude, float longitude)
+    {
+        var browser = _browser ?? throw new InvalidOperationException("The browser is not running.");
+        return browser.NewContextAsync(new BrowserNewContextOptions
+        {
+            BaseURL = BaseUrl,
+            ColorScheme = ColorScheme.Light,
+            Geolocation = new Geolocation { Latitude = latitude, Longitude = longitude, Accuracy = 25 },
+            Permissions = ["geolocation"],
+        });
+    }
+
     public Task<IBrowserContext> NewContextAsync(string baseUrl, ColorScheme scheme = ColorScheme.Light)
     {
         var browser = _browser ?? throw new InvalidOperationException("The browser is not running.");

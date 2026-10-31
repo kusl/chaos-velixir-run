@@ -162,6 +162,64 @@ public sealed class BoardServiceTests
         Assert.Equal(BoardService.MaxOffers, board.Offer(offered));
     }
 
+    [Fact]
+    public void SubmitReturnsTheMessageWithNormalizedDetails()
+    {
+        var board = Create();
+        var reply = board.Submit("located", "a", [new("timeZone", " UTC "), new("longitude", "2"), new("latitude", "1"), new("mystery", "x")]);
+        Assert.Equal(PostResult.Accepted, reply.Result);
+        var message = Assert.Single(board.Messages);
+        Assert.Same(message, reply.Message);
+        Assert.Equal(
+            [new MetaEntry("latitude", "1"), new MetaEntry("longitude", "2"), new MetaEntry("timeZone", "UTC")],
+            message.Meta);
+    }
+
+    [Fact]
+    public void SubmitDropsDetailsWithoutALocation()
+    {
+        var board = Create();
+        Assert.Null(board.Submit("no location", "a", [new("timeZone", "UTC")]).Message!.Meta);
+        Assert.Null(board.Submit("no details", "b", null).Message!.Meta);
+    }
+
+    [Fact]
+    public void SubmitReturnsNoMessageWhenRefused()
+    {
+        var board = Create();
+        Assert.Null(board.Submit(" ", "a", null).Message);
+        board.Submit("same", "a", null);
+        var repeat = board.Submit("same", "b", [new("latitude", "1"), new("longitude", "2")]);
+        Assert.Equal(PostResult.Repeat, repeat.Result);
+        Assert.Null(repeat.Message);
+    }
+
+    [Fact]
+    public void DetailsReachSubscribers()
+    {
+        var board = Create();
+        var recorder = new BoardRecorder();
+        board.Subscribe(recorder);
+        board.Submit("shared", "a", [new("latitude", "1"), new("longitude", "2")]);
+        Assert.Equal("1", Assert.Single(recorder.Updates[1].Added).Meta![0].Value);
+    }
+
+    [Fact]
+    public void OfferKeepsNormalizedDetailsAndRejectsOthers()
+    {
+        var board = Create();
+        MetaEntry[] good = [new("latitude", "1"), new("longitude", "2")];
+        Assert.Equal(1, board.Offer([Old(-1, "kept") with { Meta = good }]));
+        Assert.Equal(0, board.Offer(
+        [
+            Old(-2, "reordered") with { Meta = [new("longitude", "2"), new("latitude", "1")] },
+            Old(-3, "unknown") with { Meta = [new("latitude", "1"), new("longitude", "2"), new("mystery", "x")] },
+            Old(-4, "empty") with { Meta = [] },
+            Old(-5, "no location") with { Meta = [new("timeZone", "UTC")] },
+        ]));
+        Assert.Equal(good, Assert.Single(board.Messages).Meta);
+    }
+
     private BoardService Create(Action<ChaosOptions>? configure = null) => new(_time, Limits.Create(configure));
 
     private static BoardMessage Old(int minutes, string text) =>

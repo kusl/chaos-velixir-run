@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Chaos.Web.Infrastructure;
 using Chaos.Web.Latency;
 using Chaos.Web.Messages;
@@ -51,6 +52,36 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
     }
 
     [Fact]
+    public async Task BoardPageRendersMessageDetailsCollapsed()
+    {
+        var text = $"located {Guid.NewGuid():N}";
+        var reply = factory.Services.GetRequiredService<BoardService>().Submit(text, $"integration {Guid.NewGuid():N}", [new("latitude", "27.7172"), new("longitude", "85.324"), new("timeZone", "Asia/Kathmandu")]);
+        Assert.Equal(PostResult.Accepted, reply.Result);
+        using var client = CreateClient();
+        var html = await client.GetStringAsync("/board", Cancellation);
+        var start = html.IndexOf($"data-id=\"{reply.Message!.Id}\"", StringComparison.Ordinal);
+        Assert.True(start >= 0);
+        var item = html[start..html.IndexOf("</li>", start, StringComparison.Ordinal)];
+        var details = Regex.Match(item, "<details class=\"meta\"[^>]*>");
+        Assert.True(details.Success);
+        Assert.DoesNotContain(" open", details.Value, StringComparison.Ordinal);
+        Assert.Matches(">Latitude</dt><dd[^>]*>27.7172</dd>", item);
+        Assert.Matches(">Time zone</dt><dd[^>]*>Asia/Kathmandu</dd>", item);
+        Assert.Contains("id=\"compose-share\"", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task LatencyPageListsJackpotsLast()
+    {
+        using var client = CreateClient();
+        var html = await client.GetStringAsync("/latency", Cancellation);
+        var results = html.IndexOf("id=\"runs-title\"", StringComparison.Ordinal);
+        var leaders = html.IndexOf("id=\"leaders-title\"", StringComparison.Ordinal);
+        var jackpots = html.IndexOf("id=\"jackpots-title\"", StringComparison.Ordinal);
+        Assert.True(results >= 0 && results < leaders && leaders < jackpots);
+    }
+
+    [Fact]
     public async Task SlotsPageRendersSettledResults()
     {
         var slots = factory.Services.GetRequiredService<SlotService>();
@@ -96,6 +127,8 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
         Assert.Equal("nosniff", response.Headers.GetValues("X-Content-Type-Options").Single());
         Assert.Equal("no-referrer", response.Headers.GetValues("Referrer-Policy").Single());
         Assert.Equal(SecurityHeaders.PermissionsPolicy, response.Headers.GetValues("Permissions-Policy").Single());
+        Assert.Contains("geolocation=(self)", SecurityHeaders.PermissionsPolicy, StringComparison.Ordinal);
+        Assert.Contains("camera=()", SecurityHeaders.PermissionsPolicy, StringComparison.Ordinal);
     }
 
     [Fact]

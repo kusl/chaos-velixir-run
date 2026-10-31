@@ -36,6 +36,23 @@ public sealed partial class BoardTests(BrowserFixture browser) : IClassFixture<B
         })
         """;
 
+    private const string StoredMine = """
+        text => new Promise((resolve, reject) => {
+            const request = indexedDB.open('chaos-board');
+            request.onsuccess = () => {
+                const db = request.result;
+                const all = db.transaction('messages', 'readonly').objectStore('messages').getAll();
+                all.onsuccess = () => {
+                    db.close();
+                    const record = all.result.find(m => m.text === text);
+                    resolve(record?.mine === true && Array.isArray(record.meta) && record.meta.some(e => e.key === 'latitude'));
+                };
+                all.onerror = () => reject(all.error);
+            };
+            request.onerror = () => reject(request.error);
+        })
+        """;
+
     [Fact]
     public async Task MessagesReachOtherBrowsersAndTheirLocalHistory()
     {
@@ -127,6 +144,71 @@ public sealed partial class BoardTests(BrowserFixture browser) : IClassFixture<B
     }
 
     [Fact]
+    public async Task LocationDetailsTravelWithMessagesWhenPermitted()
+    {
+        await using var locatedContext = await browser.NewLocatedContextAsync(27.7172f, 85.324f);
+        await using var readerContext = await browser.NewContextAsync();
+        var poster = await OpenBoardAsync(locatedContext);
+        var reader = await OpenBoardAsync(readerContext);
+        await Expect(poster.Locator("#compose-share")).ToBeCheckedAsync();
+        var text = $"located {Guid.NewGuid():N}";
+
+        await PostAsync(poster, text);
+
+        var mine = poster.Locator("#board-feed .msg", new() { HasText = text });
+        await Expect(mine.Locator(".yours")).ToHaveTextAsync("Your message");
+        var theirs = reader.Locator("#board-feed .msg", new() { HasText = text });
+        await Expect(theirs.Locator("details.meta")).ToBeVisibleAsync();
+        await Expect(theirs.Locator(".yours")).ToHaveCountAsync(0);
+        var latitude = theirs.Locator("details.meta dt", new() { HasText = "Latitude" });
+        await Expect(latitude).ToBeHiddenAsync();
+        await theirs.Locator("details.meta summary").ClickAsync();
+        await Expect(latitude).ToBeVisibleAsync();
+        await Expect(theirs.Locator("details.meta dd").First).ToHaveTextAsync(Kathmandu());
+        await Expect(theirs.Locator("details.meta dt", new() { HasText = "Time zone" })).ToBeVisibleAsync();
+        await EventuallyAsync(async () => (await poster.EvaluateAsync<bool>(StoredMine, text)));
+    }
+
+    [Fact]
+    public async Task UncheckingStopsDetailsButKeepsYourMessage()
+    {
+        await using var locatedContext = await browser.NewLocatedContextAsync(40.7128f, -74.006f);
+        var poster = await OpenBoardAsync(locatedContext);
+        await poster.Locator("#compose-share").UncheckAsync();
+        var text = $"unlocated {Guid.NewGuid():N}";
+
+        await PostAsync(poster, text);
+
+        var item = poster.Locator("#board-feed .msg", new() { HasText = text });
+        await Expect(item.Locator(".yours")).ToHaveTextAsync("Your message");
+        await Expect(item.Locator("details.meta")).ToHaveCountAsync(0);
+
+        await poster.ReloadAsync();
+        await Expect(poster.Locator("#compose-text")).ToBeEnabledAsync();
+        await Expect(poster.Locator("#compose-share")).Not.ToBeCheckedAsync();
+        await Expect(poster.Locator("#board-feed .msg", new() { HasText = text }).Locator(".yours")).ToHaveTextAsync("Your message");
+    }
+
+    [Fact]
+    public async Task WithoutPermissionTheBoardWorksAndAttachesNothing()
+    {
+        await using var context = await browser.NewContextAsync();
+        var page = await OpenBoardAsync(context);
+        await Expect(page.Locator("#compose-share")).Not.ToBeCheckedAsync();
+        var text = $"no permission {Guid.NewGuid():N}";
+
+        await PostAsync(page, text);
+
+        var item = page.Locator("#board-feed .msg", new() { HasText = text });
+        await Expect(item.Locator(".yours")).ToHaveTextAsync("Your message");
+        await Expect(item.Locator("details.meta")).ToHaveCountAsync(0);
+
+        await page.Locator("#compose-share").CheckAsync();
+        await Expect(page.Locator("#compose-share")).Not.ToBeCheckedAsync();
+        await Expect(page.Locator("#compose-share-status")).ToHaveTextAsync("No location permission, so nothing is attached.");
+    }
+
+    [Fact]
     public async Task ClearingLocalHistoryDeletesTheDatabase()
     {
         await using var context = await browser.NewContextAsync();
@@ -173,4 +255,7 @@ public sealed partial class BoardTests(BrowserFixture browser) : IClassFixture<B
 
     [GeneratedRegex("archived")]
     private static partial Regex Archived();
+
+    [GeneratedRegex(@"^27\.717")]
+    private static partial Regex Kathmandu();
 }

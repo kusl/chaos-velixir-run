@@ -43,17 +43,19 @@ internal sealed class BoardService
         }
     }
 
-    public PostResult Post(string? input, string client)
+    public PostResult Post(string? input, string client) => Submit(input, client, null).Result;
+
+    public PostReply Submit(string? input, string client, IEnumerable<MetaEntry?>? meta)
     {
         var text = MessageText.Normalize(input);
         if (text.Length == 0)
         {
-            return PostResult.Empty;
+            return new PostReply(PostResult.Empty);
         }
 
         if (!_posts.TryTake(client))
         {
-            return PostResult.TooFast;
+            return new PostReply(PostResult.TooFast);
         }
 
         lock (_gate)
@@ -63,14 +65,14 @@ internal sealed class BoardService
             {
                 if (string.Equals(_messages[i].Text, text, StringComparison.Ordinal))
                 {
-                    return PostResult.Repeat;
+                    return new PostReply(PostResult.Repeat);
                 }
             }
 
-            Merge([new BoardMessage(Guid.CreateVersion7(_time.GetUtcNow()), text)]);
+            var message = new BoardMessage(Guid.CreateVersion7(_time.GetUtcNow()), text, MessageMeta.Normalize(meta));
+            Merge([message]);
+            return new PostReply(PostResult.Accepted, message);
         }
-
-        return PostResult.Accepted;
     }
 
     public int Offer(IEnumerable<BoardMessage> offered)
@@ -128,7 +130,8 @@ internal sealed class BoardService
     private bool IsAcceptable(BoardMessage message, DateTimeOffset now) =>
         message is not null
         && MessageWindow.IsRestorable(message.Id, now, StartedAt)
-        && MessageText.IsNormalized(message.Text);
+        && MessageText.IsNormalized(message.Text)
+        && MessageMeta.IsNormalized(message.Meta);
 
     private int Merge(IReadOnlyCollection<BoardMessage> candidates)
     {
