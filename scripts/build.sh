@@ -9,3 +9,5 @@ dotnet restore chaos-velixir-run.slnx
 
 step "Build (Release, warnings are errors)"
 dotnet build chaos-velixir-run.slnx --configuration Release --no-restore
+dotnet list package
+dotnet list package --outdated
