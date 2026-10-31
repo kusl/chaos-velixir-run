@@ -1,8 +1,8 @@
 ===============================================================================
 PROJECT EXPORT
-Generated (UTC): 2026-10-31 02:53:58
+Generated (UTC): 2026-10-31 02:58:28
 Project Path:    /home/kushal/src/dotnet/chaos-velixir-run
-Git Commit:      edbfa3b06d283943d55df90e3cc0ec4e8dee457d
+Git Commit:      f06daf4a2e58a6b91b5d5a7e73c5df190f2450bb
 Git Branch:      main
 Git Dirty:       no
 .NET SDK:        10.0.113
@@ -1077,10 +1077,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     scripts/build.sh
-SIZE:     0.28 KB (283 bytes)
-LINES:    11
-SHA256:   c1ad3fda175baf5d6ee6b3ba180d52f77d1cdb7f54b2c4a34ebc9d22c9534772
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     0.33 KB (334 bytes)
+LINES:    13
+SHA256:   2f1f39397a0155e5d3e9dd3d71e88849a0ce509e993b1f1b1f08c0d6e1480670
+MODIFIED: 2026-10-31 02:55:58 (UTC)
 ================================================================================
 
 #!/usr/bin/env bash
@@ -1094,6 +1094,8 @@ dotnet restore chaos-velixir-run.slnx
 
 step "Build (Release, warnings are errors)"
 dotnet build chaos-velixir-run.slnx --configuration Release --no-restore
+dotnet list package
+dotnet list package --outdated
 
 
 ================================================================================
@@ -17064,9 +17066,9 @@ export default defineConfig({
 
 
 ===============================================================================
-EXPORT COMPLETED (UTC): 2026-10-31 02:54:00
+EXPORT COMPLETED (UTC): 2026-10-31 02:58:30
 Total Files Exported:   174
-Total Source Size:      0.50 MB (527445 bytes)
+Total Source Size:      0.50 MB (527496 bytes)
 Output File:            /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
 ===============================================================================
-DUMP SHA256 (of all lines above this one): 5d707397616f180f7cb0a6e726ec3bc463941840a48ae8ad4f4aaf8e6d2cbf47
+DUMP SHA256 (of all lines above this one): 80ac8fd9a296fe4426439a71a55c319c460a038beff55b77d1400ebda62ce61a
