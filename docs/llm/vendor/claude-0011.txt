@@ -698,3 +698,7 @@ chaos-velixir-run
 
 
 
+Something isn't quite right. 
+We have a failing test. 
+The application looks good though, 
+at least from what I can tell with a cursory look 
