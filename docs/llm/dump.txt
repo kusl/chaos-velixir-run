@@ -1,12 +1,12 @@
 ===============================================================================
 PROJECT EXPORT
-Generated (UTC): 2026-10-31 02:18:47
+Generated (UTC): 2026-10-31 02:47:46
 Project Path:    /home/kushal/src/dotnet/chaos-velixir-run
-Git Commit:      77807b39cc299ccd7fc8889a7b00bc7ef210ee6e
+Git Commit:      2a5ea27a8de760b948267242848c4b50f29df937
 Git Branch:      main
-Git Dirty:       yes (uncommitted changes are included below)
+Git Dirty:       no
 .NET SDK:        10.0.113
-Files Exported:  168
+Files Exported:  174
 ===============================================================================
 
 DIRECTORY STRUCTURE (exported files only):
@@ -49,6 +49,7 @@ DIRECTORY STRUCTURE (exported files only):
             0019-slots.md
             0020-latency.md
             0021-server-clock.md
+            0022-message-details.md
             README.md
     global.json
     scripts/
@@ -148,8 +149,12 @@ DIRECTORY STRUCTURE (exported files only):
                 BoardUpdate.cs
                 IBoardSubscriber.cs
                 MessageFormat.cs
+                MessageMeta.cs
                 MessageText.cs
                 MessageWindow.cs
+                MetaEntry.cs
+                MetaField.cs
+                PostReply.cs
                 PostResult.cs
                 Uuid7.cs
             Program.cs
@@ -188,6 +193,7 @@ DIRECTORY STRUCTURE (exported files only):
             LatencyRunTests.cs
             LatencyServiceTests.cs
             MessageFormatTests.cs
+            MessageMetaTests.cs
             MessageTextTests.cs
             OutboxTests.cs
             SlotRulesTests.cs
@@ -455,20 +461,20 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     README.md
-SIZE:     3.28 KB (3357 bytes)
+SIZE:     3.54 KB (3622 bytes)
 LINES:    46
-SHA256:   676ad0b59f4e223648d2774ffd44c84e1cec0e5665e225a110cfd745eb671740
-MODIFIED: 2026-10-29 20:03:06 (UTC)
+SHA256:   1bf6b11f52856c7908378ac66bc10f5ef8e93d25c44483b71856ee6912fbd172
+MODIFIED: 2026-10-31 02:28:55 (UTC)
 ================================================================================
 
 # chaos-velixir-run
 
 A message board, a shared drawing canvas, a shared slot machine and a shared latency test that everyone sees live and nobody keeps. Blazor Server on .NET 10, on the [velixir](https://velixir.net) free plan (0.25 vCPU, 256 MB). Live at https://chaos.velixir.run/.
 
-- Board: the server keeps the newest 50 messages; each browser keeps up to 10,000 in IndexedDB and offers its newest 50 back after a server restart. Dotted border means the server no longer has it.
+- Board: the server keeps the newest 50 messages; each browser keeps up to 10,000 in IndexedDB and offers its newest 50 back after a server restart. Dotted border means the server no longer has it. Your own posts show `Your message` (this browser only). Optional: after the poster opts in and grants geolocation, each post carries a collapsed `Details` list with the browser's location, time zone and device details. No lookups, no third parties, no IP stored.
 - Canvas: one black pen on a shared square page, live for everyone, one reset button. Browsers keep finished strokes (10,000) and the latest reset, and offer back up to 500 strokes after a server restart.
 - Slots: one shared machine. A press draws five symbols (A–Z, 0–9) on the server and locks the button for everyone until the reels stop. Three of a kind or a five-symbol straight wins. Four or five of a kind, or an unbroken sequence along `0-9A-Z` (`ABCDE`, `43210`), is a jackpot: everyone watching sees a celebration, and jackpots are never deleted, on the server or in the browser. Results are kept like board messages, plus the newest 500 winners. Tapping a winner shows its odds and the probability behind them. Ten successful presses unlock auto spin, which also runs in background tabs.
-- Latency: one button times public endpoints from the browser and from the server. One test at a time, one per network every 5 minutes. Results are kept like board messages, without identity. Below them: jackpots (a median under 10 ms wins, 100 ms or more loses) and the 10 fastest and slowest browser and server medians. Browsers offer back their own 10 best and worst of each after a restart. Ten tests unlock auto run.
+- Latency: one button times public endpoints from the browser and from the server. One test at a time, one per network every 5 minutes. Results are kept like board messages, without identity. Below them: the 10 fastest and slowest browser and server medians, then jackpots (a median under 10 ms wins, 100 ms or more loses). Browsers offer back their own 10 best and worst of each after a restart. Ten tests unlock auto run.
 - Every page footer shows the ticking server time.
 - No third-party code, no cookies, no accounts. Strict CSP with no inline scripts; `connect-src` also lists the latency endpoints.
 
@@ -603,10 +609,10 @@ velixir builds with a Nixpacks-style plan: `dotnet restore` and `dotnet publish 
 
 ================================================================================
 FILE:     docs/adr/0004-message-ids-and-reconciliation.md
-SIZE:     1.20 KB (1229 bytes)
+SIZE:     1.26 KB (1288 bytes)
 LINES:    10
-SHA256:   d7f19b03e910e15052950c9d70d4a3bb70c83b55136e634eebb8e9004db6ed06
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SHA256:   0d9476f09dae9f964dee0871a291328e8f7096baafb2790a2c495ebfe5a6f4b3
+MODIFIED: 2026-10-31 02:28:55 (UTC)
 ================================================================================
 
 # 0004 UUIDv7 ids and handshake rules
@@ -616,24 +622,24 @@ Status: accepted
 - The server creates every id with `Guid.CreateVersion7` from its own clock. Clients never mint ids. Timestamps are read from the id.
 - The id string sorts in time order, so it is also the IndexedDB key and the sort key everywhere. Two posts in the same millisecond sort in random order; that is accepted.
 - Handshake: the client offers its 50 newest local messages, newest first, in chunks under 24 KB so no SignalR message exceeds the 32 KB limit. The server considers at most 50 per circuit.
-- An offered message is accepted only if its id is a valid UUIDv7, its time is not in the future, its time is before the server started, and its text is already normalized. Then it is merged; the server keeps the newest 50 and keeps its own copy on id ties.
+- An offered message is accepted only if its id is a valid UUIDv7, its time is not in the future, its time is before the server started, and its text is already normalized, and its `meta` is absent or already normalized (ADR 0022). Then it is merged; the server keeps the newest 50 and keeps its own copy on id ties.
 - The start-time rule rejects forged recent messages: anything stamped after the server started came from this server, so if the server does not have it, it is forged or already evicted. It costs posts made to an old instance during a rolling deploy; those stay in local history.
 - Posts: 500 UTF-16 code units after normalization, cut on grapheme boundaries; the same text as one of the 10 newest messages is refused.
 
 
 ================================================================================
 FILE:     docs/adr/0005-local-history.md
-SIZE:     1.28 KB (1311 bytes)
+SIZE:     1.30 KB (1336 bytes)
 LINES:    12
-SHA256:   3fc3a10f591efe7df5a4cd6570fc0cb081b32609a5c91eda137516e1759e7997
-MODIFIED: 2026-10-16 10:38:19 (UTC)
+SHA256:   28bf69904c579c304f14befcb97e438bd13a0c9422a536c01bd42784791ad4c3
+MODIFIED: 2026-10-31 02:28:55 (UTC)
 ================================================================================
 
 # 0005 IndexedDB local history
 
 Status: accepted
 
-- Database `chaos-board`, store `messages`, key path `id`, values `{ id, text }`. Slots use `chaos-slots` (v2), store `spins`, values `{ id, text, mine }`, plus an uncapped `jackpots` store (ADR 0019), and latency uses `chaos-latency`, store `runs`, same shape, through the same `LocalHistory` exported by `BoardIsland.razor.js`. The canvas uses `chaos-canvas` (ADR 0006).
+- Database `chaos-board`, store `messages`, key path `id`, values `{ id, text, meta?, mine? }` (ADR 0022). Slots use `chaos-slots` (v2), store `spins`, values `{ id, text, mine }`, plus an uncapped `jackpots` store (ADR 0019), and latency uses `chaos-latency`, store `runs`, same shape, through the same `LocalHistory` exported by `BoardIsland.razor.js`. The canvas uses `chaos-canvas` (ADR 0006).
 - Schema changes are numbered migrations in `BoardIsland.razor.js`; `onupgradeneeded` runs every step from the stored version. A database from a newer schema (`VersionError`) is deleted and recreated, since the server can refill it.
 - Other tabs close their connection on `versionchange`, so upgrades and deletes are not blocked for long.
 - Cap: 10,000 messages. After each write, the oldest are deleted with one key-range delete.
@@ -691,10 +697,10 @@ Status: accepted
 
 ================================================================================
 FILE:     docs/adr/0008-abuse-limits.md
-SIZE:     1.92 KB (1963 bytes)
-LINES:    31
-SHA256:   7cf696b72c5347dbd69dbf73e7477a38174916a9cec3a47556a581ad827ff9e3
-MODIFIED: 2026-10-29 20:03:06 (UTC)
+SIZE:     1.99 KB (2033 bytes)
+LINES:    32
+SHA256:   a6cf021fd0f10b6ac37d37871e39d5af2fa4540b6e36f5aacd3c15ea857f2b46
+MODIFIED: 2026-10-31 02:28:55 (UTC)
 ================================================================================
 
 # 0008 Rate and connection limits
@@ -710,6 +716,7 @@ Defaults live in `ChaosOptions` and can be overridden with `Chaos__*` environmen
 | WebSocket connections in total | 80, then 503 |
 | Posts per client | 3 burst, 1 every 2 s |
 | Message length | 500 |
+| Message details | 43 known keys, values 8–512 characters by key |
 | Offered messages per circuit | 50 |
 | Stroke points per circuit | 4,000 burst, 1,500 per second |
 | Points per batch / stroke / canvas | 256 / 2,048 / 20,000 |
@@ -732,10 +739,10 @@ Defaults live in `ChaosOptions` and can be overridden with `Chaos__*` environmen
 
 ================================================================================
 FILE:     docs/adr/0009-security-headers.md
-SIZE:     1.27 KB (1303 bytes)
+SIZE:     1.37 KB (1398 bytes)
 LINES:    11
-SHA256:   cd2880b93de511d8444b5261fb4a674a5769197c64c60480e154a5acbc417fc7
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SHA256:   eb1fb6b1bad94dadad098c659df71aa38dba86dea4b9c04e657b3e0ae0f637a1
+MODIFIED: 2026-10-31 02:28:55 (UTC)
 ================================================================================
 
 # 0009 Security headers, CSP, origin check
@@ -746,7 +753,7 @@ Status: accepted
 - The latency origins come from `LatencyCatalog`, so the policy and the endpoint list cannot drift. They are allowed on every page because enhanced navigation keeps the first document's policy.
 - `<ImportMap />` is left out because it emits an inline script. Modules load from fingerprinted URLs through `Assets[...]` instead.
 - `Blazor.start` is called from `App.razor.js`, not an inline script. The reconnect UI is our own element, so Blazor injects no styles. No markup uses `style` attributes.
-- Also sent: `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `Permissions-Policy`, `Cross-Origin-Opener-Policy`, `Cross-Origin-Resource-Policy`, HSTS outside development. No `Server` header. `X-Frame-Options` is omitted as legacy.
+- Also sent: `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `Permissions-Policy` (`camera=(), microphone=(), geolocation=(self), payment=(), usb=()`; geolocation for ADR 0022), `Cross-Origin-Opener-Policy`, `Cross-Origin-Resource-Policy`, HSTS outside development. No `Server` header. `X-Frame-Options` is omitted as legacy.
 - `/_blazor` requests with an `Origin` header must match the request host or `Chaos:AllowedOrigins`. Requests without `Origin` pass, since only browsers can be tricked into cross-site WebSockets.
 - Headers are set in `OnStarting` so error pages keep them.
 
@@ -950,8 +957,8 @@ Status: accepted
 FILE:     docs/adr/0020-latency.md
 SIZE:     2.65 KB (2714 bytes)
 LINES:    15
-SHA256:   27be3bc3a89dcf2aeefb4f8b6fa6f76e9bbca587e65d40b803594419d98a9393
-MODIFIED: 2026-10-29 20:03:06 (UTC)
+SHA256:   11e90e37991f0be3804a157273eb11d3dd276ea8dde3c68c5da0bae31a200a17
+MODIFIED: 2026-10-31 02:28:55 (UTC)
 ================================================================================
 
 # 0020 Shared latency test
@@ -967,7 +974,7 @@ Status: accepted
 - Leaderboards (`LatencyLeaders`): jackpot winners (a counted median under 10 ms) and losers (100 ms or more), newest `LatencyJackpotCapacity` (default 50) each; and the `LatencyRankCapacity` (default 10) lowest and highest counted medians per side, ties to the older run. Every measured or offered run is a candidate.
 - Snapshots carry `boards`: six ordered id lists (`fastJackpots`, `slowJackpots`, `browserFastest`, `browserSlowest`, `serverFastest`, `serverSlowest`) and `runs`, the texts the client has not seen. Deltas carry `boards` only when a list changes, with only new texts. Browsers save leader runs to local history.
 - After a restart, browsers read every local run and offer their 10 best and 10 worst counted medians per side through `OfferLeaders` (40 per circuit, boards only, same validation as offers). Offers are trusted like slot jackpots; the caps bound forgeries.
-- The page lists Results, then Jackpots, then Leaderboard.
+- The page lists Results, then Leaderboard, then Jackpots.
 - No identity: results hold only timings. The browser marks its own as `mine`. Test count (`chaos-latency-runs`) and next allowed time (`chaos-latency-next`) are in `localStorage`; 10 tests unlock auto run, which tests whenever allowed, including in hidden tabs.
 
 
@@ -989,11 +996,35 @@ Status: accepted
 
 
 ================================================================================
+FILE:     docs/adr/0022-message-details.md
+SIZE:     2.06 KB (2110 bytes)
+LINES:    14
+SHA256:   2e5fe0afd6aba40624f4ca0749d028b6b125c4b8ed3f1e280646ee5d8336501d
+MODIFIED: 2026-10-31 02:28:55 (UTC)
+================================================================================
+
+# 0022 Optional location and browser details on board messages
+
+Status: accepted
+
+- Opt-in. `#compose-share` appears only when `navigator.geolocation` exists. Ticking it calls `getCurrentPosition`; the browser prompt is the consent. Without permission nothing changes.
+- Default state: on when the Permissions API reports `granted` and `localStorage` `chaos-board-share` is not `off`; off when denied. Unticking stores `off`. A permission change to `denied` unticks it. Clearing local history removes the key.
+- On send, `BoardIsland` asks the module for `meta()` (15 s server timeout, `maximumAge` 60 s, 10 s position timeout). Failure sends the message without details.
+- `collectMeta` reads only the browser: coordinates, accuracy, altitude, heading, speed, fix time, `Intl` time zone, locale, calendar, numbering system, UTC offset, local time, languages, user agent, client hints brands, platform, mobile, vendor, webdriver, Do Not Track, GPC, PDF viewer, screen, available screen, viewport, pixel ratio, color depth, orientation, threads, memory, touch points, pointer, color scheme, reduced motion, contrast, online, connection type, downlink, RTT, save data.
+- No reverse geocoding, no third-party requests. The server adds nothing: no IP, no headers.
+- Wire and storage: `BoardMessage.meta` is an ordered list of `{ key, value }` strings, omitted when null. `MessageMeta` keeps known keys only, in catalog order, first occurrence wins, strips control characters, trims, cuts to a per-key length and range-checks numeric keys. Without valid latitude and longitude the list is dropped. Offers carry `meta` and must already be normalized.
+- Values are self-reported and unverified.
+- Labels live in `MessageMeta.Fields` and `META_FIELDS`; tests pin the same key order in both.
+- `Submit` returns the new message; the island calls `own(id)` so the browser marks it `mine` in IndexedDB and shows `Your message`. The server keeps no ownership. Older messages are unaffected.
+- Rendering: collapsed `<details class="meta">` under the text, timestamp-sized and muted, both in the prerender and in the module.
+
+
+================================================================================
 FILE:     docs/adr/README.md
-SIZE:     1.33 KB (1364 bytes)
-LINES:    25
-SHA256:   c9bb780b552df0d36e76a329005c241c4fe23dc42c86e10d078db0ddac28666a
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     1.42 KB (1458 bytes)
+LINES:    26
+SHA256:   c2d9dbb4932de623489798637753145142a6f8e3fa758fef21e15ef7b9a66cca
+MODIFIED: 2026-10-31 02:28:55 (UTC)
 ================================================================================
 
 # Architecture decision records
@@ -1021,6 +1052,7 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 | [0019](0019-slots.md) | Shared slot machine |
 | [0020](0020-latency.md) | Shared latency test |
 | [0021](0021-server-clock.md) | Server clock in the footer |
+| [0022](0022-message-details.md) | Optional location and browser details on board messages |
 
 
 ================================================================================
@@ -1665,10 +1697,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/App.razor.js
-SIZE:     10.09 KB (10329 bytes)
+SIZE:     10.11 KB (10351 bytes)
 LINES:    316
-SHA256:   ee51bd21845e26df0a85d7d8429067694306153509c1f6beac04d4accce63b56
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SHA256:   ee23bae4afc3024123cfe302778f1f22ffc4e1a80c2ce5dd9e03a0b06f35dfc4
+MODIFIED: 2026-10-31 02:28:25 (UTC)
 ================================================================================
 
 export const THEME_KEY = 'chaos-theme';
@@ -1896,7 +1928,7 @@ export function boot(win) {
         button.disabled = true;
         try {
             const [
-                { DB_NAME: BOARD_DB, deleteDatabase },
+                { DB_NAME: BOARD_DB, SHARE_KEY, deleteDatabase },
                 { DB_NAME: SLOTS_DB, PRESS_KEY },
                 { DB_NAME: CANVAS_DB },
                 { DB_NAME: LATENCY_DB, RUNS_KEY, NEXT_KEY },
@@ -1907,7 +1939,7 @@ export function boot(win) {
                 import('./Islands/LatencyIsland.razor.js'),
             ]);
             const outcomes = await Promise.all([BOARD_DB, SLOTS_DB, CANVAS_DB, LATENCY_DB].map(name => deleteDatabase(win.indexedDB, name)));
-            for (const key of [PRESS_KEY, RUNS_KEY, NEXT_KEY]) {
+            for (const key of [SHARE_KEY, PRESS_KEY, RUNS_KEY, NEXT_KEY]) {
                 try {
                     win.localStorage.removeItem(key);
                 } catch {
@@ -1991,10 +2023,10 @@ if (typeof window !== 'undefined' && window.Blazor) {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/BoardIsland.razor
-SIZE:     4.60 KB (4710 bytes)
-LINES:    148
-SHA256:   a0725988ecc91ed4cc537b8d673e43348a92aaf9dee54a689d708c08b99f96bf
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     6.39 KB (6545 bytes)
+LINES:    217
+SHA256:   50665de42483c2596ca53f77b1a084a57c3e7833e36763d5035b885d306e9609
+MODIFIED: 2026-10-31 02:26:24 (UTC)
 ================================================================================
 
 @implements IAsyncDisposable
@@ -2010,11 +2042,16 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
         <output class="status" for="compose-text">@_status</output>
         <span id="compose-count" class="count"></span>
         <span class="hint">Ctrl+Enter sends</span>
-        <button type="submit" disabled="@(!_ready)">Send</button>
+        <button type="submit" disabled="@(!_ready || _sending)">Send</button>
+    </div>
+    <div id="compose-share-box" class="share" hidden>
+        <label><input type="checkbox" id="compose-share" /> Attach my location and browser details to my messages</label>
+        <span id="compose-share-status" class="share-status" role="status"></span>
     </div>
 </form>
 
 @code {
+    private static readonly TimeSpan MetaTimeout = TimeSpan.FromSeconds(15);
     private readonly TaskCompletionSource _attached = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private DotNetObjectReference<BoardIsland>? _self;
     private IJSObjectReference? _module;
@@ -2024,6 +2061,7 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
     private string? _draft;
     private string? _status;
     private bool _ready;
+    private bool _sending;
     private bool _recount;
     private int _offered;
 
@@ -2052,9 +2090,9 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
     }
 
     [JSInvokable]
-    public int Offer(string[] ids, string[] texts)
+    public int Offer(string[] ids, string[] texts, MetaEntry[]?[]? metas)
     {
-        if (ids is null || texts is null || ids.Length != texts.Length)
+        if (ids is null || texts is null || ids.Length != texts.Length || (metas is not null && metas.Length != ids.Length))
         {
             return 0;
         }
@@ -2071,7 +2109,7 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
         {
             if (Guid.TryParseExact(ids[i], "D", out var id) && texts[i] is { } text)
             {
-                offered.Add(new BoardMessage(id, text));
+                offered.Add(new BoardMessage(id, text, metas?[i]));
             }
         }
 
@@ -2099,21 +2137,84 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
         _self?.Dispose();
     }
 
-    private void Send()
+    private async Task Send()
     {
-        var result = Board.Post(_draft, Client);
-        _status = result switch
+        if (_sending)
         {
-            PostResult.Empty => "Type a message first.",
-            PostResult.TooFast => "Slow down. You can post again in a moment.",
-            PostResult.Repeat => "That message was just posted.",
-            _ => null,
-        };
+            return;
+        }
 
-        if (result is PostResult.Accepted)
+        _sending = true;
+        try
         {
-            _draft = null;
-            _recount = true;
+            var meta = await ReadMetaAsync();
+            var reply = Board.Submit(_draft, Client, meta);
+            _status = reply.Result switch
+            {
+                PostResult.Empty => "Type a message first.",
+                PostResult.TooFast => "Slow down. You can post again in a moment.",
+                PostResult.Repeat => "That message was just posted.",
+                _ => null,
+            };
+
+            if (reply.Message is { } message)
+            {
+                _draft = null;
+                _recount = true;
+                await OwnAsync(message.Id);
+            }
+        }
+        finally
+        {
+            _sending = false;
+        }
+    }
+
+    private async Task<MetaEntry[]?> ReadMetaAsync()
+    {
+        if (_client is null || MessageText.Normalize(_draft).Length == 0)
+        {
+            return null;
+        }
+
+        try
+        {
+            using var timeout = new CancellationTokenSource(MetaTimeout);
+            return await _client.InvokeAsync<MetaEntry[]?>("meta", timeout.Token);
+        }
+        catch (JSDisconnectedException)
+        {
+            return null;
+        }
+        catch (JSException)
+        {
+            return null;
+        }
+        catch (OperationCanceledException)
+        {
+            return null;
+        }
+    }
+
+    private async Task OwnAsync(Guid id)
+    {
+        if (_client is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _client.InvokeVoidAsync("own", id.ToString("D"));
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+        catch (JSException)
+        {
+        }
+        catch (OperationCanceledException)
+        {
         }
     }
 
@@ -2149,10 +2250,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/BoardIsland.razor.css
-SIZE:     0.71 KB (726 bytes)
-LINES:    48
-SHA256:   88cd3f78e731f3fd2ee67defae775e05003ddeed97d9feac2de7ffd445572b84
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     1.04 KB (1061 bytes)
+LINES:    72
+SHA256:   10cee4ceab7b3fd2e028e2dfac1d94ca26718f1a94b8f3a501de4cdde4afa190
+MODIFIED: 2026-10-31 02:26:39 (UTC)
 ================================================================================
 
 .compose {
@@ -2204,13 +2305,37 @@ textarea:disabled {
     font-weight: 650;
 }
 
+.share {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem 1rem;
+    color: var(--muted);
+    font-size: .8rem;
+}
+
+.share[hidden] {
+    display: none;
+}
+
+.share label {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    cursor: pointer;
+}
+
+.share-status:empty {
+    display: none;
+}
+
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/BoardIsland.razor.js
-SIZE:     15.20 KB (15564 bytes)
-LINES:    487
-SHA256:   93ef94ea66647bf3c7ff14f1c9056a65fc62d962df8caad984d01504906199b0
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     28.11 KB (28783 bytes)
+LINES:    875
+SHA256:   e90f6cd957ae1ef07595a3bffdb162c9b0dcb80a35a343fbbf81b8d1d8046798
+MODIFIED: 2026-10-31 02:28:17 (UTC)
 ================================================================================
 
 export const DB_NAME = 'chaos-board';
@@ -2221,6 +2346,56 @@ export const OFFER_LIMIT = 50;
 export const OFFER_BYTES = 24000;
 export const PAGE_SIZE = 100;
 export const PING_MS = 25000;
+export const SHARE_KEY = 'chaos-board-share';
+export const POSITION_OPTIONS = Object.freeze({ enableHighAccuracy: false, maximumAge: 60000, timeout: 10000 });
+
+export const META_FIELDS = Object.freeze([
+    ['latitude', 'Latitude'],
+    ['longitude', 'Longitude'],
+    ['accuracy', 'Accuracy (m)'],
+    ['altitude', 'Altitude (m)'],
+    ['altitudeAccuracy', 'Altitude accuracy (m)'],
+    ['heading', 'Heading (°)'],
+    ['speed', 'Speed (m/s)'],
+    ['positionAt', 'Position time'],
+    ['timeZone', 'Time zone'],
+    ['utcOffset', 'UTC offset'],
+    ['localTime', 'Local time'],
+    ['locale', 'Locale'],
+    ['calendar', 'Calendar'],
+    ['numberingSystem', 'Numbering system'],
+    ['language', 'Language'],
+    ['languages', 'Languages'],
+    ['userAgent', 'User agent'],
+    ['brands', 'Brands'],
+    ['platform', 'Platform'],
+    ['mobile', 'Mobile'],
+    ['vendor', 'Vendor'],
+    ['webdriver', 'Automated'],
+    ['doNotTrack', 'Do Not Track'],
+    ['globalPrivacyControl', 'Global Privacy Control'],
+    ['pdfViewer', 'PDF viewer'],
+    ['screen', 'Screen'],
+    ['availableScreen', 'Available screen'],
+    ['viewport', 'Viewport'],
+    ['pixelRatio', 'Pixel ratio'],
+    ['colorDepth', 'Color depth'],
+    ['orientation', 'Orientation'],
+    ['cores', 'CPU threads'],
+    ['memory', 'Memory (GB)'],
+    ['touchPoints', 'Touch points'],
+    ['pointer', 'Pointer'],
+    ['colorScheme', 'Color scheme'],
+    ['reducedMotion', 'Reduced motion'],
+    ['contrast', 'Contrast'],
+    ['online', 'Online'],
+    ['connection', 'Connection'],
+    ['downlink', 'Downlink (Mb/s)'],
+    ['rtt', 'Round trip (ms)'],
+    ['saveData', 'Data saver'],
+]);
+
+const META_LABELS = new Map(META_FIELDS);
 
 export const migrations = [
     db => db.createObjectStore(STORE, { keyPath: 'id' }),
@@ -2261,7 +2436,8 @@ export function chunkOffers(messages, maxBytes = OFFER_BYTES, limit = OFFER_LIMI
     let chunk = [];
     let size = 0;
     for (const message of messages.slice(0, limit)) {
-        const bytes = encoder.encode(message.id).length + encoder.encode(JSON.stringify(message.text)).length + 8;
+        const meta = message.meta ? encoder.encode(JSON.stringify(message.meta)).length : 0;
+        const bytes = encoder.encode(message.id).length + encoder.encode(JSON.stringify(message.text)).length + meta + 8;
         if (bytes > maxBytes) {
             continue;
         }
@@ -2296,6 +2472,189 @@ export function announce(doc, text) {
 
 export function excessOf(count, cap = LOCAL_CAP) {
     return Math.max(0, count - cap);
+}
+
+export function metaLabel(key) {
+    return META_LABELS.get(key) ?? key;
+}
+
+export function readShare(storage) {
+    try {
+        const value = storage?.getItem(SHARE_KEY);
+        return value === 'on' || value === 'off' ? value : null;
+    } catch {
+        return null;
+    }
+}
+
+export function writeShare(storage, value) {
+    try {
+        storage?.setItem(SHARE_KEY, value);
+    } catch {
+    }
+}
+
+export function shareDefault(choice, state) {
+    if (choice === 'off' || state === 'denied') {
+        return false;
+    }
+    return state === 'granted' || (state === null && choice === 'on');
+}
+
+export function formatOffset(minutesEast) {
+    if (!Number.isFinite(minutesEast)) {
+        return null;
+    }
+    const sign = minutesEast < 0 ? '-' : '+';
+    const total = Math.abs(Math.trunc(minutesEast));
+    return `${sign}${String(Math.trunc(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+}
+
+export function localStamp(date) {
+    const pad = (value, length = 2) => String(value).padStart(length, '0');
+    return `${pad(date.getFullYear(), 4)}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
+function numberText(value) {
+    return typeof value === 'number' && Number.isFinite(value) ? String(value) : null;
+}
+
+function flag(value) {
+    return typeof value === 'boolean' ? (value ? 'yes' : 'no') : null;
+}
+
+function size(width, height) {
+    return Number.isFinite(width) && Number.isFinite(height) ? `${width}x${height}` : null;
+}
+
+function resolvedIntl(win) {
+    try {
+        return (win.Intl ?? Intl).DateTimeFormat().resolvedOptions();
+    } catch {
+        return {};
+    }
+}
+
+function mediaQuery(win) {
+    return query => {
+        try {
+            return typeof win.matchMedia === 'function' ? win.matchMedia(query).matches === true : null;
+        } catch {
+            return null;
+        }
+    };
+}
+
+function firstMatch(media, name, values, fallback) {
+    for (const value of values) {
+        const matched = media(`(${name}: ${value})`);
+        if (matched === null) {
+            return null;
+        }
+        if (matched) {
+            return value;
+        }
+    }
+    return fallback;
+}
+
+export function collectMeta(position, win, now = new Date()) {
+    const coords = position?.coords;
+    if (!coords || !Number.isFinite(coords.latitude) || !Number.isFinite(coords.longitude)) {
+        return null;
+    }
+    const nav = win?.navigator ?? {};
+    const agent = nav.userAgentData;
+    const connection = nav.connection;
+    const screen = win?.screen;
+    const intl = resolvedIntl(win ?? {});
+    const media = mediaQuery(win ?? {});
+    const values = {
+        latitude: numberText(coords.latitude),
+        longitude: numberText(coords.longitude),
+        accuracy: numberText(coords.accuracy),
+        altitude: numberText(coords.altitude),
+        altitudeAccuracy: numberText(coords.altitudeAccuracy),
+        heading: numberText(coords.heading),
+        speed: numberText(coords.speed),
+        positionAt: Number.isFinite(position.timestamp) ? new Date(position.timestamp).toISOString() : null,
+        timeZone: intl.timeZone,
+        utcOffset: formatOffset(-now.getTimezoneOffset()),
+        localTime: localStamp(now),
+        locale: intl.locale,
+        calendar: intl.calendar,
+        numberingSystem: intl.numberingSystem,
+        language: nav.language,
+        languages: Array.isArray(nav.languages) ? nav.languages.join(', ') : null,
+        userAgent: nav.userAgent,
+        brands: Array.isArray(agent?.brands) ? agent.brands.map(brand => `${brand.brand} ${brand.version}`).join(', ') : null,
+        platform: agent?.platform || nav.platform,
+        mobile: flag(agent?.mobile),
+        vendor: nav.vendor,
+        webdriver: flag(nav.webdriver),
+        doNotTrack: nav.doNotTrack,
+        globalPrivacyControl: flag(nav.globalPrivacyControl),
+        pdfViewer: flag(nav.pdfViewerEnabled),
+        screen: size(screen?.width, screen?.height),
+        availableScreen: size(screen?.availWidth, screen?.availHeight),
+        viewport: size(win?.innerWidth, win?.innerHeight),
+        pixelRatio: numberText(win?.devicePixelRatio),
+        colorDepth: numberText(screen?.colorDepth),
+        orientation: screen?.orientation?.type,
+        cores: numberText(nav.hardwareConcurrency),
+        memory: numberText(nav.deviceMemory),
+        touchPoints: numberText(nav.maxTouchPoints),
+        pointer: firstMatch(media, 'pointer', ['coarse', 'fine'], 'none'),
+        colorScheme: firstMatch(media, 'prefers-color-scheme', ['dark'], 'light'),
+        reducedMotion: flag(media('(prefers-reduced-motion: reduce)')),
+        contrast: firstMatch(media, 'prefers-contrast', ['more', 'less'], 'no preference'),
+        online: flag(nav.onLine),
+        connection: [connection?.effectiveType, connection?.type].filter(value => typeof value === 'string' && value.length > 0).join(', ') || null,
+        downlink: numberText(connection?.downlink),
+        rtt: numberText(connection?.rtt),
+        saveData: flag(connection?.saveData),
+    };
+    const entries = [];
+    for (const [key] of META_FIELDS) {
+        const value = values[key];
+        if (typeof value === 'string' && value.trim().length > 0) {
+            entries.push({ key, value });
+        }
+    }
+    return entries;
+}
+
+export function toRecord(message, mine) {
+    const record = { id: message.id, text: message.text };
+    if (Array.isArray(message.meta) && message.meta.length > 0) {
+        record.meta = message.meta;
+    }
+    if (mine) {
+        record.mine = true;
+    }
+    return record;
+}
+
+export function metaElement(doc, meta) {
+    if (!Array.isArray(meta) || meta.length === 0) {
+        return null;
+    }
+    const details = doc.createElement('details');
+    details.className = 'meta';
+    const summary = doc.createElement('summary');
+    summary.textContent = 'Details';
+    const list = doc.createElement('dl');
+    for (const entry of meta) {
+        const row = doc.createElement('div');
+        const term = doc.createElement('dt');
+        term.textContent = metaLabel(entry.key);
+        const value = doc.createElement('dd');
+        value.textContent = entry.value;
+        row.append(term, value);
+        list.append(row);
+    }
+    details.append(summary, list);
+    return details;
 }
 
 function settle(request) {
@@ -2467,17 +2826,24 @@ class BoardClient {
         this.older = doc.getElementById('board-older');
         this.textarea = doc.getElementById('compose-text');
         this.count = doc.getElementById('compose-count');
+        this.shareBox = doc.getElementById('compose-share-box');
+        this.share = doc.getElementById('compose-share');
+        this.shareStatus = doc.getElementById('compose-share-status');
         this.version = -1;
         this.live = new Map();
         this.shown = new Map();
+        this.mine = new Set();
         this.cursor = null;
         this.joining = null;
+        this.permission = null;
         this.timer = 0;
         this.disposed = false;
         this.onKeyDown = event => this.keyDown(event);
         this.onInput = () => this.recount();
         this.onOlder = () => this.loadOlder();
         this.onReconnected = () => this.join();
+        this.onShare = () => this.toggleShare();
+        this.onPermission = () => this.permissionChanged();
     }
 
     async start() {
@@ -2488,10 +2854,100 @@ class BoardClient {
         this.recount();
         this.timer = this.win.setInterval(() => this.ping(), PING_MS);
         try {
+            await this.setupShare();
+        } catch {
+        }
+        try {
             await this.offer();
         } catch {
         }
         await this.join();
+    }
+
+    geolocation() {
+        return this.win.navigator?.geolocation ?? null;
+    }
+
+    async setupShare() {
+        if (!this.share || !this.shareBox || !this.geolocation() || this.disposed) {
+            return;
+        }
+        let state = null;
+        try {
+            this.permission = await this.win.navigator.permissions?.query({ name: 'geolocation' }) ?? null;
+            state = this.permission?.state ?? null;
+        } catch {
+            this.permission = null;
+        }
+        if (this.disposed) {
+            return;
+        }
+        this.permission?.addEventListener('change', this.onPermission);
+        this.share.checked = shareDefault(readShare(this.win.localStorage), state);
+        this.share.addEventListener('change', this.onShare);
+        this.shareBox.hidden = false;
+    }
+
+    setShareStatus(text) {
+        if (this.shareStatus) {
+            this.shareStatus.textContent = text;
+        }
+    }
+
+    permissionChanged() {
+        if (this.permission?.state === 'denied' && this.share?.checked) {
+            this.share.checked = false;
+            this.setShareStatus('Location permission was turned off, so nothing is attached.');
+        }
+    }
+
+    position() {
+        return new Promise((resolve, reject) => {
+            const geolocation = this.geolocation();
+            if (!geolocation) {
+                reject(new Error('Geolocation is not available.'));
+                return;
+            }
+            geolocation.getCurrentPosition(resolve, reject, POSITION_OPTIONS);
+        });
+    }
+
+    async toggleShare() {
+        if (!this.share) {
+            return;
+        }
+        if (!this.share.checked) {
+            writeShare(this.win.localStorage, 'off');
+            this.setShareStatus('Nothing is attached to your messages.');
+            return;
+        }
+        this.share.disabled = true;
+        this.setShareStatus('Asking for your location.');
+        try {
+            await this.position();
+            writeShare(this.win.localStorage, 'on');
+            this.setShareStatus('Your location and browser details will be attached to your messages.');
+        } catch {
+            this.share.checked = false;
+            this.setShareStatus('No location permission, so nothing is attached.');
+        } finally {
+            this.share.disabled = false;
+        }
+    }
+
+    async meta() {
+        if (this.disposed || !this.share?.checked) {
+            return null;
+        }
+        try {
+            return collectMeta(await this.position(), this.win);
+        } catch (error) {
+            if (error?.code === 1) {
+                this.share.checked = false;
+            }
+            this.setShareStatus('Could not read your location, so that message has no details.');
+            return null;
+        }
     }
 
     recount() {
@@ -2514,12 +2970,21 @@ class BoardClient {
     }
 
     async offer() {
-        const local = await this.history.newest(OFFER_LIMIT);
+        const local = await this.history.newest(OFFER_LIMIT * 2);
+        for (const record of local) {
+            if (record.mine) {
+                this.mine.add(record.id);
+            }
+        }
         for (const chunk of chunkOffers(local)) {
             if (this.disposed) {
                 return;
             }
-            await this.dotnet.invokeMethodAsync('Offer', chunk.map(message => message.id), chunk.map(message => message.text));
+            await this.dotnet.invokeMethodAsync(
+                'Offer',
+                chunk.map(message => message.id),
+                chunk.map(message => message.text),
+                chunk.map(message => (Array.isArray(message.meta) && message.meta.length > 0 ? message.meta : null)));
         }
     }
 
@@ -2565,19 +3030,24 @@ class BoardClient {
         }
     }
 
+    async save(messages) {
+        try {
+            await this.history.save(messages.map(message => toRecord(message, this.mine.has(message.id))));
+        } catch {
+        }
+    }
+
     async snapshot(update) {
         this.version = update.version;
         this.live = new Map(update.added.map(message => [message.id, message]));
-        try {
-            await this.history.save(update.added.map(message => ({ id: message.id, text: message.text })));
-        } catch {
-        }
+        await this.save(update.added);
         let archive = { items: [], last: null, done: true };
         try {
             archive = await this.history.page(null, PAGE_SIZE, this.live);
         } catch {
         }
         this.cursor = archive.last;
+        this.remember(archive.items);
         this.render([...update.added, ...archive.items].sort(newestFirst), archive.done);
     }
 
@@ -2600,9 +3070,31 @@ class BoardClient {
         }
         this.updateEmpty();
         this.announce(fresh);
-        try {
-            await this.history.save(update.added.map(message => ({ id: message.id, text: message.text })));
-        } catch {
+        await this.save(update.added);
+    }
+
+    async own(id) {
+        if (this.disposed || typeof id !== 'string') {
+            return;
+        }
+        this.mine.add(id);
+        const existing = this.shown.get(id);
+        const message = this.live.get(id);
+        if (existing && message) {
+            const element = this.item(message, existing.classList.contains('fresh'));
+            existing.replaceWith(element);
+            this.shown.set(id, element);
+        }
+        if (message) {
+            await this.save([message]);
+        }
+    }
+
+    remember(records) {
+        for (const record of records) {
+            if (record.mine) {
+                this.mine.add(record.id);
+            }
         }
     }
 
@@ -2614,6 +3106,7 @@ class BoardClient {
         try {
             const archive = await this.history.page(this.cursor, PAGE_SIZE, this.live);
             this.cursor = archive.last ?? this.cursor;
+            this.remember(archive.items);
             for (const message of archive.items) {
                 if (!this.shown.has(message.id)) {
                     this.insert(message, false);
@@ -2628,17 +3121,33 @@ class BoardClient {
     }
 
     item(message, fresh) {
+        const mine = this.mine.has(message.id) || message.mine === true;
         const element = this.doc.createElement('li');
         element.className = 'msg';
         element.classList.toggle('archived', !this.live.has(message.id));
         element.classList.toggle('fresh', fresh);
+        element.classList.toggle('mine', mine);
         element.dataset.id = message.id;
+        const head = this.doc.createElement('div');
+        head.className = 'head';
         const time = this.doc.createElement('time');
         time.dateTime = isoOf(message.id);
         time.textContent = labelOf(message.id);
+        head.append(time);
+        if (mine) {
+            const yours = this.doc.createElement('span');
+            yours.className = 'yours';
+            yours.textContent = 'Your message';
+            head.append(yours);
+        }
         const text = this.doc.createElement('p');
+        text.className = 'text';
         text.textContent = message.text;
-        element.append(time, text);
+        element.append(head, text);
+        const details = metaElement(this.doc, message.meta);
+        if (details) {
+            element.append(details);
+        }
         return element;
     }
 
@@ -2687,6 +3196,8 @@ class BoardClient {
         this.textarea?.removeEventListener('keydown', this.onKeyDown);
         this.textarea?.removeEventListener('input', this.onInput);
         this.older?.removeEventListener('click', this.onOlder);
+        this.share?.removeEventListener('change', this.onShare);
+        this.permission?.removeEventListener('change', this.onPermission);
         this.win.removeEventListener('chaos:reconnected', this.onReconnected);
     }
 }
@@ -2697,6 +3208,8 @@ export function attach(dotnet) {
     return {
         apply: updates => client.apply(updates),
         recount: () => client.recount(),
+        meta: () => client.meta(),
+        own: id => client.own(id),
         dispose: () => client.dispose(),
     };
 }
@@ -6786,10 +7299,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Pages/About.razor
-SIZE:     7.92 KB (8110 bytes)
-LINES:    58
-SHA256:   36b18ee850d3899d37f2e0044078b97f6b25d5ad6e335a92dcfceac6f2882c84
-MODIFIED: 2026-10-29 20:03:06 (UTC)
+SIZE:     9.13 KB (9353 bytes)
+LINES:    60
+SHA256:   a133612f257815ffa599100f7842d09133cb4250df398f915402197d17350210
+MODIFIED: 2026-10-31 02:28:55 (UTC)
 ================================================================================
 
 @page "/about"
@@ -6805,13 +7318,13 @@ MODIFIED: 2026-10-29 20:03:06 (UTC)
 <h2>What you can do</h2>
 <dl>
     <dt><a href="board">Board</a></dt>
-    <dd>Post a message of up to 500 characters. Everyone on the board sees it at once. The server keeps the newest 50. This browser keeps up to 10,000 on your device, so you still see messages after the server has forgotten them. Those have a dotted border.</dd>
+    <dd>Post a message of up to 500 characters. Everyone on the board sees it at once. The server keeps the newest 50. This browser keeps up to 10,000 on your device, so you still see messages after the server has forgotten them. Those have a dotted border. Your own messages are marked <em>Your message</em> in this browser only. You can choose to attach your location and some browser details to your messages; see <a href="about#location">Location and details</a>.</dd>
     <dt><a href="canvas">Canvas</a></dt>
     <dd>Draw with a mouse, a finger or a stylus. Everyone sees each stroke as it is drawn. Anyone can reset the page for everyone. This browser keeps up to 10,000 finished strokes, so after a server restart the drawing comes back from the browsers that saw it, unless someone had pressed reset since.</dd>
     <dt><a href="slots">Slots</a></dt>
     <dd>Press the button and the shared machine spins for everyone watching. Nobody can press again until the reels stop, and then whoever presses first goes next. Nobody knows who pressed, but you are told whether your own press worked. After ten successful presses from this browser you get an auto spin button that presses for you each time the reels stop, even while the tab is in the background. Four or five of a kind, or five symbols in an unbroken sequence like <code>ABCDE</code>, is a jackpot: the machine celebrates, and every jackpot is kept forever in its own list. The newest 500 winners stay in their own list below the results. Tap any winner to see how rare it was and the probability behind it. No money or prizes are involved; it is just for fun.</dd>
     <dt><a href="latency">Latency</a></dt>
-    <dd>Press the button and your browser times how long a list of public endpoints takes to answer, while this server times the same endpoints from its data centre. Each endpoint gets one warm-up request and then the fastest of three is kept. Everyone sees every result, with no name or address attached. Each network can start a test every five minutes, so phones and computers on the same Wi-Fi share that limit. After ten tests from this browser an auto run button appears. Below the results, a browser or server median under 10 ms is a jackpot winner and 100 ms or more a jackpot loser, and a leaderboard shows the ten fastest and slowest medians from browsers and from the server. A median only counts when at least half of the endpoints answered.</dd>
+    <dd>Press the button and your browser times how long a list of public endpoints takes to answer, while this server times the same endpoints from its data centre. Each endpoint gets one warm-up request and then the fastest of three is kept. Everyone sees every result, with no name or address attached. Each network can start a test every five minutes, so phones and computers on the same Wi-Fi share that limit. After ten tests from this browser an auto run button appears. Below the results, a leaderboard shows the ten fastest and slowest medians from browsers and from the server. At the bottom, a browser or server median under 10 ms is a jackpot winner and 100 ms or more a jackpot loser. A median only counts when at least half of the endpoints answered.</dd>
 </dl>
 
 <h2>Winners</h2>
@@ -6841,7 +7354,9 @@ MODIFIED: 2026-10-29 20:03:06 (UTC)
 <p class="warning">Anything you post or draw goes to every connected browser at once and is stored on their devices. It can't be edited, deleted or recalled. Nothing is moderated. Don't share anything private.</p>
 
 <h2>Your data</h2>
-<p>There are no accounts, no cookies and no tracking. Your theme choice, your count of successful slot presses and latency tests, and when your next test is allowed are kept in this browser's local storage. Board messages, canvas strokes, slot results and latency results are kept in this browser's IndexedDB, up to 10,000 of each, with the oldest removed first. Slot jackpots are kept separately and never removed unless you clear local history. Results you started are marked as yours only in this browser. Latency results carry only timings: no address, no name and no device details. Rate limits count by network address in the server's memory only; addresses are never saved or shown, and devices sharing one internet connection share one limit.</p>
+<p>There are no accounts, no cookies and no tracking. Your theme choice, your count of successful slot presses and latency tests, and when your next test is allowed are kept in this browser's local storage. Board messages, canvas strokes, slot results and latency results are kept in this browser's IndexedDB, up to 10,000 of each, with the oldest removed first. Slot jackpots are kept separately and never removed unless you clear local history. Messages you posted and results you started are marked as yours only in this browser. Latency results carry only timings: no address, no name and no device details. Rate limits count by network address in the server's memory only; addresses are never saved or shown, and devices sharing one internet connection share one limit.</p>
+<h3 id="location">Location and details</h3>
+<p>This is optional and off unless you turn it on. The board works the same either way. If you tick <em>Attach my location and browser details</em> and your browser grants location permission, every message you send carries what your browser reports at that moment: latitude, longitude and accuracy, plus altitude, heading and speed when known, your time zone, UTC offset and local time, language, user agent, platform, screen and window size, CPU threads, memory, touch points, color scheme, motion and contrast settings, and connection type. Anyone can open it under the message with <em>Details</em>, and it is kept and offered back like the message itself. Nothing is looked up from it: no maps, no address, no third-party service. The server does not add your network address. Your browser reports these values and the server cannot check them. Untick the box, or block location for this site, to stop. Messages already sent keep their details.</p>
 <p class="clear">
     <button type="button" data-clear-history="clear-status">Clear local history</button>
     <output id="clear-status"></output>
@@ -6906,10 +7421,10 @@ code {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Pages/BoardPage.razor
-SIZE:     1.44 KB (1477 bytes)
-LINES:    38
-SHA256:   7c7e3640be769146a17ef9b220e81b4e2080c8ba91fb3d6ff772635909f128d5
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     2.16 KB (2207 bytes)
+LINES:    53
+SHA256:   ced81f81bda82b27a57d4529447dfe7bd7ac1a0fa867f5c5a53269cbd931df7b
+MODIFIED: 2026-10-31 02:26:39 (UTC)
 ================================================================================
 
 @page "/board"
@@ -6919,7 +7434,7 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 <PageTitle>Chaos board</PageTitle>
 
 <h1>Board</h1>
-<p class="lede">Say something. The server keeps the newest @Board.Capacity messages and this browser keeps what it has seen. A dotted border marks a message the server has already forgotten.</p>
+<p class="lede">Say something. The server keeps the newest @Board.Capacity messages and this browser keeps what it has seen. A dotted border marks a message the server has already forgotten. If you let this site see your location, your messages also carry it and some details about your browser, which anyone can open under the message.</p>
 
 <BoardIsland Client="@_client" @rendermode="InteractiveServer" />
 
@@ -6929,7 +7444,22 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
     <ol id="board-feed" class="messages">
         @foreach (var message in _messages)
         {
-            <li @key="message.Id" class="msg" data-id="@message.Id"><time datetime="@MessageFormat.Iso(message.Id)">@MessageFormat.Label(message.Id, _now)</time><p>@message.Text</p></li>
+            <li @key="message.Id" class="msg" data-id="@message.Id">
+                <div class="head"><time datetime="@MessageFormat.Iso(message.Id)">@MessageFormat.Label(message.Id, _now)</time></div>
+                <p class="text">@message.Text</p>
+                @if (message.Meta is { Count: > 0 } meta)
+                {
+                    <details class="meta">
+                        <summary>Details</summary>
+                        <dl>
+                            @foreach (var entry in meta)
+                            {
+                                <div><dt>@MessageMeta.LabelOf(entry.Key)</dt><dd>@entry.Value</dd></div>
+                            }
+                        </dl>
+                    </details>
+                }
+            </li>
         }
     </ol>
     <button type="button" id="board-older" class="older" hidden>Show older messages</button>
@@ -6954,10 +7484,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Pages/BoardPage.razor.css
-SIZE:     1.11 KB (1136 bytes)
-LINES:    64
-SHA256:   f37a0c4317740d0b3c00b625551f00210b9c96bcc9ca42c25af8f018225f8704
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     1.92 KB (1967 bytes)
+LINES:    110
+SHA256:   1a2dbe22c8a46240befa6dc732b4702ac23cec1c7122a0933979c456bddae892
+MODIFIED: 2026-10-31 02:26:39 (UTC)
 ================================================================================
 
 .feed {
@@ -6988,17 +7518,63 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
     color: var(--muted);
 }
 
+.messages ::deep .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem .6rem;
+}
+
 .messages ::deep time {
-    display: block;
     color: var(--muted);
     font-size: .75rem;
     font-variant-numeric: tabular-nums;
 }
 
-.messages ::deep p {
+.messages ::deep .yours {
+    padding: 0 .5rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: .7rem;
+}
+
+.messages ::deep .text {
     margin: 0;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
+}
+
+.messages ::deep .meta {
+    margin-block-start: .3rem;
+    color: var(--muted);
+    font-size: .75rem;
+}
+
+.messages ::deep .meta summary {
+    inline-size: fit-content;
+    cursor: pointer;
+}
+
+.messages ::deep .meta dl {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: .1rem .75rem;
+    margin: .35rem 0 0;
+}
+
+.messages ::deep .meta dl div {
+    display: contents;
+}
+
+.messages ::deep .meta dt {
+    font-weight: 600;
+}
+
+.messages ::deep .meta dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-variant-numeric: tabular-nums;
 }
 
 .empty {
@@ -7216,8 +7792,8 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 FILE:     src/Chaos.Web/Components/Pages/LatencyPage.razor
 SIZE:     6.48 KB (6634 bytes)
 LINES:    139
-SHA256:   5cd24a00429ecbc122157f6c9ea3295b39cde43da49e1826327983c07cd37b01
-MODIFIED: 2026-10-29 19:42:36 (UTC)
+SHA256:   318791fab51994cc227cbd3c7c5b397e7b4220e8a8d4f79170c7bea50ae3e19f
+MODIFIED: 2026-10-31 02:28:29 (UTC)
 ================================================================================
 
 @page "/latency"
@@ -7243,15 +7819,6 @@ MODIFIED: 2026-10-29 19:42:36 (UTC)
     <button type="button" id="latency-older" class="older" hidden>Show older results</button>
 </section>
 
-<section class="feed" data-permanent="latency-jackpots" aria-labelledby="jackpots-title">
-    <h2 id="jackpots-title">Jackpots</h2>
-    <p class="note">A browser or server median under @LatencyLeaders.FastBelow ms wins; @LatencyLeaders.SlowFrom ms or more loses. The newest @Latency.JackpotCapacity of each are kept.</p>
-    <div class="boards">
-        @Board("latency-jackpot-winners", "Winners", "Nobody yet. Probably nobody ever.", _leaders.FastJackpots, "fast", null)
-        @Board("latency-jackpot-losers", "Losers", "Nobody yet. Hopefully nobody ever.", _leaders.SlowJackpots, "slow", null)
-    </div>
-</section>
-
 <section class="feed" data-permanent="latency-leaders" aria-labelledby="leaders-title">
     <h2 id="leaders-title">Leaderboard</h2>
     <p class="note">The @Latency.RankCapacity lowest and highest medians seen. A median only counts when at least half of the endpoints answered on that side.</p>
@@ -7260,6 +7827,15 @@ MODIFIED: 2026-10-29 19:42:36 (UTC)
         @Board("latency-browser-slowest", "Slowest browsers", "No browser results yet.", _leaders.BrowserSlowest, null, LatencySide.Browser)
         @Board("latency-server-fastest", "Fastest server runs", "No server results yet.", _leaders.ServerFastest, null, LatencySide.Server)
         @Board("latency-server-slowest", "Slowest server runs", "No server results yet.", _leaders.ServerSlowest, null, LatencySide.Server)
+    </div>
+</section>
+
+<section class="feed" data-permanent="latency-jackpots" aria-labelledby="jackpots-title">
+    <h2 id="jackpots-title">Jackpots</h2>
+    <p class="note">A browser or server median under @LatencyLeaders.FastBelow ms wins; @LatencyLeaders.SlowFrom ms or more loses. The newest @Latency.JackpotCapacity of each are kept.</p>
+    <div class="boards">
+        @Board("latency-jackpot-winners", "Winners", "Nobody yet. Probably nobody ever.", _leaders.FastJackpots, "fast", null)
+        @Board("latency-jackpot-losers", "Losers", "Nobody yet. Hopefully nobody ever.", _leaders.SlowJackpots, "slow", null)
     </div>
 </section>
 
@@ -9389,10 +9965,10 @@ internal static class RequestLimits
 
 ================================================================================
 FILE:     src/Chaos.Web/Infrastructure/SecurityHeaders.cs
-SIZE:     1.25 KB (1280 bytes)
+SIZE:     1.25 KB (1284 bytes)
 LINES:    32
-SHA256:   d30b476b9c151d143921de43de246325c2d3b1634534f45dcb26147301bc22a3
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SHA256:   25db9d6c9e6e9bdb045f3ff8ac3d234148a2c23ea6e292a4a19077a8146f01b2
+MODIFIED: 2026-10-31 02:26:46 (UTC)
 ================================================================================
 
 using Chaos.Web.Latency;
@@ -9406,7 +9982,7 @@ internal static class SecurityHeaders
         + string.Join(' ', LatencyCatalog.Origins)
         + "; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
 
-    public const string PermissionsPolicy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()";
+    public const string PermissionsPolicy = "camera=(), microphone=(), geolocation=(self), payment=(), usb=()";
 
     public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app) =>
         app.Use((context, next) =>
@@ -10466,23 +11042,28 @@ internal sealed record LatencyUpdate(
 
 ================================================================================
 FILE:     src/Chaos.Web/Messages/BoardMessage.cs
-SIZE:     0.09 KB (90 bytes)
-LINES:    3
-SHA256:   1a382bc2f4fa460611aafc910f6341e818771ef3f4209f9757f0cad70986a7d0
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     0.25 KB (253 bytes)
+LINES:    8
+SHA256:   fab62b34cfb57a92eccae6443fdf636d427ee9aea43e20b9cf6289421a2999e4
+MODIFIED: 2026-10-31 02:26:05 (UTC)
 ================================================================================
+
+using System.Text.Json.Serialization;
 
 namespace Chaos.Web.Messages;
 
-internal sealed record BoardMessage(Guid Id, string Text);
+internal sealed record BoardMessage(
+    Guid Id,
+    string Text,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] IReadOnlyList<MetaEntry>? Meta = null);
 
 
 ================================================================================
 FILE:     src/Chaos.Web/Messages/BoardService.cs
-SIZE:     4.14 KB (4241 bytes)
-LINES:    164
-SHA256:   88cb2c40acbae151a4c0217d47c22809091902567e13bb00f5b6ecfeb2bcf5c5
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     4.45 KB (4556 bytes)
+LINES:    167
+SHA256:   da4c4b06df144e57ad316e203350be0b439e5e8b5067ffdf024938b74087de53
+MODIFIED: 2026-10-31 02:26:12 (UTC)
 ================================================================================
 
 using Chaos.Web.Infrastructure;
@@ -10530,17 +11111,19 @@ internal sealed class BoardService
         }
     }
 
-    public PostResult Post(string? input, string client)
+    public PostResult Post(string? input, string client) => Submit(input, client, null).Result;
+
+    public PostReply Submit(string? input, string client, IEnumerable<MetaEntry?>? meta)
     {
         var text = MessageText.Normalize(input);
         if (text.Length == 0)
         {
-            return PostResult.Empty;
+            return new PostReply(PostResult.Empty);
         }
 
         if (!_posts.TryTake(client))
         {
-            return PostResult.TooFast;
+            return new PostReply(PostResult.TooFast);
         }
 
         lock (_gate)
@@ -10550,14 +11133,14 @@ internal sealed class BoardService
             {
                 if (string.Equals(_messages[i].Text, text, StringComparison.Ordinal))
                 {
-                    return PostResult.Repeat;
+                    return new PostReply(PostResult.Repeat);
                 }
             }
 
-            Merge([new BoardMessage(Guid.CreateVersion7(_time.GetUtcNow()), text)]);
+            var message = new BoardMessage(Guid.CreateVersion7(_time.GetUtcNow()), text, MessageMeta.Normalize(meta));
+            Merge([message]);
+            return new PostReply(PostResult.Accepted, message);
         }
-
-        return PostResult.Accepted;
     }
 
     public int Offer(IEnumerable<BoardMessage> offered)
@@ -10615,7 +11198,8 @@ internal sealed class BoardService
     private bool IsAcceptable(BoardMessage message, DateTimeOffset now) =>
         message is not null
         && MessageWindow.IsRestorable(message.Id, now, StartedAt)
-        && MessageText.IsNormalized(message.Text);
+        && MessageText.IsNormalized(message.Text)
+        && MessageMeta.IsNormalized(message.Meta);
 
     private int Merge(IReadOnlyCollection<BoardMessage> candidates)
     {
@@ -10710,6 +11294,171 @@ internal static class MessageFormat
         return at.Date == now.UtcDateTime.Date
             ? at.ToString("HH:mm:ss", CultureInfo.InvariantCulture)
             : at.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
+    }
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Messages/MessageMeta.cs
+SIZE:     4.82 KB (4939 bytes)
+LINES:    155
+SHA256:   255660a372ad15b9a8a89eb7d20fedfd3f539fe5e919fcf9b7802c54269afdfd
+MODIFIED: 2026-10-31 02:26:05 (UTC)
+================================================================================
+
+using System.Globalization;
+using System.Text;
+
+namespace Chaos.Web.Messages;
+
+internal static class MessageMeta
+{
+    public const int MaxValueLength = 120;
+
+    public static IReadOnlyList<MetaField> Fields { get; } =
+    [
+        new("latitude", "Latitude", 32, -90, 90),
+        new("longitude", "Longitude", 32, -180, 180),
+        new("accuracy", "Accuracy (m)", 32, 0, 1e8),
+        new("altitude", "Altitude (m)", 32, -1e5, 1e6),
+        new("altitudeAccuracy", "Altitude accuracy (m)", 32, 0, 1e8),
+        new("heading", "Heading (°)", 32, 0, 360),
+        new("speed", "Speed (m/s)", 32, 0, 1e5),
+        new("positionAt", "Position time", 40),
+        new("timeZone", "Time zone", 64),
+        new("utcOffset", "UTC offset", 8),
+        new("localTime", "Local time", 40),
+        new("locale", "Locale", 64),
+        new("calendar", "Calendar", 32),
+        new("numberingSystem", "Numbering system", 32),
+        new("language", "Language", 64),
+        new("languages", "Languages", 200),
+        new("userAgent", "User agent", 512),
+        new("brands", "Brands", 200),
+        new("platform", "Platform", 64),
+        new("mobile", "Mobile", 8),
+        new("vendor", "Vendor", 64),
+        new("webdriver", "Automated", 8),
+        new("doNotTrack", "Do Not Track", 16),
+        new("globalPrivacyControl", "Global Privacy Control", 8),
+        new("pdfViewer", "PDF viewer", 8),
+        new("screen", "Screen", 24),
+        new("availableScreen", "Available screen", 24),
+        new("viewport", "Viewport", 24),
+        new("pixelRatio", "Pixel ratio", 16, 0, 100),
+        new("colorDepth", "Color depth", 8, 0, 128),
+        new("orientation", "Orientation", 32),
+        new("cores", "CPU threads", 8, 0, 4096),
+        new("memory", "Memory (GB)", 8, 0, 4096),
+        new("touchPoints", "Touch points", 8, 0, 1024),
+        new("pointer", "Pointer", 16),
+        new("colorScheme", "Color scheme", 16),
+        new("reducedMotion", "Reduced motion", 8),
+        new("contrast", "Contrast", 16),
+        new("online", "Online", 8),
+        new("connection", "Connection", 32),
+        new("downlink", "Downlink (Mb/s)", 16, 0, 1e6),
+        new("rtt", "Round trip (ms)", 16, 0, 1e6),
+        new("saveData", "Data saver", 8),
+    ];
+
+    private static readonly Dictionary<string, int> Order = Fields
+        .Select((field, index) => (field.Key, index))
+        .ToDictionary(pair => pair.Key, pair => pair.index, StringComparer.Ordinal);
+
+    public static string LabelOf(string key) =>
+        Order.TryGetValue(key, out var index) ? Fields[index].Label : key;
+
+    public static MetaEntry[]? Normalize(IEnumerable<MetaEntry?>? entries)
+    {
+        if (entries is null)
+        {
+            return null;
+        }
+
+        var values = new string?[Fields.Count];
+        foreach (var entry in entries.Take(Fields.Count * 2))
+        {
+            if (entry?.Key is not { } key || !Order.TryGetValue(key, out var index) || values[index] is not null)
+            {
+                continue;
+            }
+
+            values[index] = Clean(Fields[index], entry.Value);
+        }
+
+        if (values[0] is null || values[1] is null)
+        {
+            return null;
+        }
+
+        var normalized = new List<MetaEntry>(Fields.Count);
+        for (var i = 0; i < Fields.Count; i++)
+        {
+            if (values[i] is { } value)
+            {
+                normalized.Add(new MetaEntry(Fields[i].Key, value));
+            }
+        }
+
+        return [.. normalized];
+    }
+
+    public static bool IsNormalized(IReadOnlyList<MetaEntry>? entries)
+    {
+        if (entries is null)
+        {
+            return true;
+        }
+
+        var normalized = Normalize(entries);
+        return normalized is not null && normalized.SequenceEqual(entries);
+    }
+
+    private static string? Clean(MetaField field, string? input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            return null;
+        }
+
+        var builder = new StringBuilder(Math.Min(input.Length, field.MaxLength));
+        foreach (var c in input)
+        {
+            if (!char.IsControl(c))
+            {
+                builder.Append(c);
+            }
+        }
+
+        var text = builder.ToString().Trim();
+        if (text.Length > field.MaxLength)
+        {
+            var cut = field.MaxLength;
+            if (char.IsHighSurrogate(text[cut - 1]))
+            {
+                cut--;
+            }
+
+            text = text[..cut].TrimEnd();
+        }
+
+        if (text.Length == 0)
+        {
+            return null;
+        }
+
+        if (!field.IsNumber)
+        {
+            return text;
+        }
+
+        return double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var number)
+            && double.IsFinite(number)
+            && number >= (field.Min ?? double.MinValue)
+            && number <= (field.Max ?? double.MaxValue)
+            ? text
+            : null;
     }
 }
 
@@ -10823,6 +11572,48 @@ internal static class MessageWindow
         return at <= now && at < startedAt;
     }
 }
+
+
+================================================================================
+FILE:     src/Chaos.Web/Messages/MetaEntry.cs
+SIZE:     0.09 KB (89 bytes)
+LINES:    3
+SHA256:   16e104a0ecc46cda2e3667676be397a6f080eba5058f40b5d9eeba0dde46f618
+MODIFIED: 2026-10-31 02:26:58 (UTC)
+================================================================================
+
+namespace Chaos.Web.Messages;
+
+public sealed record MetaEntry(string Key, string Value);
+
+
+================================================================================
+FILE:     src/Chaos.Web/Messages/MetaField.cs
+SIZE:     0.24 KB (242 bytes)
+LINES:    6
+SHA256:   012f865995f93c27f1b78bb5402d6be30dd93a6d96435c83d22a00751d7046d2
+MODIFIED: 2026-10-31 02:26:05 (UTC)
+================================================================================
+
+namespace Chaos.Web.Messages;
+
+internal sealed record MetaField(string Key, string Label, int MaxLength = MessageMeta.MaxValueLength, double? Min = null, double? Max = null)
+{
+    public bool IsNumber => Min is not null || Max is not null;
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Messages/PostReply.cs
+SIZE:     0.11 KB (114 bytes)
+LINES:    3
+SHA256:   0b3b9cee49ac4a1e5a37cc7ab977abf3150b896cdca0cc47b84cdc65217ab00b
+MODIFIED: 2026-10-31 02:26:05 (UTC)
+================================================================================
+
+namespace Chaos.Web.Messages;
+
+internal sealed record PostReply(PostResult Result, BoardMessage? Message = null);
 
 
 ================================================================================
@@ -11787,10 +12578,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     tests/Chaos.E2E/BoardTests.cs
-SIZE:     7.11 KB (7279 bytes)
-LINES:    176
-SHA256:   375112d10c3ebed6e53e80017108899f33a448a16880a751a2b27d66d5573ebb
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     11.20 KB (11471 bytes)
+LINES:    261
+SHA256:   7198df7555b04bdfe17de404c3fbc7fb9d79c4034b68b5b8f2d50299873c208c
+MODIFIED: 2026-10-31 02:36:14 (UTC)
 ================================================================================
 
 using System.Text.RegularExpressions;
@@ -11826,6 +12617,23 @@ public sealed partial class BoardTests(BrowserFixture browser) : IClassFixture<B
                 transaction.objectStore('messages').put({ id, text });
                 transaction.oncomplete = () => { db.close(); resolve(); };
                 transaction.onerror = () => reject(transaction.error);
+            };
+            request.onerror = () => reject(request.error);
+        })
+        """;
+
+    private const string StoredMine = """
+        text => new Promise((resolve, reject) => {
+            const request = indexedDB.open('chaos-board');
+            request.onsuccess = () => {
+                const db = request.result;
+                const all = db.transaction('messages', 'readonly').objectStore('messages').getAll();
+                all.onsuccess = () => {
+                    db.close();
+                    const record = all.result.find(m => m.text === text);
+                    resolve(record?.mine === true && Array.isArray(record.meta) && record.meta.some(e => e.key === 'latitude'));
+                };
+                all.onerror = () => reject(all.error);
             };
             request.onerror = () => reject(request.error);
         })
@@ -11922,6 +12730,71 @@ public sealed partial class BoardTests(BrowserFixture browser) : IClassFixture<B
     }
 
     [Fact]
+    public async Task LocationDetailsTravelWithMessagesWhenPermitted()
+    {
+        await using var locatedContext = await browser.NewLocatedContextAsync(27.7172f, 85.324f);
+        await using var readerContext = await browser.NewContextAsync();
+        var poster = await OpenBoardAsync(locatedContext);
+        var reader = await OpenBoardAsync(readerContext);
+        await Expect(poster.Locator("#compose-share")).ToBeCheckedAsync();
+        var text = $"located {Guid.NewGuid():N}";
+
+        await PostAsync(poster, text);
+
+        var mine = poster.Locator("#board-feed .msg", new() { HasText = text });
+        await Expect(mine.Locator(".yours")).ToHaveTextAsync("Your message");
+        var theirs = reader.Locator("#board-feed .msg", new() { HasText = text });
+        await Expect(theirs.Locator("details.meta")).ToBeVisibleAsync();
+        await Expect(theirs.Locator(".yours")).ToHaveCountAsync(0);
+        var latitude = theirs.Locator("details.meta dt", new() { HasText = "Latitude" });
+        await Expect(latitude).ToBeHiddenAsync();
+        await theirs.Locator("details.meta summary").ClickAsync();
+        await Expect(latitude).ToBeVisibleAsync();
+        await Expect(theirs.Locator("details.meta dd").First).ToHaveTextAsync(Kathmandu());
+        await Expect(theirs.Locator("details.meta dt", new() { HasText = "Time zone" })).ToBeVisibleAsync();
+        await EventuallyAsync(async () => (await poster.EvaluateAsync<bool>(StoredMine, text)));
+    }
+
+    [Fact]
+    public async Task UncheckingStopsDetailsButKeepsYourMessage()
+    {
+        await using var locatedContext = await browser.NewLocatedContextAsync(40.7128f, -74.006f);
+        var poster = await OpenBoardAsync(locatedContext);
+        await poster.Locator("#compose-share").UncheckAsync();
+        var text = $"unlocated {Guid.NewGuid():N}";
+
+        await PostAsync(poster, text);
+
+        var item = poster.Locator("#board-feed .msg", new() { HasText = text });
+        await Expect(item.Locator(".yours")).ToHaveTextAsync("Your message");
+        await Expect(item.Locator("details.meta")).ToHaveCountAsync(0);
+
+        await poster.ReloadAsync();
+        await Expect(poster.Locator("#compose-text")).ToBeEnabledAsync();
+        await Expect(poster.Locator("#compose-share")).Not.ToBeCheckedAsync();
+        await Expect(poster.Locator("#board-feed .msg", new() { HasText = text }).Locator(".yours")).ToHaveTextAsync("Your message");
+    }
+
+    [Fact]
+    public async Task WithoutPermissionTheBoardWorksAndAttachesNothing()
+    {
+        await using var context = await browser.NewContextAsync();
+        var page = await OpenBoardAsync(context);
+        await Expect(page.Locator("#compose-share")).Not.ToBeCheckedAsync();
+        var text = $"no permission {Guid.NewGuid():N}";
+
+        await PostAsync(page, text);
+
+        var item = page.Locator("#board-feed .msg", new() { HasText = text });
+        await Expect(item.Locator(".yours")).ToHaveTextAsync("Your message");
+        await Expect(item.Locator("details.meta")).ToHaveCountAsync(0);
+
+        await page.Locator("#compose-share").CheckAsync();
+        await Expect(page.Locator("#compose-share")).Not.ToBeCheckedAsync();
+        await Expect(page.Locator("#compose-share-status")).ToHaveTextAsync("No location permission, so nothing is attached.");
+    }
+
+    [Fact]
     public async Task ClearingLocalHistoryDeletesTheDatabase()
     {
         await using var context = await browser.NewContextAsync();
@@ -11968,15 +12841,18 @@ public sealed partial class BoardTests(BrowserFixture browser) : IClassFixture<B
 
     [GeneratedRegex("archived")]
     private static partial Regex Archived();
+
+    [GeneratedRegex(@"^27\.717")]
+    private static partial Regex Kathmandu();
 }
 
 
 ================================================================================
 FILE:     tests/Chaos.E2E/BrowserFixture.cs
-SIZE:     1.31 KB (1342 bytes)
-LINES:    41
-SHA256:   0f5dffc0d1ef49a015dabe025c008cf6e4b76019907143ed6e35479a02623778
-MODIFIED: 2026-10-16 10:31:46 (UTC)
+SIZE:     1.82 KB (1860 bytes)
+LINES:    53
+SHA256:   10f0f023ec271f40a75a391544d70e854db7ed65f46d9a90f26ba7d1e02cb186
+MODIFIED: 2026-10-31 02:36:01 (UTC)
 ================================================================================
 
 using Microsoft.Playwright;
@@ -12013,6 +12889,18 @@ public sealed class BrowserFixture : IAsyncLifetime
     }
 
     public Task<IBrowserContext> NewContextAsync(ColorScheme scheme = ColorScheme.Light) => NewContextAsync(BaseUrl, scheme);
+
+    public Task<IBrowserContext> NewLocatedContextAsync(float latitude, float longitude)
+    {
+        var browser = _browser ?? throw new InvalidOperationException("The browser is not running.");
+        return browser.NewContextAsync(new BrowserNewContextOptions
+        {
+            BaseURL = BaseUrl,
+            ColorScheme = ColorScheme.Light,
+            Geolocation = new Geolocation { Latitude = latitude, Longitude = longitude, Accuracy = 25 },
+            Permissions = ["geolocation"],
+        });
+    }
 
     public Task<IBrowserContext> NewContextAsync(string baseUrl, ColorScheme scheme = ColorScheme.Light)
     {
@@ -12554,10 +13442,10 @@ public sealed class SlotTests(BrowserFixture browser) : IClassFixture<BrowserFix
 
 ================================================================================
 FILE:     tests/Chaos.Web.Tests/BoardServiceTests.cs
-SIZE:     5.55 KB (5683 bytes)
-LINES:    169
-SHA256:   81b492e594b5642c5c1fb2a2fc5b6b1fc6fb3477b76b580fe414e2fb3de85d8e
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     7.82 KB (8003 bytes)
+LINES:    227
+SHA256:   33adf6ad27f54aa983a8874c914b382cda24b502132a47eed0b2e21424c3fbd8
+MODIFIED: 2026-10-31 02:31:03 (UTC)
 ================================================================================
 
 using Chaos.Web.Infrastructure;
@@ -12722,6 +13610,64 @@ public sealed class BoardServiceTests
         var board = Create(o => o.BoardCapacity = 100);
         var offered = Enumerable.Range(1, 60).Select(i => Old(-i, $"m{i}")).ToList();
         Assert.Equal(BoardService.MaxOffers, board.Offer(offered));
+    }
+
+    [Fact]
+    public void SubmitReturnsTheMessageWithNormalizedDetails()
+    {
+        var board = Create();
+        var reply = board.Submit("located", "a", [new("timeZone", " UTC "), new("longitude", "2"), new("latitude", "1"), new("mystery", "x")]);
+        Assert.Equal(PostResult.Accepted, reply.Result);
+        var message = Assert.Single(board.Messages);
+        Assert.Same(message, reply.Message);
+        Assert.Equal(
+            [new MetaEntry("latitude", "1"), new MetaEntry("longitude", "2"), new MetaEntry("timeZone", "UTC")],
+            message.Meta);
+    }
+
+    [Fact]
+    public void SubmitDropsDetailsWithoutALocation()
+    {
+        var board = Create();
+        Assert.Null(board.Submit("no location", "a", [new("timeZone", "UTC")]).Message!.Meta);
+        Assert.Null(board.Submit("no details", "b", null).Message!.Meta);
+    }
+
+    [Fact]
+    public void SubmitReturnsNoMessageWhenRefused()
+    {
+        var board = Create();
+        Assert.Null(board.Submit(" ", "a", null).Message);
+        board.Submit("same", "a", null);
+        var repeat = board.Submit("same", "b", [new("latitude", "1"), new("longitude", "2")]);
+        Assert.Equal(PostResult.Repeat, repeat.Result);
+        Assert.Null(repeat.Message);
+    }
+
+    [Fact]
+    public void DetailsReachSubscribers()
+    {
+        var board = Create();
+        var recorder = new BoardRecorder();
+        board.Subscribe(recorder);
+        board.Submit("shared", "a", [new("latitude", "1"), new("longitude", "2")]);
+        Assert.Equal("1", Assert.Single(recorder.Updates[1].Added).Meta![0].Value);
+    }
+
+    [Fact]
+    public void OfferKeepsNormalizedDetailsAndRejectsOthers()
+    {
+        var board = Create();
+        MetaEntry[] good = [new("latitude", "1"), new("longitude", "2")];
+        Assert.Equal(1, board.Offer([Old(-1, "kept") with { Meta = good }]));
+        Assert.Equal(0, board.Offer(
+        [
+            Old(-2, "reordered") with { Meta = [new("longitude", "2"), new("latitude", "1")] },
+            Old(-3, "unknown") with { Meta = [new("latitude", "1"), new("longitude", "2"), new("mystery", "x")] },
+            Old(-4, "empty") with { Meta = [] },
+            Old(-5, "no location") with { Meta = [new("timeZone", "UTC")] },
+        ]));
+        Assert.Equal(good, Assert.Single(board.Messages).Meta);
     }
 
     private BoardService Create(Action<ChaosOptions>? configure = null) => new(_time, Limits.Create(configure));
@@ -13223,14 +14169,15 @@ public sealed class LatencyOptionsTests
 
 ================================================================================
 FILE:     tests/Chaos.Web.Tests/HttpPipelineTests.cs
-SIZE:     9.71 KB (9941 bytes)
-LINES:    230
-SHA256:   1e236cc1a1f3b689d2c622cabf50d2db8d2587c769be15f849193c10866508fc
-MODIFIED: 2026-10-29 19:44:46 (UTC)
+SIZE:     11.60 KB (11876 bytes)
+LINES:    263
+SHA256:   44e22134ce9840b83c938ef034ba42cc9defb6bf7f7d7dbb7dacb98f77ea2e3e
+MODIFIED: 2026-10-31 02:33:30 (UTC)
 ================================================================================
 
 using System.Net;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Chaos.Web.Infrastructure;
 using Chaos.Web.Latency;
 using Chaos.Web.Messages;
@@ -13282,6 +14229,36 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
     }
 
     [Fact]
+    public async Task BoardPageRendersMessageDetailsCollapsed()
+    {
+        var text = $"located {Guid.NewGuid():N}";
+        var reply = factory.Services.GetRequiredService<BoardService>().Submit(text, $"integration {Guid.NewGuid():N}", [new("latitude", "27.7172"), new("longitude", "85.324"), new("timeZone", "Asia/Kathmandu")]);
+        Assert.Equal(PostResult.Accepted, reply.Result);
+        using var client = CreateClient();
+        var html = await client.GetStringAsync("/board", Cancellation);
+        var start = html.IndexOf($"data-id=\"{reply.Message!.Id}\"", StringComparison.Ordinal);
+        Assert.True(start >= 0);
+        var item = html[start..html.IndexOf("</li>", start, StringComparison.Ordinal)];
+        var details = Regex.Match(item, "<details class=\"meta\"[^>]*>");
+        Assert.True(details.Success);
+        Assert.DoesNotContain(" open", details.Value, StringComparison.Ordinal);
+        Assert.Matches(">Latitude</dt><dd[^>]*>27.7172</dd>", item);
+        Assert.Matches(">Time zone</dt><dd[^>]*>Asia/Kathmandu</dd>", item);
+        Assert.Contains("id=\"compose-share\"", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task LatencyPageListsJackpotsLast()
+    {
+        using var client = CreateClient();
+        var html = await client.GetStringAsync("/latency", Cancellation);
+        var results = html.IndexOf("id=\"runs-title\"", StringComparison.Ordinal);
+        var leaders = html.IndexOf("id=\"leaders-title\"", StringComparison.Ordinal);
+        var jackpots = html.IndexOf("id=\"jackpots-title\"", StringComparison.Ordinal);
+        Assert.True(results >= 0 && results < leaders && leaders < jackpots);
+    }
+
+    [Fact]
     public async Task SlotsPageRendersSettledResults()
     {
         var slots = factory.Services.GetRequiredService<SlotService>();
@@ -13327,6 +14304,8 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
         Assert.Equal("nosniff", response.Headers.GetValues("X-Content-Type-Options").Single());
         Assert.Equal("no-referrer", response.Headers.GetValues("Referrer-Policy").Single());
         Assert.Equal(SecurityHeaders.PermissionsPolicy, response.Headers.GetValues("Permissions-Policy").Single());
+        Assert.Contains("geolocation=(self)", SecurityHeaders.PermissionsPolicy, StringComparison.Ordinal);
+        Assert.Contains("camera=()", SecurityHeaders.PermissionsPolicy, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -13978,6 +14957,131 @@ public sealed class MessageFormatTests
     public void LabelShowsDateForOtherDays()
     {
         Assert.Equal("2026-10-12 09:05", MessageFormat.Label(Id, new DateTimeOffset(2026, 10, 13, 0, 0, 1, TimeSpan.Zero)));
+    }
+}
+
+
+================================================================================
+FILE:     tests/Chaos.Web.Tests/MessageMetaTests.cs
+SIZE:     4.72 KB (4834 bytes)
+LINES:    115
+SHA256:   7a52deb16f1efaa6434753d2cd40ca33e69723379739b8c827de8716a2392c83
+MODIFIED: 2026-10-31 02:31:03 (UTC)
+================================================================================
+
+using Chaos.Web.Messages;
+
+namespace Chaos.Web.Tests;
+
+public sealed class MessageMetaTests
+{
+    private static readonly string[] Keys =
+    [
+        "latitude", "longitude", "accuracy", "altitude", "altitudeAccuracy", "heading", "speed", "positionAt",
+        "timeZone", "utcOffset", "localTime", "locale", "calendar", "numberingSystem", "language", "languages",
+        "userAgent", "brands", "platform", "mobile", "vendor", "webdriver", "doNotTrack", "globalPrivacyControl",
+        "pdfViewer", "screen", "availableScreen", "viewport", "pixelRatio", "colorDepth", "orientation", "cores",
+        "memory", "touchPoints", "pointer", "colorScheme", "reducedMotion", "contrast", "online", "connection",
+        "downlink", "rtt", "saveData",
+    ];
+
+    [Fact]
+    public void TheCatalogMatchesTheBrowserModule()
+    {
+        Assert.Equal(Keys, MessageMeta.Fields.Select(field => field.Key));
+        Assert.Equal(Keys.Length, MessageMeta.Fields.Select(field => field.Label).Distinct().Count());
+        Assert.Equal("Latitude", MessageMeta.LabelOf("latitude"));
+        Assert.Equal("CPU threads", MessageMeta.LabelOf("cores"));
+        Assert.Equal("mystery", MessageMeta.LabelOf("mystery"));
+    }
+
+    [Fact]
+    public void NormalizeKeepsKnownKeysInCatalogOrder()
+    {
+        var normalized = MessageMeta.Normalize(
+        [
+            new("timeZone", " Asia/Kathmandu "),
+            new("mystery", "dropped"),
+            new("longitude", "85.324"),
+            new("latitude", "27.7172"),
+            new("latitude", "1"),
+            null,
+        ]);
+
+        Assert.NotNull(normalized);
+        Assert.Equal(
+            [new MetaEntry("latitude", "27.7172"), new MetaEntry("longitude", "85.324"), new MetaEntry("timeZone", "Asia/Kathmandu")],
+            normalized);
+    }
+
+    [Fact]
+    public void NormalizeNeedsLatitudeAndLongitude()
+    {
+        Assert.Null(MessageMeta.Normalize(null));
+        Assert.Null(MessageMeta.Normalize([new("latitude", "1")]));
+        Assert.Null(MessageMeta.Normalize([new("latitude", "91"), new("longitude", "1")]));
+        Assert.Null(MessageMeta.Normalize([new("latitude", "1"), new("longitude", "NaN")]));
+        Assert.Null(MessageMeta.Normalize([new("latitude", "north"), new("longitude", "1")]));
+        Assert.NotNull(MessageMeta.Normalize([new("latitude", "-90"), new("longitude", "180")]));
+        Assert.NotNull(MessageMeta.Normalize([new("latitude", "1e-7"), new("longitude", "-0.5")]));
+    }
+
+    [Fact]
+    public void NormalizeDropsOutOfRangeNumbersAndBlankText()
+    {
+        var normalized = MessageMeta.Normalize(
+        [
+            new("latitude", "1"),
+            new("longitude", "2"),
+            new("accuracy", "-1"),
+            new("heading", "361"),
+            new("cores", "8"),
+            new("language", "   "),
+            new("platform", "\u0000\u0007"),
+        ]);
+
+        Assert.Equal(["latitude", "longitude", "cores"], normalized!.Select(entry => entry.Key));
+    }
+
+    [Fact]
+    public void NormalizeStripsControlCharactersAndCutsLongValues()
+    {
+        var agent = new string('a', 600);
+        var normalized = MessageMeta.Normalize(
+        [
+            new("latitude", "1"),
+            new("longitude", "2"),
+            new("userAgent", agent),
+            new("vendor", "Goo\u0000gle\nInc."),
+            new("utcOffset", "+05:45:00:00"),
+            new("timeZone", new string('x', 63) + "😀"),
+        ]);
+
+        var values = normalized!.ToDictionary(entry => entry.Key, entry => entry.Value);
+        Assert.Equal(512, values["userAgent"].Length);
+        Assert.Equal("GoogleInc.", values["vendor"]);
+        Assert.Equal("+05:45:0", values["utcOffset"]);
+        Assert.Equal(new string('x', 63), values["timeZone"]);
+    }
+
+    [Fact]
+    public void NormalizeIgnoresNullValuesAndEndlessInput()
+    {
+        var flood = Enumerable.Range(0, 10_000).Select(i => new MetaEntry($"k{i}", "v")).Prepend(new MetaEntry("latitude", "1"));
+        Assert.Null(MessageMeta.Normalize(flood.Append(new MetaEntry("longitude", "2"))));
+        Assert.Null(MessageMeta.Normalize([new("latitude", null!), new("longitude", "2")]));
+    }
+
+    [Fact]
+    public void IsNormalizedAcceptsOnlyTheCanonicalForm()
+    {
+        MetaEntry[] canonical = [new("latitude", "1"), new("longitude", "2"), new("timeZone", "UTC")];
+        Assert.True(MessageMeta.IsNormalized(null));
+        Assert.True(MessageMeta.IsNormalized(canonical));
+        Assert.False(MessageMeta.IsNormalized([]));
+        Assert.False(MessageMeta.IsNormalized([new("longitude", "2"), new("latitude", "1")]));
+        Assert.False(MessageMeta.IsNormalized([new("latitude", "1"), new("longitude", "2"), new("timeZone", " UTC")]));
+        Assert.False(MessageMeta.IsNormalized([new("latitude", "1"), new("longitude", "2"), new("mystery", "x")]));
     }
 }
 
@@ -14899,25 +16003,35 @@ describe('server clock', () => {
 
 ================================================================================
 FILE:     tests/js/board.test.js
-SIZE:     3.28 KB (3360 bytes)
-LINES:    94
-SHA256:   909fa98fe004f9b8974d010283fab19ab7f88420ec636017658f74f3ddfb33bd
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     10.90 KB (11159 bytes)
+LINES:    271
+SHA256:   b31ee90aa6453efb642bb4575b85c26234e750e28e4227c37fcfcfe71fdf0743
+MODIFIED: 2026-10-31 02:29:33 (UTC)
 ================================================================================
 
 import { describe, expect, it } from 'vitest';
 import {
     LOCAL_CAP,
+    META_FIELDS,
     OFFER_LIMIT,
+    SHARE_KEY,
     chunkOffers,
+    collectMeta,
     countText,
     excessOf,
+    formatOffset,
     isoOf,
     labelOf,
+    localStamp,
+    metaLabel,
     needsResync,
     newestFirst,
+    readShare,
+    shareDefault,
     timestampOf,
+    toRecord,
     upgrade,
+    writeShare,
 } from '../../src/Chaos.Web/Components/Islands/BoardIsland.razor.js';
 
 const OLD_ID = '016f5e66-e800-7000-8000-000000000001';
@@ -14963,6 +16077,13 @@ describe('chunkOffers', () => {
     it('skips a message that can never fit', () => {
         expect(chunkOffers([message(1, 'x'.repeat(2000)), message(2)], 1000)).toEqual([[message(2)]]);
     });
+
+    it('counts details toward the size', () => {
+        const meta = [{ key: 'userAgent', value: 'x'.repeat(300) }];
+        const messages = Array.from({ length: 4 }, (_, index) => ({ ...message(index, 'x'.repeat(100)), meta }));
+        expect(chunkOffers(messages, 1000).every(chunk => chunk.length === 2)).toBe(true);
+        expect(chunkOffers(messages.map(({ meta: _, ...rest }) => rest), 1000)).toHaveLength(1);
+    });
 });
 
 describe('bookkeeping', () => {
@@ -14997,6 +16118,166 @@ describe('countText', () => {
         expect(countText(0, 500)).toBe('0 / 500');
         expect(countText(137, 500)).toBe('137 / 500');
         expect(countText(3, -1)).toBe('3');
+    });
+});
+
+describe('message details', () => {
+    const keys = [
+        'latitude', 'longitude', 'accuracy', 'altitude', 'altitudeAccuracy', 'heading', 'speed', 'positionAt',
+        'timeZone', 'utcOffset', 'localTime', 'locale', 'calendar', 'numberingSystem', 'language', 'languages',
+        'userAgent', 'brands', 'platform', 'mobile', 'vendor', 'webdriver', 'doNotTrack', 'globalPrivacyControl',
+        'pdfViewer', 'screen', 'availableScreen', 'viewport', 'pixelRatio', 'colorDepth', 'orientation', 'cores',
+        'memory', 'touchPoints', 'pointer', 'colorScheme', 'reducedMotion', 'contrast', 'online', 'connection',
+        'downlink', 'rtt', 'saveData',
+    ];
+
+    const position = (coords = {}) => ({
+        timestamp: Date.UTC(2026, 9, 30, 12),
+        coords: { latitude: 27.7172, longitude: 85.324, accuracy: 35, altitude: null, altitudeAccuracy: null, heading: Number.NaN, speed: null, ...coords },
+    });
+
+    const browser = {
+        navigator: {
+            language: 'en-US',
+            languages: ['en-US', 'ne'],
+            userAgent: 'TestAgent/1.0',
+            userAgentData: { brands: [{ brand: 'Chromium', version: '140' }], platform: 'Linux', mobile: false },
+            platform: 'Linux x86_64',
+            vendor: 'Google Inc.',
+            webdriver: true,
+            doNotTrack: '1',
+            pdfViewerEnabled: true,
+            hardwareConcurrency: 8,
+            deviceMemory: 4,
+            maxTouchPoints: 0,
+            onLine: true,
+            connection: { effectiveType: '4g', downlink: 10, rtt: 50, saveData: false },
+        },
+        screen: { width: 1920, height: 1080, availWidth: 1920, availHeight: 1040, colorDepth: 24, orientation: { type: 'landscape-primary' } },
+        innerWidth: 1280,
+        innerHeight: 720,
+        devicePixelRatio: 1.5,
+        matchMedia: query => ({ matches: ['(pointer: fine)', '(prefers-color-scheme: dark)'].includes(query) }),
+        Intl: { DateTimeFormat: () => ({ resolvedOptions: () => ({ timeZone: 'Asia/Kathmandu', locale: 'en-US', calendar: 'gregory', numberingSystem: 'latn' }) }) },
+    };
+
+    const now = { getTimezoneOffset: () => -345, getFullYear: () => 2026, getMonth: () => 9, getDate: () => 30, getHours: () => 17, getMinutes: () => 45, getSeconds: () => 3 };
+
+    it('uses the same keys in the same order as the server', () => {
+        expect(META_FIELDS.map(([key]) => key)).toEqual(keys);
+        expect(new Set(META_FIELDS.map(([, label]) => label)).size).toBe(keys.length);
+    });
+
+    it('labels known keys and falls back to the key', () => {
+        expect(metaLabel('latitude')).toBe('Latitude');
+        expect(metaLabel('cores')).toBe('CPU threads');
+        expect(metaLabel('mystery')).toBe('mystery');
+    });
+
+    it('needs a position', () => {
+        expect(collectMeta(null, browser)).toBeNull();
+        expect(collectMeta({ coords: { latitude: Number.NaN, longitude: 1 } }, browser)).toBeNull();
+    });
+
+    it('collects what the browser reports, in catalog order, without empty values', () => {
+        const entries = collectMeta(position(), browser, now);
+        const values = Object.fromEntries(entries.map(entry => [entry.key, entry.value]));
+        expect(entries.map(entry => entry.key)).toEqual(keys.filter(key => key in values));
+        expect(values).toMatchObject({
+            latitude: '27.7172',
+            longitude: '85.324',
+            accuracy: '35',
+            positionAt: '2026-10-30T12:00:00.000Z',
+            timeZone: 'Asia/Kathmandu',
+            utcOffset: '+05:45',
+            localTime: '2026-10-30 17:45:03',
+            languages: 'en-US, ne',
+            brands: 'Chromium 140',
+            platform: 'Linux',
+            mobile: 'no',
+            webdriver: 'yes',
+            screen: '1920x1080',
+            availableScreen: '1920x1040',
+            viewport: '1280x720',
+            pixelRatio: '1.5',
+            orientation: 'landscape-primary',
+            cores: '8',
+            memory: '4',
+            touchPoints: '0',
+            pointer: 'fine',
+            colorScheme: 'dark',
+            reducedMotion: 'no',
+            contrast: 'no preference',
+            connection: '4g',
+            downlink: '10',
+            rtt: '50',
+            saveData: 'no',
+        });
+        expect(values).not.toHaveProperty('altitude');
+        expect(values).not.toHaveProperty('heading');
+        expect(values).not.toHaveProperty('speed');
+    });
+
+    it('works in a bare browser', () => {
+        const entries = collectMeta(position({ altitude: 1400, heading: 90, speed: 0 }), {}, now);
+        const values = Object.fromEntries(entries.map(entry => [entry.key, entry.value]));
+        expect(values).toMatchObject({ altitude: '1400', heading: '90', speed: '0', utcOffset: '+05:45' });
+        expect(values).not.toHaveProperty('pointer');
+        expect(values).not.toHaveProperty('userAgent');
+    });
+
+    it('formats UTC offsets', () => {
+        expect(formatOffset(0)).toBe('+00:00');
+        expect(formatOffset(345)).toBe('+05:45');
+        expect(formatOffset(-240)).toBe('-04:00');
+        expect(formatOffset(-570)).toBe('-09:30');
+        expect(formatOffset(Number.NaN)).toBeNull();
+    });
+
+    it('stamps local time', () => {
+        expect(localStamp(new Date(2026, 0, 2, 3, 4, 5))).toBe('2026-01-02 03:04:05');
+    });
+
+    it('stores details and ownership only when present', () => {
+        const meta = [{ key: 'latitude', value: '1' }, { key: 'longitude', value: '2' }];
+        expect(toRecord({ id: 'a', text: 't', meta }, true)).toEqual({ id: 'a', text: 't', meta, mine: true });
+        expect(toRecord({ id: 'a', text: 't', meta: [] }, false)).toEqual({ id: 'a', text: 't' });
+        expect(toRecord({ id: 'a', text: 't' }, false)).toEqual({ id: 'a', text: 't' });
+    });
+});
+
+describe('sharing choice', () => {
+    const storage = () => {
+        const values = new Map();
+        return { getItem: key => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) };
+    };
+
+    it('follows the permission unless turned off', () => {
+        expect(shareDefault(null, 'granted')).toBe(true);
+        expect(shareDefault('on', 'granted')).toBe(true);
+        expect(shareDefault('off', 'granted')).toBe(false);
+        expect(shareDefault('on', 'denied')).toBe(false);
+        expect(shareDefault('on', 'prompt')).toBe(false);
+        expect(shareDefault(null, 'prompt')).toBe(false);
+        expect(shareDefault('on', null)).toBe(true);
+        expect(shareDefault(null, null)).toBe(false);
+    });
+
+    it('remembers only on and off', () => {
+        const store = storage();
+        expect(readShare(store)).toBeNull();
+        writeShare(store, 'on');
+        expect(store.getItem(SHARE_KEY)).toBe('on');
+        expect(readShare(store)).toBe('on');
+        store.setItem(SHARE_KEY, 'maybe');
+        expect(readShare(store)).toBeNull();
+    });
+
+    it('survives storage that throws', () => {
+        const broken = { getItem: () => { throw new Error('denied'); }, setItem: () => { throw new Error('denied'); } };
+        expect(readShare(broken)).toBeNull();
+        expect(() => writeShare(broken, 'on')).not.toThrow();
+        expect(readShare(undefined)).toBeNull();
     });
 });
 
@@ -15783,9 +17064,9 @@ export default defineConfig({
 
 
 ===============================================================================
-EXPORT COMPLETED (UTC): 2026-10-31 02:18:49
-Total Files Exported:   168
-Total Source Size:      0.46 MB (479048 bytes)
+EXPORT COMPLETED (UTC): 2026-10-31 02:47:48
+Total Files Exported:   174
+Total Source Size:      0.50 MB (527445 bytes)
 Output File:            /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
 ===============================================================================
-DUMP SHA256 (of all lines above this one): 34e06d58de4e00a16fafae368b5d029da524f390d5bbc65ff479d1b23633db22
+DUMP SHA256 (of all lines above this one): ece92ea9e7b5055670de00ceecad9fe931e63465afe21aba8cedc40420451b88
