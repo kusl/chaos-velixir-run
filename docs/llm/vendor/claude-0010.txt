@@ -21,6 +21,7 @@ that displays all the metadata we have about that particular message
 for example geo location API, metadata, browser time zone 
 anything else we can capture 
 but ONLY if the browser gave us geolocation permission 
+and yes please add or update tests as necessary for this
 
 and please update all documentation accordingly as well.
 these winners and losers should go at the bottom after recent results  
