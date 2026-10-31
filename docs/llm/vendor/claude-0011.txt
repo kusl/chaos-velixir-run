@@ -1,0 +1,31 @@
+60
+88
+
+Lets do something ambitious. 
+a new board 
+except now, 
+the server only retains only ONE message every time 
+but the message is a LOT longer 
+plus, you can now attach images -- png, jpeg, gif, within reason of course 
+and you define the reason 
+clients still retain older messages and the text is still plain text 
+also we still have the geolocation as an option and when enabled we still add all the metadata and headers 
+we also have the `your message` 
+but really the biggest thing is only one message is retained this time at the server 
+there is no concept of a jackpot or winner here 
+text limit should be higher than 500
+pick something reasonable 
+clients should retain ten thousand messages if possible or something high if that is not possible 
+allow multiple images if possible, otherwise single image is fine 
+I don't know how we will keep images locally... you will have to figure that out if it is possible to store images inside the indexed db 
+or something like that 
+Use your best judgment
+If only a few files (under five or there about) need to change, give me the full path of the files that need to change and the FULL file 
+if there are a lot of files that need to change 
+    Delivery
+    Whole project as one tar.gz, unambiguous file placement
+    do not include any file that has not changed 
+    Any files to delete on updates called out explicitly
+    No bespoke sed/patch scripts — full files only for anything that changes
+    Docs updated alongside code changes
+    Low verbosity, no code comments
