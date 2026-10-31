@@ -457,3 +457,244 @@ real	0m2.494s
 user	0m1.338s
 sys	0m1.616s
 kushal@fedora:~/src/dotnet/chaos-velixir-run$ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Claude
+/
+claude-0011.txt
+claude-0011.txt
+TXT
+Lets do something ambitious. 
+a new board 
+except now, 
+the server only retains only ONE message every time 
+but the message is a LOT longer 
+plus, you can now attach images -- png, jpeg, gif, within reason of course 
+and you define the reason 
+clients still retain older messages and the text is still plain text 
+also we still have the geolocation as an option and when enabled we still add all the metadata and headers 
+we also have the your message 
+but really the biggest thing is only one message is retained this time at the server 
+there is no concept of a jackpot or winner here 
+text limit should be higher than 500
+pick something reasonable 
+clients should retain ten thousand messages if possible or something high if that is not possible 
+allow multiple images if possible, otherwise single image is fine 
+I don't know how we will keep images locally... you will have to figure that out if it is possible to store images inside the indexed db 
+or something like that 
+Use your best judgment
+If only a few files (under five or there about) need to change, give me the full path of the files that need to change and the FULL file 
+if there are a lot of files that need to change 
+    Delivery
+    Whole project as one tar.gz, unambiguous file placement
+    do not include any file that has not changed 
+    Any files to delete on updates called out explicitly
+    No bespoke sed/patch scripts — full files only for anything that changes
+    Docs updated alongside code changes
+    Low verbosity, no code comments
+also I suspect a test is flaky or something 
+it does not fail every time but it has failed at least once before. worth taking a look.
+
+Ran 86 commands, updated tasks, and 12 more tools
+Let me read the board stack thoroughly.
+Created a file
+ImageSanitizer.cs
+Created a file
+PostcardService.cs
+Created a file
+PostcardIsland.razor
+Created a file
+PostcardIsland.razor.js
+Created a file
+postcard.test.js
+Created a file
+PostcardTests.cs
+Shared files
+I’ve added a new page called Postcard at /postcard and fixed the flaky test. I haven’t been able to run the full test suite or try the page in a real browser session, so please run run-all.sh before you deploy.
+
+Unpack it from the repo root:
+
+tar -xzf chaos-postcard.tar.gz -C ~/src/dotnet/chaos-velixir-run
+It has 47 files (25 changed, 22 new) and no files to delete.
+
+The flaky test. TheCharacterCountFollowsTypingPastingAndSending was a real timing bug, not a test problem. After you pressed Send, the board set a “recount” flag and expected the next screen update to clear the counter. Sometimes the counter was recounted while the old text was still in the box, so it stayed at “40 / 500” even though the box ended up empty. Now, once a post is accepted, the browser clears the box and recounts straight away (a new sent(id) call), so it no longer depends on timing.
+
+The new board. I called it Postcard; renaming is easy if you want something else.
+
+Server keeps one: each new postcard replaces the last for everyone. There is no jackpot or winner.
+Text: up to 5,000 characters, still plain text.
+Images:
+Up to 4 PNG, JPEG or GIF images, 2 MB each and 4 MB in total, at most 4,096 pixels on a side.
+A postcard can be images only, with no text.
+Large photos are scaled down in the browser to 2,048 pixels before sending. GIFs are sent as they are or refused, so animation isn’t lost.
+Why those limits: the 256 MB server holds at most one 4 MB postcard plus two uploads in progress. 5,000 characters stays under the connection’s 32 KB message limit.
+Image cleaning: the server checks the actual file contents rather than the file name, and refuses anything broken or unknown. It removes hidden metadata such as photo GPS location and camera details, keeping only the JPEG rotation so photos aren’t shown sideways.
+Kept in the browser: up to 10,000 postcards, with images stored in IndexedDB (it can hold image files). Images are capped at 256 MB; above that the oldest images are dropped but their text stays, and a placeholder says the image wasn’t kept. Everything except the newest postcard gets the dotted border.
+Kept as before: Your message, the optional location details (sharing the board’s on/off setting), and offering the newest postcard back after a server restart.
+Rate limit: 2 postcards at once, then one every 10 seconds per network. These can be changed with environment variables.
+One security change: the content security policy now allows img-src 'self' blob:, because stored images are displayed from the browser’s own copy.
+What I could and couldn’t test here. This environment couldn’t download NuGet packages or the Blazor browser script.
+
+Checked:
+The app builds in Release with warnings as errors.
+My new and changed server tests pass (60) using a stand-in for xUnit.
+The JavaScript tests pass (154, 15 of them new).
+The page and image addresses respond correctly.
+A Chromium script exercised the page’s browser code (Send, server updates and offers faked) against the real security policy: thumbnails, scaling a 7.9 MB photo to 1.7 MB, storing and reloading images, dotted borders, the 10,000 and 256 MB limits, and the restart offer.
+Not run:
+The new Playwright tests in PostcardTests.cs and the integration tests in HttpPipelineTests.cs.
+Actual image upload over the live connection, which uses Blazor’s built-in streaming from the browser. That’s the part most worth watching on your first run.
+Docs are updated alongside the code: the README, the About and Home pages, the nav, a new ADR 0023, edits to ADRs 0005, 0008, 0009, 0014 and 0022, and new relaxed limits for the end-to-end test server.
+
+
+Chaos postcard.tar
+GZ 
+
+Automatically approve is on. Claude runs on its own and pauses if anything looks unsafe. This includes using your connectors and Claude in Chrome, unless you turn them off. Learn more
+
+
+Claude finished the response
+
+chaos-postcard.tar.gz
+
+chaos-velixir-run
+2 documents read
+
+79
+00
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
