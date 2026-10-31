@@ -12,11 +12,11 @@ Build succeeded.
     0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:05.56
+Time Elapsed 00:00:01.59
 
 ==> Unit and integration tests
 Running tests from /home/kushal/src/dotnet/chaos-velixir-run/tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
-/home/kushal/src/dotnet/chaos-velixir-run/tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 343ms)
+/home/kushal/src/dotnet/chaos-velixir-run/tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 243ms)
 
   In process file artifacts produced:
     - /home/kushal/src/dotnet/chaos-velixir-run/artifacts/test-results/unit/coverage.cobertura.xml
@@ -26,26 +26,26 @@ Test run summary: Passed!
   failed: 0
   succeeded: 241
   skipped: 0
-  duration: 2s 382ms
+  duration: 2s 202ms
 .NET line coverage: 70.1%
 
 ==> JavaScript unit tests
 
-added 49 packages in 623ms
+added 49 packages in 615ms
 
 [1m[30m[46m RUN [49m[39m[22m [36mv5.0.4 [39m[90m/home/kushal/src/dotnet/chaos-velixir-run/tests/js[39m
       [2mCoverage enabled with [22m[33mv8[39m
 
- [32m✓[39m app.test.js [2m([22m[2m13 tests[22m[2m)[22m[32m 6[2mms[22m[39m
- [32m✓[39m latency.test.js [2m([22m[2m33 tests[22m[2m)[22m[32m 17[2mms[22m[39m
- [32m✓[39m board.test.js [2m([22m[2m23 tests[22m[2m)[22m[32m 46[2mms[22m[39m
- [32m✓[39m canvas.test.js [2m([22m[2m21 tests[22m[2m)[22m[32m 9[2mms[22m[39m
- [32m✓[39m slots.test.js [2m([22m[2m49 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m app.test.js [2m([22m[2m13 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m latency.test.js [2m([22m[2m33 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m canvas.test.js [2m([22m[2m21 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m board.test.js [2m([22m[2m23 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+ [32m✓[39m slots.test.js [2m([22m[2m49 tests[22m[2m)[22m[32m 20[2mms[22m[39m
 
 [2m Test Files [22m [1m[32m5 passed[39m[22m[90m (5)[39m
 [2m      Tests [22m [1m[32m139 passed[39m[22m[90m (139)[39m
-[2m   Start at [22m 22:41:36
-[2m   Duration [22m 340ms[2m (transform 54%, tests 17%, import 16%, worker 12%)[22m
+[2m   Start at [22m 22:46:24
+[2m   Duration [22m 304ms[2m (transform 57%, import 15%, tests 14%, worker 13%)[22m
 
 [34m % [39m[2mCoverage report from [22m[33mv8[39m
 -------------------|---------|----------|---------|---------|-------------------
@@ -65,11 +65,11 @@ All files          |   23.21 |    30.92 |   28.81 |   23.23 |
 
 ==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.63.0-noble
   Determining projects to restore...
-  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 343 ms).
+  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 307 ms).
   Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
   Chaos.Web -> /tmp/app/
 Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
-failed Chaos.E2E.BoardTests.TheCharacterCountFollowsTypingPastingAndSending (5s 192ms)
+failed Chaos.E2E.BoardTests.TheCharacterCountFollowsTypingPastingAndSending (5s 178ms)
   from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
   Xunit.MicrosoftTestingPlatform.XunitException: Microsoft.Playwright.PlaywrightException : Locator expected to have text '0 / 500'
   But was: '40 / 500' 
@@ -86,7 +86,7 @@ failed Chaos.E2E.BoardTests.TheCharacterCountFollowsTypingPastingAndSending (5s 
     at Chaos.E2E.BoardTests.TheCharacterCountFollowsTypingPastingAndSending() in /work/tests/Chaos.E2E/BoardTests.cs:104
     at Chaos.E2E.BoardTests.TheCharacterCountFollowsTypingPastingAndSending() in /work/tests/Chaos.E2E/BoardTests.cs:104
     --- End of stack trace from previous location ---
-/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) failed with 1 error(s) (34s 875ms)
+/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) failed with 1 error(s) (35s 910ms)
 Exit code: 2
 
 Test run summary: Failed!
@@ -94,5 +94,5 @@ Test run summary: Failed!
   failed: 1
   succeeded: 21
   skipped: 0
-  duration: 35s 044ms
+  duration: 36s 059ms
 Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
