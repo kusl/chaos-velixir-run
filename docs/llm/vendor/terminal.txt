@@ -1,4 +1,4 @@
-kushal@fedora:~/src/dotnet/HelloXUnit$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
 
 ==> Restore
 Restore complete (0.7s)
@@ -6,212 +6,11 @@ Restore complete (0.7s)
 Build succeeded in 0.8s
 
 ==> Build (Release, warnings are errors)
-  Chaos.E2E net10.0 succeeded (0.4s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
-  Chaos.Web net10.0 succeeded (1.2s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.E2E net10.0 succeeded (3.0s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
+  Chaos.Web net10.0 succeeded (4.9s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
   Chaos.Web.Tests net10.0 succeeded (0.7s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
 
-Build succeeded in 2.3s
-Restore complete (0.6s)
-
-Build succeeded in 0.7s
-Project 'Chaos.Web' has the following package references
-   [net10.0]: 
-   Top-level Package                                  Requested     Resolved
-   > Microsoft.AspNetCore.App.Internal.Assets   (A)   [10.0.13, )   10.0.13 
-
-Project 'Chaos.E2E' has the following package references
-   [net10.0]: 
-   Top-level Package           Requested   Resolved
-   > Microsoft.Playwright      1.64.1      1.64.1  
-   > xunit.v3                  4.0.2       4.0.2   
-
-Project 'Chaos.Web.Tests' has the following package references
-   [net10.0]: 
-   Top-level Package                                Requested   Resolved
-   > Microsoft.AspNetCore.Mvc.Testing               10.0.14     10.0.14 
-   > Microsoft.Testing.Extensions.CodeCoverage      18.12.0     18.12.0 
-   > xunit.v3                                       4.0.2       4.0.2   
-
-(A) : Auto-referenced package.
-Restore complete (0.6s)
-
-Build succeeded in 0.7s
-
-The following sources were used:
-   https://api.nuget.org/v3/index.json
-
-The given project `Chaos.Web` has no updates given the current sources.
-The given project `Chaos.E2E` has no updates given the current sources.
-The given project `Chaos.Web.Tests` has no updates given the current sources.
-
-==> Unit and integration tests
-Running tests from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
-tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 499ms)
-
-  In process file artifacts produced:
-    - artifacts/test-results/unit/coverage.cobertura.xml
-
-Test run summary: Passed!
-  total: 271
-  failed: 0
-  succeeded: 271
-  skipped: 0
-  duration: 2s 504ms
-.NET line coverage: 70.9%
-
-==> JavaScript unit tests
-npm error code EUSAGE
-npm error
-npm error `npm ci` can only install packages when your package.json and package-lock.json or npm-shrinkwrap.json are in sync. Please update your lock file with `npm install` before continuing.
-npm error
-npm error Invalid: lock file's @vitest/coverage-v8@5.0.4 does not satisfy @vitest/coverage-v8@5.0.5
-npm error Invalid: lock file's vitest@5.0.4 does not satisfy vitest@5.0.5
-npm error Invalid: lock file's vite@8.3.4 does not satisfy vite@8.3.5
-npm error Invalid: lock file's postcss@8.5.30 does not satisfy postcss@8.5.32
-npm error Invalid: lock file's rolldown@1.2.13 does not satisfy rolldown@1.2.16
-npm error Invalid: lock file's @oxc-project/types@0.153.0 does not satisfy @oxc-project/types@0.156.0
-npm error Invalid: lock file's @rolldown/binding-android-arm-eabi@1.2.13 does not satisfy @rolldown/binding-android-arm-eabi@1.2.16
-npm error Invalid: lock file's @rolldown/binding-android-arm64@1.2.13 does not satisfy @rolldown/binding-android-arm64@1.2.16
-npm error Invalid: lock file's @rolldown/binding-darwin-arm64@1.2.13 does not satisfy @rolldown/binding-darwin-arm64@1.2.16
-npm error Invalid: lock file's @rolldown/binding-darwin-x64@1.2.13 does not satisfy @rolldown/binding-darwin-x64@1.2.16
-npm error Invalid: lock file's @rolldown/binding-freebsd-x64@1.2.13 does not satisfy @rolldown/binding-freebsd-x64@1.2.16
-npm error Invalid: lock file's @rolldown/binding-linux-arm-gnueabihf@1.2.13 does not satisfy @rolldown/binding-linux-arm-gnueabihf@1.2.16
-npm error Invalid: lock file's @rolldown/binding-linux-arm64-gnu@1.2.13 does not satisfy @rolldown/binding-linux-arm64-gnu@1.2.16
-npm error Invalid: lock file's @rolldown/binding-linux-arm64-musl@1.2.13 does not satisfy @rolldown/binding-linux-arm64-musl@1.2.16
-npm error Invalid: lock file's @rolldown/binding-linux-ppc64-gnu@1.2.13 does not satisfy @rolldown/binding-linux-ppc64-gnu@1.2.16
-npm error Invalid: lock file's @rolldown/binding-linux-s390x-gnu@1.2.13 does not satisfy @rolldown/binding-linux-s390x-gnu@1.2.16
-npm error Invalid: lock file's @rolldown/binding-linux-x64-gnu@1.2.13 does not satisfy @rolldown/binding-linux-x64-gnu@1.2.16
-npm error Invalid: lock file's @rolldown/binding-linux-x64-musl@1.2.13 does not satisfy @rolldown/binding-linux-x64-musl@1.2.16
-npm error Invalid: lock file's @rolldown/binding-openharmony-arm64@1.2.13 does not satisfy @rolldown/binding-openharmony-arm64@1.2.16
-npm error Invalid: lock file's @rolldown/binding-win32-arm64-msvc@1.2.13 does not satisfy @rolldown/binding-win32-arm64-msvc@1.2.16
-npm error Invalid: lock file's @rolldown/binding-win32-x64-msvc@1.2.13 does not satisfy @rolldown/binding-win32-x64-msvc@1.2.16
-npm error Invalid: lock file's @vitest/mocker@5.0.4 does not satisfy @vitest/mocker@5.0.5
-npm error Invalid: lock file's magic-string@1.4.3 does not satisfy magic-string@1.4.5
-npm error Invalid: lock file's @vitest/spy@5.0.4 does not satisfy @vitest/spy@5.0.5
-npm error
-npm error Clean install a project
-npm error
-npm error Usage:
-npm error npm ci
-npm error
-npm error Options:
-npm error [--install-strategy <hoisted|nested|shallow|linked>] [--legacy-bundling]
-npm error [--global-style] [--omit <dev|optional|peer> [--omit <dev|optional|peer> ...]]
-npm error [--include <prod|dev|optional|peer> [--include <prod|dev|optional|peer> ...]]
-npm error [--strict-peer-deps] [--foreground-scripts] [--ignore-scripts]
-npm error [--allow-directory <all|none|root>] [--allow-file <all|none|root>]
-npm error [--allow-git <all|none|root>] [--allow-remote <all|none|root>]
-npm error [--allow-scripts <package-list> [--allow-scripts <package-list> ...]]
-npm error [--strict-allow-scripts] [--dangerously-allow-all-scripts] [--no-audit]
-npm error [--no-bin-links] [--no-fund] [--dry-run]
-npm error [-w|--workspace <workspace-name> [-w|--workspace <workspace-name> ...]]
-npm error [--workspaces] [--include-workspace-root] [--install-links]
-npm error
-npm error   --install-strategy
-npm error     Sets the strategy for installing packages in node_modules.
-npm error
-npm error   --legacy-bundling
-npm error     Instead of hoisting package installs in `node_modules`, install packages
-npm error
-npm error   --global-style
-npm error     Only install direct dependencies in the top level `node_modules`,
-npm error
-npm error   --omit
-npm error     Dependency types to omit from the installation tree on disk.
-npm error
-npm error   --include
-npm error     Option that allows for defining which types of dependencies to install.
-npm error
-npm error   --strict-peer-deps
-npm error     If set to `true`, and `--legacy-peer-deps` is not set, then _any_
-npm error
-npm error   --foreground-scripts
-npm error     Run all build scripts (ie, `preinstall`, `install`, and
-npm error
-npm error   --ignore-scripts
-npm error     If true, npm does not run scripts specified in package.json files.
-npm error
-npm error   --allow-directory
-npm error     Limits the ability for npm to install dependencies from directories.
-npm error
-npm error   --allow-file
-npm error     Limits the ability for npm to install dependencies from tarball files.
-npm error
-npm error   --allow-git
-npm error     Limits the ability for npm to fetch dependencies from git references.
-npm error
-npm error   --allow-remote
-npm error     Limits the ability for npm to fetch dependencies from urls.
-npm error
-npm error   --allow-scripts
-npm error     Comma-separated list of packages whose install-time lifecycle scripts
-npm error
-npm error   --strict-allow-scripts
-npm error     If `true`, turn the install-script policy from a warning into a hard
-npm error
-npm error   --dangerously-allow-all-scripts
-npm error     If `true`, bypass the `allowScripts` policy entirely and run every
-npm error
-npm error   --audit
-npm error     When "true" submit audit reports alongside the current npm command to the
-npm error
-npm error   --bin-links
-npm error     Tells npm to create symlinks (or `.cmd` shims on Windows) for package
-npm error
-npm error   --fund
-npm error     When "true" displays the message at the end of each `npm install`
-npm error
-npm error   --dry-run
-npm error     Indicates that you don't want npm to make any changes and that it should
-npm error
-npm error   -w|--workspace
-npm error     Enable running a command in the context of the configured workspaces of the
-npm error
-npm error   --workspaces
-npm error     Set to true to run the command in the context of **all** configured
-npm error
-npm error   --include-workspace-root
-npm error     Include the workspace root when workspaces are enabled for a command.
-npm error
-npm error   --install-links
-npm error     When set file: protocol dependencies will be packed and installed as
-npm error
-npm error
-npm error aliases: clean-install, ic, install-clean, isntall-clean
-npm error
-npm error Run "npm help ci" for more info
-npm error A complete log of this run can be found in: /home/kushal/.npm/_logs/2026-10-31T23_16_58_650Z-debug-0.log
-
-real	0m14.093s
-user	0m11.461s
-sys	0m2.281s
-kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run/tests/js; node --version; npm --version; time npm install
-v24.18.0
-11.16.0
-
-removed 2 packages, changed 10 packages, and audited 48 packages in 1s
-
-13 packages are looking for funding
-  run `npm fund` for details
-
-found 0 vulnerabilities
-
-real	0m1.528s
-user	0m1.409s
-sys	0m0.447s
-kushal@fedora:~/src/dotnet/chaos-velixir-run/tests/js$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
-
-==> Restore
-Restore complete (0.5s)
-
-Build succeeded in 0.6s
-
-==> Build (Release, warnings are errors)
-  Chaos.E2E net10.0 succeeded (0.2s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
-  Chaos.Web net10.0 succeeded (1.0s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
-  Chaos.Web.Tests net10.0 succeeded (0.4s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
-
-Build succeeded in 1.7s
+Build succeeded in 6.0s
 Restore complete (0.5s)
 
 Build succeeded in 0.6s
@@ -247,7 +46,7 @@ The given project `Chaos.Web.Tests` has no updates given the current sources.
 
 ==> Unit and integration tests
 Running tests from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
-tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 292ms)
+tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 407ms)
 
   In process file artifacts produced:
     - artifacts/test-results/unit/coverage.cobertura.xml
@@ -257,40 +56,40 @@ Test run summary: Passed!
   failed: 0
   succeeded: 271
   skipped: 0
-  duration: 2s 161ms
+  duration: 2s 410ms
 .NET line coverage: 70.9%
 
 ==> JavaScript unit tests
 
-added 47 packages in 413ms
+added 47 packages in 420ms
 
  RUN  v5.0.5 /home/kushal/src/dotnet/chaos-velixir-run/tests/js
       Coverage enabled with v8
 
- ✓ app.test.js (13 tests) 5ms
- ✓ postcard.test.js (15 tests) 6ms
- ✓ canvas.test.js (21 tests) 7ms
- ✓ latency.test.js (33 tests) 8ms
- ✓ board.test.js (23 tests) 39ms
- ✓ slots.test.js (49 tests) 24ms
+ ✓ latency.test.js (33 tests) 11ms
+ ✓ app.test.js (13 tests) 6ms
+ ✓ postcard.test.js (15 tests) 8ms
+ ✓ board.test.js (23 tests) 24ms
+ ✓ canvas.test.js (21 tests) 9ms
+ ✓ slots.test.js (49 tests) 23ms
 
  Test Files  6 passed (6)
       Tests  154 passed (154)
-   Start at  19:18:51
-   Duration  340ms (transform 53%, import 20%, tests 14%, worker 13%)
+   Start at  06:11:44
+   Duration  382ms (transform 63%, import 15%, worker 12%, tests 10%)
 
  % Coverage report from v8
 --------------------------|---------|----------|---------|---------|-------------------------------------------
 File                      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                         
 --------------------------|---------|----------|---------|---------|-------------------------------------------
-All files                 |   20.46 |    27.19 |   25.93 |   20.52 |                                           
+All files                 |   20.45 |    27.17 |   25.89 |    20.5 |                                           
  Components               |   16.76 |       24 |   26.47 |   17.05 |                                           
   App.razor.js            |   16.76 |       24 |   26.47 |   17.05 | 64-313,317                                
- Components/Islands       |   20.73 |    27.49 |    25.9 |   20.78 |                                           
+ Components/Islands       |   20.71 |    27.47 |   25.85 |   20.76 |                                           
   BoardIsland.razor.js    |   20.85 |    36.11 |   24.34 |   21.39 | 88,127-129,194,203,299-880                
   CanvasIsland.razor.js   |   20.72 |    24.39 |   16.48 |   21.47 | 22-23,158-278,303-691                     
   LatencyIsland.razor.js  |    28.1 |     34.7 |   33.02 |   28.13 | 31,56,149-152,199-200,221-225,237,290-851 
-  PostcardIsland.razor.js |    9.47 |    12.58 |   13.08 |    9.73 | 24-26,118-925                             
+  PostcardIsland.razor.js |    9.44 |    12.54 |   12.96 |     9.7 | 24-26,118-930                             
   SlotIsland.razor.js     |   24.17 |    30.61 |   38.46 |   23.46 | 20,194,211,372-1151                       
  wwwroot                  |       0 |        0 |     100 |       0 |                                           
   theme-init.js           |       0 |        0 |     100 |       0 | 2-8                                       
@@ -298,145 +97,18 @@ All files                 |   20.46 |    27.19 |   25.93 |   20.52 |
 
 ==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.64.1-noble
   Determining projects to restore...
-  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 308 ms).
+  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 301 ms).
   Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
   Chaos.Web -> /tmp/app/
 Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
-failed Chaos.E2E.PostcardTests.PostcardsReachOtherBrowsersWithTheirImages (5s 277ms)
-  from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
-  Xunit.MicrosoftTestingPlatform.XunitException: Microsoft.Playwright.PlaywrightException : Locator expected to have count '1'
-  But was: '0' 
-  Call log:
-    - Expect "ToHaveCountAsync" Locator("#postcard-feed .card.mine") with timeout 5000ms
-    - waiting for Locator("#postcard-feed .card.mine")
-      14 × locator resolved to 0 elements
-         - unexpected value "0"
-    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, FrameExpectOptions expectOptions, Object expected, String message, String title) in /_/src/Playwright/Core/AssertionsBase.cs:97
-    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, ExpectedTextValue[] expectedText, Object expected, String message, String title, FrameExpectOptions options) in /_/src/Playwright/Core/AssertionsBase.cs:69
-    at Chaos.E2E.PostcardTests.SendAsync(IPage page, String text, Byte[] image) in /work/tests/Chaos.E2E/PostcardTests.cs:145
-    at Chaos.E2E.PostcardTests.PostcardsReachOtherBrowsersWithTheirImages() in /work/tests/Chaos.E2E/PostcardTests.cs:34
-    at Chaos.E2E.PostcardTests.PostcardsReachOtherBrowsersWithTheirImages() in /work/tests/Chaos.E2E/PostcardTests.cs:44
-    at Chaos.E2E.PostcardTests.PostcardsReachOtherBrowsersWithTheirImages() in /work/tests/Chaos.E2E/PostcardTests.cs:44
-    --- End of stack trace from previous location ---
-/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) failed with 1 error(s) (37s 025ms)
-Exit code: 2
+/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) passed (30s 684ms)
 
-Test run summary: Failed!
+Test run summary: Passed!
   total: 27
-  failed: 1
-  succeeded: 26
+  failed: 0
+  succeeded: 27
   skipped: 0
-  duration: 37s 169ms
-Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
-
-==> Last 50 lines of the app log
-info: Microsoft.AspNetCore.Http.Result.JsonResult[3]
-      Writing value of type 'ServerTime' as Json.
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'HTTP: GET /time'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/time?n=33 - 200 - application/json;+charset=utf-8 0.2481ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5080/_blazor/initializers - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/_blazor/initializers - 200 - application/json;+charset=utf-8 0.1087ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 POST http://127.0.0.1:5080/_blazor/negotiate?negotiateVersion=1 - - 0
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 POST http://127.0.0.1:5080/_blazor/negotiate?negotiateVersion=1 - 200 - application/json 0.1770ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5080/_blazor?id=Jzh3tAEStkkUgmVsHo03Ag - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/CanvasIsland.8wavzjs07i.razor.js - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
-      Sending file. Request path: 'Components/Islands/CanvasIsland.8wavzjs07i.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/CanvasIsland.razor.js.br'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/CanvasIsland.8wavzjs07i.razor.js - 200 4668 text/javascript 0.2258ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/BoardIsland.razor.js - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
-      Sending file. Request path: 'Components/Islands/BoardIsland.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/BoardIsland.razor.js.br'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/BoardIsland.razor.js - 200 6232 text/javascript 0.1293ms
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/_blazor?id=Jzh3tAEStkkUgmVsHo03Ag - 101 - - 261.6826ms
-
-==> Last 50 lines of the rigged app log
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5081/time?n=48 - 200 - application/json;+charset=utf-8 0.8694ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5081/_blazor/initializers - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5081/_blazor/initializers - 200 - application/json;+charset=utf-8 0.4350ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 POST http://127.0.0.1:5081/_blazor/negotiate?negotiateVersion=1 - - 0
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 POST http://127.0.0.1:5081/_blazor/negotiate?negotiateVersion=1 - 200 - application/json 0.5286ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5081/_blazor?id=g5pPm4Uwu40Zefnst0mhnQ - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5081/Components/Islands/SlotIsland.ha6xp2ea2h.razor.js - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
-      Sending file. Request path: 'Components/Islands/SlotIsland.ha6xp2ea2h.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/SlotIsland.razor.js.br'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5081/Components/Islands/SlotIsland.ha6xp2ea2h.razor.js - 200 8477 text/javascript 0.3977ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5081/Components/Islands/BoardIsland.razor.js - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
-      Sending file. Request path: 'Components/Islands/BoardIsland.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/BoardIsland.razor.js.br'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5081/Components/Islands/BoardIsland.razor.js - 200 6232 text/javascript 0.4912ms
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5081/_blazor?id=eowgzRDdxg5TKZ381cGfvg - 101 - - 10057.6749ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5081/_blazor?id=g5pPm4Uwu40Zefnst0mhnQ - 101 - - 9792.6609ms
-
-real	0m54.865s
-user	0m10.528s
-sys	0m2.269s
-kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/export.sh 
+  duration: 30s 831ms
 Starting project export...
 Project Path: /home/kushal/src/dotnet/chaos-velixir-run
 Output File:  /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
@@ -643,244 +315,9 @@ Export completed successfully!
 Output file: /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
 Total source size: 0.61 MB across 196 files
 
-real	0m2.818s
-user	0m1.454s
-sys	0m1.892s
-kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
+==> All steps passed
 
-==> Restore
-Restore complete (0.7s)
-
-Build succeeded in 0.8s
-
-==> Build (Release, warnings are errors)
-  Chaos.E2E net10.0 succeeded (2.8s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
-  Chaos.Web net10.0 succeeded (4.4s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
-  Chaos.Web.Tests net10.0 succeeded (0.6s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
-
-Build succeeded in 5.3s
-Restore complete (0.5s)
-
-Build succeeded in 0.6s
-Project 'Chaos.Web' has the following package references
-   [net10.0]: 
-   Top-level Package                                  Requested     Resolved
-   > Microsoft.AspNetCore.App.Internal.Assets   (A)   [10.0.13, )   10.0.13 
-
-Project 'Chaos.E2E' has the following package references
-   [net10.0]: 
-   Top-level Package           Requested   Resolved
-   > Microsoft.Playwright      1.64.1      1.64.1  
-   > xunit.v3                  4.0.2       4.0.2   
-
-Project 'Chaos.Web.Tests' has the following package references
-   [net10.0]: 
-   Top-level Package                                Requested   Resolved
-   > Microsoft.AspNetCore.Mvc.Testing               10.0.14     10.0.14 
-   > Microsoft.Testing.Extensions.CodeCoverage      18.12.0     18.12.0 
-   > xunit.v3                                       4.0.2       4.0.2   
-
-(A) : Auto-referenced package.
-Restore complete (0.5s)
-
-Build succeeded in 0.6s
-
-The following sources were used:
-   https://api.nuget.org/v3/index.json
-
-The given project `Chaos.Web` has no updates given the current sources.
-The given project `Chaos.E2E` has no updates given the current sources.
-The given project `Chaos.Web.Tests` has no updates given the current sources.
-
-==> Unit and integration tests
-Running tests from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
-tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 442ms)
-
-  In process file artifacts produced:
-    - artifacts/test-results/unit/coverage.cobertura.xml
-
-Test run summary: Passed!
-  total: 271
-  failed: 0
-  succeeded: 271
-  skipped: 0
-  duration: 2s 478ms
-.NET line coverage: 70.9%
-
-==> JavaScript unit tests
-
-added 47 packages in 547ms
-
- RUN  v5.0.5 /home/kushal/src/dotnet/chaos-velixir-run/tests/js
-      Coverage enabled with v8
-
- ✓ canvas.test.js (21 tests) 10ms
- ✓ latency.test.js (33 tests) 15ms
- ✓ app.test.js (13 tests) 7ms
- ✓ postcard.test.js (15 tests) 9ms
- ✓ board.test.js (23 tests) 71ms
- ✓ slots.test.js (49 tests) 24ms
-
- Test Files  6 passed (6)
-      Tests  154 passed (154)
-   Start at  03:19:03
-   Duration  453ms (transform 58%, import 17%, tests 14%, worker 11%)
-
- % Coverage report from v8
---------------------------|---------|----------|---------|---------|-------------------------------------------
-File                      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                         
---------------------------|---------|----------|---------|---------|-------------------------------------------
-All files                 |   20.46 |    27.19 |   25.93 |   20.52 |                                           
- Components               |   16.76 |       24 |   26.47 |   17.05 |                                           
-  App.razor.js            |   16.76 |       24 |   26.47 |   17.05 | 64-313,317                                
- Components/Islands       |   20.73 |    27.49 |    25.9 |   20.78 |                                           
-  BoardIsland.razor.js    |   20.85 |    36.11 |   24.34 |   21.39 | 88,127-129,194,203,299-880                
-  CanvasIsland.razor.js   |   20.72 |    24.39 |   16.48 |   21.47 | 22-23,158-278,303-691                     
-  LatencyIsland.razor.js  |    28.1 |     34.7 |   33.02 |   28.13 | 31,56,149-152,199-200,221-225,237,290-851 
-  PostcardIsland.razor.js |    9.47 |    12.58 |   13.08 |    9.73 | 24-26,118-925                             
-  SlotIsland.razor.js     |   24.17 |    30.61 |   38.46 |   23.46 | 20,194,211,372-1151                       
- wwwroot                  |       0 |        0 |     100 |       0 |                                           
-  theme-init.js           |       0 |        0 |     100 |       0 | 2-8                                       
---------------------------|---------|----------|---------|---------|-------------------------------------------
-
-==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.64.1-noble
-  Determining projects to restore...
-  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 331 ms).
-  Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
-  Chaos.Web -> /tmp/app/
-Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
-failed Chaos.E2E.PostcardTests.PostcardsReachOtherBrowsersWithTheirImages (5s 277ms)
-  from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
-  Xunit.MicrosoftTestingPlatform.XunitException: Microsoft.Playwright.PlaywrightException : Locator expected to have count '1'
-  But was: '0' 
-  Call log:
-    - Expect "ToHaveCountAsync" Locator("#postcard-feed .card.mine") with timeout 5000ms
-    - waiting for Locator("#postcard-feed .card.mine")
-      14 × locator resolved to 0 elements
-         - unexpected value "0"
-    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, FrameExpectOptions expectOptions, Object expected, String message, String title) in /_/src/Playwright/Core/AssertionsBase.cs:97
-    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, ExpectedTextValue[] expectedText, Object expected, String message, String title, FrameExpectOptions options) in /_/src/Playwright/Core/AssertionsBase.cs:69
-    at Chaos.E2E.PostcardTests.SendAsync(IPage page, String text, Byte[] image) in /work/tests/Chaos.E2E/PostcardTests.cs:145
-    at Chaos.E2E.PostcardTests.PostcardsReachOtherBrowsersWithTheirImages() in /work/tests/Chaos.E2E/PostcardTests.cs:34
-    at Chaos.E2E.PostcardTests.PostcardsReachOtherBrowsersWithTheirImages() in /work/tests/Chaos.E2E/PostcardTests.cs:44
-    at Chaos.E2E.PostcardTests.PostcardsReachOtherBrowsersWithTheirImages() in /work/tests/Chaos.E2E/PostcardTests.cs:44
-    --- End of stack trace from previous location ---
-/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) failed with 1 error(s) (35s 825ms)
-Exit code: 2
-
-Test run summary: Failed!
-  total: 27
-  failed: 1
-  succeeded: 26
-  skipped: 0
-  duration: 35s 984ms
-Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
-
-==> Last 50 lines of the app log
-info: Microsoft.AspNetCore.Http.Result.JsonResult[3]
-      Writing value of type 'ServerTime' as Json.
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'HTTP: GET /time'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/time?n=33 - 200 - application/json;+charset=utf-8 0.2060ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5080/_blazor/initializers - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/_blazor/initializers - 200 - application/json;+charset=utf-8 0.1019ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 POST http://127.0.0.1:5080/_blazor/negotiate?negotiateVersion=1 - - 0
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 POST http://127.0.0.1:5080/_blazor/negotiate?negotiateVersion=1 - 200 - application/json 0.1731ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5080/_blazor?id=IRQZlchJ99MShEe0LJI4Yw - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/CanvasIsland.8wavzjs07i.razor.js - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
-      Sending file. Request path: 'Components/Islands/CanvasIsland.8wavzjs07i.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/CanvasIsland.razor.js.br'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/CanvasIsland.8wavzjs07i.razor.js - 200 4668 text/javascript 0.2245ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/BoardIsland.razor.js - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
-      Sending file. Request path: 'Components/Islands/BoardIsland.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/BoardIsland.razor.js.br'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/BoardIsland.razor.js - 200 6232 text/javascript 0.1019ms
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/_blazor?id=IRQZlchJ99MShEe0LJI4Yw - 101 - - 277.0257ms
-
-==> Last 50 lines of the rigged app log
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5081/time?n=46 - 200 - application/json;+charset=utf-8 0.9628ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5081/_blazor/initializers - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5081/_blazor/initializers - 200 - application/json;+charset=utf-8 0.4177ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 POST http://127.0.0.1:5081/_blazor/negotiate?negotiateVersion=1 - - 0
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 POST http://127.0.0.1:5081/_blazor/negotiate?negotiateVersion=1 - 200 - application/json 0.6570ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5081/_blazor?id=Q_fOZpaPMXpZClXPfYlt9g - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5081/Components/Islands/SlotIsland.ha6xp2ea2h.razor.js - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
-      Sending file. Request path: 'Components/Islands/SlotIsland.ha6xp2ea2h.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/SlotIsland.razor.js.br'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5081/Components/Islands/SlotIsland.ha6xp2ea2h.razor.js - 200 8477 text/javascript 0.4066ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5081/Components/Islands/BoardIsland.razor.js - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
-      Sending file. Request path: 'Components/Islands/BoardIsland.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/BoardIsland.razor.js.br'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5081/Components/Islands/BoardIsland.razor.js - 200 6232 text/javascript 0.3006ms
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5081/_blazor?id=Z7xNPrbWJcJSb6R24nuHbw - 101 - - 10061.4082ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5081/_blazor?id=Q_fOZpaPMXpZClXPfYlt9g - 101 - - 9793.0822ms
-
-real	1m0.233s
-user	0m12.021s
-sys	0m3.079s
+real	0m57.217s
+user	0m13.135s
+sys	0m4.668s
 kushal@fedora:~/src/dotnet/chaos-velixir-run$ 

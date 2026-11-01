@@ -1,8 +1,8 @@
 ===============================================================================
 PROJECT EXPORT
-Generated (UTC): 2026-10-31 23:25:04
+Generated (UTC): 2026-11-01 11:12:24
 Project Path:    /home/kushal/src/dotnet/chaos-velixir-run
-Git Commit:      0fbce2600a28873d3d2c2bbaead5a0e5acf5369a
+Git Commit:      9a3ac89f79de3226784a1b1823b07b4ff6358201
 Git Branch:      main
 Git Dirty:       no
 .NET SDK:        10.0.113
@@ -1052,10 +1052,10 @@ Status: accepted
 
 ================================================================================
 FILE:     docs/adr/0023-postcards.md
-SIZE:     3.52 KB (3601 bytes)
+SIZE:     3.71 KB (3799 bytes)
 LINES:    17
-SHA256:   2724c87b44fea07d53360cf7fb7f1a15aaa4846f8096049c3738a58ab5557bfa
-MODIFIED: 2026-10-31 22:55:38 (UTC)
+SHA256:   468d72d844fc2a406425a26bacacaec20f8d39d284f3d657f8da4968eb5210c6
+MODIFIED: 2026-11-01 11:10:57 (UTC)
 ================================================================================
 
 # 0023 Postcards: one long message with images
@@ -1074,7 +1074,7 @@ Status: accepted
 - Local history: database `chaos-postcards` v1, stores `cards` (`{ id, text, images, meta?, mine? }`), `images` (`{ key: "<id>/<index>", id, blob }`) and `state` (`bytes`). 10,000 cards; images up to 256 MB, oldest images evicted first while their text stays. On a quota error the card is saved without images. Missing images show `Image n of m was not kept`. Images are shown from `blob:` URLs, so the CSP allows `img-src 'self' blob:`; URLs are revoked when the feed is redrawn or the island is disposed.
 - Feed: the live postcard plus 20 stored ones, a button for 20 more. Every postcard but the live one has a dotted border.
 - After a restart (snapshot without a card) the browser offers its newest postcard once per circuit, images included, if all of them are stored. `WouldRestore` checks the UUIDv7 before any upload; the server accepts it only if it is older than the server start and newer than the current postcard, with normalized text and details and clean images.
-- Details and `Your message` work as on the board (ADR 0022) and share the `chaos-board-share` setting. The browser marks its own postcards `mine` from the `Send` reply.
+- Details and `Your message` work as on the board (ADR 0022) and share the `chaos-board-share` setting. The browser marks its own postcards `mine` from the `Send` reply. The reply and the `change` update race (the update usually wins while stream references are released), so `mine` is applied whenever a card enters the feed and on every save, whichever comes first.
 
 
 ================================================================================
@@ -5708,10 +5708,10 @@ input[type="file"]:focus-visible + .pick {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/PostcardIsland.razor.js
-SIZE:     30.42 KB (31149 bytes)
-LINES:    927
-SHA256:   2a3ee2b62efd69f16f6aa9343406de996280a47595795086ccc7f4f0baaab5a8
-MODIFIED: 2026-10-31 22:52:59 (UTC)
+SIZE:     30.56 KB (31292 bytes)
+LINES:    932
+SHA256:   ab4922acbba1922da6bfeb44760abf5bf7340a417172c3185f1f407a752a7690
+MODIFIED: 2026-11-01 11:10:29 (UTC)
 ================================================================================
 
 import { LocalHistory, POSITION_OPTIONS, announce, collectMeta, countText, excessOf, isoOf, labelOf, metaElement, newestFirst, readShare, shareDefault, writeShare } from './BoardIsland.razor.js';
@@ -5750,7 +5750,7 @@ export function imageKey(id, index) {
 }
 
 export function imageRange(id) {
-    return [`${id}/`, `${id}/￿`];
+    return [`${id}/`, `${id}/\uffff`];
 }
 
 export function imageUrl(id, index) {
@@ -5763,7 +5763,7 @@ export function cleanText(text) {
 }
 
 export function hasText(text) {
-    return /[^\s​-‏⁠﻿]/.test(text);
+    return /[^\s\u200b-\u200f\u2060\ufeff]/.test(text);
 }
 
 export function fitSize(width, height, max = RESIZE_SIDE) {
@@ -5911,7 +5911,7 @@ export class PostcardHistory extends LocalHistory {
         if (excess > 0) {
             const keys = await settle(cards.getAllKeys(null, excess));
             const last = keys[keys.length - 1];
-            await walk(images.openCursor(IDBKeyRange.upperBound(`${last}/￿`)), cursor => {
+            await walk(images.openCursor(IDBKeyRange.upperBound(`${last}/\uffff`)), cursor => {
                 bytes -= cursor.value?.blob?.size ?? 0;
                 cursor.delete();
             });
@@ -6325,7 +6325,8 @@ class PostcardClient {
         }
     }
 
-    async save(record, blobs) {
+    async save(stored, blobs) {
+        const record = this.mine.has(stored.id) ? { ...stored, mine: true } : stored;
         try {
             await this.history.save(record, blobs);
         } catch {
@@ -6439,11 +6440,7 @@ class PostcardClient {
         }
         const mine = { ...record, mine: true };
         this.records.set(id, mine);
-        const existing = this.shown.get(id);
-        if (existing && !existing.classList.contains('mine')) {
-            existing.classList.add('mine');
-            existing.querySelector('.head')?.append(this.yours());
-        }
+        this.markMine(this.shown.get(id));
         await this.save(mine, []);
     }
 
@@ -6524,13 +6521,22 @@ class PostcardClient {
         return yours;
     }
 
+    markMine(element) {
+        if (!element || element.classList.contains('mine') || !this.mine.has(element.dataset.id)) {
+            return;
+        }
+        element.classList.add('mine');
+        element.querySelector('.head')?.append(this.yours());
+    }
+
     async item(record, fresh) {
-        const mine = this.mine.has(record.id) || record.mine === true;
+        if (record.mine === true) {
+            this.mine.add(record.id);
+        }
         const element = this.doc.createElement('li');
         element.className = 'card';
         element.classList.toggle('archived', record.id !== this.live);
         element.classList.toggle('fresh', fresh);
-        element.classList.toggle('mine', mine);
         element.dataset.id = record.id;
         const head = this.doc.createElement('div');
         head.className = 'head';
@@ -6538,9 +6544,6 @@ class PostcardClient {
         time.dateTime = isoOf(record.id);
         time.textContent = labelOf(record.id);
         head.append(time);
-        if (mine) {
-            head.append(this.yours());
-        }
         element.append(head);
         if (record.text) {
             const text = this.doc.createElement('p');
@@ -6568,6 +6571,7 @@ class PostcardClient {
             this.revoke(record.id);
             return;
         }
+        this.markMine(element);
         let next = this.feed.firstElementChild;
         while (next && next.dataset.id > record.id) {
             next = next.nextElementSibling;
@@ -6585,6 +6589,7 @@ class PostcardClient {
         const elements = [];
         for (const record of records) {
             const element = await this.item(record, false);
+            this.markMine(element);
             this.shown.set(record.id, element);
             elements.push(element);
         }
@@ -20425,9 +20430,9 @@ export default defineConfig({
 
 
 ===============================================================================
-EXPORT COMPLETED (UTC): 2026-10-31 23:25:07
+EXPORT COMPLETED (UTC): 2026-11-01 11:12:26
 Total Files Exported:   196
-Total Source Size:      0.61 MB (636960 bytes)
+Total Source Size:      0.61 MB (637301 bytes)
 Output File:            /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
 ===============================================================================
-DUMP SHA256 (of all lines above this one): 37bd432cfb3f9b3803284ebedffb0b0f451c580f9a1a22b016882d87e479c491
+DUMP SHA256 (of all lines above this one): 52885a92c5329a5b320e18fcd69f03e210d6e01557992fa96b61520a8da766ba
