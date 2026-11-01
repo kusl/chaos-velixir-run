@@ -34,7 +34,7 @@ export function imageKey(id, index) {
 }
 
 export function imageRange(id) {
-    return [`${id}/`, `${id}/￿`];
+    return [`${id}/`, `${id}/\uffff`];
 }
 
 export function imageUrl(id, index) {
@@ -47,7 +47,7 @@ export function cleanText(text) {
 }
 
 export function hasText(text) {
-    return /[^\s​-‏⁠﻿]/.test(text);
+    return /[^\s\u200b-\u200f\u2060\ufeff]/.test(text);
 }
 
 export function fitSize(width, height, max = RESIZE_SIDE) {
@@ -195,7 +195,7 @@ export class PostcardHistory extends LocalHistory {
         if (excess > 0) {
             const keys = await settle(cards.getAllKeys(null, excess));
             const last = keys[keys.length - 1];
-            await walk(images.openCursor(IDBKeyRange.upperBound(`${last}/￿`)), cursor => {
+            await walk(images.openCursor(IDBKeyRange.upperBound(`${last}/\uffff`)), cursor => {
                 bytes -= cursor.value?.blob?.size ?? 0;
                 cursor.delete();
             });
@@ -609,7 +609,8 @@ class PostcardClient {
         }
     }
 
-    async save(record, blobs) {
+    async save(stored, blobs) {
+        const record = this.mine.has(stored.id) ? { ...stored, mine: true } : stored;
         try {
             await this.history.save(record, blobs);
         } catch {
@@ -723,11 +724,7 @@ class PostcardClient {
         }
         const mine = { ...record, mine: true };
         this.records.set(id, mine);
-        const existing = this.shown.get(id);
-        if (existing && !existing.classList.contains('mine')) {
-            existing.classList.add('mine');
-            existing.querySelector('.head')?.append(this.yours());
-        }
+        this.markMine(this.shown.get(id));
         await this.save(mine, []);
     }
 
@@ -808,13 +805,22 @@ class PostcardClient {
         return yours;
     }
 
+    markMine(element) {
+        if (!element || element.classList.contains('mine') || !this.mine.has(element.dataset.id)) {
+            return;
+        }
+        element.classList.add('mine');
+        element.querySelector('.head')?.append(this.yours());
+    }
+
     async item(record, fresh) {
-        const mine = this.mine.has(record.id) || record.mine === true;
+        if (record.mine === true) {
+            this.mine.add(record.id);
+        }
         const element = this.doc.createElement('li');
         element.className = 'card';
         element.classList.toggle('archived', record.id !== this.live);
         element.classList.toggle('fresh', fresh);
-        element.classList.toggle('mine', mine);
         element.dataset.id = record.id;
         const head = this.doc.createElement('div');
         head.className = 'head';
@@ -822,9 +828,6 @@ class PostcardClient {
         time.dateTime = isoOf(record.id);
         time.textContent = labelOf(record.id);
         head.append(time);
-        if (mine) {
-            head.append(this.yours());
-        }
         element.append(head);
         if (record.text) {
             const text = this.doc.createElement('p');
@@ -852,6 +855,7 @@ class PostcardClient {
             this.revoke(record.id);
             return;
         }
+        this.markMine(element);
         let next = this.feed.firstElementChild;
         while (next && next.dataset.id > record.id) {
             next = next.nextElementSibling;
@@ -869,6 +873,7 @@ class PostcardClient {
         const elements = [];
         for (const record of records) {
             const element = await this.item(record, false);
+            this.markMine(element);
             this.shown.set(record.id, element);
             elements.push(element);
         }

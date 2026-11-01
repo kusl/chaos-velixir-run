@@ -998,3 +998,1478 @@ Error: Process completed with exit code 2.
 
 
 
+tried again 
+==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.64.1-noble
+  Determining projects to restore...
+  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 537 ms).
+  Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web -> /tmp/app/
+Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+failed Chaos.E2E.PostcardTests.PostcardsReachOtherBrowsersWithTheirImages (5s 563ms)
+  from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Microsoft.Playwright.PlaywrightException : Locator expected to have count '1'
+  But was: '0' 
+  Call log:
+    - Expect "ToHaveCountAsync" Locator("#postcard-feed .card.mine") with timeout 5000ms
+    - waiting for Locator("#postcard-feed .card.mine")
+      14 × locator resolved to 0 elements
+         - unexpected value "0"
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, FrameExpectOptions expectOptions, Object expected, String message, String title) in /_/src/Playwright/Core/AssertionsBase.cs:97
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, ExpectedTextValue[] expectedText, Object expected, String message, String title, FrameExpectOptions options) in /_/src/Playwright/Core/AssertionsBase.cs:69
+    at Chaos.E2E.PostcardTests.SendAsync(IPage page, String text, Byte[] image) in /work/tests/Chaos.E2E/PostcardTests.cs:145
+    at Chaos.E2E.PostcardTests.PostcardsReachOtherBrowsersWithTheirImages() in /work/tests/Chaos.E2E/PostcardTests.cs:34
+    at Chaos.E2E.PostcardTests.PostcardsReachOtherBrowsersWithTheirImages() in /work/tests/Chaos.E2E/PostcardTests.cs:44
+    at Chaos.E2E.PostcardTests.PostcardsReachOtherBrowsersWithTheirImages() in /work/tests/Chaos.E2E/PostcardTests.cs:44
+    --- End of stack trace from previous location ---
+failed Chaos.E2E.PostcardTests.TheServerKeepsOnlyTheNewestPostcardButBrowsersKeepTheRest (5s 314ms)
+  from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Microsoft.Playwright.PlaywrightException : Locator expected to have count '1'
+  But was: '0' 
+  Call log:
+    - Expect "ToHaveCountAsync" Locator("#postcard-feed .card.mine") with timeout 5000ms
+    - waiting for Locator("#postcard-feed .card.mine")
+      14 × locator resolved to 0 elements
+         - unexpected value "0"
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, FrameExpectOptions expectOptions, Object expected, String message, String title) in /_/src/Playwright/Core/AssertionsBase.cs:97
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, ExpectedTextValue[] expectedText, Object expected, String message, String title, FrameExpectOptions options) in /_/src/Playwright/Core/AssertionsBase.cs:69
+    at Chaos.E2E.PostcardTests.SendAsync(IPage page, String text, Byte[] image) in /work/tests/Chaos.E2E/PostcardTests.cs:145
+    at Chaos.E2E.PostcardTests.TheServerKeepsOnlyTheNewestPostcardButBrowsersKeepTheRest() in /work/tests/Chaos.E2E/PostcardTests.cs:52
+    at Chaos.E2E.PostcardTests.TheServerKeepsOnlyTheNewestPostcardButBrowsersKeepTheRest() in /work/tests/Chaos.E2E/PostcardTests.cs:66
+    --- End of stack trace from previous location ---
+/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) failed with 2 error(s) (50s 149ms)
+Exit code: 2
+
+Test run summary: Failed!
+  total: 27
+  failed: 2
+  succeeded: 25
+  skipped: 0
+  duration: 50s 395ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Claude
+/
+claude-0011.txt
+claude-0011.txt
+TXT
+Lets do something ambitious. 
+a new board 
+except now, 
+the server only retains only ONE message every time 
+but the message is a LOT longer 
+plus, you can now attach images -- png, jpeg, gif, within reason of course 
+and you define the reason 
+clients still retain older messages and the text is still plain text 
+also we still have the geolocation as an option and when enabled we still add all the metadata and headers 
+we also have the your message 
+but really the biggest thing is only one message is retained this time at the server 
+there is no concept of a jackpot or winner here 
+text limit should be higher than 500
+pick something reasonable 
+clients should retain ten thousand messages if possible or something high if that is not possible 
+allow multiple images if possible, otherwise single image is fine 
+I don't know how we will keep images locally... you will have to figure that out if it is possible to store images inside the indexed db 
+or something like that 
+Use your best judgment
+If only a few files (under five or there about) need to change, give me the full path of the files that need to change and the FULL file 
+if there are a lot of files that need to change 
+    Delivery
+    Whole project as one tar.gz, unambiguous file placement
+    do not include any file that has not changed 
+    Any files to delete on updates called out explicitly
+    No bespoke sed/patch scripts — full files only for anything that changes
+    Docs updated alongside code changes
+    Low verbosity, no code comments
+also I suspect a test is flaky or something 
+it does not fail every time but it has failed at least once before. worth taking a look.
+
+Ran 86 commands, updated tasks, and 12 more tools
+Let me read the board stack thoroughly.
+Created a file
+ImageSanitizer.cs
+Created a file
+PostcardService.cs
+Created a file
+PostcardIsland.razor
+Created a file
+PostcardIsland.razor.js
+Created a file
+postcard.test.js
+Created a file
+PostcardTests.cs
+Shared files
+I’ve added a new page called Postcard at /postcard and fixed the flaky test. I haven’t been able to run the full test suite or try the page in a real browser session, so please run run-all.sh before you deploy.
+
+Unpack it from the repo root:
+
+tar -xzf chaos-postcard.tar.gz -C ~/src/dotnet/chaos-velixir-run
+It has 47 files (25 changed, 22 new) and no files to delete.
+
+The flaky test. TheCharacterCountFollowsTypingPastingAndSending was a real timing bug, not a test problem. After you pressed Send, the board set a “recount” flag and expected the next screen update to clear the counter. Sometimes the counter was recounted while the old text was still in the box, so it stayed at “40 / 500” even though the box ended up empty. Now, once a post is accepted, the browser clears the box and recounts straight away (a new sent(id) call), so it no longer depends on timing.
+
+The new board. I called it Postcard; renaming is easy if you want something else.
+
+Server keeps one: each new postcard replaces the last for everyone. There is no jackpot or winner.
+Text: up to 5,000 characters, still plain text.
+Images:
+Up to 4 PNG, JPEG or GIF images, 2 MB each and 4 MB in total, at most 4,096 pixels on a side.
+A postcard can be images only, with no text.
+Large photos are scaled down in the browser to 2,048 pixels before sending. GIFs are sent as they are or refused, so animation isn’t lost.
+Why those limits: the 256 MB server holds at most one 4 MB postcard plus two uploads in progress. 5,000 characters stays under the connection’s 32 KB message limit.
+Image cleaning: the server checks the actual file contents rather than the file name, and refuses anything broken or unknown. It removes hidden metadata such as photo GPS location and camera details, keeping only the JPEG rotation so photos aren’t shown sideways.
+Kept in the browser: up to 10,000 postcards, with images stored in IndexedDB (it can hold image files). Images are capped at 256 MB; above that the oldest images are dropped but their text stays, and a placeholder says the image wasn’t kept. Everything except the newest postcard gets the dotted border.
+Kept as before: Your message, the optional location details (sharing the board’s on/off setting), and offering the newest postcard back after a server restart.
+Rate limit: 2 postcards at once, then one every 10 seconds per network. These can be changed with environment variables.
+One security change: the content security policy now allows img-src 'self' blob:, because stored images are displayed from the browser’s own copy.
+What I could and couldn’t test here. This environment couldn’t download NuGet packages or the Blazor browser script.
+
+Checked:
+The app builds in Release with warnings as errors.
+My new and changed server tests pass (60) using a stand-in for xUnit.
+The JavaScript tests pass (154, 15 of them new).
+The page and image addresses respond correctly.
+A Chromium script exercised the page’s browser code (Send, server updates and offers faked) against the real security policy: thumbnails, scaling a 7.9 MB photo to 1.7 MB, storing and reloading images, dotted borders, the 10,000 and 256 MB limits, and the restart offer.
+Not run:
+The new Playwright tests in PostcardTests.cs and the integration tests in HttpPipelineTests.cs.
+Actual image upload over the live connection, which uses Blazor’s built-in streaming from the browser. That’s the part most worth watching on your first run.
+Docs are updated alongside the code: the README, the About and Home pages, the nav, a new ADR 0023, edits to ADRs 0005, 0008, 0009, 0014 and 0022, and new relaxed limits for the end-to-end test server.
+
+
+Chaos postcard.tar
+GZ 
+dump.txt
+dump.txt
+TXT
+Something isn't quite right. 
+We have a failing test. 
+The application looks good though, 
+at least from what I can tell with a cursory look 
+I updated npm dependencies but I think that is unrelated 
+
+==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.64.1-noble
+  Determining projects to restore...
+  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 308 ms).
+  Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web -> /tmp/app/
+Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+failed Chaos.E2E.PostcardTests.PostcardsReachOtherBrowsersWithTheirImages (5s 277ms)
+  from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Microsoft.Playwright.PlaywrightException : Locator expected to have count '1'
+  But was: '0' 
+  Call log:
+    - Expect "ToHaveCountAsync" Locator("#postcard-feed .card.mine") with timeout 5000ms
+    - waiting for Locator("#postcard-feed .card.mine")
+      14 × locator resolved to 0 elements
+         - unexpected value "0"
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, FrameExpectOptions expectOptions, Object expected, String message, String title) in /_/src/Playwright/Core/AssertionsBase.cs:97
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, ExpectedTextValue[] expectedText, Object expected, String message, String title, FrameExpectOptions options) in /_/src/Playwright/Core/AssertionsBase.cs:69
+    at Chaos.E2E.PostcardTests.SendAsync(IPage page, String text, Byte[] image) in /work/tests/Chaos.E2E/PostcardTests.cs:145
+    at Chaos.E2E.PostcardTests.PostcardsReachOtherBrowsersWithTheirImages() in /work/tests/Chaos.E2E/PostcardTests.cs:34
+    at Chaos.E2E.PostcardTests.PostcardsReachOtherBrowsersWithTheirImages() in /work/tests/Chaos.E2E/PostcardTests.cs:44
+    at Chaos.E2E.PostcardTests.PostcardsReachOtherBrowsersWithTheirImages() in /work/tests/Chaos.E2E/PostcardTests.cs:44
+    --- End of stack trace from previous location ---
+/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) failed with 1 error(s) (37s 025ms)
+Exit code: 2
+
+Test run summary: Failed!
+  total: 27
+  failed: 1
+  succeeded: 26
+  skipped: 0
+  duration: 37s 169ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
+also from github actions: 
+
+Run scripts/run-all.sh
+
+==> Restore
+  Determining projects to restore...
+  Restored /home/runner/work/chaos-velixir-run/chaos-velixir-run/src/Chaos.Web/Chaos.Web.csproj (in 1.02 sec).
+  Restored /home/runner/work/chaos-velixir-run/chaos-velixir-run/tests/Chaos.Web.Tests/Chaos.Web.Tests.csproj (in 1.77 sec).
+  Restored /home/runner/work/chaos-velixir-run/chaos-velixir-run/tests/Chaos.E2E/Chaos.E2E.csproj (in 7.05 sec).
+
+==> Build (Release, warnings are errors)
+  Chaos.E2E -> /home/runner/work/chaos-velixir-run/chaos-velixir-run/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
+  Chaos.Web -> /home/runner/work/chaos-velixir-run/chaos-velixir-run/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web.Tests -> /home/runner/work/chaos-velixir-run/chaos-velixir-run/tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:09.64
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+Project 'Chaos.Web' has the following package references
+   [net10.0]: 
+   Top-level Package                                  Requested     Resolved
+   > Microsoft.AspNetCore.App.Internal.Assets   (A)   [10.0.14, )   10.0.14 
+
+Project 'Chaos.E2E' has the following package references
+   [net10.0]: 
+   Top-level Package           Requested   Resolved
+   > Microsoft.Playwright      1.64.1      1.64.1  
+   > xunit.v3                  4.0.2       4.0.2   
+
+Project 'Chaos.Web.Tests' has the following package references
+   [net10.0]: 
+   Top-level Package                                Requested   Resolved
+   > Microsoft.AspNetCore.Mvc.Testing               10.0.14     10.0.14 
+   > Microsoft.Testing.Extensions.CodeCoverage      18.12.0     18.12.0 
+   > xunit.v3                                       4.0.2       4.0.2   
+
+(A) : Auto-referenced package.
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+
+The following sources were used:
+   https://api.nuget.org/v3/index.json
+
+The given project `Chaos.Web` has no updates given the current sources.
+The given project `Chaos.E2E` has no updates given the current sources.
+The given project `Chaos.Web.Tests` has no updates given the current sources.
+
+==> Unit and integration tests
+Running tests from /home/runner/work/chaos-velixir-run/chaos-velixir-run/tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
+/home/runner/work/chaos-velixir-run/chaos-velixir-run/tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (3s 222ms)
+
+  In process file artifacts produced:
+    - /home/runner/work/chaos-velixir-run/chaos-velixir-run/artifacts/test-results/unit/coverage.cobertura.xml
+
+Test run summary: Passed!
+  total: 271
+  failed: 0
+  succeeded: 271
+  skipped: 0
+  duration: 4s 309ms
+.NET line coverage: 70.9%
+
+==> JavaScript unit tests
+
+added 47 packages in 1s
+
+ RUN  v5.0.5 /home/runner/work/chaos-velixir-run/chaos-velixir-run/tests/js
+      Coverage enabled with v8
+
+ ✓ latency.test.js (33 tests) 12ms
+ ✓ board.test.js (23 tests) 43ms
+ ✓ slots.test.js (49 tests) 43ms
+ ✓ canvas.test.js (21 tests) 18ms
+ ✓ postcard.test.js (15 tests) 10ms
+ ✓ app.test.js (13 tests) 7ms
+
+ Test Files  6 passed (6)
+      Tests  154 passed (154)
+   Start at  23:26:10
+   Duration  617ms (transform 40%, tests 22%, import 21%, worker 18%)
+
+ % Coverage report from v8
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   20.46 |    27.19 |   25.93 |   20.52 |                   
+ Components        |   16.76 |       24 |   26.47 |   17.05 |                   
+  App.razor.js     |   16.76 |       24 |   26.47 |   17.05 | 64-313,317        
+ ...onents/Islands |   20.73 |    27.49 |    25.9 |   20.78 |                   
+  ...land.razor.js |   20.85 |    36.11 |   24.34 |   21.39 | ...94,203,299-880 
+  ...land.razor.js |   20.72 |    24.39 |   16.48 |   21.47 | ...58-278,303-691 
+  ...land.razor.js |    28.1 |     34.7 |   33.02 |   28.13 | ...25,237,290-851 
+  ...land.razor.js |    9.47 |    12.58 |   13.08 |    9.73 | 24-26,118-925     
+  ...land.razor.js |   24.17 |    30.61 |   38.46 |   23.46 | ...4,211,372-1151 
+ wwwroot           |       0 |        0 |     100 |       0 |                   
+  theme-init.js    |       0 |        0 |     100 |       0 | 2-8               
+-------------------|---------|----------|---------|---------|-------------------
+
+==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.64.1-noble
+  Determining projects to restore...
+  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 465 ms).
+  Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web -> /tmp/app/
+Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+failed Chaos.E2E.PostcardTests.TheServerKeepsOnlyTheNewestPostcardButBrowsersKeepTheRest (5s 227ms)
+  from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Microsoft.Playwright.PlaywrightException : Locator expected to have count '1'
+  But was: '0' 
+  Call log:
+    - Expect "ToHaveCountAsync" Locator("#postcard-feed .card.mine") with timeout 5000ms
+    - waiting for Locator("#postcard-feed .card.mine")
+      14 × locator resolved to 0 elements
+         - unexpected value "0"
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, FrameExpectOptions expectOptions, Object expected, String message, String title) in /_/src/Playwright/Core/AssertionsBase.cs:97
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, ExpectedTextValue[] expectedText, Object expected, String message, String title, FrameExpectOptions options) in /_/src/Playwright/Core/AssertionsBase.cs:69
+    at Chaos.E2E.PostcardTests.SendAsync(IPage page, String text, Byte[] image) in /work/tests/Chaos.E2E/PostcardTests.cs:145
+    at Chaos.E2E.PostcardTests.TheServerKeepsOnlyTheNewestPostcardButBrowsersKeepTheRest() in /work/tests/Chaos.E2E/PostcardTests.cs:52
+    at Chaos.E2E.PostcardTests.TheServerKeepsOnlyTheNewestPostcardButBrowsersKeepTheRest() in /work/tests/Chaos.E2E/PostcardTests.cs:66
+    --- End of stack trace from previous location ---
+failed Chaos.E2E.PostcardTests.ImagesAreCleanedOnTheServer (5s 231ms)
+  from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Microsoft.Playwright.PlaywrightException : Locator expected to have count '1'
+  But was: '0' 
+  Call log:
+    - Expect "ToHaveCountAsync" Locator("#postcard-feed .card.mine") with timeout 5000ms
+    - waiting for Locator("#postcard-feed .card.mine")
+      14 × locator resolved to 0 elements
+         - unexpected value "0"
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, FrameExpectOptions expectOptions, Object expected, String message, String title) in /_/src/Playwright/Core/AssertionsBase.cs:97
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, ExpectedTextValue[] expectedText, Object expected, String message, String title, FrameExpectOptions options) in /_/src/Playwright/Core/AssertionsBase.cs:69
+    at Chaos.E2E.PostcardTests.SendAsync(IPage page, String text, Byte[] image) in /work/tests/Chaos.E2E/PostcardTests.cs:145
+    at Chaos.E2E.PostcardTests.ImagesAreCleanedOnTheServer() in /work/tests/Chaos.E2E/PostcardTests.cs:74
+    at Chaos.E2E.PostcardTests.ImagesAreCleanedOnTheServer() in /work/tests/Chaos.E2E/PostcardTests.cs:81
+    --- End of stack trace from previous location ---
+/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) failed with 2 error(s) (45s 283ms)
+Exit code: 2
+
+Test run summary: Failed!
+  total: 27
+  failed: 2
+  succeeded: 25
+  skipped: 0
+  duration: 45s 467ms
+Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
+
+==> Last 50 lines of the app log
+info: Microsoft.AspNetCore.Http.Result.JsonResult[3]
+      Writing value of type 'ServerTime' as Json.
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'HTTP: GET /time'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5080/time?n=61 - 200 - application/json;+charset=utf-8 0.2711ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:5080/_blazor/initializers - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5080/_blazor/initializers - 200 - application/json;+charset=utf-8 0.2398ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:5080/_blazor/negotiate?negotiateVersion=1 - - 0
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:5080/_blazor/negotiate?negotiateVersion=1 - 200 - application/json 0.1576ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:5080/_blazor?id=U7smYTl-KLqwN6fnal9Nbg - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/CanvasIsland.8wavzjs07i.razor.js - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
+      Sending file. Request path: 'Components/Islands/CanvasIsland.8wavzjs07i.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/CanvasIsland.razor.js.br'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/CanvasIsland.8wavzjs07i.razor.js - 200 4668 text/javascript 0.3126ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/BoardIsland.razor.js - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
+      Sending file. Request path: 'Components/Islands/BoardIsland.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/BoardIsland.razor.js.br'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/BoardIsland.razor.js - 200 6232 text/javascript 0.1435ms
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5080/_blazor?id=U7smYTl-KLqwN6fnal9Nbg - 101 - - 282.9537ms
+
+==> Last 50 lines of the rigged app log
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5081/time?n=65 - 200 - application/json;+charset=utf-8 1.0845ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:5081/_blazor/initializers - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5081/_blazor/initializers - 200 - application/json;+charset=utf-8 0.3346ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 POST http://127.0.0.1:5081/_blazor/negotiate?negotiateVersion=1 - - 0
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 POST http://127.0.0.1:5081/_blazor/negotiate?negotiateVersion=1 - 200 - application/json 0.5156ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:5081/_blazor?id=7rIUIhGI8waRSa-fjwy-8A - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:5081/Components/Islands/SlotIsland.ha6xp2ea2h.razor.js - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
+      Sending file. Request path: 'Components/Islands/SlotIsland.ha6xp2ea2h.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/SlotIsland.razor.js.br'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5081/Components/Islands/SlotIsland.ha6xp2ea2h.razor.js - 200 8477 text/javascript 0.5000ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/1.1 GET http://127.0.0.1:5081/Components/Islands/BoardIsland.razor.js - - -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
+      Sending file. Request path: 'Components/Islands/BoardIsland.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/BoardIsland.razor.js.br'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5081/Components/Islands/BoardIsland.razor.js - 200 6232 text/javascript 0.4144ms
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5081/_blazor?id=7rIUIhGI8waRSa-fjwy-8A - 101 - - 9795.3821ms
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5081/_blazor?id=MVOmxe-hvY15VW3bNyHxLQ - 101 - - 10106.6975ms
+Error: Process completed with exit code 2.
+Ran 14 commands, read a file, shared files
+The failing tests come from a bug in the postcard page code, not your npm update and not the tests. When you send a postcard with an image, it shows up in the feed but sometimes isn’t marked Your message. I fixed it; two files change.
+
+Why only image postcards. After the server accepts a postcard, two messages race back to the browser. One is the server’s broadcast that a new postcard exists. The other is the server’s reply confirming your own send, which arrives slightly later when images are attached. When the broadcast won, the page started building the card and decided “not mine” right away. It then paused to load the card’s images from local storage. The confirmation landed during that pause, but the card wasn’t in the feed yet, so the mark never got applied. Text-only cards don’t pause, so the two tests that send only text kept passing.
+
+The fix. The “mine” check now runs at the moment a card is added to the feed, so whichever message arrives first, the card ends up marked. Every save to local storage also re-applies “mine”, so the mark survives a reload even if the save started before the confirmation arrived.
+
+I reproduced it with a script that varies when the confirmation arrives. The old code missed the mark about once in 40 sends; the fixed code missed none across 120. The server unit tests, the 154 JavaScript tests and the earlier browser script still pass. I still can’t run the real Playwright suite here, so please rerun run-all.sh.
+
+I also replaced three invisible Unicode characters in the JavaScript file with their visible \u escape spellings. Behaviour is unchanged; they were just impossible to see in the source.
+
+No files to delete.
+
+src/Chaos.Web/Components/Islands/PostcardIsland.razor.js
+js
+import { LocalHistory, POSITION_OPTIONS, announce, collectMeta, countText, excessOf, isoOf, labelOf, metaElement, newestFirst, readShare, shareDefault, writeShare } from './BoardIsland.razor.js';
+
+export const DB_NAME = 'chaos-postcards';
+export const DB_VERSION = 1;
+export const CARDS = 'cards';
+export const IMAGES = 'images';
+export const STATE = 'state';
+export const LOCAL_CAP = 10000;
+export const IMAGE_BUDGET = 256 * 1024 * 1024;
+export const PAGE_SIZE = 20;
+export const PING_MS = 25000;
+export const MAX_TEXT = 5000;
+export const MAX_IMAGES = 4;
+export const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
+export const MAX_TOTAL_BYTES = 4 * 1024 * 1024;
+export const MAX_SIDE = 4096;
+export const RESIZE_SIDE = 2048;
+export const JPEG_QUALITY = 0.85;
+export const TYPES = Object.freeze(['image/png', 'image/jpeg', 'image/gif']);
+export const IMAGE_PATH = 'postcard/images';
+
+export const migrations = [
+    db => {
+        db.createObjectStore(CARDS, { keyPath: 'id' });
+        db.createObjectStore(IMAGES, { keyPath: 'key' });
+        db.createObjectStore(STATE, { keyPath: 'key' });
+    },
+];
+
+export const SCHEMA = Object.freeze({ name: DB_NAME, version: DB_VERSION, store: CARDS, migrations, cap: LOCAL_CAP });
+
+export function imageKey(id, index) {
+    return `${id}/${index}`;
+}
+
+export function imageRange(id) {
+    return [`${id}/`, `${id}/\uffff`];
+}
+
+export function imageUrl(id, index) {
+    return `${IMAGE_PATH}/${id}/${index}`;
+}
+
+export function cleanText(text) {
+    const value = String(text ?? '').replace(/\r\n?/g, '\n').replace(/[\u0000-\u0009\u000b-\u001f\u007f-\u009f]/g, '');
+    return typeof value.toWellFormed === 'function' ? value.toWellFormed() : value;
+}
+
+export function hasText(text) {
+    return /[^\s\u200b-\u200f\u2060\ufeff]/.test(text);
+}
+
+export function fitSize(width, height, max = RESIZE_SIDE) {
+    const longest = Math.max(width, height);
+    if (longest <= max) {
+        return { width, height };
+    }
+    const scale = max / longest;
+    return { width: Math.max(1, Math.round(width * scale)), height: Math.max(1, Math.round(height * scale)) };
+}
+
+export function needsResize(type, size, width, height) {
+    return type !== 'image/gif' && (size > MAX_IMAGE_BYTES || Math.max(width, height) > MAX_SIDE);
+}
+
+export function pickProblem(type, size, count, total) {
+    if (count >= MAX_IMAGES) {
+        return `Attach at most ${MAX_IMAGES} images.`;
+    }
+    if (!TYPES.includes(type)) {
+        return 'Only PNG, JPEG and GIF images can be attached.';
+    }
+    if (type === 'image/gif' && size > MAX_IMAGE_BYTES) {
+        return 'GIFs must be 2 MB or smaller.';
+    }
+    if (size !== null && total + size > MAX_TOTAL_BYTES) {
+        return 'All images together can be 4 MB.';
+    }
+    return null;
+}
+
+export function toRecord(card, mine) {
+    const record = {
+        id: card.id,
+        text: typeof card.text === 'string' ? card.text : '',
+        images: Array.isArray(card.images)
+            ? card.images.map(image => ({ type: image.type, width: image.width, height: image.height, length: image.length }))
+            : [],
+    };
+    if (Array.isArray(card.meta) && card.meta.length > 0) {
+        record.meta = card.meta;
+    }
+    if (mine) {
+        record.mine = true;
+    }
+    return record;
+}
+
+export function merge(existing, record) {
+    const merged = { ...record };
+    if (existing?.mine || record.mine) {
+        merged.mine = true;
+    } else {
+        delete merged.mine;
+    }
+    return merged;
+}
+
+export function isComplete(record, blobs) {
+    return record.images.every((image, index) => blobs[index] instanceof Blob && blobs[index].size === image.length);
+}
+
+export function isStale(version, update) {
+    return update.kind !== 'snapshot' && update.version <= version;
+}
+
+function settle(request) {
+    return new Promise((resolve, reject) => {
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function finished(transaction) {
+    return new Promise((resolve, reject) => {
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+        transaction.onabort = () => reject(transaction.error);
+    });
+}
+
+function walk(request, visit) {
+    return new Promise((resolve, reject) => {
+        request.onsuccess = () => {
+            const cursor = request.result;
+            if (!cursor || visit(cursor) === false) {
+                resolve();
+                return;
+            }
+            cursor.continue();
+        };
+        request.onerror = () => reject(request.error);
+    });
+}
+
+export class PostcardHistory extends LocalHistory {
+    constructor(factory, schema = SCHEMA, budget = IMAGE_BUDGET) {
+        super(factory, schema);
+        this.budget = budget;
+    }
+
+    async blobs(record) {
+        const db = await this.database();
+        if (!db || record.images.length === 0) {
+            return [];
+        }
+        const store = db.transaction(IMAGES, 'readonly').objectStore(IMAGES);
+        const values = await Promise.all(record.images.map((_, index) => settle(store.get(imageKey(record.id, index)))));
+        return values.map(value => (value?.blob instanceof Blob ? value.blob : null));
+    }
+
+    async get(id) {
+        const db = await this.database();
+        if (!db) {
+            return null;
+        }
+        return (await settle(db.transaction(CARDS, 'readonly').objectStore(CARDS).get(id))) ?? null;
+    }
+
+    async save(record, blobs = []) {
+        const db = await this.database();
+        if (!db) {
+            return;
+        }
+        const transaction = db.transaction([CARDS, IMAGES, STATE], 'readwrite');
+        const done = finished(transaction);
+        const cards = transaction.objectStore(CARDS);
+        const images = transaction.objectStore(IMAGES);
+        const state = transaction.objectStore(STATE);
+        const existing = await settle(cards.get(record.id));
+        cards.put(merge(existing, record));
+        let bytes = (await settle(state.get('bytes')))?.value ?? 0;
+        for (let index = 0; index < blobs.length; index += 1) {
+            const blob = blobs[index];
+            if (!(blob instanceof Blob)) {
+                continue;
+            }
+            const key = imageKey(record.id, index);
+            if ((await settle(images.count(key))) === 0) {
+                images.put({ key, id: record.id, blob });
+                bytes += blob.size;
+            }
+        }
+        const excess = excessOf(await settle(cards.count()), this.schema.cap);
+        if (excess > 0) {
+            const keys = await settle(cards.getAllKeys(null, excess));
+            const last = keys[keys.length - 1];
+            await walk(images.openCursor(IDBKeyRange.upperBound(`${last}/\uffff`)), cursor => {
+                bytes -= cursor.value?.blob?.size ?? 0;
+                cursor.delete();
+            });
+            cards.delete(IDBKeyRange.upperBound(last));
+        }
+        if (bytes > this.budget) {
+            const [keep] = imageRange(record.id);
+            await walk(images.openCursor(IDBKeyRange.upperBound(keep, true)), cursor => {
+                if (bytes <= this.budget) {
+                    return false;
+                }
+                bytes -= cursor.value?.blob?.size ?? 0;
+                cursor.delete();
+                return true;
+            });
+        }
+        state.put({ key: 'bytes', value: Math.max(0, bytes) });
+        await done;
+    }
+}
+
+class ShareControl {
+    constructor(win, box, input, status) {
+        this.win = win;
+        this.box = box;
+        this.input = input;
+        this.status = status;
+        this.permission = null;
+        this.disposed = false;
+        this.onChange = () => this.toggle();
+        this.onPermission = () => this.permissionChanged();
+    }
+
+    geolocation() {
+        return this.win.navigator?.geolocation ?? null;
+    }
+
+    async setup() {
+        if (!this.input || !this.box || !this.geolocation()) {
+            return;
+        }
+        let state = null;
+        try {
+            this.permission = await this.win.navigator.permissions?.query({ name: 'geolocation' }) ?? null;
+            state = this.permission?.state ?? null;
+        } catch {
+            this.permission = null;
+        }
+        if (this.disposed) {
+            return;
+        }
+        this.permission?.addEventListener('change', this.onPermission);
+        this.input.checked = shareDefault(readShare(this.win.localStorage), state);
+        this.input.addEventListener('change', this.onChange);
+        this.box.hidden = false;
+    }
+
+    say(text) {
+        if (this.status) {
+            this.status.textContent = text;
+        }
+    }
+
+    permissionChanged() {
+        if (this.permission?.state === 'denied' && this.input?.checked) {
+            this.input.checked = false;
+            this.say('Location permission was turned off, so nothing is attached.');
+        }
+    }
+
+    position() {
+        return new Promise((resolve, reject) => {
+            const geolocation = this.geolocation();
+            if (!geolocation) {
+                reject(new Error('Geolocation is not available.'));
+                return;
+            }
+            geolocation.getCurrentPosition(resolve, reject, POSITION_OPTIONS);
+        });
+    }
+
+    async toggle() {
+        if (!this.input.checked) {
+            writeShare(this.win.localStorage, 'off');
+            this.say('Nothing is attached to your postcards.');
+            return;
+        }
+        this.input.disabled = true;
+        this.say('Asking for your location.');
+        try {
+            await this.position();
+            writeShare(this.win.localStorage, 'on');
+            this.say('Your location and browser details will be attached to your postcards.');
+        } catch {
+            this.input.checked = false;
+            this.say('No location permission, so nothing is attached.');
+        } finally {
+            this.input.disabled = false;
+        }
+    }
+
+    async meta() {
+        if (this.disposed || !this.input?.checked) {
+            return null;
+        }
+        try {
+            return collectMeta(await this.position(), this.win);
+        } catch (error) {
+            if (error?.code === 1) {
+                this.input.checked = false;
+            }
+            this.say('Could not read your location, so that postcard has no details.');
+            return null;
+        }
+    }
+
+    dispose() {
+        this.disposed = true;
+        this.input?.removeEventListener('change', this.onChange);
+        this.permission?.removeEventListener('change', this.onPermission);
+    }
+}
+
+class PostcardClient {
+    constructor(dotnet, doc, win) {
+        this.dotnet = dotnet;
+        this.doc = doc;
+        this.win = win;
+        this.history = new PostcardHistory(win.indexedDB);
+        this.form = doc.getElementById('postcard-form');
+        this.textarea = doc.getElementById('postcard-text');
+        this.files = doc.getElementById('postcard-files');
+        this.picked = doc.getElementById('postcard-picked');
+        this.status = doc.getElementById('postcard-status');
+        this.count = doc.getElementById('postcard-count');
+        this.button = doc.getElementById('postcard-send');
+        this.feed = doc.getElementById('postcard-feed');
+        this.empty = doc.getElementById('postcard-empty');
+        this.older = doc.getElementById('postcard-older');
+        this.share = new ShareControl(win, doc.getElementById('postcard-share-box'), doc.getElementById('postcard-share'), doc.getElementById('postcard-share-status'));
+        this.attachments = [];
+        this.version = -1;
+        this.live = null;
+        this.shown = new Map();
+        this.records = new Map();
+        this.urls = new Map();
+        this.mine = new Set();
+        this.cursor = null;
+        this.joining = null;
+        this.offered = false;
+        this.sending = false;
+        this.timer = 0;
+        this.disposed = false;
+        this.onSubmit = event => this.submit(event);
+        this.onKeyDown = event => this.keyDown(event);
+        this.onInput = () => this.recount();
+        this.onFiles = () => this.addFiles();
+        this.onPicked = event => this.removePicked(event);
+        this.onOlder = () => this.loadOlder();
+        this.onReconnected = () => this.join();
+    }
+
+    async start() {
+        this.form?.addEventListener('submit', this.onSubmit);
+        this.textarea?.addEventListener('keydown', this.onKeyDown);
+        this.textarea?.addEventListener('input', this.onInput);
+        this.files?.addEventListener('change', this.onFiles);
+        this.picked?.addEventListener('click', this.onPicked);
+        this.older?.addEventListener('click', this.onOlder);
+        this.win.addEventListener('chaos:reconnected', this.onReconnected);
+        this.timer = this.win.setInterval(() => this.ping(), PING_MS);
+        this.recount();
+        for (const control of [this.textarea, this.files, this.button]) {
+            if (control) {
+                control.disabled = false;
+            }
+        }
+        try {
+            await this.share.setup();
+        } catch {
+        }
+        await this.join();
+    }
+
+    say(text) {
+        if (this.status && !this.disposed) {
+            this.status.textContent = text ?? '';
+        }
+    }
+
+    recount() {
+        if (!this.count || !this.textarea || this.disposed) {
+            return;
+        }
+        const max = this.textarea.maxLength;
+        const length = this.textarea.value.length;
+        this.count.textContent = countText(length, max);
+        this.count.classList.toggle('full', max > 0 && length >= max);
+    }
+
+    keyDown(event) {
+        if (event.key !== 'Enter' || !(event.ctrlKey || event.metaKey)) {
+            return;
+        }
+        event.preventDefault();
+        this.form?.requestSubmit();
+    }
+
+    totalBytes() {
+        return this.attachments.reduce((sum, item) => sum + item.blob.size, 0);
+    }
+
+    async prepare(file) {
+        const problem = pickProblem(file.type, file.type === 'image/gif' ? file.size : null, this.attachments.length, this.totalBytes());
+        if (problem) {
+            return { problem };
+        }
+        if (file.type === 'image/gif') {
+            return { blob: file };
+        }
+        let bitmap;
+        try {
+            bitmap = await this.win.createImageBitmap(file);
+        } catch {
+            return { problem: 'That file is not an image this browser can read.' };
+        }
+        try {
+            if (!needsResize(file.type, file.size, bitmap.width, bitmap.height)) {
+                return this.checkTotal(file);
+            }
+            const size = fitSize(bitmap.width, bitmap.height);
+            const canvas = this.doc.createElement('canvas');
+            canvas.width = size.width;
+            canvas.height = size.height;
+            const context = canvas.getContext('2d');
+            context.fillStyle = '#ffffff';
+            context.fillRect(0, 0, size.width, size.height);
+            context.drawImage(bitmap, 0, 0, size.width, size.height);
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', JPEG_QUALITY));
+            if (!blob || blob.size > MAX_IMAGE_BYTES) {
+                return { problem: 'That image is too large even after scaling it down.' };
+            }
+            return this.checkTotal(blob);
+        } finally {
+            bitmap.close();
+        }
+    }
+
+    checkTotal(blob) {
+        return this.totalBytes() + blob.size > MAX_TOTAL_BYTES ? { problem: 'All images together can be 4 MB.' } : { blob };
+    }
+
+    async addFiles() {
+        const files = [...(this.files?.files ?? [])];
+        if (this.files) {
+            this.files.value = '';
+        }
+        let problem = null;
+        for (const file of files) {
+            const result = await this.prepare(file);
+            if (this.disposed) {
+                return;
+            }
+            if (result.blob) {
+                this.attachments.push({ blob: result.blob, name: file.name, url: this.win.URL.createObjectURL(result.blob) });
+            } else {
+                problem ??= result.problem;
+            }
+        }
+        this.renderPicked();
+        this.say(problem);
+    }
+
+    renderPicked() {
+        if (!this.picked) {
+            return;
+        }
+        const items = this.attachments.map((item, index) => {
+            const row = this.doc.createElement('li');
+            const image = this.doc.createElement('img');
+            image.src = item.url;
+            image.alt = item.name;
+            const remove = this.doc.createElement('button');
+            remove.type = 'button';
+            remove.dataset.index = String(index);
+            remove.textContent = 'Remove';
+            remove.setAttribute('aria-label', `Remove image ${index + 1}`);
+            row.append(image, remove);
+            return row;
+        });
+        this.picked.replaceChildren(...items);
+    }
+
+    removePicked(event) {
+        const button = event.target instanceof this.win.Element ? event.target.closest('button[data-index]') : null;
+        if (!button || this.sending) {
+            return;
+        }
+        const [removed] = this.attachments.splice(Number(button.dataset.index), 1);
+        if (removed) {
+            this.win.URL.revokeObjectURL(removed.url);
+        }
+        this.renderPicked();
+        this.say('');
+    }
+
+    clearComposer() {
+        for (const item of this.attachments) {
+            this.win.URL.revokeObjectURL(item.url);
+        }
+        this.attachments = [];
+        this.renderPicked();
+        if (this.textarea) {
+            this.textarea.value = '';
+        }
+        this.recount();
+    }
+
+    async submit(event) {
+        event.preventDefault();
+        if (this.sending || this.disposed || !this.textarea) {
+            return;
+        }
+        const text = cleanText(this.textarea.value);
+        if (!hasText(text) && this.attachments.length === 0) {
+            this.say('Write something or add an image first.');
+            return;
+        }
+        this.sending = true;
+        if (this.button) {
+            this.button.disabled = true;
+        }
+        this.say(this.attachments.length > 0 ? 'Sending your postcard and its images.' : 'Sending your postcard.');
+        let streams = [];
+        try {
+            const meta = await this.share.meta();
+            streams = this.attachments.map(item => this.win.DotNet.createJSStreamReference(item.blob));
+            const reply = await this.dotnet.invokeMethodAsync('Send', text, streams, meta);
+            if (typeof reply?.id === 'string') {
+                this.clearComposer();
+                this.say('');
+                await this.own(reply.id);
+            } else {
+                this.say(reply?.status ?? 'Could not send. Try again.');
+            }
+        } catch {
+            this.say('Could not send. Try again.');
+        } finally {
+            this.sending = false;
+            if (this.button && !this.disposed) {
+                this.button.disabled = false;
+            }
+        }
+    }
+
+    join() {
+        if (this.disposed) {
+            return Promise.resolve();
+        }
+        this.version = -1;
+        this.joining ??= this.dotnet.invokeMethodAsync('Join')
+            .catch(() => {})
+            .finally(() => {
+                this.joining = null;
+            });
+        return this.joining;
+    }
+
+    async ping() {
+        if (this.disposed || this.joining) {
+            return;
+        }
+        try {
+            if (!(await this.dotnet.invokeMethodAsync('Ping'))) {
+                await this.join();
+            }
+        } catch {
+        }
+    }
+
+    async apply(updates) {
+        for (const update of updates) {
+            if (this.disposed) {
+                return;
+            }
+            if (isStale(this.version, update) || (update.kind !== 'snapshot' && this.version < 0)) {
+                continue;
+            }
+            this.version = update.version;
+            if (update.kind === 'snapshot') {
+                await this.snapshot(update.card ?? null);
+            } else {
+                await this.change(update.card ?? null);
+            }
+        }
+    }
+
+    async stored(id) {
+        try {
+            return await this.history.get(id);
+        } catch {
+            return null;
+        }
+    }
+
+    async storedBlobs(record) {
+        try {
+            return await this.history.blobs(record);
+        } catch {
+            return [];
+        }
+    }
+
+    async save(stored, blobs) {
+        const record = this.mine.has(stored.id) ? { ...stored, mine: true } : stored;
+        try {
+            await this.history.save(record, blobs);
+        } catch {
+            try {
+                await this.history.save(record, []);
+            } catch {
+            }
+        }
+    }
+
+    async snapshot(card) {
+        this.live = card?.id ?? null;
+        let liveRecord = null;
+        if (card) {
+            const existing = await this.stored(card.id);
+            liveRecord = merge(existing, toRecord(card, this.mine.has(card.id)));
+            await this.save(liveRecord, []);
+        }
+        let archive = { items: [], last: null, done: true };
+        try {
+            archive = await this.history.page(null, PAGE_SIZE, new Set(this.live ? [this.live] : []));
+        } catch {
+        }
+        this.cursor = archive.last;
+        const records = liveRecord ? [liveRecord, ...archive.items] : archive.items;
+        this.remember(records);
+        await this.render(records.sort(newestFirst), archive.done);
+        if (liveRecord) {
+            this.complete(liveRecord).catch(() => {});
+        } else {
+            await this.offerBack(archive.items[0] ?? null);
+        }
+    }
+
+    async change(card) {
+        const previous = this.live;
+        this.live = card?.id ?? null;
+        if (previous && previous !== this.live) {
+            this.shown.get(previous)?.classList.add('archived');
+        }
+        if (!card) {
+            return;
+        }
+        const record = merge(await this.stored(card.id), toRecord(card, this.mine.has(card.id)));
+        this.remember([record]);
+        const existing = this.shown.get(card.id);
+        if (existing) {
+            existing.classList.remove('archived');
+        } else {
+            await this.insert(record, true);
+            this.announce(record);
+        }
+        this.updateEmpty();
+        await this.save(record, []);
+        this.complete(record).catch(() => {});
+    }
+
+    async complete(record) {
+        const blobs = await this.storedBlobs(record);
+        if (isComplete(record, blobs)) {
+            return;
+        }
+        const fetched = await Promise.all(record.images.map((image, index) => (blobs[index] ? Promise.resolve(blobs[index]) : this.download(record.id, index, image))));
+        await this.save(record, fetched);
+        if (this.disposed) {
+            return;
+        }
+        const element = this.shown.get(record.id);
+        if (element) {
+            this.paint(element, record, fetched);
+        }
+    }
+
+    async download(id, index, image) {
+        try {
+            const response = await this.win.fetch(new URL(imageUrl(id, index), this.doc.baseURI), { cache: 'force-cache', credentials: 'omit' });
+            if (!response.ok) {
+                return null;
+            }
+            const blob = await response.blob();
+            return blob.size === image.length ? new Blob([blob], { type: image.type }) : null;
+        } catch {
+            return null;
+        }
+    }
+
+    async offerBack(newest) {
+        if (this.offered || !newest || this.disposed) {
+            return;
+        }
+        this.offered = true;
+        const blobs = await this.storedBlobs(newest);
+        if (!isComplete(newest, blobs)) {
+            return;
+        }
+        try {
+            const streams = newest.images.map((_, index) => this.win.DotNet.createJSStreamReference(blobs[index]));
+            await this.dotnet.invokeMethodAsync('Offer', newest.id, newest.text, newest.meta ?? null, streams);
+        } catch {
+        }
+    }
+
+    async own(id) {
+        if (this.disposed || typeof id !== 'string') {
+            return;
+        }
+        this.mine.add(id);
+        const record = this.records.get(id) ?? (await this.stored(id));
+        if (!record) {
+            return;
+        }
+        const mine = { ...record, mine: true };
+        this.records.set(id, mine);
+        this.markMine(this.shown.get(id));
+        await this.save(mine, []);
+    }
+
+    remember(records) {
+        for (const record of records) {
+            this.records.set(record.id, record);
+            if (record.mine) {
+                this.mine.add(record.id);
+            }
+        }
+    }
+
+    async loadOlder() {
+        if (!this.older) {
+            return;
+        }
+        this.older.disabled = true;
+        try {
+            const archive = await this.history.page(this.cursor, PAGE_SIZE, new Set(this.live ? [this.live] : []));
+            this.cursor = archive.last ?? this.cursor;
+            this.remember(archive.items);
+            for (const record of archive.items) {
+                if (!this.shown.has(record.id)) {
+                    await this.insert(record, false);
+                }
+            }
+            this.older.hidden = archive.done;
+        } catch {
+            this.older.hidden = true;
+        } finally {
+            this.older.disabled = false;
+        }
+    }
+
+    revoke(id) {
+        for (const url of this.urls.get(id) ?? []) {
+            this.win.URL.revokeObjectURL(url);
+        }
+        this.urls.delete(id);
+    }
+
+    paint(element, record, blobs) {
+        const box = element.querySelector('.images');
+        if (!box) {
+            return;
+        }
+        this.revoke(record.id);
+        const urls = [];
+        const total = record.images.length;
+        const children = record.images.map((image, index) => {
+            const blob = blobs[index];
+            if (blob instanceof Blob) {
+                const img = this.doc.createElement('img');
+                const url = this.win.URL.createObjectURL(blob);
+                urls.push(url);
+                img.src = url;
+                img.width = image.width;
+                img.height = image.height;
+                img.alt = `Image ${index + 1} of ${total}`;
+                img.decoding = 'async';
+                return img;
+            }
+            const missing = this.doc.createElement('span');
+            missing.className = 'missing';
+            missing.textContent = blob === undefined && record.id === this.live
+                ? `Loading image ${index + 1} of ${total}`
+                : `Image ${index + 1} of ${total} was not kept`;
+            return missing;
+        });
+        this.urls.set(record.id, urls);
+        box.replaceChildren(...children);
+    }
+
+    yours() {
+        const yours = this.doc.createElement('span');
+        yours.className = 'yours';
+        yours.textContent = 'Your message';
+        return yours;
+    }
+
+    markMine(element) {
+        if (!element || element.classList.contains('mine') || !this.mine.has(element.dataset.id)) {
+            return;
+        }
+        element.classList.add('mine');
+        element.querySelector('.head')?.append(this.yours());
+    }
+
+    async item(record, fresh) {
+        if (record.mine === true) {
+            this.mine.add(record.id);
+        }
+        const element = this.doc.createElement('li');
+        element.className = 'card';
+        element.classList.toggle('archived', record.id !== this.live);
+        element.classList.toggle('fresh', fresh);
+        element.dataset.id = record.id;
+        const head = this.doc.createElement('div');
+        head.className = 'head';
+        const time = this.doc.createElement('time');
+        time.dateTime = isoOf(record.id);
+        time.textContent = labelOf(record.id);
+        head.append(time);
+        element.append(head);
+        if (record.text) {
+            const text = this.doc.createElement('p');
+            text.className = 'text';
+            text.textContent = record.text;
+            element.append(text);
+        }
+        if (record.images.length > 0) {
+            const box = this.doc.createElement('div');
+            box.className = 'images';
+            element.append(box);
+            const blobs = await this.storedBlobs(record);
+            this.paint(element, record, record.images.map((_, index) => blobs[index] ?? (record.id === this.live ? undefined : null)));
+        }
+        const details = metaElement(this.doc, record.meta);
+        if (details) {
+            element.append(details);
+        }
+        return element;
+    }
+
+    async insert(record, fresh) {
+        const element = await this.item(record, fresh);
+        if (this.shown.has(record.id) || this.disposed) {
+            this.revoke(record.id);
+            return;
+        }
+        this.markMine(element);
+        let next = this.feed.firstElementChild;
+        while (next && next.dataset.id > record.id) {
+            next = next.nextElementSibling;
+        }
+        this.feed.insertBefore(element, next);
+        this.shown.set(record.id, element);
+        this.updateEmpty();
+    }
+
+    async render(records, done) {
+        for (const id of [...this.urls.keys()]) {
+            this.revoke(id);
+        }
+        this.shown.clear();
+        const elements = [];
+        for (const record of records) {
+            const element = await this.item(record, false);
+            this.markMine(element);
+            this.shown.set(record.id, element);
+            elements.push(element);
+        }
+        if (this.disposed) {
+            return;
+        }
+        this.feed.replaceChildren(...elements);
+        if (this.older) {
+            this.older.hidden = done;
+        }
+        this.updateEmpty();
+    }
+
+    announce(record) {
+        if (this.disposed || !this.feed?.isConnected) {
+            return;
+        }
+        const images = record.images.length;
+        const suffix = images === 0 ? '' : images === 1 ? ' (1 image)' : ` (${images} images)`;
+        announce(this.doc, `New postcard${suffix}: ${record.text.slice(0, 140)}`);
+    }
+
+    updateEmpty() {
+        if (this.empty) {
+            this.empty.hidden = this.shown.size > 0;
+        }
+    }
+
+    dispose() {
+        this.disposed = true;
+        this.win.clearInterval(this.timer);
+        this.share.dispose();
+        this.form?.removeEventListener('submit', this.onSubmit);
+        this.textarea?.removeEventListener('keydown', this.onKeyDown);
+        this.textarea?.removeEventListener('input', this.onInput);
+        this.files?.removeEventListener('change', this.onFiles);
+        this.picked?.removeEventListener('click', this.onPicked);
+        this.older?.removeEventListener('click', this.onOlder);
+        this.win.removeEventListener('chaos:reconnected', this.onReconnected);
+        for (const item of this.attachments) {
+            this.win.URL.revokeObjectURL(item.url);
+        }
+        for (const id of [...this.urls.keys()]) {
+            this.revoke(id);
+        }
+    }
+}
+
+export function attach(dotnet) {
+    const client = new PostcardClient(dotnet, document, window);
+    client.start();
+    return {
+        apply: updates => client.apply(updates),
+        dispose: () => client.dispose(),
+    };
+}
+docs/adr/0023-postcards.md
+markdown
+# 0023 Postcards: one long message with images
+
+Status: accepted
+
+- `/postcard` hosts `PostcardIsland`. The server keeps one postcard, the newest; each accepted one replaces it. No jackpots, no winners.
+- Limits (`PostcardRules`, mirrored in `PostcardIsland.razor.js`): 5,000 characters (`MessageText` with a longer limit), up to 4 images, PNG, JPEG or GIF, 2 MB each, 4 MB together, at most 4,096 px a side and 4,096² px, GIFs at most 1,000 frames. Text or at least one image is required. A postcard identical to the current one (text and image bytes) is refused.
+- Why these numbers: one postcard is at most 4 MB in memory, plus at most `PostcardUploads` (default 2) uploads in flight, well inside 256 MB; 5,000 characters stay under the 32 KB hub message limit even as 3-byte UTF-8.
+- Rate: `PostcardBurst` 2, `PostcardsPerSecond` 0.1 per client. Size and count are checked before the rate bucket and before any upload. When every upload slot is taken, image postcards get `busy`.
+- Upload: the module handles submit itself and calls `Send(text, images, meta)`. Images go as `DotNet.createJSStreamReference(blob)` and are read with `OpenReadStreamAsync`, chunked under the hub limit. No HTTP upload endpoint, so origin checks and limits stay on the circuit.
+- The browser drops control characters and lone surrogates before sending. JPEG and PNG over 2 MB or 4,096 px are redrawn on a canvas to 2,048 px JPEG at 0.85, which also applies EXIF rotation. GIFs are sent as they are or refused.
+- `ImageSanitizer` decides the type from the bytes, never the name or MIME type, walks the file structure, and rebuilds it: PNG keeps rendering chunks only (no `tEXt`, `zTXt`, `iTXt`, `eXIf`, `tIME`) and refuses unknown critical chunks; JPEG drops `APP1`–`APP15` except ICC and Adobe, and `COM`, then writes a 34-byte EXIF with only the orientation when it was not 1; GIF drops comments, plain text and application extensions other than looping. Anything truncated, unknown or out of range is refused.
+- Wire: `PostcardUpdate { kind, version, card }`, `kind` `snapshot` on join and `change` after. A card is `{ id, text, images: [{ type, width, height, length }], meta? }`. Bytes never travel over the circuit to viewers.
+- Images: `GET /postcard/images/{id}/{index}` serves the current postcard only, `private, max-age=31536000, immutable`, 404 otherwise. The prerender uses these URLs; the module fetches each image once, checks its length and stores it.
+- Local history: database `chaos-postcards` v1, stores `cards` (`{ id, text, images, meta?, mine? }`), `images` (`{ key: "<id>/<index>", id, blob }`) and `state` (`bytes`). 10,000 cards; images up to 256 MB, oldest images evicted first while their text stays. On a quota error the card is saved without images. Missing images show `Image n of m was not kept`. Images are shown from `blob:` URLs, so the CSP allows `img-src 'self' blob:`; URLs are revoked when the feed is redrawn or the island is disposed.
+- Feed: the live postcard plus 20 stored ones, a button for 20 more. Every postcard but the live one has a dotted border.
+- After a restart (snapshot without a card) the browser offers its newest postcard once per circuit, images included, if all of them are stored. `WouldRestore` checks the UUIDv7 before any upload; the server accepts it only if it is older than the server start and newer than the current postcard, with normalized text and details and clean images.
+- Details and `Your message` work as on the board (ADR 0022) and share the `chaos-board-share` setting. The browser marks its own postcards `mine` from the `Send` reply. The reply and the `change` update race (the update usually wins while stream references are released), so `mine` is applied whenever a card enters the feed and on every save, whichever comes first.
+
+Postcardisland.razor
+JS 
+
+0023 postcards
+Document·MD 
+
+
+Automatically approve is on. Claude runs on its own and pauses if anything looks unsafe. This includes using your connectors and Claude in Chrome, unless you turn them off. Learn more
+
+
+Claude finished the response
+
+0023-postcards.md
+
+PostcardIsland.razor.js
+
+chaos-postcard.tar.gz
+
+chaos-velixir-run
+2 documents read
+
+00
+01
+
