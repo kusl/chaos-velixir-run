@@ -1,12 +1,12 @@
 ===============================================================================
 PROJECT EXPORT
-Generated (UTC): 2026-11-02 15:00:49
+Generated (UTC): 2026-11-02 15:39:54
 Project Path:    /home/kushal/src/dotnet/chaos-velixir-run
-Git Commit:      57a28e8d78c184c86415a8d18f1809a4e0523b44
+Git Commit:      cda714fb9a985a318b231b84b1a981e345df8a9a
 Git Branch:      main
 Git Dirty:       no
 .NET SDK:        10.0.113
-Files Exported:  212
+Files Exported:  213
 ===============================================================================
 
 DIRECTORY STRUCTURE (exported files only):
@@ -189,6 +189,7 @@ DIRECTORY STRUCTURE (exported files only):
                 ArticleEntry.cs
                 ArticleLibrary.cs
                 ArticleText.cs
+                RandomArticle.cs
             Slots/
                 ISlotSubscriber.cs
                 SlotPress.cs
@@ -1100,17 +1101,17 @@ Status: accepted
 
 ================================================================================
 FILE:     docs/adr/0024-reading.md
-SIZE:     1.97 KB (2021 bytes)
+SIZE:     2.17 KB (2220 bytes)
 LINES:    11
-SHA256:   560eb99280e5e278338ffe62312b40aefbcc16d3809233695df74abbc842f2a4
-MODIFIED: 2026-11-02 14:17:47 (UTC)
+SHA256:   8b68c9b979b3e194ffe241abeef5a97e8b921fce7cac5ccde12ed2aa9201e010
+MODIFIED: 2026-11-02 15:38:32 (UTC)
 ================================================================================
 
 # 0024 Random article reader
 
 Status: accepted
 
-- `/read` is a static SSR page with no circuit. It redirects (302) to `/read/{id}` for a random article, so every article has a stable address and enhanced navigation shows the final URL. With no articles it renders a notice instead.
+- `/read` is a static SSR page with no circuit. `RandomArticle` middleware answers GET/HEAD `/read` with a 302 to a relative `/read/{id}` (`no-store`), so every article has a stable address and enhanced navigation shows the final URL. Not `NavigateTo`: Blazor makes that `Location` absolute from the request `Host`, which behind the velixir edge is the regional host (`chaos-eu`). With no articles the page renders a notice instead.
 - Source: `wwwroot/nytimes.txt` (`Chaos:ArticlesFile`), plain UTF-8, also served as a static file. Records start with a header between two `=` rules (20 or more, up to 6 header lines). Inside: optional `SUMMARY` paragraph, `ARTICLE`, then a head paragraph (title, optional dek, `By …`, `Published yyyy-MM-dd HH:mm UTC`, source URL, matched from the end) and body paragraphs split by blank lines. Paragraphs whose every line starts with `- `, `• `, `* ` render as lists; other line breaks are kept. A file with no rules is one article.
 - Id: first 12 hex digits of SHA-256 of the source URL, or of title and body without one. Stable across reordering and edits elsewhere in the file. The first record wins on duplicate ids.
 - `ArticleLibrary` indexes the file once (offset and length per id, about 50 KB for 500 articles), then reads and parses one record per request. It re-indexes when the file's length or modified time changes, treats a missing, unreadable or over-64 MB file as empty, and returns nothing rather than throwing. A record that no longer parses to its id is dropped and the index rebuilt.
@@ -9909,23 +9910,18 @@ MODIFIED: 2026-10-31 22:43:55 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Pages/ReadPage.razor
-SIZE:     3.45 KB (3536 bytes)
-LINES:    121
-SHA256:   53bee59686a8bff244765d01c4a4769bbf04be3fa905aaa62c98036f0982e0ff
-MODIFIED: 2026-11-02 14:13:49 (UTC)
+SIZE:     3.08 KB (3151 bytes)
+LINES:    99
+SHA256:   7805f7b6305c1580b5553899690f724d6358b728f0cd5cf501ebd5445f2053b9
+MODIFIED: 2026-11-02 15:38:14 (UTC)
 ================================================================================
 
 @page "/read"
 @page "/read/{Id}"
 @using System.Globalization
 @inject ArticleLibrary Library
-@inject NavigationManager Navigation
 
-@if (_moving)
-{
-    <PageTitle>Chaos read</PageTitle>
-}
-else if (_article is { } article)
+@if (_article is { } article)
 {
     <PageTitle>@article.Title · Chaos</PageTitle>
 
@@ -9998,37 +9994,20 @@ else
     <p class="lede">That article is no longer here. <a href="read">Read a random one</a> instead.</p>
 }
 
-@if (!_moving)
-{
-    <section class="history" data-permanent="reading-history" aria-labelledby="history-title">
-        <h2 id="history-title">Read on this device</h2>
-        <p id="reading-empty" class="empty">Articles you open here are listed here, on this device only.</p>
-        <ol id="reading-history" class="shelf"></ol>
-    </section>
-}
+<section class="history" data-permanent="reading-history" aria-labelledby="history-title">
+    <h2 id="history-title">Read on this device</h2>
+    <p id="reading-empty" class="empty">Articles you open here are listed here, on this device only.</p>
+    <ol id="reading-history" class="shelf"></ol>
+</section>
 
 @code {
     private Article? _article;
-    private bool _moving;
 
     [Parameter]
     public string? Id { get; set; }
 
-    protected override void OnParametersSet()
-    {
-        if (Id is null)
-        {
-            if (Library.Random() is { } random)
-            {
-                _moving = true;
-                Navigation.NavigateTo($"read/{random.Id}");
-            }
-
-            return;
-        }
-
-        _article = Library.Find(Id);
-    }
+    protected override void OnParametersSet() =>
+        _article = Id is null ? null : Library.Find(Id);
 
     private static string? Iso(DateTimeOffset? at) =>
         at?.UtcDateTime.ToString("yyyy-MM-dd'T'HH:mm'Z'", CultureInfo.InvariantCulture);
@@ -14950,10 +14929,10 @@ internal sealed record PostcardUpdate(string Kind, long Version, Postcard? Card)
 
 ================================================================================
 FILE:     src/Chaos.Web/Program.cs
-SIZE:     4.32 KB (4421 bytes)
-LINES:    118
-SHA256:   510ffbdd95560f7e2cbf2c4266b7ec2b1bcfcc1678eaa29d177144bb34f919c3
-MODIFIED: 2026-11-02 14:24:33 (UTC)
+SIZE:     4.34 KB (4445 bytes)
+LINES:    119
+SHA256:   b4fb623dbfda5eb9beb5c05e2a852955fa5b84d20eebc69f488de6ca81c6065e
+MODIFIED: 2026-11-02 15:38:02 (UTC)
 ================================================================================
 
 using System.IO.Compression;
@@ -15059,6 +15038,7 @@ app.UseRateLimiter();
 app.UseWebSockets();
 app.UseHubGuard();
 app.UseAntiforgery();
+app.UseRandomArticle();
 
 app.MapHealthChecks("/health");
 app.MapGet("/time", static (TimeProvider time, HttpResponse response) =>
@@ -15649,6 +15629,41 @@ internal static class ArticleText
 
     private static bool HasText(ReadOnlySpan<byte> utf8) =>
         utf8.ContainsAnyExcept(Blank);
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Reading/RandomArticle.cs
+SIZE:     0.91 KB (931 bytes)
+LINES:    25
+SHA256:   4bd7de8c9ba1e5c5de079b50e342a7485c74b7ba819c40c6d5927a8fe9128c76
+MODIFIED: 2026-11-02 15:37:55 (UTC)
+================================================================================
+
+namespace Chaos.Web.Reading;
+
+internal static class RandomArticle
+{
+    public const string Path = "/read";
+
+    public static IApplicationBuilder UseRandomArticle(this IApplicationBuilder app)
+    {
+        ArgumentNullException.ThrowIfNull(app);
+        return app.Use(static (context, next) =>
+        {
+            var request = context.Request;
+            if (!(HttpMethods.IsGet(request.Method) || HttpMethods.IsHead(request.Method))
+                || !string.Equals(request.Path.Value?.TrimEnd('/'), Path, StringComparison.OrdinalIgnoreCase)
+                || context.RequestServices.GetRequiredService<ArticleLibrary>().Random() is not { } article)
+            {
+                return next(context);
+            }
+
+            context.Response.Headers.CacheControl = "no-store";
+            context.Response.Redirect($"{request.PathBase}{Path}/{article.Id}");
+            return Task.CompletedTask;
+        });
+    }
 }
 
 
@@ -20201,10 +20216,10 @@ public sealed class PostcardServiceTests : IDisposable
 
 ================================================================================
 FILE:     tests/Chaos.Web.Tests/ReadPageTests.cs
-SIZE:     4.09 KB (4190 bytes)
-LINES:    96
-SHA256:   ce847cad7b9c2118a2c70ed010d3ac252b11c662a9dd8439121790f192de4e47
-MODIFIED: 2026-11-02 14:21:04 (UTC)
+SIZE:     4.87 KB (4985 bytes)
+LINES:    114
+SHA256:   09fc636fcd58cd7794cdf664917285e9727dbe08899bdb07f4b2d1c2ca1b5d72
+MODIFIED: 2026-11-02 15:38:23 (UTC)
 ================================================================================
 
 using System.Net;
@@ -20252,6 +20267,24 @@ public sealed class ReadPageTests : IClassFixture<ChaosFactory>, IDisposable
         var target = response.Headers.Location?.ToString() ?? "";
         Assert.Contains(target[(target.LastIndexOf('/') + 1)..], new[] { ArticleText.IdOf(ArticleSamples.FirstUrl), ArticleText.IdOf(ArticleSamples.SecondUrl) });
         Assert.False(response.Headers.Contains("Set-Cookie"));
+        Assert.Equal("no-store", response.Headers.CacheControl?.ToString());
+    }
+
+    [Fact]
+    public async Task TheRedirectStaysOnTheHostTheBrowserUsed()
+    {
+        Write(ArticleSamples.First);
+        using var client = CreateClient();
+        foreach (var path in new[] { "/read", "/read/" })
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, path);
+            request.Headers.Host = "chaos-eu.velixir.run";
+            request.Headers.Add("blazor-enhanced-nav", "on");
+            using var response = await client.SendAsync(request, Cancellation);
+
+            Assert.Equal(HttpStatusCode.Found, response.StatusCode);
+            Assert.Equal($"/read/{ArticleText.IdOf(ArticleSamples.FirstUrl)}", response.Headers.Location?.OriginalString);
+        }
     }
 
     [Fact]
@@ -22636,9 +22669,9 @@ export default defineConfig({
 
 
 ===============================================================================
-EXPORT COMPLETED (UTC): 2026-11-02 15:00:51
-Total Files Exported:   212
-Total Source Size:      0.67 MB (707459 bytes)
+EXPORT COMPLETED (UTC): 2026-11-02 15:39:56
+Total Files Exported:   213
+Total Source Size:      0.68 MB (709023 bytes)
 Output File:            /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
 ===============================================================================
-DUMP SHA256 (of all lines above this one): 588ed4344dce7b0734999c63cda3b19724ed3e1981e9b05812aec63bf95b9e56
+DUMP SHA256 (of all lines above this one): 257c81259352557f908a2866281958d36e05fee5cdb1fb022b590937775d72b2

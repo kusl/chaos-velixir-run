@@ -340,4 +340,347 @@ Total source size: 0.67 MB across 212 files
 real	1m14.751s
 user	0m15.044s
 sys	0m4.688s
+kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
+
+==> Restore
+Restore complete (0.7s)
+
+Build succeeded in 0.8s
+
+==> Build (Release, warnings are errors)
+  Chaos.E2E net10.0 succeeded (3.0s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
+  Chaos.Web net10.0 succeeded (4.9s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web.Tests net10.0 succeeded (0.7s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
+
+Build succeeded in 5.9s
+Restore complete (0.5s)
+
+Build succeeded in 0.6s
+Project 'Chaos.Web' has the following package references
+   [net10.0]: 
+   Top-level Package                                  Requested     Resolved
+   > Microsoft.AspNetCore.App.Internal.Assets   (A)   [10.0.13, )   10.0.13 
+
+Project 'Chaos.E2E' has the following package references
+   [net10.0]: 
+   Top-level Package           Requested   Resolved
+   > Microsoft.Playwright      1.64.1      1.64.1  
+   > xunit.v3                  4.0.2       4.0.2   
+
+Project 'Chaos.Web.Tests' has the following package references
+   [net10.0]: 
+   Top-level Package                                Requested   Resolved
+   > Microsoft.AspNetCore.Mvc.Testing               10.0.14     10.0.14 
+   > Microsoft.Testing.Extensions.CodeCoverage      18.12.0     18.12.0 
+   > xunit.v3                                       4.0.2       4.0.2   
+
+(A) : Auto-referenced package.
+Restore complete (0.5s)
+
+Build succeeded in 0.6s
+
+The following sources were used:
+   https://api.nuget.org/v3/index.json
+
+The given project `Chaos.Web` has no updates given the current sources.
+The given project `Chaos.E2E` has no updates given the current sources.
+The given project `Chaos.Web.Tests` has no updates given the current sources.
+
+==> Unit and integration tests
+Running tests from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
+tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 666ms)
+
+  In process file artifacts produced:
+    - artifacts/test-results/unit/coverage.cobertura.xml
+
+Test run summary: Passed!
+  total: 313
+  failed: 0
+  succeeded: 313
+  skipped: 0
+  duration: 2s 734ms
+.NET line coverage: 72.5%
+
+==> JavaScript unit tests
+
+added 47 packages in 531ms
+
+ RUN  v5.0.5 /home/kushal/src/dotnet/chaos-velixir-run/tests/js
+      Coverage enabled with v8
+
+ ✓ status.test.js (9 tests) 6ms
+ ✓ latency.test.js (33 tests) 14ms
+ ✓ app.test.js (13 tests) 7ms
+ ✓ board.test.js (23 tests) 41ms
+ ✓ postcard.test.js (15 tests) 8ms
+ ✓ read.test.js (14 tests) 8ms
+ ✓ canvas.test.js (21 tests) 9ms
+ ✓ slots.test.js (49 tests) 24ms
+
+ Test Files  8 passed (8)
+      Tests  177 passed (177)
+   Start at  10:38:56
+   Duration  421ms (transform 56%, import 17%, worker 15%, tests 12%)
+
+ % Coverage report from v8
+--------------------------|---------|----------|---------|---------|-------------------------------------------
+File                      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                         
+--------------------------|---------|----------|---------|---------|-------------------------------------------
+All files                 |   21.75 |    29.36 |   28.04 |   21.84 |                                           
+ Components               |    16.2 |    23.52 |   24.32 |   16.57 |                                           
+  App.razor.js            |    16.2 |    23.52 |   24.32 |   16.57 | 64-323,327                                
+ Components/Islands       |   21.61 |    28.75 |   27.14 |   21.67 |                                           
+  BoardIsland.razor.js    |   25.94 |     42.7 |   29.83 |   26.53 | 88,127-129,259,268,364-945                
+  CanvasIsland.razor.js   |   20.72 |    24.39 |   16.48 |   21.47 | 22-23,158-278,303-691                     
+  LatencyIsland.razor.js  |    27.9 |    34.12 |   33.33 |   27.91 | 31,56,149-152,199-200,221-225,237,290-854 
+  PostcardIsland.razor.js |    9.44 |    12.54 |   12.96 |     9.7 | 24-26,118-930                             
+  SlotIsland.razor.js     |   24.07 |    30.44 |   38.75 |   23.36 | 20,194,211,372-1152                       
+ Components/Pages         |   35.08 |    54.68 |   51.85 |   35.84 |                                           
+  ReadPage.razor.js       |   35.08 |    54.68 |   51.85 |   35.84 | 78-88,96-157,164-181                      
+ wwwroot                  |       0 |        0 |     100 |       0 |                                           
+  theme-init.js           |       0 |        0 |     100 |       0 | 2-8                                       
+--------------------------|---------|----------|---------|---------|-------------------------------------------
+
+==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.64.1-noble
+  Determining projects to restore...
+  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 351 ms).
+  Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web -> /tmp/app/
+Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) passed (40s 465ms)
+
+Test run summary: Passed!
+  total: 32
+  failed: 0
+  succeeded: 32
+  skipped: 0
+  duration: 40s 636ms
+Starting project export...
+Project Path: /home/kushal/src/dotnet/chaos-velixir-run
+Output File:  /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
+Listing files via git...
+Found 213 files to export
+Processing (1/213): .editorconfig
+Processing (2/213): .gitattributes
+Processing (3/213): .github/dependabot.yml
+Processing (4/213): .github/workflows/ci.yml
+Processing (5/213): .github/workflows/velixir.yml
+Processing (6/213): .gitignore
+Processing (7/213): Directory.Build.props
+Processing (8/213): Directory.Packages.props
+Processing (9/213): README.md
+Processing (10/213): REUSE.toml
+Processing (11/213): chaos-velixir-run.slnx
+Processing (12/213): docs/adr/0001-record-decisions.md
+Processing (13/213): docs/adr/0002-rendering-model.md
+Processing (14/213): docs/adr/0003-deploy-only-the-web-project.md
+Processing (15/213): docs/adr/0004-message-ids-and-reconciliation.md
+Processing (16/213): docs/adr/0005-local-history.md
+Processing (17/213): docs/adr/0006-canvas-protocol.md
+Processing (18/213): docs/adr/0007-realtime-delivery.md
+Processing (19/213): docs/adr/0008-abuse-limits.md
+Processing (20/213): docs/adr/0009-security-headers.md
+Processing (21/213): docs/adr/0010-no-cookies.md
+Processing (22/213): docs/adr/0011-theme.md
+Processing (23/213): docs/adr/0012-reconnect-and-cold-start.md
+Processing (24/213): docs/adr/0013-runtime-footprint.md
+Processing (25/213): docs/adr/0014-testing.md
+Processing (26/213): docs/adr/0015-dependencies.md
+Processing (27/213): docs/adr/0016-licensing.md
+Processing (28/213): docs/adr/0017-scripts-and-ci.md
+Processing (29/213): docs/adr/0018-export.md
+Processing (30/213): docs/adr/0019-slots.md
+Processing (31/213): docs/adr/0020-latency.md
+Processing (32/213): docs/adr/0021-server-clock.md
+Processing (33/213): docs/adr/0022-message-details.md
+Processing (34/213): docs/adr/0023-postcards.md
+Processing (35/213): docs/adr/0024-reading.md
+Processing (36/213): docs/adr/README.md
+Processing (37/213): global.json
+Processing (38/213): scripts/build.sh
+Processing (39/213): scripts/e2e-container.sh
+Processing (40/213): scripts/export.sh
+Processing (41/213): scripts/lib.sh
+Processing (42/213): scripts/run-all.sh
+Processing (43/213): scripts/test-e2e.sh
+Processing (44/213): scripts/test-js.sh
+Processing (45/213): scripts/test-unit.sh
+Processing (46/213): src/Chaos.Web/Chaos.Web.csproj
+Processing (47/213): src/Chaos.Web/Components/App.razor
+Processing (48/213): src/Chaos.Web/Components/App.razor.js
+Processing (49/213): src/Chaos.Web/Components/Islands/BoardIsland.razor
+Processing (50/213): src/Chaos.Web/Components/Islands/BoardIsland.razor.css
+Processing (51/213): src/Chaos.Web/Components/Islands/BoardIsland.razor.js
+Processing (52/213): src/Chaos.Web/Components/Islands/CanvasIsland.razor
+Processing (53/213): src/Chaos.Web/Components/Islands/CanvasIsland.razor.css
+Processing (54/213): src/Chaos.Web/Components/Islands/CanvasIsland.razor.js
+Processing (55/213): src/Chaos.Web/Components/Islands/LatencyIsland.razor
+Processing (56/213): src/Chaos.Web/Components/Islands/LatencyIsland.razor.css
+Processing (57/213): src/Chaos.Web/Components/Islands/LatencyIsland.razor.js
+Processing (58/213): src/Chaos.Web/Components/Islands/PostcardIsland.razor
+Processing (59/213): src/Chaos.Web/Components/Islands/PostcardIsland.razor.css
+Processing (60/213): src/Chaos.Web/Components/Islands/PostcardIsland.razor.js
+Processing (61/213): src/Chaos.Web/Components/Islands/SlotIsland.razor
+Processing (62/213): src/Chaos.Web/Components/Islands/SlotIsland.razor.css
+Processing (63/213): src/Chaos.Web/Components/Islands/SlotIsland.razor.js
+Processing (64/213): src/Chaos.Web/Components/Layout/MainLayout.razor
+Processing (65/213): src/Chaos.Web/Components/Layout/MainLayout.razor.css
+Processing (66/213): src/Chaos.Web/Components/Layout/ReconnectBanner.razor
+Processing (67/213): src/Chaos.Web/Components/Layout/ReconnectBanner.razor.css
+Processing (68/213): src/Chaos.Web/Components/Layout/ThemeToggle.razor
+Processing (69/213): src/Chaos.Web/Components/Layout/ThemeToggle.razor.css
+Processing (70/213): src/Chaos.Web/Components/Pages/About.razor
+Processing (71/213): src/Chaos.Web/Components/Pages/About.razor.css
+Processing (72/213): src/Chaos.Web/Components/Pages/BoardPage.razor
+Processing (73/213): src/Chaos.Web/Components/Pages/BoardPage.razor.css
+Processing (74/213): src/Chaos.Web/Components/Pages/CanvasPage.razor
+Processing (75/213): src/Chaos.Web/Components/Pages/CanvasPage.razor.css
+Processing (76/213): src/Chaos.Web/Components/Pages/Error.razor
+Processing (77/213): src/Chaos.Web/Components/Pages/Error.razor.css
+Processing (78/213): src/Chaos.Web/Components/Pages/Home.razor
+Processing (79/213): src/Chaos.Web/Components/Pages/Home.razor.css
+Processing (80/213): src/Chaos.Web/Components/Pages/LatencyPage.razor
+Processing (81/213): src/Chaos.Web/Components/Pages/LatencyPage.razor.css
+Processing (82/213): src/Chaos.Web/Components/Pages/NotFound.razor
+Processing (83/213): src/Chaos.Web/Components/Pages/PostcardPage.razor
+Processing (84/213): src/Chaos.Web/Components/Pages/PostcardPage.razor.css
+Processing (85/213): src/Chaos.Web/Components/Pages/ReadPage.razor
+Processing (86/213): src/Chaos.Web/Components/Pages/ReadPage.razor.css
+Processing (87/213): src/Chaos.Web/Components/Pages/ReadPage.razor.js
+Processing (88/213): src/Chaos.Web/Components/Pages/SlotResult.razor
+Processing (89/213): src/Chaos.Web/Components/Pages/SlotsPage.razor
+Processing (90/213): src/Chaos.Web/Components/Pages/SlotsPage.razor.css
+Processing (91/213): src/Chaos.Web/Components/Routes.razor
+Processing (92/213): src/Chaos.Web/Components/_Imports.razor
+Processing (93/213): src/Chaos.Web/Drawing/CanvasService.cs
+Processing (94/213): src/Chaos.Web/Drawing/CanvasSession.cs
+Processing (95/213): src/Chaos.Web/Drawing/CanvasUpdate.cs
+Processing (96/213): src/Chaos.Web/Drawing/DrawReply.cs
+Processing (97/213): src/Chaos.Web/Drawing/DrawResult.cs
+Processing (98/213): src/Chaos.Web/Drawing/ICanvasSubscriber.cs
+Processing (99/213): src/Chaos.Web/Drawing/ResetResult.cs
+Processing (100/213): src/Chaos.Web/Drawing/Stroke.cs
+Processing (101/213): src/Chaos.Web/Drawing/StrokeOffer.cs
+Processing (102/213): src/Chaos.Web/Infrastructure/ChaosOptions.cs
+Processing (103/213): src/Chaos.Web/Infrastructure/ClientAddress.cs
+Processing (104/213): src/Chaos.Web/Infrastructure/ConnectionTracker.cs
+Processing (105/213): src/Chaos.Web/Infrastructure/CookielessAntiforgery.cs
+Processing (106/213): src/Chaos.Web/Infrastructure/HubGuard.cs
+Processing (107/213): src/Chaos.Web/Infrastructure/JsCleanup.cs
+Processing (108/213): src/Chaos.Web/Infrastructure/KeyedCooldowns.cs
+Processing (109/213): src/Chaos.Web/Infrastructure/KeyedTokenBuckets.cs
+Processing (110/213): src/Chaos.Web/Infrastructure/ModulePath.cs
+Processing (111/213): src/Chaos.Web/Infrastructure/OriginPolicy.cs
+Processing (112/213): src/Chaos.Web/Infrastructure/Outbox.cs
+Processing (113/213): src/Chaos.Web/Infrastructure/RequestLimits.cs
+Processing (114/213): src/Chaos.Web/Infrastructure/SecurityHeaders.cs
+Processing (115/213): src/Chaos.Web/Infrastructure/ServerClock.cs
+Processing (116/213): src/Chaos.Web/Infrastructure/TokenBucket.cs
+Processing (117/213): src/Chaos.Web/Latency/HttpLatencyProbe.cs
+Processing (118/213): src/Chaos.Web/Latency/ILatencyProbe.cs
+Processing (119/213): src/Chaos.Web/Latency/ILatencySubscriber.cs
+Processing (120/213): src/Chaos.Web/Latency/LatencyCatalog.cs
+Processing (121/213): src/Chaos.Web/Latency/LatencyEndpoint.cs
+Processing (122/213): src/Chaos.Web/Latency/LatencyLeaders.cs
+Processing (123/213): src/Chaos.Web/Latency/LatencyRun.cs
+Processing (124/213): src/Chaos.Web/Latency/LatencyService.cs
+Processing (125/213): src/Chaos.Web/Latency/LatencyStart.cs
+Processing (126/213): src/Chaos.Web/Latency/LatencyUpdate.cs
+Processing (127/213): src/Chaos.Web/Messages/BoardMessage.cs
+Processing (128/213): src/Chaos.Web/Messages/BoardService.cs
+Processing (129/213): src/Chaos.Web/Messages/BoardUpdate.cs
+Processing (130/213): src/Chaos.Web/Messages/IBoardSubscriber.cs
+Processing (131/213): src/Chaos.Web/Messages/MessageFormat.cs
+Processing (132/213): src/Chaos.Web/Messages/MessageMeta.cs
+Processing (133/213): src/Chaos.Web/Messages/MessageText.cs
+Processing (134/213): src/Chaos.Web/Messages/MessageWindow.cs
+Processing (135/213): src/Chaos.Web/Messages/MetaEntry.cs
+Processing (136/213): src/Chaos.Web/Messages/MetaField.cs
+Processing (137/213): src/Chaos.Web/Messages/PostReply.cs
+Processing (138/213): src/Chaos.Web/Messages/PostResult.cs
+Processing (139/213): src/Chaos.Web/Messages/Uuid7.cs
+Processing (140/213): src/Chaos.Web/Postcards/CleanImage.cs
+Processing (141/213): src/Chaos.Web/Postcards/IPostcardSubscriber.cs
+Processing (142/213): src/Chaos.Web/Postcards/ImageSanitizer.cs
+Processing (143/213): src/Chaos.Web/Postcards/Postcard.cs
+Processing (144/213): src/Chaos.Web/Postcards/PostcardEndpoint.cs
+Processing (145/213): src/Chaos.Web/Postcards/PostcardImage.cs
+Processing (146/213): src/Chaos.Web/Postcards/PostcardReply.cs
+Processing (147/213): src/Chaos.Web/Postcards/PostcardResult.cs
+Processing (148/213): src/Chaos.Web/Postcards/PostcardRules.cs
+Processing (149/213): src/Chaos.Web/Postcards/PostcardSent.cs
+Processing (150/213): src/Chaos.Web/Postcards/PostcardService.cs
+Processing (151/213): src/Chaos.Web/Postcards/PostcardUpdate.cs
+Processing (152/213): src/Chaos.Web/Program.cs
+Processing (153/213): src/Chaos.Web/Properties/launchSettings.json
+Processing (154/213): src/Chaos.Web/Reading/Article.cs
+Processing (155/213): src/Chaos.Web/Reading/ArticleBlock.cs
+Processing (156/213): src/Chaos.Web/Reading/ArticleEntry.cs
+Processing (157/213): src/Chaos.Web/Reading/ArticleLibrary.cs
+Processing (158/213): src/Chaos.Web/Reading/ArticleText.cs
+Processing (159/213): src/Chaos.Web/Reading/RandomArticle.cs
+Processing (160/213): src/Chaos.Web/Slots/ISlotSubscriber.cs
+Processing (161/213): src/Chaos.Web/Slots/SlotPress.cs
+Processing (162/213): src/Chaos.Web/Slots/SlotRules.cs
+Processing (163/213): src/Chaos.Web/Slots/SlotService.cs
+Processing (164/213): src/Chaos.Web/Slots/SlotUpdate.cs
+Processing (165/213): src/Chaos.Web/Slots/SlotWin.cs
+Processing (166/213): src/Chaos.Web/appsettings.Development.json
+Processing (167/213): src/Chaos.Web/appsettings.json
+Processing (168/213): src/Chaos.Web/wwwroot/app.css
+Processing (169/213): src/Chaos.Web/wwwroot/favicon.svg
+Processing (170/213): src/Chaos.Web/wwwroot/theme-init.js
+Processing (171/213): tests/Chaos.E2E/BoardTests.cs
+Processing (172/213): tests/Chaos.E2E/BrowserFixture.cs
+Processing (173/213): tests/Chaos.E2E/CanvasTests.cs
+Processing (174/213): tests/Chaos.E2E/Chaos.E2E.csproj
+Processing (175/213): tests/Chaos.E2E/LatencyTests.cs
+Processing (176/213): tests/Chaos.E2E/PostcardTests.cs
+Processing (177/213): tests/Chaos.E2E/ReadTests.cs
+Processing (178/213): tests/Chaos.E2E/SiteTests.cs
+Processing (179/213): tests/Chaos.E2E/SlotTests.cs
+Processing (180/213): tests/Chaos.Web.Tests/ArticleLibraryTests.cs
+Processing (181/213): tests/Chaos.Web.Tests/ArticleSamples.cs
+Processing (182/213): tests/Chaos.Web.Tests/ArticleTextTests.cs
+Processing (183/213): tests/Chaos.Web.Tests/BoardServiceTests.cs
+Processing (184/213): tests/Chaos.Web.Tests/CanvasPersistenceTests.cs
+Processing (185/213): tests/Chaos.Web.Tests/CanvasServiceTests.cs
+Processing (186/213): tests/Chaos.Web.Tests/Chaos.Web.Tests.csproj
+Processing (187/213): tests/Chaos.Web.Tests/ClockAndCooldownTests.cs
+Processing (188/213): tests/Chaos.Web.Tests/HttpPipelineTests.cs
+Processing (189/213): tests/Chaos.Web.Tests/ImageSanitizerTests.cs
+Processing (190/213): tests/Chaos.Web.Tests/InfrastructureTests.cs
+Processing (191/213): tests/Chaos.Web.Tests/LatencyRunTests.cs
+Processing (192/213): tests/Chaos.Web.Tests/LatencyServiceTests.cs
+Processing (193/213): tests/Chaos.Web.Tests/MessageFormatTests.cs
+Processing (194/213): tests/Chaos.Web.Tests/MessageMetaTests.cs
+Processing (195/213): tests/Chaos.Web.Tests/MessageTextTests.cs
+Processing (196/213): tests/Chaos.Web.Tests/OutboxTests.cs
+Processing (197/213): tests/Chaos.Web.Tests/PostcardServiceTests.cs
+Processing (198/213): tests/Chaos.Web.Tests/ReadPageTests.cs
+Processing (199/213): tests/Chaos.Web.Tests/SlotRulesTests.cs
+Processing (200/213): tests/Chaos.Web.Tests/SlotServiceTests.cs
+Processing (201/213): tests/Chaos.Web.Tests/TestSupport.cs
+Processing (202/213): tests/Chaos.Web.Tests/Uuid7Tests.cs
+Processing (203/213): tests/Directory.Build.props
+Processing (204/213): tests/js/app.test.js
+Processing (205/213): tests/js/board.test.js
+Processing (206/213): tests/js/canvas.test.js
+Processing (207/213): tests/js/latency.test.js
+Processing (208/213): tests/js/package.json
+Processing (209/213): tests/js/postcard.test.js
+Processing (210/213): tests/js/read.test.js
+Processing (211/213): tests/js/slots.test.js
+Processing (212/213): tests/js/status.test.js
+Processing (213/213): tests/js/vitest.config.mjs
+
+Export completed successfully!
+Output file: /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
+Total source size: 0.68 MB across 213 files
+
+==> All steps passed
+
+real	1m15.933s
+user	0m14.621s
+sys	0m4.829s
 kushal@fedora:~/src/dotnet/chaos-velixir-run$ 
