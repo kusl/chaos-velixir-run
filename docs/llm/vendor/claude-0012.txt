@@ -1550,3 +1550,151 @@ User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:159.0) Gecko/20100101 Firefox/159
 Accept: text/html; blazor-enhanced-nav=on
 Accept-Language: en-US,en;q=0.9
 Accept-Encoding: gzip, deflate, br, zstd
+
+Claude
+/
+All the other pages work as expected in my smoke test but one page consistently fails to load
+I don't know what to tell you 
+does this help? 
+NS_ERROR_DOM_BAD_URI 
+NS_ERROR_UNEXPECTED
+I have also temporarily uploaded an har.json to help with your diagnosis
+
+https://chaos.velixir.run/read
+
+GET /read HTTP/2
+Host: chaos.velixir.run
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:159.0) Gecko/20100101 Firefox/159.0
+Accept: text/html; blazor-enhanced-nav=on
+Accept-Language: en-US,en;q=0.9
+Accept-Encoding: gzip, deflate, br, zstd
+Connection: keep-alive
+Sec-Fetch-Dest: empty
+Sec-Fetch-Mode: no-cors
+Sec-Fetch-Site: same-origin
+Priority: u=0
+Pragma: no-cache
+Cache-Control: no-cache
+TE: trailers
+
+HTTP/2 302 
+content-type: text/html; charset=utf-8
+location: https://chaos-eu.velixir.run/read/e0220c87e871
+cross-origin-opener-policy: same-origin
+cross-origin-resource-policy: same-origin
+x-content-type-options: nosniff
+vary: Accept-Encoding
+content-encoding: br
+permissions-policy: camera=(), microphone=(), geolocation=(self), payment=(), usb=()
+strict-transport-security: max-age=2592000
+ssr-framing: b66ea5cf-236e-4192-9c8a-294a77e31a92
+referrer-policy: no-referrer
+date: Mon, 02 Nov 2026 14:48:02 GMT
+content-security-policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob:; font-src 'self'; connect-src 'self' https://www.cloudflare.com https://one.one.one.one https://www.google.com https://www.gstatic.com https://dns.google https://www.apple.com https://www.microsoft.com https://detectportal.firefox.com https://github.com https://www.wikipedia.org https://example.com https://www.fastly.com https://www.akamai.com https://cdn.jsdelivr.net https://registry.npmjs.org https://api.nuget.org https://pypi.org https://deb.debian.org https://www.kernel.org https://dynamodb.us-east-1.amazonaws.com https://dynamodb.us-east-2.amazonaws.com https://dynamodb.us-west-1.amazonaws.com https://dynamodb.us-west-2.amazonaws.com https://dynamodb.ca-central-1.amazonaws.com https://dynamodb.sa-east-1.amazonaws.com https://dynamodb.eu-west-1.amazonaws.com https://dynamodb.eu-west-2.amazonaws.com https://dynamodb.eu-central-1.amazonaws.com https://dynamodb.eu-north-1.amazonaws.com https://dynamodb.me-south-1.amazonaws.com https://dynamodb.af-south-1.amazonaws.com https://dynamodb.ap-south-1.amazonaws.com https://dynamodb.ap-southeast-1.amazonaws.com https://dynamodb.ap-southeast-2.amazonaws.com https://dynamodb.ap-northeast-1.amazonaws.com https://dynamodb.ap-northeast-2.amazonaws.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+blazor-enhanced-nav: allow
+x-served-by: velixir-edge
+X-Firefox-Spdy: h2
+
+https://chaos-eu.velixir.run/read/e0220c87e871
+GET /read/e0220c87e871 undefined
+Host: chaos-eu.velixir.run
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:159.0) Gecko/20100101 Firefox/159.0
+Accept: text/html; blazor-enhanced-nav=on
+Accept-Language: en-US,en;q=0.9
+Accept-Encoding: gzip, deflate, br, zstd
+
+Read memory, ran a command, used a tool
+The HAR confirms it. /read only breaks when you reach it by clicking a link inside the app.
+
+What the HAR shows
+
+If you type or reload chaos.velixir.run/read, the browser does a normal page load. It follows the 302 to chaos-eu.velixir.run/read/…, gets a 200, and the page works.
+If you click into /read from another page, Blazor’s enhanced navigation fetches it in the background instead (the request has Accept: text/html; blazor-enhanced-nav=on). That fetch also gets the 302 to the other host, chaos-eu, and comes back with status 0. That’s the NS_ERROR_DOM_BAD_URI you’re seeing.
+Why the fetch fails
+
+A background fetch can’t follow a redirect to another site here, for two reasons:
+
+Your CSP has connect-src 'self', and chaos-eu.velixir.run isn’t on the list, so Firefox blocks the redirected request.
+Even if the CSP allowed it, the request would also need CORS on chaos-eu. Blazor would then try to swap a page from another site into the current one, which isn’t what you want.
+The 302 comes from your edge proxy (x-served-by: velixir-edge), not from Blazor. Blazor never gets the chance to handle the redirect itself.
+
+Fixes, any one will do:
+
+Turn off enhanced navigation for links to /read:
+razor
+   <NavLink href="read" data-enhance-nav="false">Read</NavLink>
+The browser then does a normal page load, which follows the redirect fine.
+
+Make the edge redirect in a way Blazor understands. When the request’s Accept contains blazor-enhanced-nav=on, return a 200 with the header blazor-enhanced-nav-redirect-location: https://chaos-eu.velixir.run/read/<id> instead of a 302. Blazor’s script should then do a full page load to that URL. I’m going from memory on that header, so check it against the Blazor source for your version before relying on it. Keep the 302 for every other request.
+Do the redirect inside the app. Drop it at the edge and call NavigationManager.NavigateTo(url, forceLoad: true) in the /read page. Blazor then handles the redirect itself during enhanced navigation.
+Option 1 is the quickest. Option 2 keeps enhanced navigation and fixes it for every page the edge redirects to another host. Don’t add chaos-eu to connect-src: that only gets you past the first block and leaves the CORS problem.
+
+
+Automatically approve is on. Claude runs on its own and pauses if anything looks unsafe. This includes using your connectors and Claude in Chrome, unless you turn them off. Learn more
+
+
+Claude finished the response
+
+
+
+chaos-velixir-run
+1 document read
+
+29
+10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
