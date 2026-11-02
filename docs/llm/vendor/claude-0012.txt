@@ -70,6 +70,8 @@ and not crash if the article doesn't exist anymore
 the main concern for any article is readability, legibility, and responsive design 
 we do not have images for any kind of rich formatting 
 so it should be straight forward 
+I have verified the text file is now available at 
+https://chaos.velixir.run/nytimes.txt
 
 as we do all of this 
 please be mindful to use best engineering practices 
