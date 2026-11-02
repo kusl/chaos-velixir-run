@@ -43,6 +43,24 @@ public sealed class ReadPageTests : IClassFixture<ChaosFactory>, IDisposable
         var target = response.Headers.Location?.ToString() ?? "";
         Assert.Contains(target[(target.LastIndexOf('/') + 1)..], new[] { ArticleText.IdOf(ArticleSamples.FirstUrl), ArticleText.IdOf(ArticleSamples.SecondUrl) });
         Assert.False(response.Headers.Contains("Set-Cookie"));
+        Assert.Equal("no-store", response.Headers.CacheControl?.ToString());
+    }
+
+    [Fact]
+    public async Task TheRedirectStaysOnTheHostTheBrowserUsed()
+    {
+        Write(ArticleSamples.First);
+        using var client = CreateClient();
+        foreach (var path in new[] { "/read", "/read/" })
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, path);
+            request.Headers.Host = "chaos-eu.velixir.run";
+            request.Headers.Add("blazor-enhanced-nav", "on");
+            using var response = await client.SendAsync(request, Cancellation);
+
+            Assert.Equal(HttpStatusCode.Found, response.StatusCode);
+            Assert.Equal($"/read/{ArticleText.IdOf(ArticleSamples.FirstUrl)}", response.Headers.Location?.OriginalString);
+        }
     }
 
     [Fact]

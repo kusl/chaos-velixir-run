@@ -2,13 +2,8 @@
 @page "/read/{Id}"
 @using System.Globalization
 @inject ArticleLibrary Library
-@inject NavigationManager Navigation
 
-@if (_moving)
-{
-    <PageTitle>Chaos read</PageTitle>
-}
-else if (_article is { } article)
+@if (_article is { } article)
 {
     <PageTitle>@article.Title · Chaos</PageTitle>
 
@@ -81,37 +76,20 @@ else
     <p class="lede">That article is no longer here. <a href="read">Read a random one</a> instead.</p>
 }
 
-@if (!_moving)
-{
-    <section class="history" data-permanent="reading-history" aria-labelledby="history-title">
-        <h2 id="history-title">Read on this device</h2>
-        <p id="reading-empty" class="empty">Articles you open here are listed here, on this device only.</p>
-        <ol id="reading-history" class="shelf"></ol>
-    </section>
-}
+<section class="history" data-permanent="reading-history" aria-labelledby="history-title">
+    <h2 id="history-title">Read on this device</h2>
+    <p id="reading-empty" class="empty">Articles you open here are listed here, on this device only.</p>
+    <ol id="reading-history" class="shelf"></ol>
+</section>
 
 @code {
     private Article? _article;
-    private bool _moving;
 
     [Parameter]
     public string? Id { get; set; }
 
-    protected override void OnParametersSet()
-    {
-        if (Id is null)
-        {
-            if (Library.Random() is { } random)
-            {
-                _moving = true;
-                Navigation.NavigateTo($"read/{random.Id}");
-            }
-
-            return;
-        }
-
-        _article = Library.Find(Id);
-    }
+    protected override void OnParametersSet() =>
+        _article = Id is null ? null : Library.Find(Id);
 
     private static string? Iso(DateTimeOffset? at) =>
         at?.UtcDateTime.ToString("yyyy-MM-dd'T'HH:mm'Z'", CultureInfo.InvariantCulture);

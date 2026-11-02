@@ -101,6 +101,7 @@ app.UseRateLimiter();
 app.UseWebSockets();
 app.UseHubGuard();
 app.UseAntiforgery();
+app.UseRandomArticle();
 
 app.MapHealthChecks("/health");
 app.MapGet("/time", static (TimeProvider time, HttpResponse response) =>
