@@ -1,8 +1,8 @@
 ===============================================================================
 PROJECT EXPORT
-Generated (UTC): 2026-11-02 14:42:50
+Generated (UTC): 2026-11-02 15:00:49
 Project Path:    /home/kushal/src/dotnet/chaos-velixir-run
-Git Commit:      930b37f5308c9f2c0dec3105ede70ff35ee4e7df
+Git Commit:      57a28e8d78c184c86415a8d18f1809a4e0523b44
 Git Branch:      main
 Git Dirty:       no
 .NET SDK:        10.0.113
@@ -8529,10 +8529,10 @@ export function attach(machine, dotnet) {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Layout/MainLayout.razor
-SIZE:     1.31 KB (1346 bytes)
+SIZE:     1.34 KB (1371 bytes)
 LINES:    42
-SHA256:   d0f5f8e87d13f36597bc19cec7081084796bb413e3000f3b0b727568f0ff0a95
-MODIFIED: 2026-11-02 14:24:33 (UTC)
+SHA256:   660ac9b4bc4e5422b5cd882d7a559afebb5ccd228d9ab1c7df0ebde2e85712bb
+MODIFIED: 2026-11-02 14:59:23 (UTC)
 ================================================================================
 
 @inherits LayoutComponentBase
@@ -8546,7 +8546,7 @@ MODIFIED: 2026-11-02 14:24:33 (UTC)
         <NavLink href="canvas">Canvas</NavLink>
         <NavLink href="slots">Slots</NavLink>
         <NavLink href="latency">Latency</NavLink>
-        <NavLink href="read">Read</NavLink>
+        <NavLink href="read" data-enhance-nav="false">Read</NavLink>
         <NavLink href="about">About</NavLink>
     </nav>
     <ThemeToggle />
@@ -22636,9 +22636,9 @@ export default defineConfig({
 
 
 ===============================================================================
-EXPORT COMPLETED (UTC): 2026-11-02 14:42:52
+EXPORT COMPLETED (UTC): 2026-11-02 15:00:51
 Total Files Exported:   212
-Total Source Size:      0.67 MB (707434 bytes)
+Total Source Size:      0.67 MB (707459 bytes)
 Output File:            /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
 ===============================================================================
-DUMP SHA256 (of all lines above this one): c88926660bdff59bb44575e8b1e565b231cef284c3fef2e38fd8a1ab35baf18d
+DUMP SHA256 (of all lines above this one): 588ed4344dce7b0734999c63cda3b19724ed3e1981e9b05812aec63bf95b9e56

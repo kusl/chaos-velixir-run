@@ -6,11 +6,11 @@ Restore complete (0.8s)
 Build succeeded in 0.9s
 
 ==> Build (Release, warnings are errors)
-  Chaos.E2E net10.0 succeeded (3.3s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
-  Chaos.Web net10.0 succeeded (5.3s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.E2E net10.0 succeeded (3.1s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
+  Chaos.Web net10.0 succeeded (5.0s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
   Chaos.Web.Tests net10.0 succeeded (0.7s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
 
-Build succeeded in 6.4s
+Build succeeded in 6.1s
 Restore complete (0.6s)
 
 Build succeeded in 0.7s
@@ -35,7 +35,7 @@ Project 'Chaos.Web.Tests' has the following package references
 (A) : Auto-referenced package.
 Restore complete (0.5s)
 
-Build succeeded in 0.7s
+Build succeeded in 0.6s
 
 The following sources were used:
    https://api.nuget.org/v3/index.json
@@ -46,7 +46,7 @@ The given project `Chaos.Web.Tests` has no updates given the current sources.
 
 ==> Unit and integration tests
 Running tests from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
-tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 648ms)
+tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 561ms)
 
   In process file artifacts produced:
     - artifacts/test-results/unit/coverage.cobertura.xml
@@ -56,29 +56,29 @@ Test run summary: Passed!
   failed: 0
   succeeded: 312
   skipped: 0
-  duration: 2s 740ms
+  duration: 2s 601ms
 .NET line coverage: 72.4%
 
 ==> JavaScript unit tests
 
-added 47 packages in 517ms
+added 47 packages in 458ms
 
  RUN  v5.0.5 /home/kushal/src/dotnet/chaos-velixir-run/tests/js
       Coverage enabled with v8
 
- ✓ postcard.test.js (15 tests) 9ms
- ✓ app.test.js (13 tests) 9ms
- ✓ canvas.test.js (21 tests) 13ms
- ✓ board.test.js (23 tests) 37ms
- ✓ status.test.js (9 tests) 6ms
- ✓ read.test.js (14 tests) 10ms
- ✓ latency.test.js (33 tests) 16ms
+ ✓ status.test.js (9 tests) 7ms
+ ✓ board.test.js (23 tests) 33ms
+ ✓ latency.test.js (33 tests) 14ms
+ ✓ app.test.js (13 tests) 8ms
+ ✓ canvas.test.js (21 tests) 8ms
+ ✓ postcard.test.js (15 tests) 10ms
+ ✓ read.test.js (14 tests) 8ms
  ✓ slots.test.js (49 tests) 23ms
 
  Test Files  8 passed (8)
       Tests  177 passed (177)
-   Start at  09:41:52
-   Duration  416ms (transform 56%, import 17%, worker 15%, tests 12%)
+   Start at  09:59:51
+   Duration  408ms (transform 60%, import 17%, worker 14%, tests 10%)
 
  % Coverage report from v8
 --------------------------|---------|----------|---------|---------|-------------------------------------------
@@ -101,18 +101,18 @@ All files                 |   21.75 |    29.36 |   28.04 |   21.84 |
 
 ==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.64.1-noble
   Determining projects to restore...
-  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 318 ms).
+  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 329 ms).
   Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
   Chaos.Web -> /tmp/app/
 Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
-/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) passed (40s 042ms)
+/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) passed (40s 163ms)
 
 Test run summary: Passed!
   total: 32
   failed: 0
   succeeded: 32
   skipped: 0
-  duration: 40s 190ms
+  duration: 40s 314ms
 Starting project export...
 Project Path: /home/kushal/src/dotnet/chaos-velixir-run
 Output File:  /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
@@ -337,7 +337,7 @@ Total source size: 0.67 MB across 212 files
 
 ==> All steps passed
 
-real	1m15.500s
-user	0m15.628s
-sys	0m4.679s
+real	1m14.751s
+user	0m15.044s
+sys	0m4.688s
 kushal@fedora:~/src/dotnet/chaos-velixir-run$ 
