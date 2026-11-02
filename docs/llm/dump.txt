@@ -1,8 +1,8 @@
 ===============================================================================
 PROJECT EXPORT
-Generated (UTC): 2026-11-02 14:33:02
+Generated (UTC): 2026-11-02 14:42:50
 Project Path:    /home/kushal/src/dotnet/chaos-velixir-run
-Git Commit:      77d32326bc8c9a9fe29a240fddf91969905157bf
+Git Commit:      930b37f5308c9f2c0dec3105ede70ff35ee4e7df
 Git Branch:      main
 Git Dirty:       no
 .NET SDK:        10.0.113
@@ -16893,10 +16893,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     tests/Chaos.E2E/LatencyTests.cs
-SIZE:     2.98 KB (3047 bytes)
-LINES:    59
-SHA256:   e4f6d5b1e8980d1b3670d6a09ece754bda6a1d2799a17ee22f47e901a7556194
-MODIFIED: 2026-11-02 14:24:33 (UTC)
+SIZE:     3.02 KB (3096 bytes)
+LINES:    60
+SHA256:   5c8ea60d7b519ebaf68c8edb78f6b271561fae38c18cbf0fdb9b845ce8a35415
+MODIFIED: 2026-11-02 14:40:58 (UTC)
 ================================================================================
 
 using Microsoft.Playwright;
@@ -16937,6 +16937,7 @@ public sealed class LatencyTests(BrowserFixture browser) : IClassFixture<Browser
         await Expect(watcher.Locator("#latency-browser-fastest-empty")).ToBeVisibleAsync();
         await Expect(watcher.Locator("#latency-jackpot-winners-empty")).ToBeVisibleAsync();
 
+        await watcher.WaitForTimeoutAsync(1500);
         var run = watcher.GetByRole(AriaRole.Button, new() { Name = "Run test" });
         await Expect(run).ToBeEnabledAsync(new() { Timeout = 10_000 });
         await run.ClickAsync();
@@ -22635,9 +22636,9 @@ export default defineConfig({
 
 
 ===============================================================================
-EXPORT COMPLETED (UTC): 2026-11-02 14:33:05
+EXPORT COMPLETED (UTC): 2026-11-02 14:42:52
 Total Files Exported:   212
-Total Source Size:      0.67 MB (707385 bytes)
+Total Source Size:      0.67 MB (707434 bytes)
 Output File:            /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
 ===============================================================================
-DUMP SHA256 (of all lines above this one): 0c13ac03998e5795af76d6fee3135dd901165ac23f98a389063b99c15d7c5a13
+DUMP SHA256 (of all lines above this one): c88926660bdff59bb44575e8b1e565b231cef284c3fef2e38fd8a1ab35baf18d

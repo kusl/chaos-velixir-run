@@ -1,19 +1,19 @@
 kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
 
 ==> Restore
-Restore complete (0.7s)
+Restore complete (0.8s)
 
-Build succeeded in 0.8s
+Build succeeded in 0.9s
 
 ==> Build (Release, warnings are errors)
-  Chaos.E2E net10.0 succeeded (3.0s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
-  Chaos.Web net10.0 succeeded (4.9s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
-  Chaos.Web.Tests net10.0 succeeded (0.6s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
+  Chaos.E2E net10.0 succeeded (3.3s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
+  Chaos.Web net10.0 succeeded (5.3s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web.Tests net10.0 succeeded (0.7s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
 
-Build succeeded in 5.9s
-Restore complete (0.5s)
+Build succeeded in 6.4s
+Restore complete (0.6s)
 
-Build succeeded in 0.6s
+Build succeeded in 0.7s
 Project 'Chaos.Web' has the following package references
    [net10.0]: 
    Top-level Package                                  Requested     Resolved
@@ -35,7 +35,7 @@ Project 'Chaos.Web.Tests' has the following package references
 (A) : Auto-referenced package.
 Restore complete (0.5s)
 
-Build succeeded in 0.6s
+Build succeeded in 0.7s
 
 The following sources were used:
    https://api.nuget.org/v3/index.json
@@ -46,7 +46,7 @@ The given project `Chaos.Web.Tests` has no updates given the current sources.
 
 ==> Unit and integration tests
 Running tests from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
-tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 514ms)
+tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 648ms)
 
   In process file artifacts produced:
     - artifacts/test-results/unit/coverage.cobertura.xml
@@ -56,29 +56,29 @@ Test run summary: Passed!
   failed: 0
   succeeded: 312
   skipped: 0
-  duration: 2s 529ms
+  duration: 2s 740ms
 .NET line coverage: 72.4%
 
 ==> JavaScript unit tests
 
-added 47 packages in 424ms
+added 47 packages in 517ms
 
  RUN  v5.0.5 /home/kushal/src/dotnet/chaos-velixir-run/tests/js
       Coverage enabled with v8
 
- ✓ status.test.js (9 tests) 5ms
- ✓ canvas.test.js (21 tests) 8ms
- ✓ latency.test.js (33 tests) 11ms
- ✓ board.test.js (23 tests) 26ms
- ✓ app.test.js (13 tests) 6ms
- ✓ read.test.js (14 tests) 11ms
- ✓ postcard.test.js (15 tests) 11ms
- ✓ slots.test.js (49 tests) 26ms
+ ✓ postcard.test.js (15 tests) 9ms
+ ✓ app.test.js (13 tests) 9ms
+ ✓ canvas.test.js (21 tests) 13ms
+ ✓ board.test.js (23 tests) 37ms
+ ✓ status.test.js (9 tests) 6ms
+ ✓ read.test.js (14 tests) 10ms
+ ✓ latency.test.js (33 tests) 16ms
+ ✓ slots.test.js (49 tests) 23ms
 
  Test Files  8 passed (8)
       Tests  177 passed (177)
-   Start at  09:30:14
-   Duration  396ms (transform 60%, import 15%, worker 15%, tests 10%)
+   Start at  09:41:52
+   Duration  416ms (transform 56%, import 17%, worker 15%, tests 12%)
 
  % Coverage report from v8
 --------------------------|---------|----------|---------|---------|-------------------------------------------
@@ -101,531 +101,18 @@ All files                 |   21.75 |    29.36 |   28.04 |   21.84 |
 
 ==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.64.1-noble
   Determining projects to restore...
-  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 301 ms).
+  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 318 ms).
   Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
   Chaos.Web -> /tmp/app/
 Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
-failed Chaos.E2E.LatencyTests.ATestReachesEveryoneAndUnlocksAutoRun (30s 638ms)
-  from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
-  Xunit.MicrosoftTestingPlatform.XunitException: Microsoft.Playwright.PlaywrightException : Locator expected to be visible
-  Error: element(s) not found 
-  Call log:
-    - Expect "ToBeVisibleAsync" Locator("#latency-feed .msg.mine").First with timeout 30000ms
-    - waiting for Locator("#latency-feed .msg.mine").First
-  Aria snapshot:
-  - banner:
-    - link "chaos":
-      - /url: ""
-    - navigation "Main":
-      - link "Board":
-        - /url: board
-      - link "Postcard":
-        - /url: postcard
-      - link "Canvas":
-        - /url: canvas
-      - link "Slots":
-        - /url: slots
-      - link "Latency":
-        - /url: latency
-      - link "Read":
-        - /url: read
-      - link "About":
-        - /url: about
-    - button "Dark theme"
-  - main:
-    - heading "Latency" [level=1]
-    - paragraph: One button times how long 37 public endpoints take to answer, once from your browser and once from this server. Everyone sees every result. Each network can run a test every 1 minutes, so devices on the same Wi-Fi share that limit.
-    - region "Latency test":
-      - heading "Latency test" [level=2]
-      - button "Run test"
-      - status
-      - paragraph: 10 more tests unlock auto run.
-      - table "Your latest test":
-        - caption: Your latest test
-        - rowgroup:
-          - row "Endpoint Your browser Server":
-            - columnheader "Endpoint"
-            - columnheader "Your browser"
-            - columnheader "Server"
-        - rowgroup:
-          - row "This site – –":
-            - rowheader "This site"
-            - cell "–"
-            - cell "–"
-          - row "Cloudflare – –":
-            - rowheader "Cloudflare"
-            - cell "–"
-            - cell "–"
-          - row "Cloudflare 1.1.1.1 – –":
-            - rowheader "Cloudflare 1.1.1.1"
-            - cell "–"
-            - cell "–"
-          - row "Google – –":
-            - rowheader "Google"
-            - cell "–"
-            - cell "–"
-          - row "Google Static – –":
-            - rowheader "Google Static"
-            - cell "–"
-            - cell "–"
-          - row "Google Public DNS – –":
-            - rowheader "Google Public DNS"
-            - cell "–"
-            - cell "–"
-          - row "Apple – –":
-            - rowheader "Apple"
-            - cell "–"
-            - cell "–"
-          - row "Microsoft – –":
-            - rowheader "Microsoft"
-            - cell "–"
-            - cell "–"
-          - row "Mozilla – –":
-            - rowheader "Mozilla"
-            - cell "–"
-            - cell "–"
-          - row "GitHub – –":
-            - rowheader "GitHub"
-            - cell "–"
-            - cell "–"
-          - row "Wikipedia – –":
-            - rowheader "Wikipedia"
-            - cell "–"
-            - cell "–"
-          - row "example.com – –":
-            - rowheader "example.com"
-            - cell "–"
-            - cell "–"
-          - row "Fastly – –":
-            - rowheader "Fastly"
-            - cell "–"
-            - cell "–"
-          - row "Akamai – –":
-            - rowheader "Akamai"
-            - cell "–"
-            - cell "–"
-          - row "jsDelivr – –":
-            - rowheader "jsDelivr"
-            - cell "–"
-            - cell "–"
-          - row "npm registry – –":
-            - rowheader "npm registry"
-            - cell "–"
-            - cell "–"
-          - row "NuGet – –":
-            - rowheader "NuGet"
-            - cell "–"
-            - cell "–"
-          - row "PyPI – –":
-            - rowheader "PyPI"
-            - cell "–"
-            - cell "–"
-          - row "Debian – –":
-            - rowheader "Debian"
-            - cell "–"
-            - cell "–"
-          - row "kernel.org – –":
-            - rowheader "kernel.org"
-            - cell "–"
-            - cell "–"
-          - row "AWS N. Virginia – –":
-            - rowheader "AWS N. Virginia"
-            - cell "–"
-            - cell "–"
-          - row "AWS Ohio – –":
-            - rowheader "AWS Ohio"
-            - cell "–"
-            - cell "–"
-          - row "AWS N. California – –":
-            - rowheader "AWS N. California"
-            - cell "–"
-            - cell "–"
-          - row "AWS Oregon – –":
-            - rowheader "AWS Oregon"
-            - cell "–"
-            - cell "–"
-          - row "AWS Canada – –":
-            - rowheader "AWS Canada"
-            - cell "–"
-            - cell "–"
-          - row "AWS São Paulo – –":
-            - rowheader "AWS São Paulo"
-            - cell "–"
-            - cell "–"
-          - row "AWS Ireland – –":
-            - rowheader "AWS Ireland"
-            - cell "–"
-            - cell "–"
-          - row "AWS London – –":
-            - rowheader "AWS London"
-            - cell "–"
-            - cell "–"
-          - row "AWS Frankfurt – –":
-            - rowheader "AWS Frankfurt"
-            - cell "–"
-            - cell "–"
-          - row "AWS Stockholm – –":
-            - rowheader "AWS Stockholm"
-            - cell "–"
-            - cell "–"
-          - row "AWS Bahrain – –":
-            - rowheader "AWS Bahrain"
-            - cell "–"
-            - cell "–"
-          - row "AWS Cape Town – –":
-            - rowheader "AWS Cape Town"
-            - cell "–"
-            - cell "–"
-          - row "AWS Mumbai – –":
-            - rowheader "AWS Mumbai"
-            - cell "–"
-            - cell "–"
-          - row "AWS Singapore – –":
-            - rowheader "AWS Singapore"
-            - cell "–"
-            - cell "–"
-          - row "AWS Sydney – –":
-            - rowheader "AWS Sydney"
-            - cell "–"
-            - cell "–"
-          - row "AWS Tokyo – –":
-            - rowheader "AWS Tokyo"
-            - cell "–"
-            - cell "–"
-          - row "AWS Seoul – –":
-            - rowheader "AWS Seoul"
-            - cell "–"
-            - cell "–"
-    - region "Results":
-      - heading "Results" [level=2]
-      - list:
-        - listitem:
-          - time: 14:31:00
-          - paragraph:
-            - text: Browser median
-            - strong: 2 ms
-            - text: Server median
-            - strong: –
-            - text: 1 of 37 answered
-          - group:
-            - text: All endpoints
-            - table:
-              - rowgroup:
-                - row "Endpoint Browser Server":
-                  - columnheader "Endpoint"
-                  - columnheader "Browser"
-                  - columnheader "Server"
-              - rowgroup:
-                - row "This site 2 ms –":
-                  - rowheader "This site"
-                  - cell "2 ms"
-                  - cell "–"
-                - row "Cloudflare – –":
-                  - rowheader "Cloudflare"
-                  - cell "–"
-                  - cell "–"
-                - row "Cloudflare 1.1.1.1 – –":
-                  - rowheader "Cloudflare 1.1.1.1"
-                  - cell "–"
-                  - cell "–"
-                - row "Google – –":
-                  - rowheader "Google"
-                  - cell "–"
-                  - cell "–"
-                - row "Google Static – –":
-                  - rowheader "Google Static"
-                  - cell "–"
-                  - cell "–"
-                - row "Google Public DNS – –":
-                  - rowheader "Google Public DNS"
-                  - cell "–"
-                  - cell "–"
-                - row "Apple – –":
-                  - rowheader "Apple"
-                  - cell "–"
-                  - cell "–"
-                - row "Microsoft – –":
-                  - rowheader "Microsoft"
-                  - cell "–"
-                  - cell "–"
-                - row "Mozilla – –":
-                  - rowheader "Mozilla"
-                  - cell "–"
-                  - cell "–"
-                - row "GitHub – –":
-                  - rowheader "GitHub"
-                  - cell "–"
-                  - cell "–"
-                - row "Wikipedia – –":
-                  - rowheader "Wikipedia"
-                  - cell "–"
-                  - cell "–"
-                - row "example.com – –":
-                  - rowheader "example.com"
-                  - cell "–"
-                  - cell "–"
-                - row "Fastly – –":
-                  - rowheader "Fastly"
-                  - cell "–"
-                  - cell "–"
-                - row "Akamai – –":
-                  - rowheader "Akamai"
-                  - cell "–"
-                  - cell "–"
-                - row "jsDelivr – –":
-                  - rowheader "jsDelivr"
-                  - cell "–"
-                  - cell "–"
-                - row "npm registry – –":
-                  - rowheader "npm registry"
-                  - cell "–"
-                  - cell "–"
-                - row "NuGet – –":
-                  - rowheader "NuGet"
-                  - cell "–"
-                  - cell "–"
-                - row "PyPI – –":
-                  - rowheader "PyPI"
-                  - cell "–"
-                  - cell "–"
-                - row "Debian – –":
-                  - rowheader "Debian"
-                  - cell "–"
-                  - cell "–"
-                - row "kernel.org – –":
-                  - rowheader "kernel.org"
-                  - cell "–"
-                  - cell "–"
-                - row "AWS N. Virginia – –":
-                  - rowheader "AWS N. Virginia"
-                  - cell "–"
-                  - cell "–"
-                - row "AWS Ohio – –":
-                  - rowheader "AWS Ohio"
-                  - cell "–"
-                  - cell "–"
-                - row "AWS N. California – –":
-                  - rowheader "AWS N. California"
-                  - cell "–"
-                  - cell "–"
-                - row "AWS Oregon – –":
-                  - rowheader "AWS Oregon"
-                  - cell "–"
-                  - cell "–"
-                - row "AWS Canada – –":
-                  - rowheader "AWS Canada"
-                  - cell "–"
-                  - cell "–"
-                - row "AWS São Paulo – –":
-                  - rowheader "AWS São Paulo"
-                  - cell "–"
-                  - cell "–"
-                - row "AWS Ireland – –":
-                  - rowheader "AWS Ireland"
-                  - cell "–"
-                  - cell "–"
-                - row "AWS London – –":
-                  - rowheader "AWS London"
-                  - cell "–"
-                  - cell "–"
-                - row "AWS Frankfurt – –":
-                  - rowheader "AWS Frankfurt"
-                  - cell "–"
-                  - cell "–"
-                - row "AWS Stockholm – –":
-                  - rowheader "AWS Stockholm"
-                  - cell "–"
-                  - cell "–"
-                - row "AWS Bahrain – –":
-                  - rowheader "AWS Bahrain"
-                  - cell "–"
-                  - cell "–"
-                - row "AWS Cape Town – –":
-                  - rowheader "AWS Cape Town"
-                  - cell "–"
-                  - cell "–"
-                - row "AWS Mumbai – –":
-                  - rowheader "AWS Mumbai"
-                  - cell "–"
-                  - cell "–"
-                - row "AWS Singapore – –":
-                  - rowheader "AWS Singapore"
-                  - cell "–"
-                  - cell "–"
-                - row "AWS Sydney – –":
-                  - rowheader "AWS Sydney"
-                  - cell "–"
-                  - cell "–"
-                - row "AWS Tokyo – –":
-                  - rowheader "AWS Tokyo"
-                  - cell "–"
-                  - cell "–"
-                - row "AWS Seoul – –":
-                  - rowheader "AWS Seoul"
-                  - cell "–"
-                  - cell "–"
-    - region "Leaderboard":
-      - heading "Leaderboard" [level=2]
-      - paragraph: The 10 lowest and highest medians seen. A median only counts when at least half of the endpoints answered on that side.
-      - region "Fastest browsers":
-        - heading "Fastest browsers" [level=3]
-        - paragraph: No browser results yet.
-        - list
-      - region "Slowest browsers":
-        - heading "Slowest browsers" [level=3]
-        - paragraph: No browser results yet.
-        - list
-      - region "Fastest server runs":
-        - heading "Fastest server runs" [level=3]
-        - paragraph: No server results yet.
-        - list
-      - region "Slowest server runs":
-        - heading "Slowest server runs" [level=3]
-        - paragraph: No server results yet.
-        - list
-    - region "Jackpots":
-      - heading "Jackpots" [level=2]
-      - paragraph: A browser or server median under 10 ms wins; 100 ms or more loses. The newest 50 of each are kept.
-      - region "Winners":
-        - heading "Winners" [level=3]
-        - paragraph: Nobody yet. Probably nobody ever.
-        - list
-      - region "Losers":
-        - heading "Losers" [level=3]
-        - paragraph: Nobody yet. Hopefully nobody ever.
-        - list
-  - contentinfo:
-    - text: Server time
-    - time: 2026-11-02 14:31:30 UTC
-    - link "Source code":
-      - /url: https://github.com/kusl/chaos-velixir-run
-    - text: AGPL-3.0-or-later
-  - paragraph: "New latency result: browser median 2 ms, server median –."
-    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, FrameExpectOptions expectOptions, Object expected, String message, String title) in /_/src/Playwright/Core/AssertionsBase.cs:95
-    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, ExpectedTextValue[] expectedText, Object expected, String message, String title, FrameExpectOptions options) in /_/src/Playwright/Core/AssertionsBase.cs:69
-    at Chaos.E2E.LatencyTests.ATestReachesEveryoneAndUnlocksAutoRun() in /work/tests/Chaos.E2E/LatencyTests.cs:42
-    at Chaos.E2E.LatencyTests.ATestReachesEveryoneAndUnlocksAutoRun() in /work/tests/Chaos.E2E/LatencyTests.cs:44
-    at Chaos.E2E.LatencyTests.ATestReachesEveryoneAndUnlocksAutoRun() in /work/tests/Chaos.E2E/LatencyTests.cs:44
-    --- End of stack trace from previous location ---
-/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) failed with 1 error(s) (1m 09s 606ms)
-Exit code: 2
+/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) passed (40s 042ms)
 
-Test run summary: Failed!
+Test run summary: Passed!
   total: 32
-  failed: 1
-  succeeded: 31
+  failed: 0
+  succeeded: 32
   skipped: 0
-  duration: 1m 09s 756ms
-Test run completed with non-success exit code: 2 (see: https://aka.ms/testingplatform/exitcodes)
-
-==> Last 50 lines of the app log
-info: Microsoft.AspNetCore.Http.Result.JsonResult[3]
-      Writing value of type 'ServerTime' as Json.
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'HTTP: GET /time'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/time?n=38 - 200 - application/json;+charset=utf-8 0.4250ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5080/_blazor/initializers - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/_blazor/initializers - 200 - application/json;+charset=utf-8 0.1383ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 POST http://127.0.0.1:5080/_blazor/negotiate?negotiateVersion=1 - - 0
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 POST http://127.0.0.1:5080/_blazor/negotiate?negotiateVersion=1 - 200 - application/json 0.1746ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5080/_blazor?id=wT8adB9UXfzkXtgR-A4Z8A - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/CanvasIsland.8wavzjs07i.razor.js - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
-      Sending file. Request path: 'Components/Islands/CanvasIsland.8wavzjs07i.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/CanvasIsland.razor.js.br'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/CanvasIsland.8wavzjs07i.razor.js - 200 4668 text/javascript 0.2303ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/BoardIsland.razor.js - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
-      Sending file. Request path: 'Components/Islands/BoardIsland.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/BoardIsland.razor.js.br'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/Components/Islands/BoardIsland.razor.js - 200 6494 text/javascript 0.1285ms
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5080/_blazor?id=wT8adB9UXfzkXtgR-A4Z8A - 101 - - 267.6241ms
-
-==> Last 50 lines of the rigged app log
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5081/time?n=47 - 200 - application/json;+charset=utf-8 0.9365ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5081/_blazor/initializers - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5081/_blazor/initializers - 200 - application/json;+charset=utf-8 0.3591ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 POST http://127.0.0.1:5081/_blazor/negotiate?negotiateVersion=1 - - 0
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 POST http://127.0.0.1:5081/_blazor/negotiate?negotiateVersion=1 - 200 - application/json 0.5405ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5081/_blazor?id=UUht0Ub_3ER5VrkvqSKptw - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5081/Components/Islands/SlotIsland.ec9s27kqt6.razor.js - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
-      Sending file. Request path: 'Components/Islands/SlotIsland.ec9s27kqt6.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/SlotIsland.razor.js.br'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5081/Components/Islands/SlotIsland.ec9s27kqt6.razor.js - 200 8526 text/javascript 0.3838ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
-      Request starting HTTP/1.1 GET http://127.0.0.1:5081/Components/Islands/BoardIsland.razor.js - - -
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
-      Executing endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.StaticAssets.StaticAssetsInvoker[2]
-      Sending file. Request path: 'Components/Islands/BoardIsland.razor.js'. Physical path: '/tmp/app/wwwroot/Components/Islands/BoardIsland.razor.js.br'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5081/Components/Islands/BoardIsland.razor.js - 200 6494 text/javascript 0.2257ms
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
-      Executed endpoint 'Microsoft.AspNetCore.Routing.RouteEndpoint'
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5081/_blazor?id=UUht0Ub_3ER5VrkvqSKptw - 101 - - 9788.1644ms
-info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
-      Request finished HTTP/1.1 GET http://127.0.0.1:5081/_blazor?id=WkiyarrOd7mteYfIzcRnAQ - 101 - - 10049.6752ms
-
-real	1m40.936s
-user	0m13.173s
-sys	0m2.847s
-kushal@fedora:~/src/dotnet/chaos-velixir-run$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/export.sh 
+  duration: 40s 190ms
 Starting project export...
 Project Path: /home/kushal/src/dotnet/chaos-velixir-run
 Output File:  /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
@@ -848,7 +335,9 @@ Export completed successfully!
 Output file: /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
 Total source size: 0.67 MB across 212 files
 
-real	0m3.049s
-user	0m1.604s
-sys	0m2.025s
+==> All steps passed
+
+real	1m15.500s
+user	0m15.628s
+sys	0m4.679s
 kushal@fedora:~/src/dotnet/chaos-velixir-run$ 
