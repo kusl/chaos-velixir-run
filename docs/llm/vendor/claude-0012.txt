@@ -1909,3 +1909,592 @@ and the plain text file still works
 https://chaos.velixir.run/nytimes.txt
 I am positive something is screwed up or otherwise fixable with the code 
 because why else would only this page be affected and none of the others? 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Claude
+/
+I made the change but it didn't fix anything as far as I can tell 
+in fact I can go straight to the /read endpoint on a new browser context 
+so nothing is weird with cache etc
+and it still redirects me to chaos-eu 
+and the plain text file still works 
+https://chaos.velixir.run/nytimes.txt
+I am positive something is screwed up or otherwise fixable with the code 
+because why else would only this page be affected and none of the others?
+
+Ran 22 commands, used 4 tools, read memory
+You’re right that it’s in the code. Only /read sends the browser somewhere from the server. Every other page uses relative links, and the browser resolves those against chaos.velixir.run.
+
+Why /read goes to chaos-eu:
+
+ReadPage calls Navigation.NavigateTo("read/{id}"). In static SSR, Blazor turns that into a 302 with an absolute Location. It builds the address from the request’s Host header.
+Behind the velixir edge, that Host is chaos-eu.velixir.run, not the address you typed. Your HAR shows it: the 302 carries your app’s security headers, so the app sent it, not the edge.
+UseForwardedHeaders only rewrites the client IP and the scheme, not the host. So the regional name ends up in the Location header.
+nytimes.txt is a plain static file with no redirect, so it was never affected.
+The fix: a small piece of middleware handles /read before Blazor does and sends a relative Location: /read/{id} with no-store. The browser then resolves it against whatever host you used, whatever Host the proxy forwards. The page no longer calls NavigateTo. When there are no articles, the request falls through to the page and shows the “nothing to read” notice as before.
+
+I couldn’t run your full suite because NuGet is blocked here. I did compile RandomArticle.cs with your analyzer settings (warnings as errors) and ran it against a real server with Host: chaos-eu.velixir.run:
+
+/read, /read/ and /READ all returned 302 /read/abcdef012345 no-store.
+With no articles, /read fell through to the page.
+There’s also a new test for the forwarded-host case. Run scripts/run-all.sh before you deploy.
+
+src/Chaos.Web/Reading/RandomArticle.cs (new)
+csharp
+namespace Chaos.Web.Reading;
+
+internal static class RandomArticle
+{
+    public const string Path = "/read";
+
+    public static IApplicationBuilder UseRandomArticle(this IApplicationBuilder app)
+    {
+        ArgumentNullException.ThrowIfNull(app);
+        return app.Use(static (context, next) =>
+        {
+            var request = context.Request;
+            if (!(HttpMethods.IsGet(request.Method) || HttpMethods.IsHead(request.Method))
+                || !string.Equals(request.Path.Value?.TrimEnd('/'), Path, StringComparison.OrdinalIgnoreCase)
+                || context.RequestServices.GetRequiredService<ArticleLibrary>().Random() is not { } article)
+            {
+                return next(context);
+            }
+
+            context.Response.Headers.CacheControl = "no-store";
+            context.Response.Redirect($"{request.PathBase}{Path}/{article.Id}");
+            return Task.CompletedTask;
+        });
+    }
+}
+src/Chaos.Web/Program.cs
+csharp
+using System.IO.Compression;
+using Chaos.Web.Components;
+using Chaos.Web.Drawing;
+using Chaos.Web.Infrastructure;
+using Chaos.Web.Latency;
+using Chaos.Web.Messages;
+using Chaos.Web.Postcards;
+using Chaos.Web.Reading;
+using Chaos.Web.Slots;
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.Options;
+
+var publishedWebRoot = Path.Combine(AppContext.BaseDirectory, "wwwroot");
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    WebRootPath = Directory.Exists(publishedWebRoot) ? publishedWebRoot : null,
+});
+
+builder.WebHost.ConfigureKestrel(kestrel =>
+{
+    kestrel.AddServerHeader = false;
+    if (int.TryParse(Environment.GetEnvironmentVariable("PORT"), out var port))
+    {
+        kestrel.ListenAnyIP(port);
+    }
+});
+
+builder.Services.Configure<HostOptions>(host => host.ShutdownTimeout = TimeSpan.FromSeconds(10));
+builder.Services.Configure<ForwardedHeadersOptions>(forwarded =>
+{
+    forwarded.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    forwarded.KnownIPNetworks.Clear();
+    forwarded.KnownProxies.Clear();
+});
+
+builder.Services.AddOptions<ChaosOptions>()
+    .Bind(builder.Configuration.GetSection(ChaosOptions.SectionName))
+    .Validate(chaos => chaos.IsValid(), "Chaos limits are out of range.")
+    .ValidateOnStart();
+
+builder.Services.AddDataProtection().UseEphemeralDataProtectionProvider();
+builder.Services.AddSingleton<IAntiforgery>(new CookielessAntiforgery());
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<BoardService>();
+builder.Services.AddSingleton<PostcardService>();
+builder.Services.AddSingleton<CanvasService>();
+builder.Services.AddSingleton<SlotService>();
+builder.Services.AddSingleton<ILatencyProbe, HttpLatencyProbe>();
+builder.Services.AddSingleton<LatencyService>();
+builder.Services.AddSingleton<ConnectionTracker>();
+builder.Services.AddSingleton(services => new ArticleLibrary(
+    services.GetRequiredService<IWebHostEnvironment>().WebRootFileProvider,
+    services.GetRequiredService<IOptions<ChaosOptions>>(),
+    services.GetRequiredService<ILogger<ArticleLibrary>>()));
+builder.Services.AddHealthChecks();
+
+builder.Services.AddResponseCompression(compression =>
+{
+    compression.EnableForHttps = true;
+    compression.Providers.Add<BrotliCompressionProvider>();
+    compression.Providers.Add<GzipCompressionProvider>();
+});
+builder.Services.Configure<BrotliCompressionProviderOptions>(brotli => brotli.Level = CompressionLevel.Fastest);
+builder.Services.Configure<GzipCompressionProviderOptions>(gzip => gzip.Level = CompressionLevel.Fastest);
+
+builder.Services.AddRateLimiter(_ => { });
+builder.Services.AddOptions<RateLimiterOptions>()
+    .Configure<IOptions<ChaosOptions>>((limiter, chaos) => RequestLimits.Configure(limiter, chaos.Value));
+
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents(circuit =>
+    {
+        circuit.DisconnectedCircuitMaxRetained = 20;
+        circuit.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(1);
+        circuit.PersistedCircuitInMemoryMaxRetained = 20;
+        circuit.PersistedCircuitInMemoryRetentionPeriod = TimeSpan.FromMinutes(5);
+        circuit.MaxBufferedUnacknowledgedRenderBatches = 2;
+        circuit.JSInteropDefaultCallTimeout = TimeSpan.FromSeconds(30);
+    })
+    .AddHubOptions(hub => hub.MaximumReceiveMessageSize = 32 * 1024);
+
+var app = builder.Build();
+
+app.UseForwardedHeaders();
+app.UseSecurityHeaders();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    app.UseHsts();
+}
+
+app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+app.UseResponseCompression();
+app.UseRateLimiter();
+app.UseWebSockets();
+app.UseHubGuard();
+app.UseAntiforgery();
+app.UseRandomArticle();
+
+app.MapHealthChecks("/health");
+app.MapGet("/time", static (TimeProvider time, HttpResponse response) =>
+{
+    response.Headers.CacheControl = "no-store";
+    return Results.Json(ServerTime.Now(time));
+});
+app.MapPostcardImages();
+app.MapStaticAssets();
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode(server => server.DisableWebSocketCompression = true);
+
+await app.RunAsync();
+
+public partial class Program;
+src/Chaos.Web/Components/Pages/ReadPage.razor
+razor
+@page "/read"
+@page "/read/{Id}"
+@using System.Globalization
+@inject ArticleLibrary Library
+
+@if (_article is { } article)
+{
+    <PageTitle>@article.Title · Chaos</PageTitle>
+
+    <p class="kicker"><span>A random article</span><a href="read">Another one</a></p>
+    <article class="story" data-reading="@article.Id" data-title="@article.Title" data-byline="@article.Byline" data-published="@Iso(article.Published)">
+        <header>
+            <h1>@article.Title</h1>
+            @if (article.Dek is { } dek)
+            {
+                <p class="dek">@dek</p>
+            }
+            @if (article.Byline is not null || article.Published is not null)
+            {
+                <p class="credit">
+                    @if (article.Byline is { } byline)
+                    {
+                        <span>@byline</span>
+                    }
+                    @if (article.Published is { } published)
+                    {
+                        <time datetime="@Iso(published)">@Label(published)</time>
+                    }
+                </p>
+            }
+        </header>
+        @if (article.Summary is { } summary)
+        {
+            <details class="brief">
+                <summary>Summary</summary>
+                <p>@summary</p>
+            </details>
+        }
+        <div class="body">
+            @foreach (var block in article.Blocks)
+            {
+                if (block.IsList)
+                {
+                    <ul>
+                        @foreach (var item in block.Lines)
+                        {
+                            <li>@item</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>@block.Text</p>
+                }
+            }
+        </div>
+        @if (article.Source is { } source)
+        {
+            <p class="source">First published at <a href="@source.AbsoluteUri">@source.Host</a>.</p>
+        }
+    </article>
+    <p class="next"><a href="read">Read another article</a></p>
+}
+else if (Id is null)
+{
+    <PageTitle>Chaos read</PageTitle>
+
+    <h1>Read</h1>
+    <p class="lede">There is nothing to read right now. Try again later.</p>
+}
+else
+{
+    <PageTitle>Chaos read</PageTitle>
+
+    <h1>Not available</h1>
+    <p class="lede">That article is no longer here. <a href="read">Read a random one</a> instead.</p>
+}
+
+<section class="history" data-permanent="reading-history" aria-labelledby="history-title">
+    <h2 id="history-title">Read on this device</h2>
+    <p id="reading-empty" class="empty">Articles you open here are listed here, on this device only.</p>
+    <ol id="reading-history" class="shelf"></ol>
+</section>
+
+@code {
+    private Article? _article;
+
+    [Parameter]
+    public string? Id { get; set; }
+
+    protected override void OnParametersSet() =>
+        _article = Id is null ? null : Library.Find(Id);
+
+    private static string? Iso(DateTimeOffset? at) =>
+        at?.UtcDateTime.ToString("yyyy-MM-dd'T'HH:mm'Z'", CultureInfo.InvariantCulture);
+
+    private static string Label(DateTimeOffset at) =>
+        at.UtcDateTime.ToString("MMMM d, yyyy", CultureInfo.InvariantCulture);
+}
+tests/Chaos.Web.Tests/ReadPageTests.cs
+csharp
+using System.Net;
+using System.Text;
+using Chaos.Web.Reading;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging.Abstractions;
+
+namespace Chaos.Web.Tests;
+
+public sealed class ReadPageTests : IClassFixture<ChaosFactory>, IDisposable
+{
+    private const string FileName = "articles.txt";
+    private readonly DirectoryInfo _root = Directory.CreateTempSubdirectory("chaos-read-");
+    private readonly PhysicalFileProvider _files;
+    private readonly WebApplicationFactory<Program> _factory;
+
+    public ReadPageTests(ChaosFactory factory)
+    {
+        _files = new PhysicalFileProvider(_root.FullName);
+        _factory = factory.WithWebHostBuilder(builder => builder.ConfigureTestServices(services =>
+            services.AddSingleton(new ArticleLibrary(_files, Limits.Create(options => options.ArticlesFile = FileName), NullLogger<ArticleLibrary>.Instance))));
+    }
+
+    private static CancellationToken Cancellation => TestContext.Current.CancellationToken;
+
+    public void Dispose()
+    {
+        _factory.Dispose();
+        _files.Dispose();
+        _root.Delete(true);
+    }
+
+    [Fact]
+    public async Task ARandomVisitRedirectsToAnArticle()
+    {
+        Write(ArticleSamples.Both);
+        using var client = CreateClient();
+        using var response = await client.GetAsync("/read", Cancellation);
+
+        Assert.Equal(HttpStatusCode.Found, response.StatusCode);
+        var target = response.Headers.Location?.ToString() ?? "";
+        Assert.Contains(target[(target.LastIndexOf('/') + 1)..], new[] { ArticleText.IdOf(ArticleSamples.FirstUrl), ArticleText.IdOf(ArticleSamples.SecondUrl) });
+        Assert.False(response.Headers.Contains("Set-Cookie"));
+        Assert.Equal("no-store", response.Headers.CacheControl?.ToString());
+    }
+
+    [Fact]
+    public async Task TheRedirectStaysOnTheHostTheBrowserUsed()
+    {
+        Write(ArticleSamples.First);
+        using var client = CreateClient();
+        foreach (var path in new[] { "/read", "/read/" })
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, path);
+            request.Headers.Host = "chaos-eu.velixir.run";
+            request.Headers.Add("blazor-enhanced-nav", "on");
+            using var response = await client.SendAsync(request, Cancellation);
+
+            Assert.Equal(HttpStatusCode.Found, response.StatusCode);
+            Assert.Equal($"/read/{ArticleText.IdOf(ArticleSamples.FirstUrl)}", response.Headers.Location?.OriginalString);
+        }
+    }
+
+    [Fact]
+    public async Task AnArticleRendersAsPlainReadableText()
+    {
+        Write(ArticleSamples.Both);
+        var id = ArticleText.IdOf(ArticleSamples.FirstUrl);
+        using var client = CreateClient();
+        using var response = await client.GetAsync($"/read/{id}", Cancellation);
+        var html = await response.Content.ReadAsStringAsync(Cancellation);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.False(response.Headers.Contains("Set-Cookie"));
+        Assert.Contains("<title>Are Babies Conscious? · Chaos</title>", html, StringComparison.Ordinal);
+        Assert.Contains($"data-reading=\"{id}\"", html, StringComparison.Ordinal);
+        Assert.Matches("<h1[^>]*>Are Babies Conscious\\?</h1>", html);
+        Assert.Contains("By Carl Zimmer", html, StringComparison.Ordinal);
+        Assert.Matches("<time[^>]*datetime=\"2026-10-05T09:00Z\"[^>]*>October 5, 2026</time>", html);
+        Assert.Matches("<li[^>]*>Surprise at the unexpected.</li>", html);
+        Assert.Contains("id=\"reading-history\"", html, StringComparison.Ordinal);
+        Assert.Contains($"href=\"{ArticleSamples.FirstUrl}\"", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task AMissingArticleSaysSoInsteadOfFailing()
+    {
+        Write(ArticleSamples.Second);
+        using var client = CreateClient();
+        var html = await client.GetStringAsync($"/read/{ArticleText.IdOf(ArticleSamples.FirstUrl)}", Cancellation);
+
+        Assert.Matches("<h1[^>]*>Not available</h1>", html);
+        Assert.Contains("id=\"reading-history\"", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task NoFileMeansNothingToReadRatherThanAnError()
+    {
+        using var client = CreateClient();
+        using var response = await client.GetAsync("/read", Cancellation);
+        var html = await response.Content.ReadAsStringAsync(Cancellation);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("nothing to read right now", html, StringComparison.Ordinal);
+    }
+
+    private HttpClient CreateClient() =>
+        _factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false, HandleCookies = false });
+
+    private void Write(string text) =>
+        File.WriteAllText(Path.Combine(_root.FullName, FileName), text, new UTF8Encoding(false));
+}
+docs/adr/0024-reading.md
+markdown
+# 0024 Random article reader
+
+Status: accepted
+
+- `/read` is a static SSR page with no circuit. `RandomArticle` middleware answers GET/HEAD `/read` with a 302 to a relative `/read/{id}` (`no-store`), so every article has a stable address and enhanced navigation shows the final URL. Not `NavigateTo`: Blazor makes that `Location` absolute from the request `Host`, which behind the velixir edge is the regional host (`chaos-eu`). With no articles the page renders a notice instead.
+- Source: `wwwroot/nytimes.txt` (`Chaos:ArticlesFile`), plain UTF-8, also served as a static file. Records start with a header between two `=` rules (20 or more, up to 6 header lines). Inside: optional `SUMMARY` paragraph, `ARTICLE`, then a head paragraph (title, optional dek, `By …`, `Published yyyy-MM-dd HH:mm UTC`, source URL, matched from the end) and body paragraphs split by blank lines. Paragraphs whose every line starts with `- `, `• `, `* ` render as lists; other line breaks are kept. A file with no rules is one article.
+- Id: first 12 hex digits of SHA-256 of the source URL, or of title and body without one. Stable across reordering and edits elsewhere in the file. The first record wins on duplicate ids.
+- `ArticleLibrary` indexes the file once (offset and length per id, about 50 KB for 500 articles), then reads and parses one record per request. It re-indexes when the file's length or modified time changes, treats a missing, unreadable or over-64 MB file as empty, and returns nothing rather than throwing. A record that no longer parses to its id is dropped and the index rebuilt.
+- Unknown or removed ids render "Not available" with a link to a random article (200, so the history list still renders).
+- Reading history lives only in the browser: IndexedDB `chaos-reading` v1, store `articles`, key `id`, values `{ id, title, byline, published, first, last, reads }`, capped at 1,000 by least recent `last`. `App.razor.js` imports `Pages/ReadPage.razor.js` on load and `enhancedload` when `#reading-history` exists. The list is `data-permanent` and only written by that module.
+- Typography: serif stack, 17–19 px, line height 1.7, 38 rem measure, hyphenation in the body, solid
+Writing
+5m 12s
+running
+Writing
+
+
+Automatically approve is on. Claude runs on its own and pauses if anything looks unsafe. This includes using your connectors and Claude in Chrome, unless you turn them off. Learn more
+
+
+Claude is responding
+
+
+
+chaos-velixir-run
+3 documents read
+
+32
+11
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
