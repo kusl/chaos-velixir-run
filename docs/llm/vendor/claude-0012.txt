@@ -798,3 +798,603 @@ Test run summary: Failed!
 
 
 
+Claude
+/
+Ran 125 commands, created 15 files, and 13 more tools
+Let me reconstruct the project locally from the dump.
+Now the latency island JS status usage.
+Edited a file
+BoardIsland.razor.js
+Edited a file
+BoardIsland.razor.js
+Created a file
+Article.cs
+Created a file
+ArticleBlock.cs
+Created a file
+ArticleEntry.cs
+Created a file
+ArticleEntry.cs
+Created a file
+ArticleText.cs
+Created a file
+ArticleLibrary.cs
+Created a file
+ReadPage.razor
+Created a file
+ReadPage.razor.css
+Created a file
+ReadPage.razor.js
+Read a file
+home320.png
+Read a file
+read390.png
+Read a file
+read1280.png
+Read a file
+home740.png
+Read a file
+home768.png
+Read a file
+read390dark.png
+Now docs: new ADRs and updates.
+Created a file
+status.test.js
+Created a file
+read.test.js
+Created a file
+ArticleSamples.cs
+Created a file
+ArticleTextTests.cs
+Created a file
+ArticleLibraryTests.cs
+Created a file
+ReadPageTests.cs
+Created a file
+ReadTests.cs
+Shared files
+I’ve confirmed the defect and fixed it, built the new Read page, and fixed the mobile nav. 40 files changed, so it’s a tar.gz above. It only has changed files, laid out from the repo root. Nothing needs deleting.
+
+What I checked, and what I couldn’t run:
+
+Checked: the app builds with warnings as errors, and all 177 JavaScript tests pass. I also ran the real app in a browser and repeated each new end-to-end check by hand: the slots and latency messages, the Read page, and no sideways scrolling at 320 and 390 px wide.
+Not run: this sandbox can’t reach NuGet, so xunit, the integration tests and the Podman end-to-end tests haven’t run. The new parser and library tests did pass under a stand-in test runner. ReadPageTests.cs and the new end-to-end tests are only checked by reading them, not compiled. Please run scripts/run-all.sh first.
+Browser script: the browser checks used the .NET 9 blazor.web.js, because the .NET 10 one wasn’t downloadable here.
+The slots bug
+
+The line under the machine now belongs to one spin. It clears when that spin stops or another spin starts.
+If the server’s reply arrives after the spin has already started, the line still shows. If the spin has already landed, it doesn’t show at all.
+Other notes (“Slow down”, “Could not reach the server”, auto spin on/off) clear after 6 seconds.
+When the same message is shown twice in a row, it is cleared and written again, so screen readers announce it again.
+Latency gets the same treatment: “Done” clears when someone else starts a test or their result lands.
+One more I found: on the canvas, “It was just reset” or “The canvas is full” stayed after someone else reset. Any reset now clears it.
+All of these have end-to-end tests that check the message goes away.
+Mobile layout
+
+Below 768 px, the nav moves to its own full-width row and wraps into even buttons. Desktop is unchanged.
+No page scrolls sideways at 320 px, including a board post of 400 unbroken characters. An end-to-end test now checks every page at 320 and 390 px.
+Long words anywhere on the site now wrap instead of overflowing.
+Read page
+
+/read redirects to a random article at /read/{id}. Each id comes from the article’s source URL, so links keep working if the file is reordered.
+The server indexes nytimes.txt once (about 135 ms) and then reads only the one article a request needs. It re-indexes when the file changes.
+528 articles in the file give 525 unique ones: 3 are exact copies filed under different names, and only the first is kept.
+If the file is missing, too large or unreadable, the page says there’s nothing to read. An id that no longer exists says “Not available” with a link to a random article. Both show a normal page rather than an error, and I tested deleting and restoring the file while the app was running.
+Layout: serif text at 17–19 px, a column about 38 characters of width wide, hyphenation, and bullet lists shown as real lists. It works in light and dark themes.
+History: the browser keeps the last 1,000 articles opened (IndexedDB chaos-reading) and lists them at the bottom, newest first, with a read count and a “Reading now” marker. “Clear local history” on the About page clears it too.
+Home, About, the README and the decision records are updated, including a new one, docs/adr/0024-reading.md.
+Licensing: REUSE.toml marks every file in the repo as AGPL, which now includes the NYT text. You may want to look at that.
+
+
+Chaos velixir run update.tar
+GZ 
+one test is now failing
+==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.64.1-noble
+  Determining projects to restore...
+  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 301 ms).
+  Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web -> /tmp/app/
+Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+failed Chaos.E2E.LatencyTests.ATestReachesEveryoneAndUnlocksAutoRun (30s 638ms)
+  from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Microsoft.Playwright.PlaywrightException : Locator expected to be visible
+  Error: element(s) not found 
+  Call log:
+    - Expect "ToBeVisibleAsync" Locator("#latency-feed .msg.mine").First with timeout 30000ms
+    - waiting for Locator("#latency-feed .msg.mine").First
+  Aria snapshot:
+  - banner:
+    - link "chaos":
+      - /url: ""
+    - navigation "Main":
+      - link "Board":
+        - /url: board
+      - link "Postcard":
+        - /url: postcard
+      - link "Canvas":
+        - /url: canvas
+      - link "Slots":
+        - /url: slots
+      - link "Latency":
+        - /url: latency
+      - link "Read":
+        - /url: read
+      - link "About":
+        - /url: about
+    - button "Dark theme"
+  - main:
+    - heading "Latency" [level=1]
+    - paragraph: One button times how long 37 public endpoints take to answer, once from your browser and once from this server. Everyone sees every result. Each network can run a test every 1 minutes, so devices on the same Wi-Fi share that limit.
+    - region "Latency test":
+      - heading "Latency test" [level=2]
+      - button "Run test"
+      - status
+      - paragraph: 10 more tests unlock auto run.
+      - table "Your latest test":
+        - caption: Your latest test
+        - rowgroup:
+          - row "Endpoint Your browser Server":
+            - columnheader "Endpoint"
+            - columnheader "Your browser"
+            - columnheader "Server"
+        - rowgroup:
+          - row "This site – –":
+            - rowheader "This site"
+            - cell "–"
+            - cell "–"
+          - row "Cloudflare – –":
+            - rowheader "Cloudflare"
+            - cell "–"
+            - cell "–"
+          - row "Cloudflare 1.1.1.1 – –":
+            - rowheader "Cloudflare 1.1.1.1"
+            - cell "–"
+            - cell "–"
+          - row "Google – –":
+            - rowheader "Google"
+            - cell "–"
+            - cell "–"
+          - row "Google Static – –":
+            - rowheader "Google Static"
+            - cell "–"
+            - cell "–"
+          - row "Google Public DNS – –":
+            - rowheader "Google Public DNS"
+            - cell "–"
+            - cell "–"
+          - row "Apple – –":
+            - rowheader "Apple"
+            - cell "–"
+            - cell "–"
+          - row "Microsoft – –":
+            - rowheader "Microsoft"
+            - cell "–"
+            - cell "–"
+          - row "Mozilla – –":
+            - rowheader "Mozilla"
+            - cell "–"
+            - cell "–"
+          - row "GitHub – –":
+            - rowheader "GitHub"
+            - cell "–"
+            - cell "–"
+          - row "Wikipedia – –":
+            - rowheader "Wikipedia"
+            - cell "–"
+            - cell "–"
+          - row "example.com – –":
+            - rowheader "example.com"
+            - cell "–"
+            - cell "–"
+          - row "Fastly – –":
+            - rowheader "Fastly"
+            - cell "–"
+            - cell "–"
+          - row "Akamai – –":
+            - rowheader "Akamai"
+            - cell "–"
+            - cell "–"
+          - row "jsDelivr – –":
+            - rowheader "jsDelivr"
+            - cell "–"
+            - cell "–"
+          - row "npm registry – –":
+            - rowheader "npm registry"
+            - cell "–"
+            - cell "–"
+          - row "NuGet – –":
+            - rowheader "NuGet"
+            - cell "–"
+            - cell "–"
+          - row "PyPI – –":
+            - rowheader "PyPI"
+            - cell "–"
+            - cell "–"
+          - row "Debian – –":
+            - rowheader "Debian"
+            - cell "–"
+            - cell "–"
+          - row "kernel.org – –":
+            - rowheader "kernel.org"
+            - cell "–"
+            - cell "–"
+          - row "AWS N. Virginia – –":
+            - rowheader "AWS N. Virginia"
+            - cell "–"
+            - cell "–"
+          - row "AWS Ohio – –":
+            - rowheader "AWS Ohio"
+            - cell "–"
+            - cell "–"
+          - row "AWS N. California – –":
+            - rowheader "AWS N. California"
+            - cell "–"
+            - cell "–"
+          - row "AWS Oregon – –":
+            - rowheader "AWS Oregon"
+            - cell "–"
+            - cell "–"
+          - row "AWS Canada – –":
+            - rowheader "AWS Canada"
+            - cell "–"
+            - cell "–"
+          - row "AWS São Paulo – –":
+            - rowheader "AWS São Paulo"
+            - cell "–"
+            - cell "–"
+          - row "AWS Ireland – –":
+            - rowheader "AWS Ireland"
+            - cell "–"
+            - cell "–"
+          - row "AWS London – –":
+            - rowheader "AWS London"
+            - cell "–"
+            - cell "–"
+          - row "AWS Frankfurt – –":
+            - rowheader "AWS Frankfurt"
+            - cell "–"
+            - cell "–"
+          - row "AWS Stockholm – –":
+            - rowheader "AWS Stockholm"
+            - cell "–"
+            - cell "–"
+          - row "AWS Bahrain – –":
+            - rowheader "AWS Bahrain"
+            - cell "–"
+            - cell "–"
+          - row "AWS Cape Town – –":
+            - rowheader "AWS Cape Town"
+            - cell "–"
+            - cell "–"
+          - row "AWS Mumbai – –":
+            - rowheader "AWS Mumbai"
+            - cell "–"
+            - cell "–"
+          - row "AWS Singapore – –":
+            - rowheader "AWS Singapore"
+            - cell "–"
+            - cell "–"
+          - row "AWS Sydney – –":
+            - rowheader "AWS Sydney"
+            - cell "–"
+            - cell "–"
+          - row "AWS Tokyo – –":
+            - rowheader "AWS Tokyo"
+            - cell "–"
+            - cell "–"
+          - row "AWS Seoul – –":
+            - rowheader "AWS Seoul"
+            - cell "–"
+            - cell "–"
+    - region "Results":
+      - heading "Results" [level=2]
+      - list:
+        - listitem:
+          - time: 14:31:00
+          - paragraph:
+            - text: Browser median
+            - strong: 2 ms
+            - text: Server median
+            - strong: –
+            - text: 1 of 37 answered
+          - group:
+            - text: All endpoints
+            - table:
+              - rowgroup:
+                - row "Endpoint Browser Server":
+                  - columnheader "Endpoint"
+                  - columnheader "Browser"
+                  - columnheader "Server"
+              - rowgroup:
+                - row "This site 2 ms –":
+                  - rowheader "This site"
+                  - cell "2 ms"
+                  - cell "–"
+                - row "Cloudflare – –":
+                  - rowheader "Cloudflare"
+                  - cell "–"
+                  - cell "–"
+                - row "Cloudflare 1.1.1.1 – –":
+                  - rowheader "Cloudflare 1.1.1.1"
+                  - cell "–"
+                  - cell "–"
+                - row "Google – –":
+                  - rowheader "Google"
+                  - cell "–"
+                  - cell "–"
+                - row "Google Static – –":
+                  - rowheader "Google Static"
+                  - cell "–"
+                  - cell "–"
+                - row "Google Public DNS – –":
+                  - rowheader "Google Public DNS"
+                  - cell "–"
+                  - cell "–"
+                - row "Apple – –":
+                  - rowheader "Apple"
+                  - cell "–"
+                  - cell "–"
+                - row "Microsoft – –":
+                  - rowheader "Microsoft"
+                  - cell "–"
+                  - cell "–"
+                - row "Mozilla – –":
+                  - rowheader "Mozilla"
+                  - cell "–"
+                  - cell "–"
+                - row "GitHub – –":
+                  - rowheader "GitHub"
+                  - cell "–"
+                  - cell "–"
+                - row "Wikipedia – –":
+                  - rowheader "Wikipedia"
+                  - cell "–"
+                  - cell "–"
+                - row "example.com – –":
+                  - rowheader "example.com"
+                  - cell "–"
+                  - cell "–"
+                - row "Fastly – –":
+                  - rowheader "Fastly"
+                  - cell "–"
+                  - cell "–"
+                - row "Akamai – –":
+                  - rowheader "Akamai"
+                  - cell "–"
+                  - cell "–"
+                - row "jsDelivr – –":
+                  - rowheader "jsDelivr"
+                  - cell "–"
+                  - cell "–"
+                - row "npm registry – –":
+                  - rowheader "npm registry"
+                  - cell "–"
+                  - cell "–"
+                - row "NuGet – –":
+                  - rowheader "NuGet"
+                  - cell "–"
+                  - cell "–"
+                - row "PyPI – –":
+                  - rowheader "PyPI"
+                  - cell "–"
+                  - cell "–"
+                - row "Debian – –":
+                  - rowheader "Debian"
+                  - cell "–"
+                  - cell "–"
+                - row "kernel.org – –":
+                  - rowheader "kernel.org"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS N. Virginia – –":
+                  - rowheader "AWS N. Virginia"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Ohio – –":
+                  - rowheader "AWS Ohio"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS N. California – –":
+                  - rowheader "AWS N. California"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Oregon – –":
+                  - rowheader "AWS Oregon"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Canada – –":
+                  - rowheader "AWS Canada"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS São Paulo – –":
+                  - rowheader "AWS São Paulo"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Ireland – –":
+                  - rowheader "AWS Ireland"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS London – –":
+                  - rowheader "AWS London"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Frankfurt – –":
+                  - rowheader "AWS Frankfurt"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Stockholm – –":
+                  - rowheader "AWS Stockholm"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Bahrain – –":
+                  - rowheader "AWS Bahrain"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Cape Town – –":
+                  - rowheader "AWS Cape Town"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Mumbai – –":
+                  - rowheader "AWS Mumbai"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Singapore – –":
+                  - rowheader "AWS Singapore"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Sydney – –":
+                  - rowheader "AWS Sydney"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Tokyo – –":
+                  - rowheader "AWS Tokyo"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Seoul – –":
+                  - rowheader "AWS Seoul"
+                  - cell "–"
+                  - cell "–"
+    - region "Leaderboard":
+      - heading "Leaderboard" [level=2]
+      - paragraph: The 10 lowest and highest medians seen. A median only counts when at least half of the endpoints answered on that side.
+      - region "Fastest browsers":
+        - heading "Fastest browsers" [level=3]
+        - paragraph: No browser results yet.
+        - list
+      - region "Slowest browsers":
+        - heading "Slowest browsers" [level=3]
+        - paragraph: No browser results yet.
+        - list
+      - region "Fastest server runs":
+        - heading "Fastest server runs" [level=3]
+        - paragraph: No server results yet.
+        - list
+      - region "Slowest server runs":
+        - heading "Slowest server runs" [level=3]
+        - paragraph: No server results yet.
+        - list
+    - region "Jackpots":
+      - heading "Jackpots" [level=2]
+      - paragraph: A browser or server median under 10 ms wins; 100 ms or more loses. The newest 50 of each are kept.
+      - region "Winners":
+        - heading "Winners" [level=3]
+        - paragraph: Nobody yet. Probably nobody ever.
+        - list
+      - region "Losers":
+        - heading "Losers" [level=3]
+        - paragraph: Nobody yet. Hopefully nobody ever.
+        - list
+  - contentinfo:
+    - text: Server time
+    - time: 2026-11-02 14:31:30 UTC
+    - link "Source code":
+      - /url: https://github.com/kusl/chaos-velixir-run
+    - text: AGPL-3.0-or-later
+  - paragraph: "New latency result: browser median 2 ms, server median –."
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, FrameExpectOptions expectOptions, Object expected, String message, String title) in /_/src/Playwright/Core/AssertionsBase.cs:95
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, ExpectedTextValue[] expectedText, Object expected, String message, String title, FrameExpectOptions options) in /_/src/Playwright/Core/AssertionsBase.cs:69
+    at Chaos.E2E.LatencyTests.ATestReachesEveryoneAndUnlocksAutoRun() in /work/tests/Chaos.E2E/LatencyTests.cs:42
+    at Chaos.E2E.LatencyTests.ATestReachesEveryoneAndUnlocksAutoRun() in /work/tests/Chaos.E2E/LatencyTests.cs:44
+    at Chaos.E2E.LatencyTests.ATestReachesEveryoneAndUnlocksAutoRun() in /work/tests/Chaos.E2E/LatencyTests.cs:44
+    --- End of stack trace from previous location ---
+/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) failed with 1 error(s) (1m 09s 606ms)
+Exit code: 2
+
+Test run summary: Failed!
+  total: 32
+  failed: 1
+  succeeded: 31
+  skipped: 0
+  duration: 1m 09s 756ms
+
+Ran 6 commands
+The fault was in the test I added, not in the app. Both test pages run from the same network address, and the test config lets each network start one test per second. With every outside request blocked, the first test finishes in a few milliseconds. So the second page clicked “Run test” less than a second after the first test started, and the server refused it with “A test ran from your network recently”. That message cleared itself after 6 seconds, which is why the failure snapshot shows an empty status and an enabled button.
+
+I reproduced it against the app here. Clicking straight away gave that refusal and no second test; waiting 1.5 seconds first made the second test run and land. The fix is that 1.5-second wait before the second page clicks, the same wait the new canvas test uses. Only this file changes; I haven’t re-run the full end-to-end suite.
+
+tests/Chaos.E2E/LatencyTests.cs
+
+csharp
+using Microsoft.Playwright;
+using static Microsoft.Playwright.Assertions;
+
+namespace Chaos.E2E;
+
+public sealed class LatencyTests(BrowserFixture browser) : IClassFixture<BrowserFixture>
+{
+    [Fact]
+    public async Task ATestReachesEveryoneAndUnlocksAutoRun()
+    {
+        await using var firstContext = await OfflineContextAsync();
+        await using var secondContext = await OfflineContextAsync();
+        var tester = await firstContext.NewPageAsync();
+        await tester.GotoAsync("/about");
+        await tester.EvaluateAsync("() => localStorage.setItem('chaos-latency-runs', '9')");
+        await OpenAsync(tester);
+        var watcher = await secondContext.NewPageAsync();
+        await OpenAsync(watcher);
+
+        var auto = tester.GetByRole(AriaRole.Button, new() { Name = "Auto run" });
+        await Expect(auto).ToBeHiddenAsync();
+        await tester.GetByRole(AriaRole.Button, new() { Name = "Run test" }).ClickAsync();
+
+        var mine = tester.Locator("#latency-feed .msg.mine").First;
+        await Expect(mine).ToBeVisibleAsync(new() { Timeout = 30_000 });
+        await Expect(auto).ToBeVisibleAsync();
+        await Expect(tester.Locator(".probe .status")).ToHaveTextAsync("Done. Your result is at the top of the list.");
+        await Expect(tester.Locator(".probe tr[data-key='chaos'] .browser")).ToHaveTextAsync(new System.Text.RegularExpressions.Regex("^\\d+ ms$"));
+
+        var id = await mine.GetAttributeAsync("data-id") ?? throw new InvalidOperationException("The result has no id.");
+        var seen = watcher.Locator($"#latency-feed .msg[data-id='{id}']");
+        await Expect(seen).ToBeVisibleAsync();
+        await Expect(seen.Locator(".yours")).ToHaveCountAsync(0);
+        await seen.Locator("summary").ClickAsync();
+        await Expect(seen.Locator("tbody tr")).ToHaveCountAsync(await tester.Locator(".probe tbody tr").CountAsync());
+        await Expect(watcher.Locator("#latency-browser-fastest-empty")).ToBeVisibleAsync();
+        await Expect(watcher.Locator("#latency-jackpot-winners-empty")).ToBeVisibleAsync();
+
+        await watcher.WaitForTimeoutAsync(1500);
+        var run = watcher.GetByRole(AriaRole.Button, new() { Name = "Run test" });
+        await Expect(run).ToBeEnabledAsync(new() { Timeout = 10_000 });
+        await run.ClickAsync();
+        await Expect(watcher.Locator("#latency-feed .msg.mine").First).ToBeVisibleAsync(new() { Timeout = 30_000 });
+        await Expect(watcher.Locator(".probe .status")).ToHaveTextAsync("Done. Your result is at the top of the list.");
+        await Expect(tester.Locator(".probe .status")).ToBeEmptyAsync();
+    }
+
+    private async Task<IBrowserContext> OfflineContextAsync()
+    {
+        var context = await browser.NewContextAsync();
+        await context.RouteAsync(url => !url.StartsWith(BrowserFixture.BaseUrl, StringComparison.Ordinal), route => route.AbortAsync());
+        return context;
+    }
+
+    private static async Task OpenAsync(IPage page)
+    {
+        await page.GotoAsync("/latency");
+        await Expect(page.Locator(".probe[data-ready]")).ToBeVisibleAsync();
+    }
+}
+
+Automatically approve is on. Claude runs on its own and pauses if anything looks unsafe. This includes using your connectors and Claude in Chrome, unless you turn them off. Learn more
+
+
+Claude finished the response
+
+
+chaos-velixir-run-update.tar.gz
+
+chaos-velixir-run
+2 documents read
+
+28
+10
+
+
+
+
+
+
+
+
+

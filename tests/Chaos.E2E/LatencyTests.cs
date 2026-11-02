@@ -36,6 +36,7 @@ public sealed class LatencyTests(BrowserFixture browser) : IClassFixture<Browser
         await Expect(watcher.Locator("#latency-browser-fastest-empty")).ToBeVisibleAsync();
         await Expect(watcher.Locator("#latency-jackpot-winners-empty")).ToBeVisibleAsync();
 
+        await watcher.WaitForTimeoutAsync(1500);
         var run = watcher.GetByRole(AriaRole.Button, new() { Name = "Run test" });
         await Expect(run).ToBeEnabledAsync(new() { Timeout = 10_000 });
         await run.ClickAsync();
