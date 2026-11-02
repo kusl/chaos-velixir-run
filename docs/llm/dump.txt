@@ -1,12 +1,12 @@
 ===============================================================================
 PROJECT EXPORT
-Generated (UTC): 2026-11-02 13:47:04
+Generated (UTC): 2026-11-02 14:33:02
 Project Path:    /home/kushal/src/dotnet/chaos-velixir-run
-Git Commit:      1990c70945422699a6736de43f9302de3802542b
+Git Commit:      77d32326bc8c9a9fe29a240fddf91969905157bf
 Git Branch:      main
 Git Dirty:       no
 .NET SDK:        10.0.113
-Files Exported:  196
+Files Exported:  212
 ===============================================================================
 
 DIRECTORY STRUCTURE (exported files only):
@@ -51,6 +51,7 @@ DIRECTORY STRUCTURE (exported files only):
             0021-server-clock.md
             0022-message-details.md
             0023-postcards.md
+            0024-reading.md
             README.md
     global.json
     scripts/
@@ -107,6 +108,9 @@ DIRECTORY STRUCTURE (exported files only):
                     NotFound.razor
                     PostcardPage.razor
                     PostcardPage.razor.css
+                    ReadPage.razor
+                    ReadPage.razor.css
+                    ReadPage.razor.js
                     SlotResult.razor
                     SlotsPage.razor
                     SlotsPage.razor.css
@@ -179,6 +183,12 @@ DIRECTORY STRUCTURE (exported files only):
             Program.cs
             Properties/
                 launchSettings.json
+            Reading/
+                Article.cs
+                ArticleBlock.cs
+                ArticleEntry.cs
+                ArticleLibrary.cs
+                ArticleText.cs
             Slots/
                 ISlotSubscriber.cs
                 SlotPress.cs
@@ -200,9 +210,13 @@ DIRECTORY STRUCTURE (exported files only):
             Chaos.E2E.csproj
             LatencyTests.cs
             PostcardTests.cs
+            ReadTests.cs
             SiteTests.cs
             SlotTests.cs
         Chaos.Web.Tests/
+            ArticleLibraryTests.cs
+            ArticleSamples.cs
+            ArticleTextTests.cs
             BoardServiceTests.cs
             CanvasPersistenceTests.cs
             CanvasServiceTests.cs
@@ -218,6 +232,7 @@ DIRECTORY STRUCTURE (exported files only):
             MessageTextTests.cs
             OutboxTests.cs
             PostcardServiceTests.cs
+            ReadPageTests.cs
             SlotRulesTests.cs
             SlotServiceTests.cs
             TestSupport.cs
@@ -230,7 +245,9 @@ DIRECTORY STRUCTURE (exported files only):
             latency.test.js
             package.json
             postcard.test.js
+            read.test.js
             slots.test.js
+            status.test.js
             vitest.config.mjs
 
 
@@ -484,21 +501,22 @@ MODIFIED: 2026-10-31 02:50:52 (UTC)
 
 ================================================================================
 FILE:     README.md
-SIZE:     4.02 KB (4116 bytes)
-LINES:    47
-SHA256:   a23babbd3ec776c87499db2088fe8165d5243f5e7219b34b6727ffeb6a57ab29
-MODIFIED: 2026-10-31 22:55:44 (UTC)
+SIZE:     4.25 KB (4348 bytes)
+LINES:    48
+SHA256:   f4b2da21a174f295bcaa6b1c2f33e47d16a0a046475aa072e119ef0300c45fd8
+MODIFIED: 2026-11-02 14:24:33 (UTC)
 ================================================================================
 
 # chaos-velixir-run
 
-A message board, a one-at-a-time postcard, a shared drawing canvas, a shared slot machine and a shared latency test that everyone sees live and nobody keeps. Blazor Server on .NET 10, on the [velixir](https://velixir.net) free plan (0.25 vCPU, 256 MB). Live at https://chaos.velixir.run/.
+A message board, a one-at-a-time postcard, a shared drawing canvas, a shared slot machine and a shared latency test that everyone sees live and nobody keeps, plus a random article to read. Blazor Server on .NET 10, on the [velixir](https://velixir.net) free plan (0.25 vCPU, 256 MB). Live at https://chaos.velixir.run/.
 
 - Board: the server keeps the newest 50 messages; each browser keeps up to 10,000 in IndexedDB and offers its newest 50 back after a server restart. Dotted border means the server no longer has it. Your own posts show `Your message` (this browser only). Optional: after the poster opts in and grants geolocation, each post carries a collapsed `Details` list with the browser's location, time zone and device details. No lookups, no third parties, no IP stored.
 - Postcard: the server keeps one postcard, the newest: up to 5,000 characters and up to 4 PNG, JPEG or GIF images (2 MB each, 4 MB total). The server strips image metadata except JPEG rotation; browsers scale big photos down first. Each browser keeps up to 10,000 postcards and 256 MB of their images in IndexedDB, and offers its newest back after a server restart. Location details and `Your message` as on the board.
 - Canvas: one black pen on a shared square page, live for everyone, one reset button. Browsers keep finished strokes (10,000) and the latest reset, and offer back up to 500 strokes after a server restart.
 - Slots: one shared machine. A press draws five symbols (A–Z, 0–9) on the server and locks the button for everyone until the reels stop. Three of a kind or a five-symbol straight wins. Four or five of a kind, or an unbroken sequence along `0-9A-Z` (`ABCDE`, `43210`), is a jackpot: everyone watching sees a celebration, and jackpots are never deleted, on the server or in the browser. Results are kept like board messages, plus the newest 500 winners. Tapping a winner shows its odds and the probability behind them. Ten successful presses unlock auto spin, which also runs in background tabs.
 - Latency: one button times public endpoints from the browser and from the server. One test at a time, one per network every 5 minutes. Results are kept like board messages, without identity. Below them: the 10 fastest and slowest browser and server medians, then jackpots (a median under 10 ms wins, 100 ms or more loses). Browsers offer back their own 10 best and worst of each after a restart. Ten tests unlock auto run.
+- Read: `/read` redirects to a random article from `wwwroot/nytimes.txt` at `/read/{id}`. The browser lists what it opened (IndexedDB, 1,000). A missing file or article shows a notice, never an error.
 - Every page footer shows the ticking server time.
 - No third-party code, no cookies, no accounts. Strict CSP with no inline scripts; `img-src` adds `blob:` for stored postcard images and `connect-src` lists the latency endpoints.
 
@@ -592,10 +610,10 @@ Decisions that were ambiguous in the brief, or that trade one property for anoth
 
 ================================================================================
 FILE:     docs/adr/0002-rendering-model.md
-SIZE:     1.53 KB (1564 bytes)
-LINES:    10
-SHA256:   4b918c2f595f78d457afd26cf0c227bd7eb701701193d105695f26966d61c5dc
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     2.11 KB (2156 bytes)
+LINES:    13
+SHA256:   980963e0cf8253937511944cbd9db4bd7cde3f465c646eac64c36ed144450c5d
+MODIFIED: 2026-11-02 14:26:27 (UTC)
 ================================================================================
 
 # 0002 Static SSR with interactive islands
@@ -607,6 +625,9 @@ Status: accepted
 - The board, slots and latency feeds are rendered by the static page and then owned by the island's JavaScript module. It is marked `data-permanent` so enhanced navigation does not overwrite it. Up to 10,000 local messages never enter a server render tree.
 - Enhanced navigation morphs elements of the old page into the new one by tag and position. JavaScript never writes into page markup outside an island or a `data-permanent` element: the board once announced into a trailing `<p>` that became the canvas page's note. Screen reader announcements go to one `#announcer` in the layout (`data-permanent`, cleared on `enhancedload`), and modules stop announcing once disposed or detached.
 - The compose form and the reset button are Blazor-rendered. The character count is an empty island element that JavaScript fills on `input`; the island asks for a recount after a post clears the box. Drawing, IndexedDB and the slot machine controls are JavaScript; `SlotIsland` renders its markup once and never re-renders.
+- `/read` is static too. Its history list is `data-permanent` and filled by `Pages/ReadPage.razor.js`, which `App.razor.js` imports (ADR 0024).
+- Status lines under the slot machine and the latency button belong to one spin or test. A new spin, a new result or another visitor's test clears them; other notices clear after 6 s (`StatusLine` in `BoardIsland.razor.js`). The canvas notice clears when anyone resets.
+- Layout: no page scrolls sideways from 320 px up. Below 48 rem the main nav takes its own row and wraps; user text uses `overflow-wrap: anywhere`, everything else `break-word`.
 - No bUnit: components are thin; logic lives in services tested directly, and the pages are covered by integration and Playwright tests.
 
 
@@ -653,23 +674,23 @@ Status: accepted
 
 ================================================================================
 FILE:     docs/adr/0005-local-history.md
-SIZE:     1.36 KB (1397 bytes)
+SIZE:     1.41 KB (1440 bytes)
 LINES:    12
-SHA256:   fda113d203445e5341c7237c06d830e4f921ac8bca0c3e83128d150fa45d0bd9
-MODIFIED: 2026-10-31 22:55:39 (UTC)
+SHA256:   77031b8d1ebbbc17756ad657df0704ad9881235de9a473de44c280c49b8c0de5
+MODIFIED: 2026-11-02 14:24:33 (UTC)
 ================================================================================
 
 # 0005 IndexedDB local history
 
 Status: accepted
 
-- Database `chaos-board`, store `messages`, key path `id`, values `{ id, text, meta?, mine? }` (ADR 0022). Slots use `chaos-slots` (v2), store `spins`, values `{ id, text, mine }`, plus an uncapped `jackpots` store (ADR 0019), and latency uses `chaos-latency`, store `runs`, same shape, through the same `LocalHistory` exported by `BoardIsland.razor.js`. The canvas uses `chaos-canvas` (ADR 0006). Postcards use `chaos-postcards` with image blobs (ADR 0023).
+- Database `chaos-board`, store `messages`, key path `id`, values `{ id, text, meta?, mine? }` (ADR 0022). Slots use `chaos-slots` (v2), store `spins`, values `{ id, text, mine }`, plus an uncapped `jackpots` store (ADR 0019), and latency uses `chaos-latency`, store `runs`, same shape, through the same `LocalHistory` exported by `BoardIsland.razor.js`. The canvas uses `chaos-canvas` (ADR 0006). Postcards use `chaos-postcards` with image blobs (ADR 0023). The reader uses `chaos-reading` (ADR 0024).
 - Schema changes are numbered migrations in `BoardIsland.razor.js`; `onupgradeneeded` runs every step from the stored version. A database from a newer schema (`VersionError`) is deleted and recreated, since the server can refill it.
 - Other tabs close their connection on `versionchange`, so upgrades and deletes are not blocked for long.
 - Cap: 10,000 messages. After each write, the oldest are deleted with one key-range delete.
 - The feed shows the server window plus 100 archived messages, with a button for 100 more. Items use `content-visibility: auto`.
 - Live messages have a solid border, messages the server no longer has a dotted one.
-- The About page deletes all five databases and the slot and latency counters without touching the theme. The next visit to the board recreates it from the server snapshot.
+- The About page deletes all six databases and the slot and latency counters without touching the theme. The next visit to the board recreates it from the server snapshot.
 - If IndexedDB is unavailable the board still works, without history.
 
 
@@ -1078,11 +1099,32 @@ Status: accepted
 
 
 ================================================================================
+FILE:     docs/adr/0024-reading.md
+SIZE:     1.97 KB (2021 bytes)
+LINES:    11
+SHA256:   560eb99280e5e278338ffe62312b40aefbcc16d3809233695df74abbc842f2a4
+MODIFIED: 2026-11-02 14:17:47 (UTC)
+================================================================================
+
+# 0024 Random article reader
+
+Status: accepted
+
+- `/read` is a static SSR page with no circuit. It redirects (302) to `/read/{id}` for a random article, so every article has a stable address and enhanced navigation shows the final URL. With no articles it renders a notice instead.
+- Source: `wwwroot/nytimes.txt` (`Chaos:ArticlesFile`), plain UTF-8, also served as a static file. Records start with a header between two `=` rules (20 or more, up to 6 header lines). Inside: optional `SUMMARY` paragraph, `ARTICLE`, then a head paragraph (title, optional dek, `By …`, `Published yyyy-MM-dd HH:mm UTC`, source URL, matched from the end) and body paragraphs split by blank lines. Paragraphs whose every line starts with `- `, `• `, `* ` render as lists; other line breaks are kept. A file with no rules is one article.
+- Id: first 12 hex digits of SHA-256 of the source URL, or of title and body without one. Stable across reordering and edits elsewhere in the file. The first record wins on duplicate ids.
+- `ArticleLibrary` indexes the file once (offset and length per id, about 50 KB for 500 articles), then reads and parses one record per request. It re-indexes when the file's length or modified time changes, treats a missing, unreadable or over-64 MB file as empty, and returns nothing rather than throwing. A record that no longer parses to its id is dropped and the index rebuilt.
+- Unknown or removed ids render "Not available" with a link to a random article (200, so the history list still renders).
+- Reading history lives only in the browser: IndexedDB `chaos-reading` v1, store `articles`, key `id`, values `{ id, title, byline, published, first, last, reads }`, capped at 1,000 by least recent `last`. `App.razor.js` imports `Pages/ReadPage.razor.js` on load and `enhancedload` when `#reading-history` exists. The list is `data-permanent` and only written by that module.
+- Typography: serif stack, 17–19 px, line height 1.7, 38 rem measure, hyphenation in the body, solid background behind the text.
+
+
+================================================================================
 FILE:     docs/adr/README.md
-SIZE:     1.49 KB (1530 bytes)
-LINES:    27
-SHA256:   671cd8c68768677ee7e3b9d84e99291d42656745281a5d4b15d598dd3c5b7307
-MODIFIED: 2026-10-31 22:55:39 (UTC)
+SIZE:     1.54 KB (1582 bytes)
+LINES:    28
+SHA256:   ea390088c6d6af354f30a0bc3a7e5368c5205c7c06cbdddc9c8d0119cbbe254d
+MODIFIED: 2026-11-02 14:24:33 (UTC)
 ================================================================================
 
 # Architecture decision records
@@ -1112,6 +1154,7 @@ MODIFIED: 2026-10-31 22:55:39 (UTC)
 | [0021](0021-server-clock.md) | Server clock in the footer |
 | [0022](0022-message-details.md) | Optional location and browser details on board messages |
 | [0023](0023-postcards.md) | Postcards: one long message with images |
+| [0024](0024-reading.md) | Random article reader |
 
 
 ================================================================================
@@ -1728,10 +1771,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/App.razor
-SIZE:     0.86 KB (876 bytes)
+SIZE:     0.89 KB (907 bytes)
 LINES:    23
-SHA256:   087281ee224921000ed25d6aa9d2619495e90e0e9ae54340db59ee952d9e3c02
-MODIFIED: 2026-10-31 22:45:41 (UTC)
+SHA256:   e82224a302c270d2c7205abf94605602191240bcb78aabdc991379c4cd1e96b4
+MODIFIED: 2026-11-02 14:24:33 (UTC)
 ================================================================================
 
 <!DOCTYPE html>
@@ -1741,7 +1784,7 @@ MODIFIED: 2026-10-31 22:45:41 (UTC)
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <meta name="description" content="A message board, a one-at-a-time postcard, a drawing canvas, a slot machine and a latency test that everyone shares and nobody keeps." />
+    <meta name="description" content="A message board, a one-at-a-time postcard, a drawing canvas, a slot machine and a latency test that everyone shares and nobody keeps, plus a random article to read." />
     <base href="/" />
     <script src="@Assets["theme-init.js"]"></script>
     <link rel="stylesheet" href="@Assets["app.css"]" />
@@ -1761,10 +1804,10 @@ MODIFIED: 2026-10-31 22:45:41 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/App.razor.js
-SIZE:     10.23 KB (10477 bytes)
-LINES:    318
-SHA256:   88f45962bd3ecd32a0f045e616d88cc5242ca5ac5d00b3a0cbaf6f1d2f95b87f
-MODIFIED: 2026-10-31 22:45:31 (UTC)
+SIZE:     10.58 KB (10839 bytes)
+LINES:    328
+SHA256:   0de21ac8590c653efe7c2d33ea38b64526c72fac93d752025e3a426289742e96
+MODIFIED: 2026-11-02 14:24:33 (UTC)
 ================================================================================
 
 export const THEME_KEY = 'chaos-theme';
@@ -1997,14 +2040,16 @@ export function boot(win) {
                 { DB_NAME: CANVAS_DB },
                 { DB_NAME: LATENCY_DB, RUNS_KEY, NEXT_KEY },
                 { DB_NAME: POSTCARD_DB },
+                { DB_NAME: READING_DB },
             ] = await Promise.all([
                 import('./Islands/BoardIsland.razor.js'),
                 import('./Islands/SlotIsland.razor.js'),
                 import('./Islands/CanvasIsland.razor.js'),
                 import('./Islands/LatencyIsland.razor.js'),
                 import('./Islands/PostcardIsland.razor.js'),
+                import('./Pages/ReadPage.razor.js'),
             ]);
-            const outcomes = await Promise.all([BOARD_DB, POSTCARD_DB, SLOTS_DB, CANVAS_DB, LATENCY_DB].map(name => deleteDatabase(win.indexedDB, name)));
+            const outcomes = await Promise.all([BOARD_DB, POSTCARD_DB, SLOTS_DB, CANVAS_DB, LATENCY_DB, READING_DB].map(name => deleteDatabase(win.indexedDB, name)));
             for (const key of [SHARE_KEY, PRESS_KEY, RUNS_KEY, NEXT_KEY]) {
                 try {
                     win.localStorage.removeItem(key);
@@ -2013,7 +2058,7 @@ export function boot(win) {
             }
             if (output) {
                 output.textContent = outcomes.includes('blocked')
-                    ? 'Close any other board, postcard, canvas, slots or latency tabs to finish clearing.'
+                    ? 'Close any other board, postcard, canvas, slots, latency or reading tabs to finish clearing.'
                     : 'Local history cleared.';
             }
         } catch {
@@ -2063,6 +2108,13 @@ export function boot(win) {
     const clock = new ServerClock(win);
     clock.start();
 
+    const trackReading = () => {
+        if (doc.getElementById('reading-history')) {
+            import('./Pages/ReadPage.razor.js').then(module => module.track(win)).catch(() => {});
+        }
+    };
+    trackReading();
+
     const afterNavigation = () => {
         applyStoredTheme();
         const announcer = doc.getElementById('announcer');
@@ -2070,6 +2122,7 @@ export function boot(win) {
             announcer.textContent = '';
         }
         clock.render();
+        trackReading();
     };
 
     return win.Blazor.start({
@@ -2390,10 +2443,10 @@ textarea:disabled {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/BoardIsland.razor.js
-SIZE:     28.24 KB (28919 bytes)
-LINES:    882
-SHA256:   843de9e73fd34552b8860e89a2d1962ae8e142fc531db095a6b046b3c86bee89
-MODIFIED: 2026-10-31 22:39:36 (UTC)
+SIZE:     29.78 KB (30498 bytes)
+LINES:    947
+SHA256:   70603fe6dacd6c49063ce3c4d0bb97d767f6bb586f64bb24c95697cbb60a88fc
+MODIFIED: 2026-11-02 14:24:33 (UTC)
 ================================================================================
 
 export const DB_NAME = 'chaos-board';
@@ -2525,6 +2578,71 @@ export function announce(doc, text) {
     const announcer = doc.getElementById('announcer');
     if (announcer) {
         announcer.textContent = text;
+    }
+}
+
+export const NOTICE_MS = 6000;
+export const REPEAT_MS = 120;
+
+export class StatusLine {
+    constructor(element, timers, ms = NOTICE_MS) {
+        this.element = element ?? null;
+        this.timers = timers;
+        this.ms = ms;
+        this.owner = null;
+        this.timer = 0;
+        this.pending = 0;
+    }
+
+    show(text, owner = null, ms = owner === null ? this.ms : 0) {
+        this.cancel();
+        this.owner = text ? owner : null;
+        if (!this.element) {
+            return;
+        }
+        if (text && this.element.textContent === text) {
+            this.element.textContent = '';
+            this.pending = this.timers.setTimeout(() => {
+                this.pending = 0;
+                this.element.textContent = text;
+            }, REPEAT_MS);
+        } else {
+            this.element.textContent = text;
+        }
+        if (text && ms > 0) {
+            this.timer = this.timers.setTimeout(() => this.clear(), ms);
+        }
+    }
+
+    clear() {
+        this.cancel();
+        this.owner = null;
+        if (this.element) {
+            this.element.textContent = '';
+        }
+    }
+
+    release(owner) {
+        if (this.owner !== null && this.owner === owner) {
+            this.clear();
+        }
+    }
+
+    supersede(owner) {
+        if (this.owner !== null && this.owner !== owner) {
+            this.clear();
+        }
+    }
+
+    cancel() {
+        this.timers.clearTimeout(this.timer);
+        this.timers.clearTimeout(this.pending);
+        this.timer = 0;
+        this.pending = 0;
+    }
+
+    dispose() {
+        this.cancel();
     }
 }
 
@@ -3282,10 +3400,10 @@ export function attach(dotnet) {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/CanvasIsland.razor
-SIZE:     5.40 KB (5530 bytes)
-LINES:    177
-SHA256:   67cb3c3ec476bc933ed17fbb54d8c65ebbb7bb357a776e08d53359853935ee48
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     5.60 KB (5735 bytes)
+LINES:    188
+SHA256:   710803dd20339afb64f8c5216c4f17e26628b99ff3b2abcd142e76aa67ca102b
+MODIFIED: 2026-11-02 14:25:37 (UTC)
 ================================================================================
 
 @implements IAsyncDisposable
@@ -3434,9 +3552,20 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
     private async Task SendAsync(IReadOnlyList<CanvasUpdate> batch, CancellationToken cancellationToken)
     {
         await _attached.Task.WaitAsync(cancellationToken);
-        await InvokeAsync(() => _client is null
-            ? Task.FromException(new InvalidOperationException("The canvas module is not attached."))
-            : _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask());
+        await InvokeAsync(() =>
+        {
+            if (_client is null)
+            {
+                return Task.FromException(new InvalidOperationException("The canvas module is not attached."));
+            }
+
+            if (batch.Any(update => update.Kind == "reset"))
+            {
+                SetStatus(null);
+            }
+
+            return _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask();
+        });
     }
 
     private async Task StopAsync()
@@ -4482,13 +4611,13 @@ tbody th {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/LatencyIsland.razor.js
-SIZE:     29.28 KB (29978 bytes)
-LINES:    853
-SHA256:   d5bf28fe48967432dc484aa72ebdcded05c4ac8a0538d937458c488c1d0736a0
-MODIFIED: 2026-10-29 19:43:14 (UTC)
+SIZE:     29.56 KB (30271 bytes)
+LINES:    856
+SHA256:   aa8892239b29df9b21b572aa29658adbd73374c084fb1b55708d19a0718f3582
+MODIFIED: 2026-11-02 14:24:33 (UTC)
 ================================================================================
 
-import { LocalHistory, OFFER_LIMIT, PAGE_SIZE, announce, chunkOffers, isoOf, labelOf, needsResync, newestFirst } from './BoardIsland.razor.js';
+import { LocalHistory, OFFER_LIMIT, PAGE_SIZE, StatusLine, announce, chunkOffers, isoOf, labelOf, needsResync, newestFirst } from './BoardIsland.razor.js';
 
 export const DB_NAME = 'chaos-latency';
 export const DB_VERSION = 1;
@@ -4794,7 +4923,7 @@ class LatencyClient {
         this.labels = new Map(this.endpoints.map(endpoint => [endpoint.key, endpoint.label]));
         this.runButton = panel.querySelector('.run');
         this.autoButton = panel.querySelector('.auto');
-        this.status = panel.querySelector('.status');
+        this.status = new StatusLine(panel.querySelector('.status'), win);
         this.progress = panel.querySelector('.progress');
         this.feed = doc.getElementById('latency-feed');
         this.empty = doc.getElementById('latency-empty');
@@ -4916,6 +5045,9 @@ class LatencyClient {
                 return;
             }
             this.running = update.running === true;
+            if (this.running && !this.testing && this.waiting === null) {
+                this.status.supersede(null);
+            }
             if (update.kind === 'snapshot') {
                 await this.snapshot(update);
                 await this.board(update.boards, true);
@@ -4979,6 +5111,7 @@ class LatencyClient {
             } else {
                 this.insert(message, true);
                 fresh.push(message);
+                this.status.supersede(message.id);
             }
             this.landed(message);
         }
@@ -5063,7 +5196,7 @@ class LatencyClient {
                 endpoint.serverCell.textContent = ms(result?.server ?? null);
             }
         }
-        this.setStatus('Done. Your result is at the top of the list.');
+        this.status.show('Done. Your result is at the top of the list.', message.id);
     }
 
     clearTable() {
@@ -5088,13 +5221,13 @@ class LatencyClient {
         }
         if (now < this.next) {
             if (manual) {
-                this.setStatus(`You can run the next test in ${clockText(this.next - now)}.`);
+                this.status.show(`You can run the next test in ${clockText(this.next - now)}.`);
             }
             return;
         }
         if (this.running) {
             if (manual) {
-                this.setStatus('Someone else is testing right now. Try again in a few seconds.');
+                this.status.show('Someone else is testing right now. Try again in a few seconds.');
             }
             return;
         }
@@ -5112,12 +5245,14 @@ class LatencyClient {
             await this.test(reply);
         } else if (reply.kind === 'busy') {
             this.retryAt = Date.now() + 10000 + Math.round(Math.random() * 20000);
-            this.setStatus(manual ? 'Someone else is testing right now. Try again in a few seconds.' : '');
+            if (manual) {
+                this.status.show('Someone else is testing right now. Try again in a few seconds.');
+            }
         } else if (reply.kind === 'wait') {
             this.setNext(Date.now() + reply.seconds * 1000);
-            this.setStatus(`A test ran from your network recently. Devices sharing an internet connection share this limit. The next one is possible in ${clockText(reply.seconds * 1000)}.`);
+            this.status.show(`A test ran from your network recently. Devices sharing an internet connection share this limit. The next one is possible in ${clockText(reply.seconds * 1000)}.`);
         } else {
-            this.setStatus('Could not reach the server.');
+            this.status.show('Could not reach the server.');
         }
         this.testing = false;
         this.updateControls();
@@ -5131,14 +5266,16 @@ class LatencyClient {
         this.setNext(Date.now() + reply.seconds * 1000);
         this.clearTable();
         let done = 0;
-        this.setStatus(`Testing from your browser: 0 of ${this.endpoints.length}.`);
+        this.status.show(`Testing from your browser: 0 of ${this.endpoints.length}.`, reply.id);
         const results = await measureAll(this.endpoints.map(endpoint => endpoint.url), defaults(this.win), this.budget, (index, result) => {
             done += 1;
             const cell = this.endpoints[index].browserCell;
             if (cell) {
                 cell.textContent = ms(result);
             }
-            this.setStatus(`Testing from your browser: ${done} of ${this.endpoints.length}.`);
+            if (this.waiting === reply.id) {
+                this.status.show(`Testing from your browser: ${done} of ${this.endpoints.length}.`, reply.id);
+            }
         });
         if (this.disposed) {
             return;
@@ -5149,7 +5286,7 @@ class LatencyClient {
         } catch {
         }
         if (this.waiting === reply.id) {
-            this.setStatus(accepted ? 'Your browser is done. Waiting for the server.' : 'The server stopped waiting for this browser. Its own numbers still count.');
+            this.status.show(accepted ? 'Your browser is done. Waiting for the server.' : 'The server stopped waiting for this browser. Its own numbers still count.', reply.id);
         }
     }
 
@@ -5163,7 +5300,7 @@ class LatencyClient {
             return;
         }
         this.auto = !this.auto;
-        this.setStatus(this.auto ? 'Auto run is on. It runs a test whenever one is allowed.' : 'Auto run is off.');
+        this.status.show(this.auto ? 'Auto run is on. It runs a test whenever one is allowed.' : 'Auto run is off.');
         this.updateControls();
     }
 
@@ -5193,12 +5330,6 @@ class LatencyClient {
             this.progress.textContent = this.running && !this.testing && !this.waiting
                 ? 'Someone is running a test right now.'
                 : progressText(this.runs);
-        }
-    }
-
-    setStatus(text) {
-        if (this.status) {
-            this.status.textContent = text;
         }
     }
 
@@ -5326,6 +5457,7 @@ class LatencyClient {
         this.disposed = true;
         this.win.clearInterval(this.timer);
         this.win.clearInterval(this.ticker);
+        this.status.dispose();
         this.runButton?.removeEventListener('click', this.onRun);
         this.autoButton?.removeEventListener('click', this.onAuto);
         this.older?.removeEventListener('click', this.onOlder);
@@ -7233,13 +7365,13 @@ MODIFIED: 2026-10-16 10:30:20 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Islands/SlotIsland.razor.js
-SIZE:     40.52 KB (41495 bytes)
-LINES:    1153
-SHA256:   e7007bd561dab4de95e34021d0afbfab8e9368695bac9346e72826efbc4da03f
-MODIFIED: 2026-10-19 05:28:54 (UTC)
+SIZE:     40.72 KB (41699 bytes)
+LINES:    1154
+SHA256:   b263e9a2c07ad53fcc12246d297ee14d5536f1c33520ac6e4f528f96d5eff49e
+MODIFIED: 2026-11-02 14:24:33 (UTC)
 ================================================================================
 
-import { LocalHistory, OFFER_LIMIT, PAGE_SIZE, announce, chunkOffers, isoOf, labelOf, needsResync, newestFirst } from './BoardIsland.razor.js';
+import { LocalHistory, OFFER_LIMIT, PAGE_SIZE, StatusLine, announce, chunkOffers, isoOf, labelOf, needsResync, newestFirst } from './BoardIsland.razor.js';
 
 export const DB_NAME = 'chaos-slots';
 export const DB_VERSION = 2;
@@ -7619,7 +7751,7 @@ class SlotClient {
         this.strips = this.reels.map(reel => reel.querySelector('.strip'));
         this.spinButton = machine.querySelector('.spin');
         this.autoButton = machine.querySelector('.auto');
-        this.status = machine.querySelector('.status');
+        this.status = new StatusLine(machine.querySelector('.status'), win);
         this.verdict = machine.querySelector('.verdict');
         this.progress = machine.querySelector('.progress');
         this.feed = doc.getElementById('slots-feed');
@@ -7902,6 +8034,7 @@ class SlotClient {
         const duration = Math.max(0, Math.round(remaining));
         const spin = { message, timers: [], animations: [] };
         this.spin = spin;
+        this.status.supersede(message.id);
         this.calm();
         this.machine.classList.remove('win');
         this.machine.classList.add('spinning');
@@ -7954,6 +8087,7 @@ class SlotClient {
             return;
         }
         this.spin = null;
+        this.status.release(spin.message.id);
         for (const timer of spin.timers) {
             this.win.clearTimeout(timer);
         }
@@ -8048,13 +8182,17 @@ class SlotClient {
                 this.win.localStorage.setItem(PRESS_KEY, String(this.presses));
             } catch {
             }
-            this.setStatus('Your press worked. This spin is yours.');
+            if (!this.shown.has(reply.id)) {
+                this.status.show('Your press worked. This spin is yours.', reply.id, this.spinMs * 3);
+            }
         } else if (reply.kind === 'busy') {
-            this.setStatus(manual ? 'Someone else pressed first. Wait for the reels to stop.' : '');
+            if (manual) {
+                this.status.show('Someone else pressed first. Wait for the reels to stop.', this.spin?.message.id ?? null);
+            }
         } else if (reply.kind === 'slow') {
-            this.setStatus('Slow down a little.');
+            this.status.show('Slow down a little.');
         } else {
-            this.setStatus('Could not reach the server.');
+            this.status.show('Could not reach the server.');
         }
         this.updateControls();
         this.scheduleAuto();
@@ -8091,7 +8229,7 @@ class SlotClient {
             return;
         }
         this.auto = !this.auto;
-        this.setStatus(this.auto ? 'Auto spin is on. It keeps going in background tabs.' : 'Auto spin is off.');
+        this.status.show(this.auto ? 'Auto spin is on. It keeps going in background tabs.' : 'Auto spin is off.');
         this.updateControls();
         this.scheduleAuto();
     }
@@ -8118,12 +8256,6 @@ class SlotClient {
         }
         if (this.progress) {
             this.progress.textContent = progressText(this.presses);
-        }
-    }
-
-    setStatus(text) {
-        if (this.status) {
-            this.status.textContent = text;
         }
     }
 
@@ -8358,6 +8490,7 @@ class SlotClient {
         this.disposed = true;
         this.win.clearInterval(this.timer);
         this.win.clearTimeout(this.autoTimer);
+        this.status.dispose();
         this.calm();
         if (this.spin) {
             for (const timer of this.spin.timers) {
@@ -8396,10 +8529,10 @@ export function attach(machine, dotnet) {
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Layout/MainLayout.razor
-SIZE:     1.27 KB (1302 bytes)
-LINES:    41
-SHA256:   d337582e5d0a15030fca06c6fc8cd2f1c97349f7ea0c4bf77fef9c6878c224de
-MODIFIED: 2026-10-31 22:45:31 (UTC)
+SIZE:     1.31 KB (1346 bytes)
+LINES:    42
+SHA256:   d0f5f8e87d13f36597bc19cec7081084796bb413e3000f3b0b727568f0ff0a95
+MODIFIED: 2026-11-02 14:24:33 (UTC)
 ================================================================================
 
 @inherits LayoutComponentBase
@@ -8413,6 +8546,7 @@ MODIFIED: 2026-10-31 22:45:31 (UTC)
         <NavLink href="canvas">Canvas</NavLink>
         <NavLink href="slots">Slots</NavLink>
         <NavLink href="latency">Latency</NavLink>
+        <NavLink href="read">Read</NavLink>
         <NavLink href="about">About</NavLink>
     </nav>
     <ThemeToggle />
@@ -8447,10 +8581,10 @@ MODIFIED: 2026-10-31 22:45:31 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Layout/MainLayout.razor.css
-SIZE:     1.51 KB (1542 bytes)
-LINES:    83
-SHA256:   255e1ddf2fdd44180a4d4564f5dba8e491012562d086cbeccb843bf0ec301038
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     1.95 KB (1996 bytes)
+LINES:    109
+SHA256:   255ce6495a09d1b861e2a87902bb65a7c708f6045f7d13aa65d6d3bb4f4e09d5
+MODIFIED: 2026-11-02 14:24:33 (UTC)
 ================================================================================
 
 .site-header {
@@ -8474,14 +8608,18 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 nav {
     display: flex;
+    flex-wrap: wrap;
     gap: .25rem;
+    min-inline-size: 0;
 }
 
 nav ::deep a {
     padding: .3rem .65rem;
     border-radius: var(--radius);
     color: var(--fg);
+    text-align: center;
     text-decoration: none;
+    white-space: nowrap;
 }
 
 nav ::deep a:hover {
@@ -8492,6 +8630,28 @@ nav ::deep a.active {
     color: var(--ink);
     background: var(--surface);
     font-weight: 650;
+}
+
+@media (width < 48rem) {
+    .site-header {
+        padding-block-end: .5rem;
+    }
+
+    nav {
+        order: 1;
+        flex-basis: 100%;
+    }
+
+    nav ::deep a {
+        flex: 1 1 auto;
+        padding: .55rem .5rem;
+        background: var(--surface);
+    }
+
+    nav ::deep a.active {
+        color: var(--on-ink);
+        background: var(--ink);
+    }
 }
 
 main {
@@ -8670,10 +8830,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Pages/About.razor
-SIZE:     10.07 KB (10312 bytes)
-LINES:    62
-SHA256:   9a648e14002adfba7b8bd5eeb636b3d28a234e9fb22db2417ad37cfa56c9784e
-MODIFIED: 2026-10-31 22:45:47 (UTC)
+SIZE:     10.68 KB (10933 bytes)
+LINES:    64
+SHA256:   704191a5049781eee4e56c023a6738b95165703b6089d5b285f2931f993702a3
+MODIFIED: 2026-11-02 14:24:33 (UTC)
 ================================================================================
 
 @page "/about"
@@ -8698,6 +8858,8 @@ MODIFIED: 2026-10-31 22:45:47 (UTC)
     <dd>Press the button and the shared machine spins for everyone watching. Nobody can press again until the reels stop, and then whoever presses first goes next. Nobody knows who pressed, but you are told whether your own press worked. After ten successful presses from this browser you get an auto spin button that presses for you each time the reels stop, even while the tab is in the background. Four or five of a kind, or five symbols in an unbroken sequence like <code>ABCDE</code>, is a jackpot: the machine celebrates, and every jackpot is kept forever in its own list. The newest 500 winners stay in their own list below the results. Tap any winner to see how rare it was and the probability behind it. No money or prizes are involved; it is just for fun.</dd>
     <dt><a href="latency">Latency</a></dt>
     <dd>Press the button and your browser times how long a list of public endpoints takes to answer, while this server times the same endpoints from its data centre. Each endpoint gets one warm-up request and then the fastest of three is kept. Everyone sees every result, with no name or address attached. Each network can start a test every five minutes, so phones and computers on the same Wi-Fi share that limit. After ten tests from this browser an auto run button appears. Below the results, a leaderboard shows the ten fastest and slowest medians from browsers and from the server. At the bottom, a browser or server median under 10 ms is a jackpot winner and 100 ms or more a jackpot loser. A median only counts when at least half of the endpoints answered.</dd>
+    <dt><a href="read">Read</a></dt>
+    <dd>Open a plain-text article picked at random from a file this site serves, and ask for another whenever you like. Each article has its own address, so you can come back to it. This browser lists the articles you opened at the bottom of the page, newest first, up to 1,000. Nobody else sees that list, and the server keeps no record of what anyone reads. If an article is ever removed from the file, its address says so instead of failing.</dd>
 </dl>
 
 <h2>Winners</h2>
@@ -8727,14 +8889,14 @@ MODIFIED: 2026-10-31 22:45:47 (UTC)
 <p class="warning">Anything you post, attach or draw goes to every connected browser at once and is stored on their devices. It can't be edited, deleted or recalled. Nothing is moderated. Don't share anything private.</p>
 
 <h2>Your data</h2>
-<p>There are no accounts, no cookies and no tracking. Your theme choice, your count of successful slot presses and latency tests, and when your next test is allowed are kept in this browser's local storage. Board messages, postcards, canvas strokes, slot results and latency results are kept in this browser's IndexedDB, up to 10,000 of each, with the oldest removed first. Postcard images are kept up to 256 MB. Slot jackpots are kept separately and never removed unless you clear local history. Messages you posted and results you started are marked as yours only in this browser. Latency results carry only timings: no address, no name and no device details. Rate limits count by network address in the server's memory only; addresses are never saved or shown, and devices sharing one internet connection share one limit.</p>
+<p>There are no accounts, no cookies and no tracking. Your theme choice, your count of successful slot presses and latency tests, and when your next test is allowed are kept in this browser's local storage. Board messages, postcards, canvas strokes, slot results and latency results are kept in this browser's IndexedDB, up to 10,000 of each, with the oldest removed first. Postcard images are kept up to 256 MB. Slot jackpots are kept separately and never removed unless you clear local history. The articles you opened on the read page are kept in IndexedDB too, up to 1,000, with the least recently read removed first. Messages you posted and results you started are marked as yours only in this browser. Latency results carry only timings: no address, no name and no device details. Rate limits count by network address in the server's memory only; addresses are never saved or shown, and devices sharing one internet connection share one limit.</p>
 <h3 id="location">Location and details</h3>
 <p>This is optional and off unless you turn it on. The board and the postcard work the same either way, and share one setting. If you tick <em>Attach my location and browser details</em> and your browser grants location permission, every message or postcard you send carries what your browser reports at that moment: latitude, longitude and accuracy, plus altitude, heading and speed when known, your time zone, UTC offset and local time, language, user agent, platform, screen and window size, CPU threads, memory, touch points, color scheme, motion and contrast settings, and connection type. Anyone can open it under the message with <em>Details</em>, and it is kept and offered back like the message itself. Nothing is looked up from it: no maps, no address, no third-party service. The server does not add your network address. Your browser reports these values and the server cannot check them. Untick the box, or block location for this site, to stop. Messages already sent keep their details.</p>
 <p class="clear">
     <button type="button" data-clear-history="clear-status">Clear local history</button>
     <output id="clear-status"></output>
 </p>
-<p>This removes the board, postcard, canvas, slot and latency history and your counts on this device. The next time you open those pages, they fill up again from the server.</p>
+<p>This removes the board, postcard, canvas, slot, latency and reading history and your counts on this device. The next time you open those pages, they fill up again from the server.</p>
 
 <h2>Source code</h2>
 <p>The code is on <a href="https://github.com/kusl/chaos-velixir-run">GitHub</a> under the GNU Affero General Public License, version 3 or later. If you run a modified copy for other people, you have to offer them its source too.</p>
@@ -9065,10 +9227,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/Pages/Home.razor
-SIZE:     1.43 KB (1460 bytes)
-LINES:    45
-SHA256:   d16be27301f77b6e55a77dfa3246a5e6a3366a09f216f1e58d150b1ccb8d886e
-MODIFIED: 2026-10-31 22:45:31 (UTC)
+SIZE:     1.62 KB (1664 bytes)
+LINES:    51
+SHA256:   88270ca218645559a5febc23b94bce89189fb1948f41ef0f5a423e88befde4bb
+MODIFIED: 2026-11-02 14:24:33 (UTC)
 ================================================================================
 
 @page "/"
@@ -9107,6 +9269,12 @@ MODIFIED: 2026-10-31 22:45:31 (UTC)
         <a href="latency">
             <strong>Latency</strong>
             <span>Time how fast dozens of public sites answer, from your browser and from this server.</span>
+        </a>
+    </li>
+    <li>
+        <a href="read">
+            <strong>Read</strong>
+            <span>One plain-text article at a time, picked at random. This device remembers what you read.</span>
         </a>
     </li>
     <li>
@@ -9740,6 +9908,534 @@ MODIFIED: 2026-10-31 22:43:55 (UTC)
 
 
 ================================================================================
+FILE:     src/Chaos.Web/Components/Pages/ReadPage.razor
+SIZE:     3.45 KB (3536 bytes)
+LINES:    121
+SHA256:   53bee59686a8bff244765d01c4a4769bbf04be3fa905aaa62c98036f0982e0ff
+MODIFIED: 2026-11-02 14:13:49 (UTC)
+================================================================================
+
+@page "/read"
+@page "/read/{Id}"
+@using System.Globalization
+@inject ArticleLibrary Library
+@inject NavigationManager Navigation
+
+@if (_moving)
+{
+    <PageTitle>Chaos read</PageTitle>
+}
+else if (_article is { } article)
+{
+    <PageTitle>@article.Title · Chaos</PageTitle>
+
+    <p class="kicker"><span>A random article</span><a href="read">Another one</a></p>
+    <article class="story" data-reading="@article.Id" data-title="@article.Title" data-byline="@article.Byline" data-published="@Iso(article.Published)">
+        <header>
+            <h1>@article.Title</h1>
+            @if (article.Dek is { } dek)
+            {
+                <p class="dek">@dek</p>
+            }
+            @if (article.Byline is not null || article.Published is not null)
+            {
+                <p class="credit">
+                    @if (article.Byline is { } byline)
+                    {
+                        <span>@byline</span>
+                    }
+                    @if (article.Published is { } published)
+                    {
+                        <time datetime="@Iso(published)">@Label(published)</time>
+                    }
+                </p>
+            }
+        </header>
+        @if (article.Summary is { } summary)
+        {
+            <details class="brief">
+                <summary>Summary</summary>
+                <p>@summary</p>
+            </details>
+        }
+        <div class="body">
+            @foreach (var block in article.Blocks)
+            {
+                if (block.IsList)
+                {
+                    <ul>
+                        @foreach (var item in block.Lines)
+                        {
+                            <li>@item</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>@block.Text</p>
+                }
+            }
+        </div>
+        @if (article.Source is { } source)
+        {
+            <p class="source">First published at <a href="@source.AbsoluteUri">@source.Host</a>.</p>
+        }
+    </article>
+    <p class="next"><a href="read">Read another article</a></p>
+}
+else if (Id is null)
+{
+    <PageTitle>Chaos read</PageTitle>
+
+    <h1>Read</h1>
+    <p class="lede">There is nothing to read right now. Try again later.</p>
+}
+else
+{
+    <PageTitle>Chaos read</PageTitle>
+
+    <h1>Not available</h1>
+    <p class="lede">That article is no longer here. <a href="read">Read a random one</a> instead.</p>
+}
+
+@if (!_moving)
+{
+    <section class="history" data-permanent="reading-history" aria-labelledby="history-title">
+        <h2 id="history-title">Read on this device</h2>
+        <p id="reading-empty" class="empty">Articles you open here are listed here, on this device only.</p>
+        <ol id="reading-history" class="shelf"></ol>
+    </section>
+}
+
+@code {
+    private Article? _article;
+    private bool _moving;
+
+    [Parameter]
+    public string? Id { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (Id is null)
+        {
+            if (Library.Random() is { } random)
+            {
+                _moving = true;
+                Navigation.NavigateTo($"read/{random.Id}");
+            }
+
+            return;
+        }
+
+        _article = Library.Find(Id);
+    }
+
+    private static string? Iso(DateTimeOffset? at) =>
+        at?.UtcDateTime.ToString("yyyy-MM-dd'T'HH:mm'Z'", CultureInfo.InvariantCulture);
+
+    private static string Label(DateTimeOffset at) =>
+        at.UtcDateTime.ToString("MMMM d, yyyy", CultureInfo.InvariantCulture);
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Components/Pages/ReadPage.razor.css
+SIZE:     3.39 KB (3474 bytes)
+LINES:    195
+SHA256:   2a3b016d7b3612c65d29fa4dc1d8d60a254b19149909d433516740ac039e2e9f
+MODIFIED: 2026-11-02 14:15:16 (UTC)
+================================================================================
+
+.kicker {
+    display: flex;
+    max-inline-size: 38rem;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: .25rem 1rem;
+    margin: 0 auto 1rem;
+    color: var(--muted);
+    font-size: .875rem;
+}
+
+.kicker span {
+    font-weight: 650;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.story {
+    --read: light-dark(#23242a, #e3e6ee);
+    max-inline-size: 38rem;
+    margin-inline: auto;
+    color: var(--read);
+    background: var(--bg);
+    box-shadow: 0 0 0 1rem var(--bg);
+    font-family: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+    font-size: clamp(1.0625rem, 1rem + .35vw, 1.1875rem);
+    line-height: 1.7;
+    overflow-wrap: break-word;
+    font-kerning: normal;
+    text-rendering: optimizeLegibility;
+}
+
+.story header {
+    margin-block-end: 1.75rem;
+    padding-block-end: 1.25rem;
+    border-block-end: 1px solid var(--line);
+}
+
+.story h1 {
+    margin: 0 0 .6rem;
+    color: var(--fg);
+    font-size: clamp(1.7rem, 1.2rem + 2.2vw, 2.5rem);
+    line-height: 1.15;
+}
+
+.dek {
+    margin: 0 0 .9rem;
+    color: var(--muted);
+    font-size: 1.1em;
+    line-height: 1.5;
+}
+
+.credit {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .15rem 1rem;
+    margin: 0;
+    color: var(--muted);
+    font-family: system-ui, sans-serif;
+    font-size: .85rem;
+    line-height: 1.4;
+}
+
+.credit span {
+    color: var(--fg);
+    font-weight: 600;
+}
+
+.credit time {
+    font-variant-numeric: tabular-nums;
+}
+
+.brief {
+    margin-block-end: 1.75rem;
+    padding: .6rem .9rem;
+    border-inline-start: 3px solid var(--ink);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    background: var(--surface);
+    font-size: .92em;
+    line-height: 1.6;
+}
+
+.brief summary {
+    inline-size: fit-content;
+    color: var(--link);
+    font-family: system-ui, sans-serif;
+    font-size: .85rem;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.brief p {
+    margin: .5rem 0 .2rem;
+}
+
+.body p,
+.body ul {
+    margin: 0 0 1.15em;
+}
+
+.body {
+    hyphens: auto;
+}
+
+.body p {
+    white-space: pre-line;
+}
+
+.body ul {
+    padding-inline-start: 1.25em;
+}
+
+.body li + li {
+    margin-block-start: .4em;
+}
+
+.source {
+    margin: 2rem 0 0;
+    padding-block-start: 1rem;
+    border-block-start: 1px solid var(--line);
+    color: var(--muted);
+    font-family: system-ui, sans-serif;
+    font-size: .85rem;
+}
+
+.next {
+    max-inline-size: 38rem;
+    margin: 1.5rem auto 0;
+    font-weight: 650;
+}
+
+.history {
+    margin-block-start: 3rem;
+}
+
+.history h2 {
+    margin: 0 0 .75rem;
+}
+
+.empty {
+    margin: 0;
+    color: var(--muted);
+}
+
+.shelf {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-block-start: 1px solid var(--line);
+}
+
+.shelf:empty {
+    display: none;
+}
+
+.shelf ::deep li {
+    display: grid;
+    gap: .15rem;
+    padding: .7rem .25rem;
+    border-block-end: 1px solid var(--line);
+    content-visibility: auto;
+    contain-intrinsic-size: auto 4rem;
+}
+
+.shelf ::deep a {
+    font-weight: 650;
+    line-height: 1.35;
+    text-decoration: none;
+}
+
+.shelf ::deep a:hover {
+    text-decoration: underline;
+}
+
+.shelf ::deep a[aria-current="page"] {
+    color: var(--fg);
+}
+
+.shelf ::deep .seen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .1rem .75rem;
+    color: var(--muted);
+    font-size: .8rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.shelf ::deep .now {
+    padding: 0 .5rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: .7rem;
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Components/Pages/ReadPage.razor.js
+SIZE:     5.57 KB (5699 bytes)
+LINES:    182
+SHA256:   fdc7044a0f6a37d7a4f5ab8f27c864b11f32d5bffc38bb55f1106a49d0cd7805
+MODIFIED: 2026-11-02 14:11:32 (UTC)
+================================================================================
+
+import { openDatabase } from '../Islands/BoardIsland.razor.js';
+
+export const DB_NAME = 'chaos-reading';
+export const DB_VERSION = 1;
+export const STORE = 'articles';
+export const LOCAL_CAP = 1000;
+
+export const migrations = [
+    db => db.createObjectStore(STORE, { keyPath: 'id' }),
+];
+
+export const SCHEMA = Object.freeze({ name: DB_NAME, version: DB_VERSION, store: STORE, migrations, cap: LOCAL_CAP });
+
+const ID = /^[0-9a-f]{12}$/;
+const MAX_TEXT = 500;
+
+function clip(value) {
+    if (typeof value !== 'string') {
+        return null;
+    }
+    const text = value.trim();
+    return text.length > 0 ? text.slice(0, MAX_TEXT) : null;
+}
+
+export function isId(value) {
+    return typeof value === 'string' && ID.test(value);
+}
+
+export function entryOf(dataset) {
+    const id = dataset?.reading;
+    const title = clip(dataset?.title);
+    if (!isId(id) || !title) {
+        return null;
+    }
+    return { id, title, byline: clip(dataset.byline), published: clip(dataset.published) };
+}
+
+export function remember(previous, entry, now) {
+    const reads = Number.isFinite(previous?.reads) && previous.reads > 0 ? previous.reads : 0;
+    const first = Number.isFinite(previous?.first) ? previous.first : now;
+    return { ...entry, first, last: now, reads: reads + 1 };
+}
+
+export function recentFirst(a, b) {
+    const difference = (b.last ?? 0) - (a.last ?? 0);
+    if (difference !== 0) {
+        return difference;
+    }
+    return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+}
+
+export function shelved(records) {
+    return records.filter(record => isId(record?.id) && clip(record.title)).sort(recentFirst);
+}
+
+export function overflow(records, cap = LOCAL_CAP) {
+    return shelved(records).slice(cap).map(record => record.id);
+}
+
+export function readLabel(ms, now = Date.now()) {
+    if (!Number.isFinite(ms)) {
+        return '';
+    }
+    const iso = new Date(ms).toISOString();
+    const today = new Date(now).toISOString().slice(0, 10);
+    return iso.slice(0, 10) === today ? `today ${iso.slice(11, 16)} UTC` : iso.slice(0, 10);
+}
+
+export function readsText(reads) {
+    return reads > 1 ? `${reads} reads` : '';
+}
+
+export function hrefOf(id) {
+    return `read/${id}`;
+}
+
+function settle(request) {
+    return new Promise((resolve, reject) => {
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function finished(transaction) {
+    return new Promise((resolve, reject) => {
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+        transaction.onabort = () => reject(transaction.error);
+    });
+}
+
+export async function visit(factory, entry, now = Date.now()) {
+    if (!factory) {
+        return [];
+    }
+    const db = await openDatabase(factory, SCHEMA);
+    try {
+        if (entry) {
+            const transaction = db.transaction(STORE, 'readwrite');
+            const done = finished(transaction);
+            const store = transaction.objectStore(STORE);
+            store.put(remember(await settle(store.get(entry.id)), entry, now));
+            await done;
+        }
+        const records = await settle(db.transaction(STORE, 'readonly').objectStore(STORE).getAll());
+        const excess = overflow(records);
+        if (excess.length > 0) {
+            const transaction = db.transaction(STORE, 'readwrite');
+            const done = finished(transaction);
+            const store = transaction.objectStore(STORE);
+            for (const id of excess) {
+                store.delete(id);
+            }
+            await done;
+        }
+        const gone = new Set(excess);
+        return shelved(records).filter(record => !gone.has(record.id));
+    } finally {
+        db.close();
+    }
+}
+
+function item(doc, record, current, now) {
+    const element = doc.createElement('li');
+    element.dataset.id = record.id;
+    const link = doc.createElement('a');
+    link.href = hrefOf(record.id);
+    link.textContent = record.title;
+    if (record.id === current) {
+        link.setAttribute('aria-current', 'page');
+    }
+    const seen = doc.createElement('span');
+    seen.className = 'seen';
+    const parts = [record.byline, readLabel(record.last, now) && `Read ${readLabel(record.last, now)}`, readsText(record.reads)].filter(Boolean);
+    for (const part of parts) {
+        const span = doc.createElement('span');
+        span.textContent = part;
+        seen.append(span);
+    }
+    if (record.id === current) {
+        const badge = doc.createElement('span');
+        badge.className = 'now';
+        badge.textContent = 'Reading now';
+        seen.append(badge);
+    }
+    element.append(link, seen);
+    return element;
+}
+
+export function render(doc, list, empty, records, current, now = Date.now()) {
+    const fragment = doc.createDocumentFragment();
+    for (const record of records) {
+        fragment.append(item(doc, record, current, now));
+    }
+    list.replaceChildren(fragment);
+    if (empty) {
+        empty.hidden = records.length > 0;
+    }
+}
+
+let generation = 0;
+
+export async function track(win) {
+    const doc = win.document;
+    const list = doc.getElementById('reading-history');
+    if (!list) {
+        return;
+    }
+    const run = ++generation;
+    const article = doc.querySelector('article[data-reading]');
+    const entry = article ? entryOf(article.dataset) : null;
+    let records = [];
+    try {
+        records = await visit(win.indexedDB, entry);
+    } catch {
+        records = entry ? [remember(null, entry, Date.now())] : [];
+    }
+    if (run !== generation || !list.isConnected) {
+        return;
+    }
+    render(doc, list, doc.getElementById('reading-empty'), records, entry?.id ?? null);
+}
+
+
+================================================================================
 FILE:     src/Chaos.Web/Components/Pages/SlotResult.razor
 SIZE:     1.47 KB (1505 bytes)
 LINES:    60
@@ -10175,10 +10871,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/Components/_Imports.razor
-SIZE:     0.42 KB (435 bytes)
-LINES:    13
-SHA256:   e4c18aae451b4d819da89ae7cd8a35e31b5c5ae38c97e4ed8d03b8dae5403bf3
-MODIFIED: 2026-10-31 22:42:53 (UTC)
+SIZE:     0.45 KB (460 bytes)
+LINES:    14
+SHA256:   35413533c2db3a0819df13c3c877ab714eb939c32ed4685b0930259804511492
+MODIFIED: 2026-11-02 14:24:33 (UTC)
 ================================================================================
 
 @using Microsoft.AspNetCore.Components.Routing
@@ -10193,6 +10889,7 @@ MODIFIED: 2026-10-31 22:42:53 (UTC)
 @using Chaos.Web.Latency
 @using Chaos.Web.Messages
 @using Chaos.Web.Postcards
+@using Chaos.Web.Reading
 @using Chaos.Web.Slots
 
 
@@ -10808,10 +11505,10 @@ internal sealed record StrokeOffer(Guid Id, IReadOnlyList<int> Points);
 
 ================================================================================
 FILE:     src/Chaos.Web/Infrastructure/ChaosOptions.cs
-SIZE:     2.90 KB (2973 bytes)
-LINES:    99
-SHA256:   dfd05e786399542572ff8e5d3000e8ed9c52545b585303d37659773980233094
-MODIFIED: 2026-10-31 22:42:53 (UTC)
+SIZE:     3.02 KB (3088 bytes)
+LINES:    102
+SHA256:   4f66f62cd76372fb586b64fe69393ff5e3bc453bbe7e67cb5ea8267e89cab473
+MODIFIED: 2026-11-02 14:24:33 (UTC)
 ================================================================================
 
 using Chaos.Web.Drawing;
@@ -10883,6 +11580,8 @@ internal sealed class ChaosOptions
 
     public bool LatencyServerProbe { get; set; } = true;
 
+    public string ArticlesFile { get; set; } = "nytimes.txt";
+
     public bool IsValid() =>
         MaxConnectionsPerClient > 0
         && MaxConnections >= MaxConnectionsPerClient
@@ -10911,7 +11610,8 @@ internal sealed class ChaosOptions
         && LatencyJackpotCapacity is >= 1 and <= 1_000
         && LatencyCooldownSeconds is >= 1 and <= 86_400
         && LatencyGapSeconds is >= 0 and <= 3_600
-        && LatencyBudgetSeconds is >= 5 and <= 120;
+        && LatencyBudgetSeconds is >= 5 and <= 120
+        && !string.IsNullOrWhiteSpace(ArticlesFile);
 }
 
 
@@ -14250,10 +14950,10 @@ internal sealed record PostcardUpdate(string Kind, long Version, Postcard? Card)
 
 ================================================================================
 FILE:     src/Chaos.Web/Program.cs
-SIZE:     4.04 KB (4137 bytes)
-LINES:    113
-SHA256:   53ea4eb461c2f91af0d5540e624853aeca8a0dd4f7014ba83f82548f6ca2c8bb
-MODIFIED: 2026-10-31 22:42:53 (UTC)
+SIZE:     4.32 KB (4421 bytes)
+LINES:    118
+SHA256:   510ffbdd95560f7e2cbf2c4266b7ec2b1bcfcc1678eaa29d177144bb34f919c3
+MODIFIED: 2026-11-02 14:24:33 (UTC)
 ================================================================================
 
 using System.IO.Compression;
@@ -14263,6 +14963,7 @@ using Chaos.Web.Infrastructure;
 using Chaos.Web.Latency;
 using Chaos.Web.Messages;
 using Chaos.Web.Postcards;
+using Chaos.Web.Reading;
 using Chaos.Web.Slots;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.DataProtection;
@@ -14310,6 +15011,10 @@ builder.Services.AddSingleton<SlotService>();
 builder.Services.AddSingleton<ILatencyProbe, HttpLatencyProbe>();
 builder.Services.AddSingleton<LatencyService>();
 builder.Services.AddSingleton<ConnectionTracker>();
+builder.Services.AddSingleton(services => new ArticleLibrary(
+    services.GetRequiredService<IWebHostEnvironment>().WebRootFileProvider,
+    services.GetRequiredService<IOptions<ChaosOptions>>(),
+    services.GetRequiredService<ILogger<ArticleLibrary>>()));
 builder.Services.AddHealthChecks();
 
 builder.Services.AddResponseCompression(compression =>
@@ -14392,6 +15097,558 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
       }
     }
   }
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Reading/Article.cs
+SIZE:     0.24 KB (242 bytes)
+LINES:    11
+SHA256:   1071e89e2994270b882628b47f3def50ce3103c6034c9decd7f03aef0afbdab6
+MODIFIED: 2026-11-02 14:05:46 (UTC)
+================================================================================
+
+namespace Chaos.Web.Reading;
+
+internal sealed record Article(
+    string Id,
+    string Title,
+    string? Dek,
+    string? Byline,
+    DateTimeOffset? Published,
+    Uri? Source,
+    string? Summary,
+    IReadOnlyList<ArticleBlock> Blocks);
+
+
+================================================================================
+FILE:     src/Chaos.Web/Reading/ArticleBlock.cs
+SIZE:     0.16 KB (164 bytes)
+LINES:    6
+SHA256:   2fcd5e89df643ddc52ea5c14939315f9b74863f3024cbbacb63229d20ff984fb
+MODIFIED: 2026-11-02 14:05:47 (UTC)
+================================================================================
+
+namespace Chaos.Web.Reading;
+
+internal sealed record ArticleBlock(IReadOnlyList<string> Lines, bool IsList)
+{
+    public string Text => string.Join('\n', Lines);
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Reading/ArticleEntry.cs
+SIZE:     0.11 KB (112 bytes)
+LINES:    3
+SHA256:   2c15389041c58033ff5f32f933167048c15899a70ced4571345ef25c201926cf
+MODIFIED: 2026-11-02 14:05:51 (UTC)
+================================================================================
+
+namespace Chaos.Web.Reading;
+
+internal readonly record struct ArticleEntry(string Id, long Offset, int Length);
+
+
+================================================================================
+FILE:     src/Chaos.Web/Reading/ArticleLibrary.cs
+SIZE:     6.53 KB (6687 bytes)
+LINES:    222
+SHA256:   38a52d9403637d379aa64ad6a24db2fda72b937054257c6d45651eb214064fbf
+MODIFIED: 2026-11-02 14:07:11 (UTC)
+================================================================================
+
+using System.Security.Cryptography;
+using System.Text;
+using Chaos.Web.Infrastructure;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
+
+namespace Chaos.Web.Reading;
+
+internal sealed partial class ArticleLibrary
+{
+    public const long MaxFileBytes = 64L * 1024 * 1024;
+    private const int Attempts = 2;
+
+    private readonly IFileProvider _files;
+    private readonly string _path;
+    private readonly ILogger<ArticleLibrary> _logger;
+    private readonly Lock _gate = new();
+    private Shelf _shelf = Shelf.Unread;
+
+    public ArticleLibrary(IFileProvider files, IOptions<ChaosOptions> options, ILogger<ArticleLibrary> logger)
+    {
+        ArgumentNullException.ThrowIfNull(files);
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(logger);
+        _files = files;
+        _path = options.Value.ArticlesFile;
+        _logger = logger;
+    }
+
+    public int Count => Current().Entries.Count;
+
+    public Article? Find(string? id)
+    {
+        if (!ArticleText.IsId(id))
+        {
+            return null;
+        }
+
+        for (var attempt = 0; attempt < Attempts; attempt++)
+        {
+            var shelf = Current();
+            if (!shelf.ById.TryGetValue(id, out var entry))
+            {
+                return null;
+            }
+
+            if (Load(shelf, entry) is { } article)
+            {
+                return article;
+            }
+        }
+
+        return null;
+    }
+
+    public Article? Random() => Pick(RandomNumberGenerator.GetInt32);
+
+    public Article? Pick(Func<int, int> choose)
+    {
+        ArgumentNullException.ThrowIfNull(choose);
+        for (var attempt = 0; attempt < Attempts; attempt++)
+        {
+            var shelf = Current();
+            if (shelf.Entries.Count == 0)
+            {
+                return null;
+            }
+
+            var index = choose(shelf.Entries.Count);
+            if (index < 0 || index >= shelf.Entries.Count)
+            {
+                return null;
+            }
+
+            if (Load(shelf, shelf.Entries[index]) is { } article)
+            {
+                return article;
+            }
+        }
+
+        return null;
+    }
+
+    private Shelf Current()
+    {
+        var file = _files.GetFileInfo(_path);
+        var stamp = Stamp.Of(file);
+        var shelf = Volatile.Read(ref _shelf);
+        if (shelf.Stamp == stamp)
+        {
+            return shelf;
+        }
+
+        lock (_gate)
+        {
+            shelf = _shelf;
+            if (shelf.Stamp != stamp)
+            {
+                shelf = Build(file, stamp);
+                Volatile.Write(ref _shelf, shelf);
+            }
+
+            return shelf;
+        }
+    }
+
+    private Shelf Build(IFileInfo file, Stamp stamp)
+    {
+        if (!stamp.Exists)
+        {
+            return Shelf.Empty(stamp);
+        }
+
+        if (stamp.Length > MaxFileBytes)
+        {
+            LogTooLarge(_logger, _path, stamp.Length);
+            return Shelf.Empty(stamp);
+        }
+
+        try
+        {
+            var bytes = Read(file, 0, (int)stamp.Length);
+            var entries = new List<ArticleEntry>();
+            var byId = new Dictionary<string, ArticleEntry>(StringComparer.Ordinal);
+            foreach (var range in ArticleText.Records(bytes))
+            {
+                var (offset, length) = range.GetOffsetAndLength(bytes.Length);
+                var article = ArticleText.Parse(Encoding.UTF8.GetString(bytes, offset, length));
+                if (article is null)
+                {
+                    continue;
+                }
+
+                var entry = new ArticleEntry(article.Id, offset, length);
+                if (byId.TryAdd(entry.Id, entry))
+                {
+                    entries.Add(entry);
+                }
+            }
+
+            return new Shelf(stamp, entries, byId);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            LogUnreadable(_logger, _path, exception);
+            return Shelf.Unread;
+        }
+    }
+
+    private Article? Load(Shelf shelf, ArticleEntry entry)
+    {
+        try
+        {
+            var file = _files.GetFileInfo(_path);
+            if (Stamp.Of(file) != shelf.Stamp)
+            {
+                return null;
+            }
+
+            var article = ArticleText.Parse(Encoding.UTF8.GetString(Read(file, entry.Offset, entry.Length)));
+            if (article?.Id == entry.Id)
+            {
+                return article;
+            }
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            LogUnreadable(_logger, _path, exception);
+        }
+
+        Interlocked.CompareExchange(ref _shelf, Shelf.Unread, shelf);
+        return null;
+    }
+
+    private static byte[] Read(IFileInfo file, long offset, int length)
+    {
+        using var stream = file.CreateReadStream();
+        if (stream.CanSeek)
+        {
+            stream.Seek(offset, SeekOrigin.Begin);
+        }
+        else
+        {
+            var skip = new byte[Math.Min(81_920, Math.Max(1L, offset))];
+            for (var left = offset; left > 0;)
+            {
+                var read = stream.Read(skip, 0, (int)Math.Min(skip.Length, left));
+                if (read == 0)
+                {
+                    throw new EndOfStreamException();
+                }
+
+                left -= read;
+            }
+        }
+
+        var bytes = new byte[length];
+        stream.ReadExactly(bytes);
+        return bytes;
+    }
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Articles file {Path} is {Length} bytes, over the limit; no articles are shown")]
+    private static partial void LogTooLarge(ILogger logger, string path, long length);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Articles file {Path} could not be read")]
+    private static partial void LogUnreadable(ILogger logger, string path, Exception exception);
+
+    private readonly record struct Stamp(bool Exists, long Length, DateTimeOffset Modified)
+    {
+        public static readonly Stamp None = new(false, -2, DateTimeOffset.MinValue);
+
+        public static Stamp Of(IFileInfo file) =>
+            file.Exists && !file.IsDirectory ? new Stamp(true, file.Length, file.LastModified) : new Stamp(false, -1, DateTimeOffset.MinValue);
+    }
+
+    private sealed record Shelf(Stamp Stamp, IReadOnlyList<ArticleEntry> Entries, IReadOnlyDictionary<string, ArticleEntry> ById)
+    {
+        public static readonly Shelf Unread = Empty(Stamp.None);
+
+        public static Shelf Empty(Stamp stamp) => new(stamp, [], new Dictionary<string, ArticleEntry>(StringComparer.Ordinal));
+    }
+}
+
+
+================================================================================
+FILE:     src/Chaos.Web/Reading/ArticleText.cs
+SIZE:     8.26 KB (8456 bytes)
+LINES:    260
+SHA256:   caacb2a09195ebfbd1fc5096305b0a542c9e162d55d0d561d5dc380ee7e4bd7e
+MODIFIED: 2026-11-02 14:19:57 (UTC)
+================================================================================
+
+using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Security.Cryptography;
+using System.Text;
+
+namespace Chaos.Web.Reading;
+
+internal static class ArticleText
+{
+    public const int IdLength = 12;
+    public const int MinRule = 20;
+    public const int MaxHeaderLines = 6;
+    public const int MaxTitleLength = 200;
+
+    private const string Untitled = "Untitled";
+    private const string SummaryMarker = "SUMMARY";
+    private const string ArticleMarker = "ARTICLE";
+    private const string BylinePrefix = "By ";
+    private const string PublishedPrefix = "Published ";
+    private static readonly string[] ListMarkers = ["- ", "\u2022 ", "* ", "\uf0b7 "];
+    private static readonly SearchValues<byte> Blank = SearchValues.Create(" \t\r\n"u8);
+
+    private static ReadOnlySpan<byte> Bom => [0xEF, 0xBB, 0xBF];
+
+    public static bool IsId([NotNullWhen(true)] string? value) =>
+        value is { Length: IdLength } && value.All(char.IsAsciiHexDigitLower);
+
+    public static IReadOnlyList<Range> Records(ReadOnlySpan<byte> utf8)
+    {
+        var rules = new List<(int Line, int Start)>();
+        var line = 0;
+        var origin = utf8.StartsWith(Bom) ? Bom.Length : 0;
+        var start = origin;
+        while (start < utf8.Length)
+        {
+            var end = utf8[start..].IndexOf((byte)'\n');
+            var next = end < 0 ? utf8.Length : start + end + 1;
+            if (IsRule(utf8[start..(end < 0 ? utf8.Length : start + end)]))
+            {
+                rules.Add((line, start));
+            }
+
+            line++;
+            start = next;
+        }
+
+        var opens = new List<int>();
+        for (var i = 0; i + 1 < rules.Count; i++)
+        {
+            var gap = rules[i + 1].Line - rules[i].Line - 1;
+            if (gap is >= 1 and <= MaxHeaderLines)
+            {
+                opens.Add(rules[i].Start);
+                i++;
+            }
+        }
+
+        if (opens.Count == 0)
+        {
+            return HasText(utf8[origin..]) ? [new Range(origin, utf8.Length)] : [];
+        }
+
+        var records = new List<Range>(opens.Count);
+        for (var i = 0; i < opens.Count; i++)
+        {
+            records.Add(new Range(opens[i], i + 1 < opens.Count ? opens[i + 1] : utf8.Length));
+        }
+
+        return records;
+    }
+
+    public static Article? Parse(string record)
+    {
+        ArgumentNullException.ThrowIfNull(record);
+        var lines = record.TrimStart('\uFEFF').Replace("\r\n", "\n", StringComparison.Ordinal).Split('\n');
+        var first = 0;
+        while (first < lines.Length && lines[first].Trim().Length == 0)
+        {
+            first++;
+        }
+
+        string? slug = null;
+        if (first < lines.Length && IsRule(lines[first]))
+        {
+            var close = Array.FindIndex(lines, first + 1, IsRule);
+            if (close > first)
+            {
+                slug = lines[(first + 1)..close].Select(header => header.Trim()).FirstOrDefault(header => header.Length > 0);
+                first = close + 1;
+            }
+        }
+
+        var paragraphs = Paragraphs(lines.AsSpan(first));
+        var summaryAt = paragraphs.FindIndex(paragraph => IsMarker(paragraph, SummaryMarker));
+        var articleAt = paragraphs.FindIndex(paragraph => IsMarker(paragraph, ArticleMarker));
+
+        string? summary = null;
+        List<List<string>> content;
+        if (articleAt >= 0)
+        {
+            if (summaryAt >= 0 && summaryAt < articleAt)
+            {
+                summary = Joined(paragraphs[(summaryAt + 1)..articleAt].SelectMany(paragraph => paragraph));
+            }
+
+            content = paragraphs[(articleAt + 1)..];
+        }
+        else
+        {
+            content = [.. paragraphs.Where(paragraph => !IsMarker(paragraph, SummaryMarker))];
+        }
+
+        string? title = null;
+        string? dek = null;
+        string? byline = null;
+        DateTimeOffset? published = null;
+        Uri? source = null;
+        if (articleAt >= 0 && content.Count > 0)
+        {
+            (title, dek, byline, published, source) = Head(content[0]);
+            content = content[1..];
+        }
+        else if (content.Count > 1 && content[0] is [var only] && only.Length <= MaxTitleLength)
+        {
+            title = only;
+            content = content[1..];
+        }
+
+        if (content.Count == 0)
+        {
+            return null;
+        }
+
+        title ??= TitleOf(slug) ?? Untitled;
+        var blocks = content.Select(Block).ToArray();
+        var key = source?.AbsoluteUri ?? title + "\n" + string.Join("\n\n", blocks.Select(block => block.Text));
+        return new Article(IdOf(key), title, dek, byline, published, source, summary, blocks);
+    }
+
+    public static string IdOf(string key) =>
+        Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(key)))[..IdLength];
+
+    public static string? TitleOf(string? slug)
+    {
+        if (string.IsNullOrWhiteSpace(slug))
+        {
+            return null;
+        }
+
+        var name = Path.GetFileNameWithoutExtension(slug.Trim());
+        var words = name.Replace('-', ' ').Replace('_', ' ').Trim();
+        if (words.Length == 0)
+        {
+            return null;
+        }
+
+        return string.Concat(char.ToUpperInvariant(words[0]).ToString(), words[1..]);
+    }
+
+    private static (string Title, string? Dek, string? Byline, DateTimeOffset? Published, Uri? Source) Head(List<string> head)
+    {
+        var end = head.Count;
+        Uri? source = null;
+        if (end > 1 && Uri.TryCreate(head[end - 1], UriKind.Absolute, out var uri) && (uri.Scheme == Uri.UriSchemeHttps || uri.Scheme == Uri.UriSchemeHttp))
+        {
+            source = uri;
+            end--;
+        }
+
+        DateTimeOffset? published = null;
+        if (end > 1 && head[end - 1].StartsWith(PublishedPrefix, StringComparison.Ordinal))
+        {
+            published = PublishedOf(head[end - 1][PublishedPrefix.Length..]);
+            end--;
+        }
+
+        string? byline = null;
+        if (end > 1 && head[end - 1].StartsWith(BylinePrefix, StringComparison.Ordinal))
+        {
+            byline = head[end - 1];
+            end--;
+        }
+
+        var dek = end > 1 ? Joined(head[1..end]) : null;
+        return (head[0], dek, byline, published, source);
+    }
+
+    private static DateTimeOffset? PublishedOf(string text) =>
+        DateTimeOffset.TryParseExact(text.Trim(), "yyyy-MM-dd HH:mm 'UTC'", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out var at)
+            ? at
+            : null;
+
+    private static ArticleBlock Block(List<string> lines)
+    {
+        if (lines.All(IsListItem))
+        {
+            return new ArticleBlock([.. lines.Select(line => line[2..].Trim())], true);
+        }
+
+        return new ArticleBlock(lines, false);
+    }
+
+    private static bool IsListItem(string line) =>
+        line.Length > 2 && ListMarkers.Any(marker => line.StartsWith(marker, StringComparison.Ordinal));
+
+    private static List<List<string>> Paragraphs(ReadOnlySpan<string> lines)
+    {
+        var paragraphs = new List<List<string>>();
+        List<string>? current = null;
+        foreach (var raw in lines)
+        {
+            var line = raw.Trim();
+            if (line.Length == 0)
+            {
+                current = null;
+                continue;
+            }
+
+            if (IsRule(line))
+            {
+                continue;
+            }
+
+            if (current is null)
+            {
+                current = [];
+                paragraphs.Add(current);
+            }
+
+            current.Add(line);
+        }
+
+        return paragraphs;
+    }
+
+    private static string? Joined(IEnumerable<string> lines)
+    {
+        var text = string.Join(' ', lines).Trim();
+        return text.Length > 0 ? text : null;
+    }
+
+    private static bool IsMarker(List<string> paragraph, string marker) =>
+        paragraph is [var only] && string.Equals(only, marker, StringComparison.Ordinal);
+
+    private static bool IsRule(string line)
+    {
+        var text = line.AsSpan().Trim();
+        return text.Length >= MinRule && !text.ContainsAnyExcept('=');
+    }
+
+    private static bool IsRule(ReadOnlySpan<byte> line)
+    {
+        var text = line.TrimEnd((byte)'\r');
+        return text.Length >= MinRule && !text.ContainsAnyExcept((byte)'=');
+    }
+
+    private static bool HasText(ReadOnlySpan<byte> utf8) =>
+        utf8.ContainsAnyExcept(Blank);
 }
 
 
@@ -14975,10 +16232,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     src/Chaos.Web/wwwroot/app.css
-SIZE:     2.24 KB (2297 bytes)
-LINES:    120
-SHA256:   9e5c9d2db17c5e676d53eb6b747cc708a178867d46fcfe527c0b2b230feeca48
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     2.27 KB (2328 bytes)
+LINES:    121
+SHA256:   2857c4ab9d4e997eb686add3ceabd3cd1c9238f1208ad564cca6ed163345e55e
+MODIFIED: 2026-11-02 14:24:33 (UTC)
 ================================================================================
 
 :root {
@@ -15026,6 +16283,7 @@ body {
         linear-gradient(90deg, var(--grid) 1px, transparent 1px);
     background-size: 1.5rem 1.5rem;
     font: 1rem/1.55 system-ui, sans-serif;
+    overflow-wrap: break-word;
 }
 
 a {
@@ -15407,10 +16665,10 @@ public sealed partial class BoardTests(BrowserFixture browser) : IClassFixture<B
 
 ================================================================================
 FILE:     tests/Chaos.E2E/BrowserFixture.cs
-SIZE:     1.82 KB (1860 bytes)
-LINES:    53
-SHA256:   10f0f023ec271f40a75a391544d70e854db7ed65f46d9a90f26ba7d1e02cb186
-MODIFIED: 2026-10-31 02:36:01 (UTC)
+SIZE:     2.24 KB (2298 bytes)
+LINES:    64
+SHA256:   defc35c16292bfa10022f19ef6fc5dba0b2878d70d605f0b9f9a3de51a1abb87
+MODIFIED: 2026-11-02 14:24:33 (UTC)
 ================================================================================
 
 using Microsoft.Playwright;
@@ -15460,6 +16718,17 @@ public sealed class BrowserFixture : IAsyncLifetime
         });
     }
 
+    public Task<IBrowserContext> NewSizedContextAsync(int width, int height)
+    {
+        var browser = _browser ?? throw new InvalidOperationException("The browser is not running.");
+        return browser.NewContextAsync(new BrowserNewContextOptions
+        {
+            BaseURL = BaseUrl,
+            ColorScheme = ColorScheme.Light,
+            ViewportSize = new ViewportSize { Width = width, Height = height },
+        });
+    }
+
     public Task<IBrowserContext> NewContextAsync(string baseUrl, ColorScheme scheme = ColorScheme.Light)
     {
         var browser = _browser ?? throw new InvalidOperationException("The browser is not running.");
@@ -15470,10 +16739,10 @@ public sealed class BrowserFixture : IAsyncLifetime
 
 ================================================================================
 FILE:     tests/Chaos.E2E/CanvasTests.cs
-SIZE:     4.78 KB (4893 bytes)
-LINES:    103
-SHA256:   3d4d00f8a377e0625c4e4c772a949964e0b0e2595c262bb000a845f35f7455a5
-MODIFIED: 2026-10-16 10:24:45 (UTC)
+SIZE:     5.66 KB (5800 bytes)
+LINES:    122
+SHA256:   a1f1fffa1ef8e36087de44214768fccc9f5873e7dae4ec81d2a2b4ebf396d429
+MODIFIED: 2026-11-02 14:26:27 (UTC)
 ================================================================================
 
 using Microsoft.Playwright;
@@ -15523,6 +16792,25 @@ public sealed class CanvasTests(BrowserFixture browser) : IClassFixture<BrowserF
         await viewer.GetByRole(AriaRole.Button, new() { Name = "Reset canvas" }).ClickAsync();
         await artist.WaitForFunctionAsync(Blank, centre);
         await late.WaitForFunctionAsync(Blank, centre);
+    }
+
+    [Fact]
+    public async Task AResetByAnyoneClearsAnOutdatedNotice()
+    {
+        await using var firstContext = await browser.NewContextAsync();
+        await using var secondContext = await browser.NewContextAsync();
+        var first = await OpenCanvasAsync(firstContext);
+        var second = await OpenCanvasAsync(secondContext);
+        var reset = first.GetByRole(AriaRole.Button, new() { Name = "Reset canvas" });
+
+        await reset.ClickAsync();
+        await reset.ClickAsync();
+        await Expect(first.Locator(".tools .status")).ToHaveTextAsync("It was just reset. Try again in a second.");
+
+        await second.WaitForTimeoutAsync(1500);
+        await second.GetByRole(AriaRole.Button, new() { Name = "Reset canvas" }).ClickAsync();
+        await Expect(second.Locator(".tools .status")).ToBeEmptyAsync();
+        await Expect(first.Locator(".tools .status")).ToBeEmptyAsync();
     }
 
     [Fact]
@@ -15605,10 +16893,10 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 
 ================================================================================
 FILE:     tests/Chaos.E2E/LatencyTests.cs
-SIZE:     2.49 KB (2548 bytes)
-LINES:    52
-SHA256:   0508d4671efb22eb49f491a87903467fa23b5836896255e4d7593ae6ea27d8eb
-MODIFIED: 2026-10-29 20:03:06 (UTC)
+SIZE:     2.98 KB (3047 bytes)
+LINES:    59
+SHA256:   e4f6d5b1e8980d1b3670d6a09ece754bda6a1d2799a17ee22f47e901a7556194
+MODIFIED: 2026-11-02 14:24:33 (UTC)
 ================================================================================
 
 using Microsoft.Playwright;
@@ -15648,6 +16936,13 @@ public sealed class LatencyTests(BrowserFixture browser) : IClassFixture<Browser
         await Expect(seen.Locator("tbody tr")).ToHaveCountAsync(await tester.Locator(".probe tbody tr").CountAsync());
         await Expect(watcher.Locator("#latency-browser-fastest-empty")).ToBeVisibleAsync();
         await Expect(watcher.Locator("#latency-jackpot-winners-empty")).ToBeVisibleAsync();
+
+        var run = watcher.GetByRole(AriaRole.Button, new() { Name = "Run test" });
+        await Expect(run).ToBeEnabledAsync(new() { Timeout = 10_000 });
+        await run.ClickAsync();
+        await Expect(watcher.Locator("#latency-feed .msg.mine").First).ToBeVisibleAsync(new() { Timeout = 30_000 });
+        await Expect(watcher.Locator(".probe .status")).ToHaveTextAsync("Done. Your result is at the top of the list.");
+        await Expect(tester.Locator(".probe .status")).ToBeEmptyAsync();
     }
 
     private async Task<IBrowserContext> OfflineContextAsync()
@@ -15850,11 +17145,104 @@ public sealed partial class PostcardTests(BrowserFixture browser) : IClassFixtur
 
 
 ================================================================================
+FILE:     tests/Chaos.E2E/ReadTests.cs
+SIZE:     3.61 KB (3693 bytes)
+LINES:    83
+SHA256:   216e3095f7881f8e826207a727ff69810227f73447f42f803a02a9c9475027bf
+MODIFIED: 2026-11-02 14:23:23 (UTC)
+================================================================================
+
+using System.Text.RegularExpressions;
+using Microsoft.Playwright;
+using static Microsoft.Playwright.Assertions;
+
+namespace Chaos.E2E;
+
+public sealed partial class ReadTests(BrowserFixture browser) : IClassFixture<BrowserFixture>
+{
+    private const string Settled = """
+        ([first, reads]) => {
+            const id = document.querySelector('article[data-reading]')?.dataset.reading;
+            const top = document.querySelector('#reading-history li');
+            return !!top && top.dataset.id === id && (id !== first || top.textContent.includes(reads));
+        }
+        """;
+
+    [Fact]
+    public async Task ArticlesAreRememberedOnThisDeviceAndCanBeReadAgain()
+    {
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        var errors = new List<string>();
+        page.PageError += (_, error) => errors.Add(error);
+
+        await page.GotoAsync("/board");
+        await page.GetByRole(AriaRole.Navigation, new() { Name = "Main" }).GetByRole(AriaRole.Link, new() { Name = "Read", Exact = true }).ClickAsync();
+        await Expect(page).ToHaveURLAsync(ArticleUrl());
+        var first = await ArticleIdAsync(page);
+        var firstUrl = page.Url;
+        var title = await page.Locator("article h1").TextContentAsync() ?? "";
+        Assert.NotEmpty(title);
+        await Expect(History(page)).ToHaveCountAsync(1);
+        await Expect(page.Locator("#reading-empty")).ToBeHiddenAsync();
+        await Expect(History(page).Locator("a[aria-current='page']")).ToHaveTextAsync(title);
+
+        var second = first;
+        var firstReads = 1;
+        for (var attempt = 0; attempt < 5 && second == first; attempt++)
+        {
+            await page.GetByRole(AriaRole.Link, new() { Name = "Another one" }).ClickAsync();
+            await page.WaitForFunctionAsync(Settled, new[] { first, $"{firstReads + 1} reads" });
+            second = await ArticleIdAsync(page);
+            if (second == first)
+            {
+                firstReads++;
+            }
+        }
+
+        Assert.NotEqual(first, second);
+        await Expect(History(page)).ToHaveCountAsync(2);
+        await Expect(History(page).First).ToHaveAttributeAsync("data-id", second);
+
+        await page.ReloadAsync();
+        await Expect(History(page)).ToHaveCountAsync(2);
+        await History(page).Locator($"a[href='read/{first}']").ClickAsync();
+        await Expect(page).ToHaveURLAsync(firstUrl);
+        await Expect(page.Locator("article h1")).ToHaveTextAsync(title);
+        await Expect(History(page).First).ToHaveAttributeAsync("data-id", first);
+        await Expect(History(page).First).ToContainTextAsync($"{firstReads + 1} reads");
+        Assert.Empty(errors);
+    }
+
+    [Fact]
+    public async Task AnArticleThatIsGoneSaysSo()
+    {
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync("/read/000000000000");
+
+        await Expect(page.GetByRole(AriaRole.Heading, new() { Name = "Not available" })).ToBeVisibleAsync();
+        await page.GetByRole(AriaRole.Link, new() { Name = "Read a random one" }).ClickAsync();
+        await Expect(page).ToHaveURLAsync(ArticleUrl());
+        await Expect(History(page)).ToHaveCountAsync(1);
+    }
+
+    private static ILocator History(IPage page) => page.Locator("#reading-history li");
+
+    private static async Task<string> ArticleIdAsync(IPage page) =>
+        await page.Locator("article[data-reading]").GetAttributeAsync("data-reading") ?? throw new InvalidOperationException("The article has no id.");
+
+    [GeneratedRegex("/read/[0-9a-f]{12}$")]
+    private static partial Regex ArticleUrl();
+}
+
+
+================================================================================
 FILE:     tests/Chaos.E2E/SiteTests.cs
-SIZE:     3.97 KB (4069 bytes)
-LINES:    105
-SHA256:   17719143be0c6b84b87918045bdcf9a0c386f07f489ecbc3da6c8b21bdbb684a
-MODIFIED: 2026-10-31 22:55:06 (UTC)
+SIZE:     5.44 KB (5575 bytes)
+LINES:    133
+SHA256:   6f95f26e1cb725a2f15ac4a4c2adbc65c49834e5c096db7df2bd98272c0e012f
+MODIFIED: 2026-11-02 14:24:33 (UTC)
 ================================================================================
 
 using System.Text.RegularExpressions;
@@ -15880,7 +17268,7 @@ public sealed partial class SiteTests(BrowserFixture browser) : IClassFixture<Br
         };
         page.PageError += (_, error) => errors.Add(error);
 
-        foreach (var path in new[] { "/", "/about", "/board", "/postcard", "/slots", "/latency", "/canvas" })
+        foreach (var path in new[] { "/", "/about", "/board", "/postcard", "/slots", "/latency", "/read", "/canvas" })
         {
             await page.GotoAsync(path);
         }
@@ -15906,6 +17294,34 @@ public sealed partial class SiteTests(BrowserFixture browser) : IClassFixture<Br
         await page.GotoAsync("/board");
         await Expect(page.Locator("#compose-text")).ToBeEnabledAsync();
         Assert.NotEmpty(sockets);
+    }
+
+    [Theory]
+    [InlineData(320, 640)]
+    [InlineData(390, 844)]
+    public async Task NoPageScrollsSidewaysOnAPhone(int width, int height)
+    {
+        await using var context = await browser.NewSizedContextAsync(width, height);
+        var page = await context.NewPageAsync();
+        await page.GotoAsync("/board");
+        await Expect(page.Locator("#compose-text")).ToBeEnabledAsync();
+        var text = $"{Guid.NewGuid():N}{new string('w', 400)}";
+        await page.Locator("#compose-text").FillAsync(text);
+        await page.Locator("#compose-text").PressAsync("Control+Enter");
+        await Expect(page.Locator("#board-feed .msg", new() { HasText = text })).ToBeVisibleAsync();
+
+        foreach (var path in new[] { "/", "/board", "/postcard", "/canvas", "/slots", "/latency", "/read", "/about", "/no-such-page" })
+        {
+            await page.GotoAsync(path);
+            var nav = page.GetByRole(AriaRole.Navigation, new() { Name = "Main" });
+            foreach (var name in new[] { "Board", "Postcard", "Canvas", "Slots", "Latency", "Read", "About" })
+            {
+                await Expect(nav.GetByRole(AriaRole.Link, new() { Name = name, Exact = true })).ToBeInViewportAsync();
+            }
+
+            var widths = await page.EvaluateAsync<int[]>("() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]");
+            Assert.True(widths[0] <= widths[1], $"{path} is {widths[0]} px wide in a {widths[1]} px viewport.");
+        }
     }
 
     [Fact]
@@ -15966,10 +17382,10 @@ public sealed partial class SiteTests(BrowserFixture browser) : IClassFixture<Br
 
 ================================================================================
 FILE:     tests/Chaos.E2E/SlotTests.cs
-SIZE:     9.39 KB (9617 bytes)
-LINES:    208
-SHA256:   8624ec4be60607f3d92b8385ddd12a4c9007d2365971b3a8d6156841d40d3ceb
-MODIFIED: 2026-10-19 05:29:58 (UTC)
+SIZE:     10.01 KB (10249 bytes)
+LINES:    217
+SHA256:   64fcab9416763b35c7ac3cc9d280567750f1b19ee87e018b77271c1abe48f543
+MODIFIED: 2026-11-02 14:24:33 (UTC)
 ================================================================================
 
 using Microsoft.Playwright;
@@ -15997,7 +17413,16 @@ public sealed class SlotTests(BrowserFixture browser) : IClassFixture<BrowserFix
         var seen = watcher.Locator($"#slots-feed .msg[data-id='{id}']");
         await Expect(seen).ToBeVisibleAsync();
         await Expect(seen.Locator(".yours")).ToHaveCountAsync(0);
+        await Expect(watcher.Locator(".machine .status")).ToBeEmptyAsync();
+        await Expect(presser.Locator(".machine .status")).ToBeEmptyAsync();
         await Expect(SpinButton(watcher)).ToBeEnabledAsync();
+
+        await SpinButton(watcher).ClickAsync();
+        await Expect(watcher.Locator(".machine .status")).ToHaveTextAsync("Your press worked. This spin is yours.");
+        await Expect(presser.Locator(".machine.spinning")).ToBeVisibleAsync();
+        await Expect(presser.Locator(".machine .status")).ToBeEmptyAsync();
+        await Expect(watcher.Locator("#slots-feed .msg.mine")).ToBeVisibleAsync();
+        await Expect(watcher.Locator(".machine .status")).ToBeEmptyAsync();
     }
 
     [Fact]
@@ -16178,6 +17603,412 @@ public sealed class SlotTests(BrowserFixture browser) : IClassFixture<BrowserFix
         await page.GotoAsync("/slots");
         await Expect(page.Locator(".machine[data-ready]")).ToBeVisibleAsync();
         return page;
+    }
+}
+
+
+================================================================================
+FILE:     tests/Chaos.Web.Tests/ArticleLibraryTests.cs
+SIZE:     6.26 KB (6407 bytes)
+LINES:    187
+SHA256:   52586195cc102d245eac703aa9e186783650284506405eedb5ec3f44d722dc80
+MODIFIED: 2026-11-02 14:24:56 (UTC)
+================================================================================
+
+using System.Text;
+using Chaos.Web.Infrastructure;
+using Chaos.Web.Reading;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Primitives;
+
+namespace Chaos.Web.Tests;
+
+public sealed class ArticleLibraryTests : IDisposable
+{
+    private const string FileName = "articles.txt";
+    private readonly DirectoryInfo _root = Directory.CreateTempSubdirectory("chaos-articles-");
+    private readonly PhysicalFileProvider _files;
+
+    public ArticleLibraryTests() => _files = new PhysicalFileProvider(_root.FullName);
+
+    private string FilePath => Path.Combine(_root.FullName, FileName);
+
+    public void Dispose()
+    {
+        _files.Dispose();
+        _root.Delete(true);
+    }
+
+    [Fact]
+    public void FindsEveryArticleById()
+    {
+        Write(ArticleSamples.Both);
+        var library = Create();
+
+        Assert.Equal(2, library.Count);
+        Assert.Equal("Are Babies Conscious?", library.Find(ArticleText.IdOf(ArticleSamples.FirstUrl))?.Title);
+        Assert.Equal("The 7 Keys to Longevity", library.Find(ArticleText.IdOf(ArticleSamples.SecondUrl))?.Title);
+    }
+
+    [Fact]
+    public void PicksAnyArticle()
+    {
+        Write(ArticleSamples.Both);
+        var library = Create();
+
+        Assert.Equal("Are Babies Conscious?", library.Pick(_ => 0)?.Title);
+        Assert.Equal("The 7 Keys to Longevity", library.Pick(count => count - 1)?.Title);
+        Assert.Null(library.Pick(count => count));
+        var any = library.Random();
+        Assert.NotNull(any);
+        Assert.Contains(any.Title, new[] { "Are Babies Conscious?", "The 7 Keys to Longevity" });
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("ffffffffffff")]
+    [InlineData("FFFFFFFFFFFF")]
+    [InlineData("../articles.txt")]
+    public void ReturnsNothingForUnknownIds(string? id)
+    {
+        Write(ArticleSamples.Both);
+        Assert.Null(Create().Find(id));
+    }
+
+    [Fact]
+    public void KeepsTheFirstOfDuplicateArticles()
+    {
+        Write(ArticleSamples.First + ArticleSamples.First.Replace("Are Babies Conscious?", "Copy", StringComparison.Ordinal) + ArticleSamples.Second);
+        var library = Create();
+
+        Assert.Equal(2, library.Count);
+        Assert.Equal("Are Babies Conscious?", library.Find(ArticleText.IdOf(ArticleSamples.FirstUrl))?.Title);
+    }
+
+    [Fact]
+    public void IsEmptyWithoutAFile()
+    {
+        var library = Create();
+
+        Assert.Equal(0, library.Count);
+        Assert.Null(library.Random());
+        Assert.Null(library.Find(ArticleText.IdOf(ArticleSamples.FirstUrl)));
+    }
+
+    [Fact]
+    public void IsEmptyWhenThePathIsAFolder()
+    {
+        Directory.CreateDirectory(FilePath);
+        Assert.Equal(0, Create().Count);
+    }
+
+    [Fact]
+    public void NoticesWhenTheFileAppearsChangesAndDisappears()
+    {
+        var library = Create();
+        Assert.Equal(0, library.Count);
+
+        Write(ArticleSamples.First);
+        Assert.Equal(1, library.Count);
+
+        Write(ArticleSamples.Second + ArticleSamples.First, TimeSpan.FromMinutes(1));
+        var first = ArticleText.IdOf(ArticleSamples.FirstUrl);
+        Assert.Equal(2, library.Count);
+        Assert.Equal("Are Babies Conscious?", library.Find(first)?.Title);
+
+        Write(ArticleSamples.Second, TimeSpan.FromMinutes(2));
+        Assert.Null(library.Find(first));
+        Assert.Equal("The 7 Keys to Longevity", library.Random()?.Title);
+
+        File.Delete(FilePath);
+        Assert.Null(library.Random());
+        Assert.Equal(0, library.Count);
+    }
+
+    [Fact]
+    public void ReadsAPlainTextFileAsOneArticle()
+    {
+        Write("A title\n\nThe only paragraph.\n");
+        var article = Create().Random();
+
+        Assert.Equal("A title", article?.Title);
+        Assert.Equal("The only paragraph.", Assert.Single(article!.Blocks).Text);
+    }
+
+    [Fact]
+    public void ReadsArticlesAfterMultibyteText()
+    {
+        Write("﻿" + ArticleSamples.Record("é.html", "ü", "Ünïcödé — “quotes”\nBy Ñame\nPublished 2026-10-01 00:00 UTC\nhttps://example.com/u", "Body ½ €.") + ArticleSamples.Second);
+        var library = Create();
+
+        Assert.Equal("Ünïcödé — “quotes”", library.Find(ArticleText.IdOf("https://example.com/u"))?.Title);
+        Assert.Equal("The 7 Keys to Longevity", library.Find(ArticleText.IdOf(ArticleSamples.SecondUrl))?.Title);
+    }
+
+    [Fact]
+    public void ReadsFromProvidersThatCannotSeek()
+    {
+        var library = new ArticleLibrary(new MemoryFiles(Encoding.UTF8.GetBytes(ArticleSamples.Both)), Limits.Create(options => options.ArticlesFile = FileName), NullLogger<ArticleLibrary>.Instance);
+
+        Assert.Equal("The 7 Keys to Longevity", library.Find(ArticleText.IdOf(ArticleSamples.SecondUrl))?.Title);
+    }
+
+    [Theory]
+    [InlineData("", false)]
+    [InlineData(" ", false)]
+    [InlineData("nytimes.txt", true)]
+    public void TheArticlesFileMustBeNamed(string name, bool valid) =>
+        Assert.Equal(valid, new ChaosOptions { ArticlesFile = name }.IsValid());
+
+    private ArticleLibrary Create() =>
+        new(_files, Limits.Create(options => options.ArticlesFile = FileName), NullLogger<ArticleLibrary>.Instance);
+
+    private void Write(string text, TimeSpan? later = null)
+    {
+        File.WriteAllText(FilePath, text, new UTF8Encoding(false));
+        File.SetLastWriteTimeUtc(FilePath, new DateTime(2026, 11, 1, 0, 0, 0, DateTimeKind.Utc) + (later ?? TimeSpan.Zero));
+    }
+
+    private sealed class MemoryFiles(byte[] bytes) : IFileProvider
+    {
+        public IDirectoryContents GetDirectoryContents(string subpath) => NotFoundDirectoryContents.Singleton;
+
+        public IFileInfo GetFileInfo(string subpath) => new MemoryFile(bytes);
+
+        public IChangeToken Watch(string filter) => NullChangeToken.Singleton;
+    }
+
+    private sealed class MemoryFile(byte[] bytes) : IFileInfo
+    {
+        public bool Exists => true;
+
+        public long Length => bytes.Length;
+
+        public string? PhysicalPath => null;
+
+        public string Name => FileName;
+
+        public DateTimeOffset LastModified => DateTimeOffset.UnixEpoch;
+
+        public bool IsDirectory => false;
+
+        public Stream CreateReadStream() => new ForwardOnlyStream(bytes);
+    }
+
+    private sealed class ForwardOnlyStream(byte[] bytes) : MemoryStream(bytes, false)
+    {
+        public override bool CanSeek => false;
+    }
+}
+
+
+================================================================================
+FILE:     tests/Chaos.Web.Tests/ArticleSamples.cs
+SIZE:     1.86 KB (1908 bytes)
+LINES:    50
+SHA256:   1d7a4737fe87c638c632bc894142bf11fd7ceaeb03fd014eccba4bedf1023b31
+MODIFIED: 2026-11-02 14:19:11 (UTC)
+================================================================================
+
+namespace Chaos.Web.Tests;
+
+internal static class ArticleSamples
+{
+    public static readonly string Rule = new('=', 80);
+
+    public const string FirstUrl = "https://www.nytimes.com/2026/10/05/science/consciousness-brain-babies.html";
+
+    public const string SecondUrl = "https://www.nytimes.com/2024/01/04/well/live/live-longer-health.html";
+
+    public static string First => Record(
+        "consciousness-brain-babies.html",
+        "When does it begin?",
+        """
+        Are Babies Conscious?
+        By pinpointing when it begins in young humans, scientists hope to better understand what consciousness is.
+        By Carl Zimmer
+        Published 2026-10-05 09:00 UTC
+        https://www.nytimes.com/2026/10/05/science/consciousness-brain-babies.html
+        """,
+        """
+        A newborn’s brain is busy.
+
+        Researchers listed three signs:
+        """,
+        """
+        - Attention to faces.
+        - Surprise at the unexpected.
+        • A sense of time.
+        """,
+        "https://example.com/" + new string('a', 300));
+
+    public static string Second => Record(
+        "live-longer-health.html",
+        "Move more.",
+        """
+        The 7 Keys to Longevity
+        Ignore the hyperbaric chambers and infrared light.
+        By Dana G. Smith
+        Published 2024-01-04 10:00 UTC
+        https://www.nytimes.com/2024/01/04/well/live/live-longer-health.html
+        """,
+        "Humans have searched for the secret to immortality for thousands of years.",
+        "1. Move more.");
+
+    public static string Both => First + Second;
+
+    public static string Record(string slug, string summary, string head, params string[] paragraphs) =>
+        $"{Rule}\n{slug}\nSource: PreloadedData  Paragraphs: {paragraphs.Length}\n{Rule}\n\nSUMMARY\n\n{summary}\n\nARTICLE\n\n{head.Trim()}\n\n{string.Join("\n\n", paragraphs.Select(paragraph => paragraph.Trim()))}\n\n";
+}
+
+
+================================================================================
+FILE:     tests/Chaos.Web.Tests/ArticleTextTests.cs
+SIZE:     5.32 KB (5445 bytes)
+LINES:    139
+SHA256:   0410579e9683d1c784d3cbb17a394198036d533180eea1c05236f340945f6093
+MODIFIED: 2026-11-02 14:19:57 (UTC)
+================================================================================
+
+using System.Text;
+using Chaos.Web.Reading;
+
+namespace Chaos.Web.Tests;
+
+public sealed class ArticleTextTests
+{
+    [Fact]
+    public void ParsesTheHeadSummaryAndBody()
+    {
+        var article = ArticleText.Parse(ArticleSamples.First);
+
+        Assert.NotNull(article);
+        Assert.Equal(ArticleText.IdOf(ArticleSamples.FirstUrl), article.Id);
+        Assert.Equal("Are Babies Conscious?", article.Title);
+        Assert.Equal("By pinpointing when it begins in young humans, scientists hope to better understand what consciousness is.", article.Dek);
+        Assert.Equal("By Carl Zimmer", article.Byline);
+        Assert.Equal(new DateTimeOffset(2026, 10, 5, 9, 0, 0, TimeSpan.Zero), article.Published);
+        Assert.Equal(new Uri(ArticleSamples.FirstUrl), article.Source);
+        Assert.Equal("When does it begin?", article.Summary);
+        Assert.Equal(4, article.Blocks.Count);
+        Assert.Equal("A newborn’s brain is busy.", article.Blocks[0].Text);
+        Assert.False(article.Blocks[0].IsList);
+        Assert.True(article.Blocks[2].IsList);
+        Assert.Equal(new[] { "Attention to faces.", "Surprise at the unexpected.", "A sense of time." }, article.Blocks[2].Lines);
+    }
+
+    [Fact]
+    public void ReadsAHeadWithoutADek()
+    {
+        var article = ArticleText.Parse(ArticleSamples.Record("x.html", "s", "Title\nBy Someone\nPublished 2026-10-05 13:10 UTC\nhttps://example.com/live", "Body."));
+
+        Assert.NotNull(article);
+        Assert.Equal("Title", article.Title);
+        Assert.Null(article.Dek);
+        Assert.Equal("By Someone", article.Byline);
+        Assert.Equal(ArticleText.IdOf("https://example.com/live"), article.Id);
+    }
+
+    [Fact]
+    public void ToleratesAnUnreadableDateAndNoSource()
+    {
+        var article = ArticleText.Parse(ArticleSamples.Record("x.html", "s", "Title\nPublished sometime", "Body."));
+
+        Assert.NotNull(article);
+        Assert.Null(article.Published);
+        Assert.Null(article.Source);
+        Assert.Null(article.Byline);
+        Assert.Null(article.Dek);
+        Assert.Equal(ArticleText.IdOf("Title\nBody."), article.Id);
+    }
+
+    [Fact]
+    public void KeepsLineBreaksInsideAParagraphThatIsNotAList()
+    {
+        var article = ArticleText.Parse(ArticleSamples.Record("x.html", "s", "Title", "First line\n- second line"));
+
+        Assert.NotNull(article);
+        Assert.False(article.Blocks[0].IsList);
+        Assert.Equal("First line\n- second line", article.Blocks[0].Text);
+    }
+
+    [Fact]
+    public void FallsBackToPlainText()
+    {
+        var article = ArticleText.Parse("﻿A plain title\r\n\r\nFirst paragraph.\r\n\r\nSecond paragraph.\r\n");
+
+        Assert.NotNull(article);
+        Assert.Equal("A plain title", article.Title);
+        Assert.Null(article.Summary);
+        Assert.Equal(new[] { "First paragraph.", "Second paragraph." }, article.Blocks.Select(block => block.Text));
+    }
+
+    [Fact]
+    public void NamesAnUntitledRecordAfterItsSlug()
+    {
+        var article = ArticleText.Parse($"{ArticleSamples.Rule}\nlong-walks-home.html\n{ArticleSamples.Rule}\n\n{new string('w', 300)}\n");
+
+        Assert.NotNull(article);
+        Assert.Equal("Long walks home", article.Title);
+        Assert.Single(article.Blocks);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   \n\n  ")]
+    [InlineData("====================\nslug\n====================\n\n")]
+    public void RejectsRecordsWithoutABody(string text) => Assert.Null(ArticleText.Parse(text));
+
+    [Fact]
+    public void SplitsRecordsAtHeaderRules()
+    {
+        var bytes = Encoding.UTF8.GetBytes(ArticleSamples.Both);
+        var records = ArticleText.Records(bytes);
+
+        Assert.Equal(2, records.Count);
+        var titles = records.Select(range => ArticleText.Parse(Encoding.UTF8.GetString(bytes[range]))!.Title);
+        Assert.Equal(new[] { "Are Babies Conscious?", "The 7 Keys to Longevity" }, titles);
+        Assert.Equal(bytes.Length, records[^1].End.GetOffset(bytes.Length));
+    }
+
+    [Fact]
+    public void IgnoresARuleInsideABody()
+    {
+        var text = ArticleSamples.Record("a.html", "s", "Alpha", "One.", ArticleSamples.Rule, "Two.", "Three.", "Four.", "Five.", "Six.", "Seven.", "Eight.") + ArticleSamples.Second;
+        var bytes = Encoding.UTF8.GetBytes("﻿" + text);
+        var records = ArticleText.Records(bytes);
+
+        Assert.Equal(2, records.Count);
+        Assert.Equal("Alpha", ArticleText.Parse(Encoding.UTF8.GetString(bytes[records[0]]))!.Title);
+    }
+
+    [Fact]
+    public void TreatsAFileWithoutRulesAsOneRecord()
+    {
+        Assert.Single(ArticleText.Records("Just some text.\n"u8));
+        Assert.Empty(ArticleText.Records(" \r\n\t\n"u8));
+        Assert.Empty(ArticleText.Records([]));
+    }
+
+    [Theory]
+    [InlineData("0123456789ab", true)]
+    [InlineData("0123456789AB", false)]
+    [InlineData("0123456789a", false)]
+    [InlineData("0123456789abc", false)]
+    [InlineData("../../secret", false)]
+    [InlineData(null, false)]
+    public void ValidatesIds(string? id, bool valid) => Assert.Equal(valid, ArticleText.IsId(id));
+
+    [Fact]
+    public void MakesShortStableIds()
+    {
+        var id = ArticleText.IdOf(ArticleSamples.FirstUrl);
+        Assert.Equal(ArticleText.IdLength, id.Length);
+        Assert.True(ArticleText.IsId(id));
+        Assert.Equal(id, ArticleText.IdOf(ArticleSamples.FirstUrl));
+        Assert.NotEqual(id, ArticleText.IdOf(ArticleSamples.SecondUrl));
     }
 }
 
@@ -16911,10 +18742,10 @@ public sealed class LatencyOptionsTests
 
 ================================================================================
 FILE:     tests/Chaos.Web.Tests/HttpPipelineTests.cs
-SIZE:     13.28 KB (13603 bytes)
-LINES:    293
-SHA256:   86a81689be31fcaf22fd052a00ad94c61553404e18603afdf61c24236fd8e111
-MODIFIED: 2026-10-31 22:47:34 (UTC)
+SIZE:     13.34 KB (13656 bytes)
+LINES:    294
+SHA256:   f3d620e6f5c09cda276f0eea72871d20b2d3caefc93ebe6dcef654afbd6bfd3d
+MODIFIED: 2026-11-02 14:24:44 (UTC)
 ================================================================================
 
 using System.Net;
@@ -16954,6 +18785,7 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
     [InlineData("/slots", "Chaos slots")]
     [InlineData("/latency", "Chaos latency")]
     [InlineData("/about", "About chaos")]
+    [InlineData("/read/000000000000", "Chaos read")]
     public async Task PagesRenderWithoutSettingCookies(string path, string title)
     {
         using var client = CreateClient();
@@ -18363,6 +20195,112 @@ public sealed class PostcardServiceTests : IDisposable
         _services.Add(service);
         return service;
     }
+}
+
+
+================================================================================
+FILE:     tests/Chaos.Web.Tests/ReadPageTests.cs
+SIZE:     4.09 KB (4190 bytes)
+LINES:    96
+SHA256:   ce847cad7b9c2118a2c70ed010d3ac252b11c662a9dd8439121790f192de4e47
+MODIFIED: 2026-11-02 14:21:04 (UTC)
+================================================================================
+
+using System.Net;
+using System.Text;
+using Chaos.Web.Reading;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging.Abstractions;
+
+namespace Chaos.Web.Tests;
+
+public sealed class ReadPageTests : IClassFixture<ChaosFactory>, IDisposable
+{
+    private const string FileName = "articles.txt";
+    private readonly DirectoryInfo _root = Directory.CreateTempSubdirectory("chaos-read-");
+    private readonly PhysicalFileProvider _files;
+    private readonly WebApplicationFactory<Program> _factory;
+
+    public ReadPageTests(ChaosFactory factory)
+    {
+        _files = new PhysicalFileProvider(_root.FullName);
+        _factory = factory.WithWebHostBuilder(builder => builder.ConfigureTestServices(services =>
+            services.AddSingleton(new ArticleLibrary(_files, Limits.Create(options => options.ArticlesFile = FileName), NullLogger<ArticleLibrary>.Instance))));
+    }
+
+    private static CancellationToken Cancellation => TestContext.Current.CancellationToken;
+
+    public void Dispose()
+    {
+        _factory.Dispose();
+        _files.Dispose();
+        _root.Delete(true);
+    }
+
+    [Fact]
+    public async Task ARandomVisitRedirectsToAnArticle()
+    {
+        Write(ArticleSamples.Both);
+        using var client = CreateClient();
+        using var response = await client.GetAsync("/read", Cancellation);
+
+        Assert.Equal(HttpStatusCode.Found, response.StatusCode);
+        var target = response.Headers.Location?.ToString() ?? "";
+        Assert.Contains(target[(target.LastIndexOf('/') + 1)..], new[] { ArticleText.IdOf(ArticleSamples.FirstUrl), ArticleText.IdOf(ArticleSamples.SecondUrl) });
+        Assert.False(response.Headers.Contains("Set-Cookie"));
+    }
+
+    [Fact]
+    public async Task AnArticleRendersAsPlainReadableText()
+    {
+        Write(ArticleSamples.Both);
+        var id = ArticleText.IdOf(ArticleSamples.FirstUrl);
+        using var client = CreateClient();
+        using var response = await client.GetAsync($"/read/{id}", Cancellation);
+        var html = await response.Content.ReadAsStringAsync(Cancellation);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.False(response.Headers.Contains("Set-Cookie"));
+        Assert.Contains("<title>Are Babies Conscious? · Chaos</title>", html, StringComparison.Ordinal);
+        Assert.Contains($"data-reading=\"{id}\"", html, StringComparison.Ordinal);
+        Assert.Matches("<h1[^>]*>Are Babies Conscious\\?</h1>", html);
+        Assert.Contains("By Carl Zimmer", html, StringComparison.Ordinal);
+        Assert.Matches("<time[^>]*datetime=\"2026-10-05T09:00Z\"[^>]*>October 5, 2026</time>", html);
+        Assert.Matches("<li[^>]*>Surprise at the unexpected.</li>", html);
+        Assert.Contains("id=\"reading-history\"", html, StringComparison.Ordinal);
+        Assert.Contains($"href=\"{ArticleSamples.FirstUrl}\"", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task AMissingArticleSaysSoInsteadOfFailing()
+    {
+        Write(ArticleSamples.Second);
+        using var client = CreateClient();
+        var html = await client.GetStringAsync($"/read/{ArticleText.IdOf(ArticleSamples.FirstUrl)}", Cancellation);
+
+        Assert.Matches("<h1[^>]*>Not available</h1>", html);
+        Assert.Contains("id=\"reading-history\"", html, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task NoFileMeansNothingToReadRatherThanAnError()
+    {
+        using var client = CreateClient();
+        using var response = await client.GetAsync("/read", Cancellation);
+        var html = await response.Content.ReadAsStringAsync(Cancellation);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("nothing to read right now", html, StringComparison.Ordinal);
+    }
+
+    private HttpClient CreateClient() =>
+        _factory.CreateClient(new WebApplicationFactoryClientOptions { AllowAutoRedirect = false, HandleCookies = false });
+
+    private void Write(string text) =>
+        File.WriteAllText(Path.Combine(_root.FullName, FileName), text, new UTF8Encoding(false));
 }
 
 
@@ -20058,6 +21996,138 @@ describe('isStale', () => {
 
 
 ================================================================================
+FILE:     tests/js/read.test.js
+SIZE:     4.26 KB (4365 bytes)
+LINES:    122
+SHA256:   c949c4f6501332c57f60d4ea0399f5f224fe846ba35b30fc05cca9f6c6090c75
+MODIFIED: 2026-11-02 14:18:30 (UTC)
+================================================================================
+
+import { describe, expect, it } from 'vitest';
+import { upgrade } from '../../src/Chaos.Web/Components/Islands/BoardIsland.razor.js';
+import {
+    DB_NAME,
+    DB_VERSION,
+    LOCAL_CAP,
+    STORE,
+    entryOf,
+    hrefOf,
+    isId,
+    migrations,
+    overflow,
+    readLabel,
+    readsText,
+    recentFirst,
+    remember,
+    shelved,
+    visit,
+} from '../../src/Chaos.Web/Components/Pages/ReadPage.razor.js';
+
+const ID = '0123456789ab';
+
+describe('reading history schema', () => {
+    it('creates one store keyed by id', () => {
+        const created = [];
+        upgrade({ createObjectStore: (name, options) => created.push([name, options]) }, 0, DB_VERSION, migrations);
+        expect(DB_NAME).toBe('chaos-reading');
+        expect(created).toEqual([[STORE, { keyPath: 'id' }]]);
+        expect(LOCAL_CAP).toBe(1000);
+    });
+});
+
+describe('entries', () => {
+    it('accepts twelve lowercase hex digits only', () => {
+        expect(isId(ID)).toBe(true);
+        expect(isId('0123456789AB')).toBe(false);
+        expect(isId('0123456789a')).toBe(false);
+        expect(isId('../etc/passwd')).toBe(false);
+        expect(isId(null)).toBe(false);
+    });
+
+    it('reads the article element', () => {
+        expect(entryOf({ reading: ID, title: '  A title ', byline: 'By Someone', published: '2026-10-05T09:03Z' }))
+            .toEqual({ id: ID, title: 'A title', byline: 'By Someone', published: '2026-10-05T09:03Z' });
+        expect(entryOf({ reading: ID, title: 'A title', byline: '', published: undefined }))
+            .toEqual({ id: ID, title: 'A title', byline: null, published: null });
+    });
+
+    it('rejects an element without a valid id or title', () => {
+        expect(entryOf({ reading: 'nope', title: 'A title' })).toBeNull();
+        expect(entryOf({ reading: ID, title: '   ' })).toBeNull();
+        expect(entryOf(undefined)).toBeNull();
+    });
+
+    it('cuts very long text', () => {
+        expect(entryOf({ reading: ID, title: 'x'.repeat(2000) }).title).toHaveLength(500);
+    });
+
+    it('links relative to the base', () => {
+        expect(hrefOf(ID)).toBe(`read/${ID}`);
+    });
+});
+
+describe('remember', () => {
+    const entry = { id: ID, title: 'A title', byline: null, published: null };
+
+    it('starts a new record', () => {
+        expect(remember(undefined, entry, 1000)).toEqual({ ...entry, first: 1000, last: 1000, reads: 1 });
+    });
+
+    it('keeps the first read and counts again', () => {
+        expect(remember({ ...entry, first: 10, last: 20, reads: 2 }, { ...entry, title: 'New title' }, 30))
+            .toEqual({ ...entry, title: 'New title', first: 10, last: 30, reads: 3 });
+    });
+
+    it('repairs damaged records', () => {
+        expect(remember({ first: 'x', reads: -4 }, entry, 5)).toEqual({ ...entry, first: 5, last: 5, reads: 1 });
+    });
+});
+
+describe('ordering and pruning', () => {
+    const records = [
+        { id: 'aaaaaaaaaaaa', title: 'A', last: 1 },
+        { id: 'bbbbbbbbbbbb', title: 'B', last: 3 },
+        { id: 'cccccccccccc', title: 'C', last: 2 },
+        { id: 'dddddddddddd', title: 'D', last: 3 },
+        { id: 'bad', title: 'E', last: 9 },
+        { id: 'eeeeeeeeeeee', title: '', last: 9 },
+        null,
+    ];
+
+    it('sorts by last read, then id, and drops damaged records', () => {
+        expect(shelved(records).map(record => record.title)).toEqual(['B', 'D', 'C', 'A']);
+        expect(recentFirst({ id: 'a', last: 1 }, { id: 'a', last: 1 })).toBe(0);
+    });
+
+    it('lists the ids past the cap', () => {
+        expect(overflow(records, 2)).toEqual(['cccccccccccc', 'aaaaaaaaaaaa']);
+        expect(overflow(records)).toEqual([]);
+    });
+});
+
+describe('labels', () => {
+    it('shows the time today and the date otherwise', () => {
+        const at = Date.UTC(2026, 10, 2, 14, 5, 9);
+        expect(readLabel(at, Date.UTC(2026, 10, 2, 23))).toBe('today 14:05 UTC');
+        expect(readLabel(at, Date.UTC(2026, 10, 3, 1))).toBe('2026-11-02');
+        expect(readLabel(undefined)).toBe('');
+    });
+
+    it('counts repeat reads only', () => {
+        expect(readsText(1)).toBe('');
+        expect(readsText(undefined)).toBe('');
+        expect(readsText(4)).toBe('4 reads');
+    });
+});
+
+describe('visit', () => {
+    it('does nothing without IndexedDB', async () => {
+        await expect(visit(undefined, { id: ID, title: 'A' })).resolves.toEqual([]);
+    });
+});
+
+
+================================================================================
 FILE:     tests/js/slots.test.js
 SIZE:     12.15 KB (12442 bytes)
 LINES:    329
@@ -20397,6 +22467,141 @@ describe('jackpots', () => {
 
 
 ================================================================================
+FILE:     tests/js/status.test.js
+SIZE:     4.18 KB (4279 bytes)
+LINES:    125
+SHA256:   bef40847088060d457317ac6a4b09a2c7eadd9fc9639962191c1ff481bc3678d
+MODIFIED: 2026-11-02 14:18:13 (UTC)
+================================================================================
+
+import { describe, expect, it } from 'vitest';
+import { NOTICE_MS, REPEAT_MS, StatusLine } from '../../src/Chaos.Web/Components/Islands/BoardIsland.razor.js';
+
+function clock() {
+    let now = 0;
+    let next = 1;
+    const pending = new Map();
+    return {
+        setTimeout(callback, ms) {
+            const id = next++;
+            pending.set(id, { at: now + ms, callback });
+            return id;
+        },
+        clearTimeout(id) {
+            pending.delete(id);
+        },
+        advance(ms) {
+            now += ms;
+            for (const [id, timer] of [...pending].sort((a, b) => a[1].at - b[1].at)) {
+                if (timer.at <= now && pending.has(id)) {
+                    pending.delete(id);
+                    timer.callback();
+                }
+            }
+        },
+        get size() {
+            return pending.size;
+        },
+    };
+}
+
+function line(ms) {
+    const element = { textContent: '' };
+    const timers = clock();
+    return { element, timers, status: new StatusLine(element, timers, ms) };
+}
+
+describe('StatusLine', () => {
+    it('clears unowned notices after a while', () => {
+        const { element, timers, status } = line();
+        status.show('Slow down a little.');
+        expect(element.textContent).toBe('Slow down a little.');
+        timers.advance(NOTICE_MS - 1);
+        expect(element.textContent).toBe('Slow down a little.');
+        timers.advance(1);
+        expect(element.textContent).toBe('');
+        expect(status.owner).toBeNull();
+    });
+
+    it('keeps an owned notice until its owner is released', () => {
+        const { element, timers, status } = line();
+        status.show('This spin is yours.', 'a');
+        timers.advance(NOTICE_MS * 10);
+        expect(element.textContent).toBe('This spin is yours.');
+        status.release('b');
+        expect(element.textContent).toBe('This spin is yours.');
+        status.release('a');
+        expect(element.textContent).toBe('');
+    });
+
+    it('lets an owned notice expire when asked to', () => {
+        const { element, timers, status } = line();
+        status.show('This spin is yours.', 'a', 500);
+        timers.advance(500);
+        expect(element.textContent).toBe('');
+    });
+
+    it('clears an owned notice when something else takes over', () => {
+        const { element, status } = line();
+        status.show('This spin is yours.', 'a');
+        status.supersede('a');
+        expect(element.textContent).toBe('This spin is yours.');
+        status.supersede('b');
+        expect(element.textContent).toBe('');
+        status.show('Done.', 'c');
+        status.supersede(null);
+        expect(element.textContent).toBe('');
+    });
+
+    it('leaves unowned notices to their timer', () => {
+        const { element, status } = line();
+        status.show('Auto spin is off.');
+        status.supersede('b');
+        status.release(null);
+        expect(element.textContent).toBe('Auto spin is off.');
+    });
+
+    it('rewrites a repeated notice so screen readers hear it again', () => {
+        const { element, timers, status } = line();
+        status.show('Slow down a little.');
+        status.show('Slow down a little.');
+        expect(element.textContent).toBe('');
+        timers.advance(REPEAT_MS);
+        expect(element.textContent).toBe('Slow down a little.');
+    });
+
+    it('cancels timers on clear and dispose', () => {
+        const { element, timers, status } = line();
+        status.show('Could not reach the server.');
+        status.clear();
+        expect(element.textContent).toBe('');
+        expect(timers.size).toBe(0);
+        status.show('Could not reach the server.');
+        status.dispose();
+        expect(timers.size).toBe(0);
+    });
+
+    it('treats empty text as a clear', () => {
+        const { element, timers, status } = line();
+        status.show('This spin is yours.', 'a');
+        status.show('');
+        expect(element.textContent).toBe('');
+        expect(status.owner).toBeNull();
+        expect(timers.size).toBe(0);
+    });
+
+    it('works without an element', () => {
+        const status = new StatusLine(null, clock());
+        expect(() => {
+            status.show('Hello', 'a');
+            status.release('a');
+            status.dispose();
+        }).not.toThrow();
+    });
+});
+
+
+================================================================================
 FILE:     tests/js/vitest.config.mjs
 SIZE:     0.60 KB (619 bytes)
 LINES:    23
@@ -20430,9 +22635,9 @@ export default defineConfig({
 
 
 ===============================================================================
-EXPORT COMPLETED (UTC): 2026-11-02 13:47:06
-Total Files Exported:   196
-Total Source Size:      0.61 MB (637301 bytes)
+EXPORT COMPLETED (UTC): 2026-11-02 14:33:05
+Total Files Exported:   212
+Total Source Size:      0.67 MB (707385 bytes)
 Output File:            /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
 ===============================================================================
-DUMP SHA256 (of all lines above this one): 05238d4dac3341e1fa5fdaa388ddc63d416bba846b5a4689bf83563bc722abc1
+DUMP SHA256 (of all lines above this one): 0c13ac03998e5795af76d6fee3135dd901165ac23f98a389063b99c15d7c5a13
