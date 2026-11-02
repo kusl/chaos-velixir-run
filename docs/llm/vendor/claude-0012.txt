@@ -298,3 +298,503 @@ chaos-velixir-run
 
 
 
+One test is now failing 
+==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.64.1-noble
+  Determining projects to restore...
+  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 301 ms).
+  Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web -> /tmp/app/
+Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+failed Chaos.E2E.LatencyTests.ATestReachesEveryoneAndUnlocksAutoRun (30s 638ms)
+  from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
+  Xunit.MicrosoftTestingPlatform.XunitException: Microsoft.Playwright.PlaywrightException : Locator expected to be visible
+  Error: element(s) not found 
+  Call log:
+    - Expect "ToBeVisibleAsync" Locator("#latency-feed .msg.mine").First with timeout 30000ms
+    - waiting for Locator("#latency-feed .msg.mine").First
+  Aria snapshot:
+  - banner:
+    - link "chaos":
+      - /url: ""
+    - navigation "Main":
+      - link "Board":
+        - /url: board
+      - link "Postcard":
+        - /url: postcard
+      - link "Canvas":
+        - /url: canvas
+      - link "Slots":
+        - /url: slots
+      - link "Latency":
+        - /url: latency
+      - link "Read":
+        - /url: read
+      - link "About":
+        - /url: about
+    - button "Dark theme"
+  - main:
+    - heading "Latency" [level=1]
+    - paragraph: One button times how long 37 public endpoints take to answer, once from your browser and once from this server. Everyone sees every result. Each network can run a test every 1 minutes, so devices on the same Wi-Fi share that limit.
+    - region "Latency test":
+      - heading "Latency test" [level=2]
+      - button "Run test"
+      - status
+      - paragraph: 10 more tests unlock auto run.
+      - table "Your latest test":
+        - caption: Your latest test
+        - rowgroup:
+          - row "Endpoint Your browser Server":
+            - columnheader "Endpoint"
+            - columnheader "Your browser"
+            - columnheader "Server"
+        - rowgroup:
+          - row "This site – –":
+            - rowheader "This site"
+            - cell "–"
+            - cell "–"
+          - row "Cloudflare – –":
+            - rowheader "Cloudflare"
+            - cell "–"
+            - cell "–"
+          - row "Cloudflare 1.1.1.1 – –":
+            - rowheader "Cloudflare 1.1.1.1"
+            - cell "–"
+            - cell "–"
+          - row "Google – –":
+            - rowheader "Google"
+            - cell "–"
+            - cell "–"
+          - row "Google Static – –":
+            - rowheader "Google Static"
+            - cell "–"
+            - cell "–"
+          - row "Google Public DNS – –":
+            - rowheader "Google Public DNS"
+            - cell "–"
+            - cell "–"
+          - row "Apple – –":
+            - rowheader "Apple"
+            - cell "–"
+            - cell "–"
+          - row "Microsoft – –":
+            - rowheader "Microsoft"
+            - cell "–"
+            - cell "–"
+          - row "Mozilla – –":
+            - rowheader "Mozilla"
+            - cell "–"
+            - cell "–"
+          - row "GitHub – –":
+            - rowheader "GitHub"
+            - cell "–"
+            - cell "–"
+          - row "Wikipedia – –":
+            - rowheader "Wikipedia"
+            - cell "–"
+            - cell "–"
+          - row "example.com – –":
+            - rowheader "example.com"
+            - cell "–"
+            - cell "–"
+          - row "Fastly – –":
+            - rowheader "Fastly"
+            - cell "–"
+            - cell "–"
+          - row "Akamai – –":
+            - rowheader "Akamai"
+            - cell "–"
+            - cell "–"
+          - row "jsDelivr – –":
+            - rowheader "jsDelivr"
+            - cell "–"
+            - cell "–"
+          - row "npm registry – –":
+            - rowheader "npm registry"
+            - cell "–"
+            - cell "–"
+          - row "NuGet – –":
+            - rowheader "NuGet"
+            - cell "–"
+            - cell "–"
+          - row "PyPI – –":
+            - rowheader "PyPI"
+            - cell "–"
+            - cell "–"
+          - row "Debian – –":
+            - rowheader "Debian"
+            - cell "–"
+            - cell "–"
+          - row "kernel.org – –":
+            - rowheader "kernel.org"
+            - cell "–"
+            - cell "–"
+          - row "AWS N. Virginia – –":
+            - rowheader "AWS N. Virginia"
+            - cell "–"
+            - cell "–"
+          - row "AWS Ohio – –":
+            - rowheader "AWS Ohio"
+            - cell "–"
+            - cell "–"
+          - row "AWS N. California – –":
+            - rowheader "AWS N. California"
+            - cell "–"
+            - cell "–"
+          - row "AWS Oregon – –":
+            - rowheader "AWS Oregon"
+            - cell "–"
+            - cell "–"
+          - row "AWS Canada – –":
+            - rowheader "AWS Canada"
+            - cell "–"
+            - cell "–"
+          - row "AWS São Paulo – –":
+            - rowheader "AWS São Paulo"
+            - cell "–"
+            - cell "–"
+          - row "AWS Ireland – –":
+            - rowheader "AWS Ireland"
+            - cell "–"
+            - cell "–"
+          - row "AWS London – –":
+            - rowheader "AWS London"
+            - cell "–"
+            - cell "–"
+          - row "AWS Frankfurt – –":
+            - rowheader "AWS Frankfurt"
+            - cell "–"
+            - cell "–"
+          - row "AWS Stockholm – –":
+            - rowheader "AWS Stockholm"
+            - cell "–"
+            - cell "–"
+          - row "AWS Bahrain – –":
+            - rowheader "AWS Bahrain"
+            - cell "–"
+            - cell "–"
+          - row "AWS Cape Town – –":
+            - rowheader "AWS Cape Town"
+            - cell "–"
+            - cell "–"
+          - row "AWS Mumbai – –":
+            - rowheader "AWS Mumbai"
+            - cell "–"
+            - cell "–"
+          - row "AWS Singapore – –":
+            - rowheader "AWS Singapore"
+            - cell "–"
+            - cell "–"
+          - row "AWS Sydney – –":
+            - rowheader "AWS Sydney"
+            - cell "–"
+            - cell "–"
+          - row "AWS Tokyo – –":
+            - rowheader "AWS Tokyo"
+            - cell "–"
+            - cell "–"
+          - row "AWS Seoul – –":
+            - rowheader "AWS Seoul"
+            - cell "–"
+            - cell "–"
+    - region "Results":
+      - heading "Results" [level=2]
+      - list:
+        - listitem:
+          - time: 14:31:00
+          - paragraph:
+            - text: Browser median
+            - strong: 2 ms
+            - text: Server median
+            - strong: –
+            - text: 1 of 37 answered
+          - group:
+            - text: All endpoints
+            - table:
+              - rowgroup:
+                - row "Endpoint Browser Server":
+                  - columnheader "Endpoint"
+                  - columnheader "Browser"
+                  - columnheader "Server"
+              - rowgroup:
+                - row "This site 2 ms –":
+                  - rowheader "This site"
+                  - cell "2 ms"
+                  - cell "–"
+                - row "Cloudflare – –":
+                  - rowheader "Cloudflare"
+                  - cell "–"
+                  - cell "–"
+                - row "Cloudflare 1.1.1.1 – –":
+                  - rowheader "Cloudflare 1.1.1.1"
+                  - cell "–"
+                  - cell "–"
+                - row "Google – –":
+                  - rowheader "Google"
+                  - cell "–"
+                  - cell "–"
+                - row "Google Static – –":
+                  - rowheader "Google Static"
+                  - cell "–"
+                  - cell "–"
+                - row "Google Public DNS – –":
+                  - rowheader "Google Public DNS"
+                  - cell "–"
+                  - cell "–"
+                - row "Apple – –":
+                  - rowheader "Apple"
+                  - cell "–"
+                  - cell "–"
+                - row "Microsoft – –":
+                  - rowheader "Microsoft"
+                  - cell "–"
+                  - cell "–"
+                - row "Mozilla – –":
+                  - rowheader "Mozilla"
+                  - cell "–"
+                  - cell "–"
+                - row "GitHub – –":
+                  - rowheader "GitHub"
+                  - cell "–"
+                  - cell "–"
+                - row "Wikipedia – –":
+                  - rowheader "Wikipedia"
+                  - cell "–"
+                  - cell "–"
+                - row "example.com – –":
+                  - rowheader "example.com"
+                  - cell "–"
+                  - cell "–"
+                - row "Fastly – –":
+                  - rowheader "Fastly"
+                  - cell "–"
+                  - cell "–"
+                - row "Akamai – –":
+                  - rowheader "Akamai"
+                  - cell "–"
+                  - cell "–"
+                - row "jsDelivr – –":
+                  - rowheader "jsDelivr"
+                  - cell "–"
+                  - cell "–"
+                - row "npm registry – –":
+                  - rowheader "npm registry"
+                  - cell "–"
+                  - cell "–"
+                - row "NuGet – –":
+                  - rowheader "NuGet"
+                  - cell "–"
+                  - cell "–"
+                - row "PyPI – –":
+                  - rowheader "PyPI"
+                  - cell "–"
+                  - cell "–"
+                - row "Debian – –":
+                  - rowheader "Debian"
+                  - cell "–"
+                  - cell "–"
+                - row "kernel.org – –":
+                  - rowheader "kernel.org"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS N. Virginia – –":
+                  - rowheader "AWS N. Virginia"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Ohio – –":
+                  - rowheader "AWS Ohio"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS N. California – –":
+                  - rowheader "AWS N. California"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Oregon – –":
+                  - rowheader "AWS Oregon"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Canada – –":
+                  - rowheader "AWS Canada"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS São Paulo – –":
+                  - rowheader "AWS São Paulo"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Ireland – –":
+                  - rowheader "AWS Ireland"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS London – –":
+                  - rowheader "AWS London"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Frankfurt – –":
+                  - rowheader "AWS Frankfurt"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Stockholm – –":
+                  - rowheader "AWS Stockholm"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Bahrain – –":
+                  - rowheader "AWS Bahrain"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Cape Town – –":
+                  - rowheader "AWS Cape Town"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Mumbai – –":
+                  - rowheader "AWS Mumbai"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Singapore – –":
+                  - rowheader "AWS Singapore"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Sydney – –":
+                  - rowheader "AWS Sydney"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Tokyo – –":
+                  - rowheader "AWS Tokyo"
+                  - cell "–"
+                  - cell "–"
+                - row "AWS Seoul – –":
+                  - rowheader "AWS Seoul"
+                  - cell "–"
+                  - cell "–"
+    - region "Leaderboard":
+      - heading "Leaderboard" [level=2]
+      - paragraph: The 10 lowest and highest medians seen. A median only counts when at least half of the endpoints answered on that side.
+      - region "Fastest browsers":
+        - heading "Fastest browsers" [level=3]
+        - paragraph: No browser results yet.
+        - list
+      - region "Slowest browsers":
+        - heading "Slowest browsers" [level=3]
+        - paragraph: No browser results yet.
+        - list
+      - region "Fastest server runs":
+        - heading "Fastest server runs" [level=3]
+        - paragraph: No server results yet.
+        - list
+      - region "Slowest server runs":
+        - heading "Slowest server runs" [level=3]
+        - paragraph: No server results yet.
+        - list
+    - region "Jackpots":
+      - heading "Jackpots" [level=2]
+      - paragraph: A browser or server median under 10 ms wins; 100 ms or more loses. The newest 50 of each are kept.
+      - region "Winners":
+        - heading "Winners" [level=3]
+        - paragraph: Nobody yet. Probably nobody ever.
+        - list
+      - region "Losers":
+        - heading "Losers" [level=3]
+        - paragraph: Nobody yet. Hopefully nobody ever.
+        - list
+  - contentinfo:
+    - text: Server time
+    - time: 2026-11-02 14:31:30 UTC
+    - link "Source code":
+      - /url: https://github.com/kusl/chaos-velixir-run
+    - text: AGPL-3.0-or-later
+  - paragraph: "New latency result: browser median 2 ms, server median –."
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, FrameExpectOptions expectOptions, Object expected, String message, String title) in /_/src/Playwright/Core/AssertionsBase.cs:95
+    at Microsoft.Playwright.Core.AssertionsBase.ExpectImplAsync(String expression, ExpectedTextValue[] expectedText, Object expected, String message, String title, FrameExpectOptions options) in /_/src/Playwright/Core/AssertionsBase.cs:69
+    at Chaos.E2E.LatencyTests.ATestReachesEveryoneAndUnlocksAutoRun() in /work/tests/Chaos.E2E/LatencyTests.cs:42
+    at Chaos.E2E.LatencyTests.ATestReachesEveryoneAndUnlocksAutoRun() in /work/tests/Chaos.E2E/LatencyTests.cs:44
+    at Chaos.E2E.LatencyTests.ATestReachesEveryoneAndUnlocksAutoRun() in /work/tests/Chaos.E2E/LatencyTests.cs:44
+    --- End of stack trace from previous location ---
+/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) failed with 1 error(s) (1m 09s 606ms)
+Exit code: 2
+
+Test run summary: Failed!
+  total: 32
+  failed: 1
+  succeeded: 31
+  skipped: 0
+  duration: 1m 09s 756ms
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
