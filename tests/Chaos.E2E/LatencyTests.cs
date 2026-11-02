@@ -35,6 +35,13 @@ public sealed class LatencyTests(BrowserFixture browser) : IClassFixture<Browser
         await Expect(seen.Locator("tbody tr")).ToHaveCountAsync(await tester.Locator(".probe tbody tr").CountAsync());
         await Expect(watcher.Locator("#latency-browser-fastest-empty")).ToBeVisibleAsync();
         await Expect(watcher.Locator("#latency-jackpot-winners-empty")).ToBeVisibleAsync();
+
+        var run = watcher.GetByRole(AriaRole.Button, new() { Name = "Run test" });
+        await Expect(run).ToBeEnabledAsync(new() { Timeout = 10_000 });
+        await run.ClickAsync();
+        await Expect(watcher.Locator("#latency-feed .msg.mine").First).ToBeVisibleAsync(new() { Timeout = 30_000 });
+        await Expect(watcher.Locator(".probe .status")).ToHaveTextAsync("Done. Your result is at the top of the list.");
+        await Expect(tester.Locator(".probe .status")).ToBeEmptyAsync();
     }
 
     private async Task<IBrowserContext> OfflineContextAsync()

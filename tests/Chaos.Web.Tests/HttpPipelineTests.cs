@@ -35,6 +35,7 @@ public sealed class HttpPipelineTests(ChaosFactory factory) : IClassFixture<Chao
     [InlineData("/slots", "Chaos slots")]
     [InlineData("/latency", "Chaos latency")]
     [InlineData("/about", "About chaos")]
+    [InlineData("/read/000000000000", "Chaos read")]
     public async Task PagesRenderWithoutSettingCookies(string path, string title)
     {
         using var client = CreateClient();

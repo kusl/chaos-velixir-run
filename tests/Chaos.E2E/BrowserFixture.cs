@@ -45,6 +45,17 @@ public sealed class BrowserFixture : IAsyncLifetime
         });
     }
 
+    public Task<IBrowserContext> NewSizedContextAsync(int width, int height)
+    {
+        var browser = _browser ?? throw new InvalidOperationException("The browser is not running.");
+        return browser.NewContextAsync(new BrowserNewContextOptions
+        {
+            BaseURL = BaseUrl,
+            ColorScheme = ColorScheme.Light,
+            ViewportSize = new ViewportSize { Width = width, Height = height },
+        });
+    }
+
     public Task<IBrowserContext> NewContextAsync(string baseUrl, ColorScheme scheme = ColorScheme.Light)
     {
         var browser = _browser ?? throw new InvalidOperationException("The browser is not running.");

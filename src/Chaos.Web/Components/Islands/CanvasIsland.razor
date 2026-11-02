@@ -144,9 +144,20 @@
     private async Task SendAsync(IReadOnlyList<CanvasUpdate> batch, CancellationToken cancellationToken)
     {
         await _attached.Task.WaitAsync(cancellationToken);
-        await InvokeAsync(() => _client is null
-            ? Task.FromException(new InvalidOperationException("The canvas module is not attached."))
-            : _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask());
+        await InvokeAsync(() =>
+        {
+            if (_client is null)
+            {
+                return Task.FromException(new InvalidOperationException("The canvas module is not attached."));
+            }
+
+            if (batch.Any(update => update.Kind == "reset"))
+            {
+                SetStatus(null);
+            }
+
+            return _client.InvokeVoidAsync("apply", cancellationToken, batch).AsTask();
+        });
     }
 
     private async Task StopAsync()

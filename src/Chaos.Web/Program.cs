@@ -5,6 +5,7 @@ using Chaos.Web.Infrastructure;
 using Chaos.Web.Latency;
 using Chaos.Web.Messages;
 using Chaos.Web.Postcards;
+using Chaos.Web.Reading;
 using Chaos.Web.Slots;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.DataProtection;
@@ -52,6 +53,10 @@ builder.Services.AddSingleton<SlotService>();
 builder.Services.AddSingleton<ILatencyProbe, HttpLatencyProbe>();
 builder.Services.AddSingleton<LatencyService>();
 builder.Services.AddSingleton<ConnectionTracker>();
+builder.Services.AddSingleton(services => new ArticleLibrary(
+    services.GetRequiredService<IWebHostEnvironment>().WebRootFileProvider,
+    services.GetRequiredService<IOptions<ChaosOptions>>(),
+    services.GetRequiredService<ILogger<ArticleLibrary>>()));
 builder.Services.AddHealthChecks();
 
 builder.Services.AddResponseCompression(compression =>

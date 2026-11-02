@@ -1,4 +1,4 @@
-import { LocalHistory, OFFER_LIMIT, PAGE_SIZE, announce, chunkOffers, isoOf, labelOf, needsResync, newestFirst } from './BoardIsland.razor.js';
+import { LocalHistory, OFFER_LIMIT, PAGE_SIZE, StatusLine, announce, chunkOffers, isoOf, labelOf, needsResync, newestFirst } from './BoardIsland.razor.js';
 
 export const DB_NAME = 'chaos-slots';
 export const DB_VERSION = 2;
@@ -378,7 +378,7 @@ class SlotClient {
         this.strips = this.reels.map(reel => reel.querySelector('.strip'));
         this.spinButton = machine.querySelector('.spin');
         this.autoButton = machine.querySelector('.auto');
-        this.status = machine.querySelector('.status');
+        this.status = new StatusLine(machine.querySelector('.status'), win);
         this.verdict = machine.querySelector('.verdict');
         this.progress = machine.querySelector('.progress');
         this.feed = doc.getElementById('slots-feed');
@@ -661,6 +661,7 @@ class SlotClient {
         const duration = Math.max(0, Math.round(remaining));
         const spin = { message, timers: [], animations: [] };
         this.spin = spin;
+        this.status.supersede(message.id);
         this.calm();
         this.machine.classList.remove('win');
         this.machine.classList.add('spinning');
@@ -713,6 +714,7 @@ class SlotClient {
             return;
         }
         this.spin = null;
+        this.status.release(spin.message.id);
         for (const timer of spin.timers) {
             this.win.clearTimeout(timer);
         }
@@ -807,13 +809,17 @@ class SlotClient {
                 this.win.localStorage.setItem(PRESS_KEY, String(this.presses));
             } catch {
             }
-            this.setStatus('Your press worked. This spin is yours.');
+            if (!this.shown.has(reply.id)) {
+                this.status.show('Your press worked. This spin is yours.', reply.id, this.spinMs * 3);
+            }
         } else if (reply.kind === 'busy') {
-            this.setStatus(manual ? 'Someone else pressed first. Wait for the reels to stop.' : '');
+            if (manual) {
+                this.status.show('Someone else pressed first. Wait for the reels to stop.', this.spin?.message.id ?? null);
+            }
         } else if (reply.kind === 'slow') {
-            this.setStatus('Slow down a little.');
+            this.status.show('Slow down a little.');
         } else {
-            this.setStatus('Could not reach the server.');
+            this.status.show('Could not reach the server.');
         }
         this.updateControls();
         this.scheduleAuto();
@@ -850,7 +856,7 @@ class SlotClient {
             return;
         }
         this.auto = !this.auto;
-        this.setStatus(this.auto ? 'Auto spin is on. It keeps going in background tabs.' : 'Auto spin is off.');
+        this.status.show(this.auto ? 'Auto spin is on. It keeps going in background tabs.' : 'Auto spin is off.');
         this.updateControls();
         this.scheduleAuto();
     }
@@ -877,12 +883,6 @@ class SlotClient {
         }
         if (this.progress) {
             this.progress.textContent = progressText(this.presses);
-        }
-    }
-
-    setStatus(text) {
-        if (this.status) {
-            this.status.textContent = text;
         }
     }
 
@@ -1117,6 +1117,7 @@ class SlotClient {
         this.disposed = true;
         this.win.clearInterval(this.timer);
         this.win.clearTimeout(this.autoTimer);
+        this.status.dispose();
         this.calm();
         if (this.spin) {
             for (const timer of this.spin.timers) {

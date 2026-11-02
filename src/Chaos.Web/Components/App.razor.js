@@ -228,14 +228,16 @@ export function boot(win) {
                 { DB_NAME: CANVAS_DB },
                 { DB_NAME: LATENCY_DB, RUNS_KEY, NEXT_KEY },
                 { DB_NAME: POSTCARD_DB },
+                { DB_NAME: READING_DB },
             ] = await Promise.all([
                 import('./Islands/BoardIsland.razor.js'),
                 import('./Islands/SlotIsland.razor.js'),
                 import('./Islands/CanvasIsland.razor.js'),
                 import('./Islands/LatencyIsland.razor.js'),
                 import('./Islands/PostcardIsland.razor.js'),
+                import('./Pages/ReadPage.razor.js'),
             ]);
-            const outcomes = await Promise.all([BOARD_DB, POSTCARD_DB, SLOTS_DB, CANVAS_DB, LATENCY_DB].map(name => deleteDatabase(win.indexedDB, name)));
+            const outcomes = await Promise.all([BOARD_DB, POSTCARD_DB, SLOTS_DB, CANVAS_DB, LATENCY_DB, READING_DB].map(name => deleteDatabase(win.indexedDB, name)));
             for (const key of [SHARE_KEY, PRESS_KEY, RUNS_KEY, NEXT_KEY]) {
                 try {
                     win.localStorage.removeItem(key);
@@ -244,7 +246,7 @@ export function boot(win) {
             }
             if (output) {
                 output.textContent = outcomes.includes('blocked')
-                    ? 'Close any other board, postcard, canvas, slots or latency tabs to finish clearing.'
+                    ? 'Close any other board, postcard, canvas, slots, latency or reading tabs to finish clearing.'
                     : 'Local history cleared.';
             }
         } catch {
@@ -294,6 +296,13 @@ export function boot(win) {
     const clock = new ServerClock(win);
     clock.start();
 
+    const trackReading = () => {
+        if (doc.getElementById('reading-history')) {
+            import('./Pages/ReadPage.razor.js').then(module => module.track(win)).catch(() => {});
+        }
+    };
+    trackReading();
+
     const afterNavigation = () => {
         applyStoredTheme();
         const announcer = doc.getElementById('announcer');
@@ -301,6 +310,7 @@ export function boot(win) {
             announcer.textContent = '';
         }
         clock.render();
+        trackReading();
     };
 
     return win.Blazor.start({

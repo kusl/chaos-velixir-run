@@ -1,0 +1,195 @@
+.kicker {
+    display: flex;
+    max-inline-size: 38rem;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: .25rem 1rem;
+    margin: 0 auto 1rem;
+    color: var(--muted);
+    font-size: .875rem;
+}
+
+.kicker span {
+    font-weight: 650;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.story {
+    --read: light-dark(#23242a, #e3e6ee);
+    max-inline-size: 38rem;
+    margin-inline: auto;
+    color: var(--read);
+    background: var(--bg);
+    box-shadow: 0 0 0 1rem var(--bg);
+    font-family: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+    font-size: clamp(1.0625rem, 1rem + .35vw, 1.1875rem);
+    line-height: 1.7;
+    overflow-wrap: break-word;
+    font-kerning: normal;
+    text-rendering: optimizeLegibility;
+}
+
+.story header {
+    margin-block-end: 1.75rem;
+    padding-block-end: 1.25rem;
+    border-block-end: 1px solid var(--line);
+}
+
+.story h1 {
+    margin: 0 0 .6rem;
+    color: var(--fg);
+    font-size: clamp(1.7rem, 1.2rem + 2.2vw, 2.5rem);
+    line-height: 1.15;
+}
+
+.dek {
+    margin: 0 0 .9rem;
+    color: var(--muted);
+    font-size: 1.1em;
+    line-height: 1.5;
+}
+
+.credit {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .15rem 1rem;
+    margin: 0;
+    color: var(--muted);
+    font-family: system-ui, sans-serif;
+    font-size: .85rem;
+    line-height: 1.4;
+}
+
+.credit span {
+    color: var(--fg);
+    font-weight: 600;
+}
+
+.credit time {
+    font-variant-numeric: tabular-nums;
+}
+
+.brief {
+    margin-block-end: 1.75rem;
+    padding: .6rem .9rem;
+    border-inline-start: 3px solid var(--ink);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    background: var(--surface);
+    font-size: .92em;
+    line-height: 1.6;
+}
+
+.brief summary {
+    inline-size: fit-content;
+    color: var(--link);
+    font-family: system-ui, sans-serif;
+    font-size: .85rem;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.brief p {
+    margin: .5rem 0 .2rem;
+}
+
+.body p,
+.body ul {
+    margin: 0 0 1.15em;
+}
+
+.body {
+    hyphens: auto;
+}
+
+.body p {
+    white-space: pre-line;
+}
+
+.body ul {
+    padding-inline-start: 1.25em;
+}
+
+.body li + li {
+    margin-block-start: .4em;
+}
+
+.source {
+    margin: 2rem 0 0;
+    padding-block-start: 1rem;
+    border-block-start: 1px solid var(--line);
+    color: var(--muted);
+    font-family: system-ui, sans-serif;
+    font-size: .85rem;
+}
+
+.next {
+    max-inline-size: 38rem;
+    margin: 1.5rem auto 0;
+    font-weight: 650;
+}
+
+.history {
+    margin-block-start: 3rem;
+}
+
+.history h2 {
+    margin: 0 0 .75rem;
+}
+
+.empty {
+    margin: 0;
+    color: var(--muted);
+}
+
+.shelf {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-block-start: 1px solid var(--line);
+}
+
+.shelf:empty {
+    display: none;
+}
+
+.shelf ::deep li {
+    display: grid;
+    gap: .15rem;
+    padding: .7rem .25rem;
+    border-block-end: 1px solid var(--line);
+    content-visibility: auto;
+    contain-intrinsic-size: auto 4rem;
+}
+
+.shelf ::deep a {
+    font-weight: 650;
+    line-height: 1.35;
+    text-decoration: none;
+}
+
+.shelf ::deep a:hover {
+    text-decoration: underline;
+}
+
+.shelf ::deep a[aria-current="page"] {
+    color: var(--fg);
+}
+
+.shelf ::deep .seen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .1rem .75rem;
+    color: var(--muted);
+    font-size: .8rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.shelf ::deep .now {
+    padding: 0 .5rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: .7rem;
+}

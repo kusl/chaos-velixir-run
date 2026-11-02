@@ -67,6 +67,8 @@ internal sealed class ChaosOptions
 
     public bool LatencyServerProbe { get; set; } = true;
 
+    public string ArticlesFile { get; set; } = "nytimes.txt";
+
     public bool IsValid() =>
         MaxConnectionsPerClient > 0
         && MaxConnections >= MaxConnectionsPerClient
@@ -95,5 +97,6 @@ internal sealed class ChaosOptions
         && LatencyJackpotCapacity is >= 1 and <= 1_000
         && LatencyCooldownSeconds is >= 1 and <= 86_400
         && LatencyGapSeconds is >= 0 and <= 3_600
-        && LatencyBudgetSeconds is >= 5 and <= 120;
+        && LatencyBudgetSeconds is >= 5 and <= 120
+        && !string.IsNullOrWhiteSpace(ArticlesFile);
 }

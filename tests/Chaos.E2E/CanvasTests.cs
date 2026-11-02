@@ -48,6 +48,25 @@ public sealed class CanvasTests(BrowserFixture browser) : IClassFixture<BrowserF
     }
 
     [Fact]
+    public async Task AResetByAnyoneClearsAnOutdatedNotice()
+    {
+        await using var firstContext = await browser.NewContextAsync();
+        await using var secondContext = await browser.NewContextAsync();
+        var first = await OpenCanvasAsync(firstContext);
+        var second = await OpenCanvasAsync(secondContext);
+        var reset = first.GetByRole(AriaRole.Button, new() { Name = "Reset canvas" });
+
+        await reset.ClickAsync();
+        await reset.ClickAsync();
+        await Expect(first.Locator(".tools .status")).ToHaveTextAsync("It was just reset. Try again in a second.");
+
+        await second.WaitForTimeoutAsync(1500);
+        await second.GetByRole(AriaRole.Button, new() { Name = "Reset canvas" }).ClickAsync();
+        await Expect(second.Locator(".tools .status")).ToBeEmptyAsync();
+        await Expect(first.Locator(".tools .status")).ToBeEmptyAsync();
+    }
+
+    [Fact]
     public async Task FinishedStrokesAreKeptInTheBrowser()
     {
         await using var context = await browser.NewContextAsync();

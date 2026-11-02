@@ -21,7 +21,7 @@ public sealed partial class SiteTests(BrowserFixture browser) : IClassFixture<Br
         };
         page.PageError += (_, error) => errors.Add(error);
 
-        foreach (var path in new[] { "/", "/about", "/board", "/postcard", "/slots", "/latency", "/canvas" })
+        foreach (var path in new[] { "/", "/about", "/board", "/postcard", "/slots", "/latency", "/read", "/canvas" })
         {
             await page.GotoAsync(path);
         }
@@ -47,6 +47,34 @@ public sealed partial class SiteTests(BrowserFixture browser) : IClassFixture<Br
         await page.GotoAsync("/board");
         await Expect(page.Locator("#compose-text")).ToBeEnabledAsync();
         Assert.NotEmpty(sockets);
+    }
+
+    [Theory]
+    [InlineData(320, 640)]
+    [InlineData(390, 844)]
+    public async Task NoPageScrollsSidewaysOnAPhone(int width, int height)
+    {
+        await using var context = await browser.NewSizedContextAsync(width, height);
+        var page = await context.NewPageAsync();
+        await page.GotoAsync("/board");
+        await Expect(page.Locator("#compose-text")).ToBeEnabledAsync();
+        var text = $"{Guid.NewGuid():N}{new string('w', 400)}";
+        await page.Locator("#compose-text").FillAsync(text);
+        await page.Locator("#compose-text").PressAsync("Control+Enter");
+        await Expect(page.Locator("#board-feed .msg", new() { HasText = text })).ToBeVisibleAsync();
+
+        foreach (var path in new[] { "/", "/board", "/postcard", "/canvas", "/slots", "/latency", "/read", "/about", "/no-such-page" })
+        {
+            await page.GotoAsync(path);
+            var nav = page.GetByRole(AriaRole.Navigation, new() { Name = "Main" });
+            foreach (var name in new[] { "Board", "Postcard", "Canvas", "Slots", "Latency", "Read", "About" })
+            {
+                await Expect(nav.GetByRole(AriaRole.Link, new() { Name = name, Exact = true })).ToBeInViewportAsync();
+            }
+
+            var widths = await page.EvaluateAsync<int[]>("() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]");
+            Assert.True(widths[0] <= widths[1], $"{path} is {widths[0]} px wide in a {widths[1]} px viewport.");
+        }
     }
 
     [Fact]

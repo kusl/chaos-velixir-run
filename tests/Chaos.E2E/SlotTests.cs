@@ -23,7 +23,16 @@ public sealed class SlotTests(BrowserFixture browser) : IClassFixture<BrowserFix
         var seen = watcher.Locator($"#slots-feed .msg[data-id='{id}']");
         await Expect(seen).ToBeVisibleAsync();
         await Expect(seen.Locator(".yours")).ToHaveCountAsync(0);
+        await Expect(watcher.Locator(".machine .status")).ToBeEmptyAsync();
+        await Expect(presser.Locator(".machine .status")).ToBeEmptyAsync();
         await Expect(SpinButton(watcher)).ToBeEnabledAsync();
+
+        await SpinButton(watcher).ClickAsync();
+        await Expect(watcher.Locator(".machine .status")).ToHaveTextAsync("Your press worked. This spin is yours.");
+        await Expect(presser.Locator(".machine.spinning")).ToBeVisibleAsync();
+        await Expect(presser.Locator(".machine .status")).ToBeEmptyAsync();
+        await Expect(watcher.Locator("#slots-feed .msg.mine")).ToBeVisibleAsync();
+        await Expect(watcher.Locator(".machine .status")).ToBeEmptyAsync();
     }
 
     [Fact]

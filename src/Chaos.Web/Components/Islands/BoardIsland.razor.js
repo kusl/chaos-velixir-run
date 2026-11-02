@@ -130,6 +130,71 @@ export function announce(doc, text) {
     }
 }
 
+export const NOTICE_MS = 6000;
+export const REPEAT_MS = 120;
+
+export class StatusLine {
+    constructor(element, timers, ms = NOTICE_MS) {
+        this.element = element ?? null;
+        this.timers = timers;
+        this.ms = ms;
+        this.owner = null;
+        this.timer = 0;
+        this.pending = 0;
+    }
+
+    show(text, owner = null, ms = owner === null ? this.ms : 0) {
+        this.cancel();
+        this.owner = text ? owner : null;
+        if (!this.element) {
+            return;
+        }
+        if (text && this.element.textContent === text) {
+            this.element.textContent = '';
+            this.pending = this.timers.setTimeout(() => {
+                this.pending = 0;
+                this.element.textContent = text;
+            }, REPEAT_MS);
+        } else {
+            this.element.textContent = text;
+        }
+        if (text && ms > 0) {
+            this.timer = this.timers.setTimeout(() => this.clear(), ms);
+        }
+    }
+
+    clear() {
+        this.cancel();
+        this.owner = null;
+        if (this.element) {
+            this.element.textContent = '';
+        }
+    }
+
+    release(owner) {
+        if (this.owner !== null && this.owner === owner) {
+            this.clear();
+        }
+    }
+
+    supersede(owner) {
+        if (this.owner !== null && this.owner !== owner) {
+            this.clear();
+        }
+    }
+
+    cancel() {
+        this.timers.clearTimeout(this.timer);
+        this.timers.clearTimeout(this.pending);
+        this.timer = 0;
+        this.pending = 0;
+    }
+
+    dispose() {
+        this.cancel();
+    }
+}
+
 export function excessOf(count, cap = LOCAL_CAP) {
     return Math.max(0, count - cap);
 }

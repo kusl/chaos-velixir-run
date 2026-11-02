@@ -19,14 +19,18 @@
 
 nav {
     display: flex;
+    flex-wrap: wrap;
     gap: .25rem;
+    min-inline-size: 0;
 }
 
 nav ::deep a {
     padding: .3rem .65rem;
     border-radius: var(--radius);
     color: var(--fg);
+    text-align: center;
     text-decoration: none;
+    white-space: nowrap;
 }
 
 nav ::deep a:hover {
@@ -37,6 +41,28 @@ nav ::deep a.active {
     color: var(--ink);
     background: var(--surface);
     font-weight: 650;
+}
+
+@media (width < 48rem) {
+    .site-header {
+        padding-block-end: .5rem;
+    }
+
+    nav {
+        order: 1;
+        flex-basis: 100%;
+    }
+
+    nav ::deep a {
+        flex: 1 1 auto;
+        padding: .55rem .5rem;
+        background: var(--surface);
+    }
+
+    nav ::deep a.active {
+        color: var(--on-ink);
+        background: var(--ink);
+    }
 }
 
 main {

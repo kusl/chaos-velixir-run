@@ -1,0 +1,121 @@
+@page "/read"
+@page "/read/{Id}"
+@using System.Globalization
+@inject ArticleLibrary Library
+@inject NavigationManager Navigation
+
+@if (_moving)
+{
+    <PageTitle>Chaos read</PageTitle>
+}
+else if (_article is { } article)
+{
+    <PageTitle>@article.Title · Chaos</PageTitle>
+
+    <p class="kicker"><span>A random article</span><a href="read">Another one</a></p>
+    <article class="story" data-reading="@article.Id" data-title="@article.Title" data-byline="@article.Byline" data-published="@Iso(article.Published)">
+        <header>
+            <h1>@article.Title</h1>
+            @if (article.Dek is { } dek)
+            {
+                <p class="dek">@dek</p>
+            }
+            @if (article.Byline is not null || article.Published is not null)
+            {
+                <p class="credit">
+                    @if (article.Byline is { } byline)
+                    {
+                        <span>@byline</span>
+                    }
+                    @if (article.Published is { } published)
+                    {
+                        <time datetime="@Iso(published)">@Label(published)</time>
+                    }
+                </p>
+            }
+        </header>
+        @if (article.Summary is { } summary)
+        {
+            <details class="brief">
+                <summary>Summary</summary>
+                <p>@summary</p>
+            </details>
+        }
+        <div class="body">
+            @foreach (var block in article.Blocks)
+            {
+                if (block.IsList)
+                {
+                    <ul>
+                        @foreach (var item in block.Lines)
+                        {
+                            <li>@item</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>@block.Text</p>
+                }
+            }
+        </div>
+        @if (article.Source is { } source)
+        {
+            <p class="source">First published at <a href="@source.AbsoluteUri">@source.Host</a>.</p>
+        }
+    </article>
+    <p class="next"><a href="read">Read another article</a></p>
+}
+else if (Id is null)
+{
+    <PageTitle>Chaos read</PageTitle>
+
+    <h1>Read</h1>
+    <p class="lede">There is nothing to read right now. Try again later.</p>
+}
+else
+{
+    <PageTitle>Chaos read</PageTitle>
+
+    <h1>Not available</h1>
+    <p class="lede">That article is no longer here. <a href="read">Read a random one</a> instead.</p>
+}
+
+@if (!_moving)
+{
+    <section class="history" data-permanent="reading-history" aria-labelledby="history-title">
+        <h2 id="history-title">Read on this device</h2>
+        <p id="reading-empty" class="empty">Articles you open here are listed here, on this device only.</p>
+        <ol id="reading-history" class="shelf"></ol>
+    </section>
+}
+
+@code {
+    private Article? _article;
+    private bool _moving;
+
+    [Parameter]
+    public string? Id { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (Id is null)
+        {
+            if (Library.Random() is { } random)
+            {
+                _moving = true;
+                Navigation.NavigateTo($"read/{random.Id}");
+            }
+
+            return;
+        }
+
+        _article = Library.Find(Id);
+    }
+
+    private static string? Iso(DateTimeOffset? at) =>
+        at?.UtcDateTime.ToString("yyyy-MM-dd'T'HH:mm'Z'", CultureInfo.InvariantCulture);
+
+    private static string Label(DateTimeOffset at) =>
+        at.UtcDateTime.ToString("MMMM d, yyyy", CultureInfo.InvariantCulture);
+}

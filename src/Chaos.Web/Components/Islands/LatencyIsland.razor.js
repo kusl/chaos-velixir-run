@@ -1,4 +1,4 @@
-import { LocalHistory, OFFER_LIMIT, PAGE_SIZE, announce, chunkOffers, isoOf, labelOf, needsResync, newestFirst } from './BoardIsland.razor.js';
+import { LocalHistory, OFFER_LIMIT, PAGE_SIZE, StatusLine, announce, chunkOffers, isoOf, labelOf, needsResync, newestFirst } from './BoardIsland.razor.js';
 
 export const DB_NAME = 'chaos-latency';
 export const DB_VERSION = 1;
@@ -304,7 +304,7 @@ class LatencyClient {
         this.labels = new Map(this.endpoints.map(endpoint => [endpoint.key, endpoint.label]));
         this.runButton = panel.querySelector('.run');
         this.autoButton = panel.querySelector('.auto');
-        this.status = panel.querySelector('.status');
+        this.status = new StatusLine(panel.querySelector('.status'), win);
         this.progress = panel.querySelector('.progress');
         this.feed = doc.getElementById('latency-feed');
         this.empty = doc.getElementById('latency-empty');
@@ -426,6 +426,9 @@ class LatencyClient {
                 return;
             }
             this.running = update.running === true;
+            if (this.running && !this.testing && this.waiting === null) {
+                this.status.supersede(null);
+            }
             if (update.kind === 'snapshot') {
                 await this.snapshot(update);
                 await this.board(update.boards, true);
@@ -489,6 +492,7 @@ class LatencyClient {
             } else {
                 this.insert(message, true);
                 fresh.push(message);
+                this.status.supersede(message.id);
             }
             this.landed(message);
         }
@@ -573,7 +577,7 @@ class LatencyClient {
                 endpoint.serverCell.textContent = ms(result?.server ?? null);
             }
         }
-        this.setStatus('Done. Your result is at the top of the list.');
+        this.status.show('Done. Your result is at the top of the list.', message.id);
     }
 
     clearTable() {
@@ -598,13 +602,13 @@ class LatencyClient {
         }
         if (now < this.next) {
             if (manual) {
-                this.setStatus(`You can run the next test in ${clockText(this.next - now)}.`);
+                this.status.show(`You can run the next test in ${clockText(this.next - now)}.`);
             }
             return;
         }
         if (this.running) {
             if (manual) {
-                this.setStatus('Someone else is testing right now. Try again in a few seconds.');
+                this.status.show('Someone else is testing right now. Try again in a few seconds.');
             }
             return;
         }
@@ -622,12 +626,14 @@ class LatencyClient {
             await this.test(reply);
         } else if (reply.kind === 'busy') {
             this.retryAt = Date.now() + 10000 + Math.round(Math.random() * 20000);
-            this.setStatus(manual ? 'Someone else is testing right now. Try again in a few seconds.' : '');
+            if (manual) {
+                this.status.show('Someone else is testing right now. Try again in a few seconds.');
+            }
         } else if (reply.kind === 'wait') {
             this.setNext(Date.now() + reply.seconds * 1000);
-            this.setStatus(`A test ran from your network recently. Devices sharing an internet connection share this limit. The next one is possible in ${clockText(reply.seconds * 1000)}.`);
+            this.status.show(`A test ran from your network recently. Devices sharing an internet connection share this limit. The next one is possible in ${clockText(reply.seconds * 1000)}.`);
         } else {
-            this.setStatus('Could not reach the server.');
+            this.status.show('Could not reach the server.');
         }
         this.testing = false;
         this.updateControls();
@@ -641,14 +647,16 @@ class LatencyClient {
         this.setNext(Date.now() + reply.seconds * 1000);
         this.clearTable();
         let done = 0;
-        this.setStatus(`Testing from your browser: 0 of ${this.endpoints.length}.`);
+        this.status.show(`Testing from your browser: 0 of ${this.endpoints.length}.`, reply.id);
         const results = await measureAll(this.endpoints.map(endpoint => endpoint.url), defaults(this.win), this.budget, (index, result) => {
             done += 1;
             const cell = this.endpoints[index].browserCell;
             if (cell) {
                 cell.textContent = ms(result);
             }
-            this.setStatus(`Testing from your browser: ${done} of ${this.endpoints.length}.`);
+            if (this.waiting === reply.id) {
+                this.status.show(`Testing from your browser: ${done} of ${this.endpoints.length}.`, reply.id);
+            }
         });
         if (this.disposed) {
             return;
@@ -659,7 +667,7 @@ class LatencyClient {
         } catch {
         }
         if (this.waiting === reply.id) {
-            this.setStatus(accepted ? 'Your browser is done. Waiting for the server.' : 'The server stopped waiting for this browser. Its own numbers still count.');
+            this.status.show(accepted ? 'Your browser is done. Waiting for the server.' : 'The server stopped waiting for this browser. Its own numbers still count.', reply.id);
         }
     }
 
@@ -673,7 +681,7 @@ class LatencyClient {
             return;
         }
         this.auto = !this.auto;
-        this.setStatus(this.auto ? 'Auto run is on. It runs a test whenever one is allowed.' : 'Auto run is off.');
+        this.status.show(this.auto ? 'Auto run is on. It runs a test whenever one is allowed.' : 'Auto run is off.');
         this.updateControls();
     }
 
@@ -703,12 +711,6 @@ class LatencyClient {
             this.progress.textContent = this.running && !this.testing && !this.waiting
                 ? 'Someone is running a test right now.'
                 : progressText(this.runs);
-        }
-    }
-
-    setStatus(text) {
-        if (this.status) {
-            this.status.textContent = text;
         }
     }
 
@@ -836,6 +838,7 @@ class LatencyClient {
         this.disposed = true;
         this.win.clearInterval(this.timer);
         this.win.clearInterval(this.ticker);
+        this.status.dispose();
         this.runButton?.removeEventListener('click', this.onRun);
         this.autoButton?.removeEventListener('click', this.onAuto);
         this.older?.removeEventListener('click', this.onOlder);
