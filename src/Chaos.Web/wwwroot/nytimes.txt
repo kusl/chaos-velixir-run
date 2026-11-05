@@ -49535,6 +49535,51 @@ The Times is committed to publishing a diversity of letters to the editor. We’
 Follow the New York Times Opinion section on Facebook, Instagram, TikTok, Bluesky, WhatsApp and Threads.
 
 ================================================================================
+jon-ossoff-georgia-senate.html
+Source: PreloadedData  Paragraphs: 11  Words: 668/779
+================================================================================
+
+SUMMARY
+
+A year ago, pundits declared Georgia’s Jon Ossoff the senator most likely to lose his seat. Mr. Ossoff courted Republicans by speaking in bipartisan terms: He acknowledged that Mr. Trump didn’t invent political corruption. By stressing corruption, in contrast, Mr. Ossoff made Mr. Trump’s assault on the rule of law tangible.
+
+ARTICLE
+
+Jon Ossoff Suddenly Looks Even More Presidential
+Fighting corruption, the theme in his race, could work for Democrats in 2028.
+By Peter Beinart
+Published 2026-11-04 01:02 UTC
+https://www.nytimes.com/2026/11/03/opinion/jon-ossoff-georgia-senate.html
+
+A year ago, pundits declared Georgia’s Jon Ossoff the senator most likely to lose his seat. On Tuesday, he won decisively. National Republicans had largely conceded the race months ago. The Associated Press announced his victory shortly after the polls closed.
+
+Mr. Ossoff won so decisively, in part, because he articulated a message that connected Democrats’ fear of authoritarianism to the broader public’s fear that life is unaffordable. It’s a message that other Democratic candidates, like James Talarico in Texas, have emphasized as well. It could prove central for the party again in 2028. And it boils down to one word: corruption.
+
+Donald Trump’s shameless self-dealing made Mr. Ossoff’s argument easier. Since returning to the White House, according to news reports, Mr. Trump has made more than $1 billion from his family’s cryptocurrency businesses alone. Americans of both parties have noticed. A Washington Post poll last month found that one-third of Republicans and independents who lean Republican now believe Mr. Trump is enriching himself in office, while a Fox News poll ranked corruption as voters’ top concern nationally.
+
+Mr. Ossoff courted Republicans by speaking in bipartisan terms: He acknowledged that Mr. Trump didn’t invent political corruption. “Yes, the system really is rigged,” he said. “But he’s not unrigging it. He is re-rigging it for himself.”
+
+Of course, it helped that Georgia Republicans chose a weak nominee. But Mr. Ossoff didn’t only benefit from a favorable political environment. He also spoke differently from the Democrats who challenged Mr. Trump two years ago.
+
+Authoritarianism was a central theme of Kamala Harris’s failed presidential campaign; public graft fell further down her list of concerns. That cost her. Exit polls found that Ms. Harris won 80 percent of voters who called democracy their most important issue, while 81 percent of voters who prioritized the economy backed Mr. Trump. In Ms. Harris’s 2024 Democratic National Convention acceptance speech, she used the words “freedom,” “democracy” and “liberty” a total of 15 times. She didn’t mention “corruption” once.
+
+By stressing corruption, in contrast, Mr. Ossoff made Mr. Trump’s assault on the rule of law tangible. He showed voters how democracy and economic distress are intertwined. On the campaign trail, he argued that “corruption is why nothing works for ordinary people. It’s why you pay a fortune for prescriptions. It’s why your insurance company gets away with denying your cancer treatment after you paid your premiums for decades.” In this way, he showed that the president wasn’t just transgressing abstract norms of good governance. He was helping the rich and powerful rip Americans off.
+
+In that sense, Mr. Ossoff was following a path forged by other parties trying to defeat aspiring autocrats. Peter Magyar, who decisively ended Viktor Orban’s 16-year rule in Hungary this spring, gained national prominence with a 2024 viral video in which he accused Mr. Orban of turning the government into a “family-owned business.” The good-government group Democracy International reported that Mr. Magyar’s campaign “reduced complex democratic concerns into a simple proposition: ‘Corruption has a cost.’”
+
+Similarly, in Serbia this September, student protesters angry over the long and corrupt run of President Aleksandar Vucic voted in a new era. “The focus of the protest was on corruption, government corruption,” Heather Conley, a senior fellow at the American Enterprise Institute, told PBS. “We’re seeing that issue become a real global issue.”
+
+If Democrats retake Congress, they’ll have a chance to use congressional hearings to lay the groundwork for making corruption a key theme again in 2028. Mr. Ossoff could make it the centerpiece of a presidential campaign. Given how much power the ultrarich now wield in Washington, and how many ordinary Americans are struggling simply to get by, it won’t be hard to convince Americans that JD Vance, Marco Rubio or any of Mr. Trump’s likely Republican successors are tainted by his administration’s epic graft.
+
+The hard part will be convincing them that Democrats — who even Mr. Ossoff concedes are viewed as corrupt themselves — can be trusted to behave differently if they regain power.
+
+Peter Beinart is a contributing Opinion writer at The Times. He is also a professor at the Newmark School of Journalism at the City University of New York and an editor at large at Jewish Currents, and he writes The Beinart Notebook, a weekly newsletter. His latest book is “Being Jewish After the Destruction of Gaza.”
+
+The Times is committed to publishing a diversity of letters to the editor. We’d like to hear what you think about this or any of our articles. Here are some tips. And here’s our email: letters@nytimes.com.
+
+Follow the New York Times Opinion section on Facebook, Instagram, TikTok, Bluesky, WhatsApp and Threads.
+
+================================================================================
 lula-brazil-latin-america-trump.html
 Source: PreloadedData  Paragraphs: 13  Words: 1106/1193
 ================================================================================
@@ -50767,6 +50812,171 @@ Mr. Musk, who avoided posting on X for most of Tuesday night as votes were being
 Theodore Schleifer contributed reporting.
 
 ================================================================================
+arbitrators-medical-bills.html
+Source: PreloadedData  Paragraphs: 25  Words: 895/895
+================================================================================
+
+SUMMARY
+
+The federal government plans to end contracts with two arbitration firms that settle medical billing disputes under the No Surprises Act, a consumer protection law that has come under scrutiny for high payouts for doctors. But doctors have flooded the system with millions of cases and have prevailed overwhelmingly, winning more than 85 percent of them in 2025, according to the most recent federal data. Network Medical Review Company has handled 363,000 cases and sided with doctors in 70.8 percent of them, according to the Turquoise analysis.
+
+ARTICLE
+
+Trump Administration Moves to Oust Arbitrators as Doctor Payouts Soar
+The two companies settled billing disputes between doctors and insurers, keeping patients out of the middle. One let doctors win 96 percent of the time.
+By Margot Sanger-Katz and Sarah Kliff
+Published 2026-11-04 21:53 UTC
+https://www.nytimes.com/2026/11/04/health/arbitrators-medical-bills.html
+
+The federal government plans to end contracts with two arbitration firms that settle medical billing disputes under the No Surprises Act, a consumer protection law that has come under scrutiny for high payouts for doctors.
+
+Congress passed the law in 2020 to protect patients from surprise bills when they saw a doctor who did not have a contract with their health plan, such as in emergencies. The law, which took effect in 2022, calls for health care providers and insurers to settle on a price and when they cannot, for arbitrators to review an offer from each side, and pick one.
+
+When the law passed, its authors expected the system to be used rarely and decisions generally to be split between the sides. But doctors have flooded the system with millions of cases and have prevailed overwhelmingly, winning more than 85 percent of them in 2025, according to the most recent federal data. Many have received awards dozens of times higher than usual insurer rates.
+
+One New York plastic surgery practice won $440,000 for breast reduction surgeries in arbitration, The New York Times previously reported, and a surgical assistant in New Jersey won $106,500 for assisting on lower back surgery.
+
+The law has been a financial boon for the arbitration firms as well. The government contracts with 17 firms to handle the millions of cases that now flow through the arbitration process. The arbitrators set their own fees, earning $425 to $800 for each dispute they settle, and they have collectively earned $742 million between 2022 and 2025.
+
+While the contractors are all supposed to follow the same rules, federal data shows that outcomes vary dramatically between the arbitrators.
+
+Some outside experts have argued that, because the arbitrators are paid per case, they have an incentive to side with the doctors to keep them coming back to the system. Doctors appear to win their cases at similar rates when they request modest or huge payments.
+
+Insurers, who have argued that the arbitrators frequently decide cases that should not even be eligible for the process, have declined to pay some awards.
+
+The arbitrators’ contracts last five years, and the government is now reviewing those awarded in 2022.
+
+Two firms, Island Peer Review Organization and Network Medical Review Company, were notified on Wednesday that the government does not plan to renew their contracts, according to a notice published that day.
+
+The notice did not say why the companies’ applications had been denied.
+
+An FAQ document published this summer provided possible grounds for denial, which included application paperwork errors, a lack of staff training, conflicts of interest or a failure to decide cases accurately.
+
+In a statement, Christopher Krepich, a spokesman for the Centers for Medicare and Medicaid Services, which oversees the program, said the firms’ applications had been denied for performance reasons.
+
+“The departments determined that these entities did not substantially comply with the standards governing their performance during their current certification terms,” he said.
+
+Island Peer Review Organization was not immediately available for comment. It had been finding in doctors’ favor 96.5 percent of the time, the highest of any arbitration firm, according to an analysis by the health data firm Turquoise. It has handled nearly 450,000 disputes through the end of last year, according to federal data.
+
+That work had transformed the finances of the small Long Island nonprofit firm, increasing its revenues from $68 million in 2022 to $171 million in 2025, according to public tax filings, as Stat News reported.
+
+Network Medical Review Company has handled 363,000 cases and sided with doctors in 70.8 percent of them, according to the Turquoise analysis. It is a privately held company, so information on its finances is not publicly available.
+
+It plans to appeal the decision, a National Medical Review Company spokeswoman said, adding that the firm “reviews claims in a comprehensive, balanced and efficient manner.”
+
+The firms have decided cases that were highlighted in Times reporting on the arbitration system. Network Medical Review Company awarded an assistant breast surgeon $220,000 for his work on a breast reduction surgery. (Another firm awarded the primary surgeon an additional $220,000 for the case.) Island Peer Review Organization awarded an assistant surgeon $50,000 for work on a prostate surgery, 27 times the fee paid to the main surgeon in the case.
+
+In recent weeks, the administration has announced that eight other firms have met the initial criteria to earn another five-year contract. Some of those arbitrators have similar records of lopsided and high awards to medical providers. Others are still being reviewed.
+
+The two firms losing contracts will have 30 days to dispute the government’s decision. The process must be completed by the end of the year.
+
+The disparate win rates and high-dollar awards have caught the attention of Congress, where interest in revising the law is growing. Representative Frank Pallone Jr., Democrat of New Jersey, introduced legislation last month proposing to abolish the arbitration system entirely.
+
+He has also opened an investigation into the arbitration firms, sending them detailed requests for information on how they make their decisions.
+
+The Trump administration has also signaled some interest in reforms. “The system is being gamed to get higher prices, and C.M.S. is actively working to clean it up,” Mr. Krepich, the agency spokesman, told The Times in July.
+
+This appears to be their first action to change the arbitration system.
+
+================================================================================
+pied-a-terre-mamdani-appeal-win-home-tax.html
+Source: PreloadedData  Paragraphs: 21  Words: 850/854
+================================================================================
+
+SUMMARY
+
+An appeals court on Wednesday ruled that Mayor Zohran Mamdani’s administration can proceed with efforts to collect a new tax on high-end second homes in New York City, handing the mayor his first major legal victory over a core piece of his progressive agenda. Uncertainty had clouded the tax for weeks, after a Staten Island judge ruled in September that the city had mishandled the rollout and ordered it to start over. The city immediately appealed, and continued rolling out the tax as the lawsuit proceeded.
+
+ARTICLE
+
+Appeals Court Hands Win to Mamdani in Fight Over Second-Home Tax
+The court reversed a judge’s order that had said New York erred in its rollout of the tax, granting Mayor Zohran Mamdani a victory over a key piece of his agenda.
+By Mihir Zaveri
+Published 2026-11-04 19:43 UTC
+https://www.nytimes.com/2026/11/04/nyregion/pied-a-terre-mamdani-appeal-win-home-tax.html
+
+An appeals court on Wednesday ruled that Mayor Zohran Mamdani’s administration can proceed with efforts to collect a new tax on high-end second homes in New York City, handing the mayor his first major legal victory over a core piece of his progressive agenda.
+
+Uncertainty had clouded the tax for weeks, after a Staten Island judge ruled in September that the city had mishandled the rollout and ordered it to start over. The city immediately appealed, and continued rolling out the tax as the lawsuit proceeded. The decision on Wednesday, from a panel of appellate judges in Brooklyn, reversed the judge’s ruling.
+
+The tax still faces other legal challenges. But the ruling is a win for the mayor, whose lawyers are also defending other policies he campaigned on, including a rent freeze on rent-stabilized apartments.
+
+Mr. Mamdani had embraced the tax as a way to make good on his campaign promise to “tax the rich,” as well as a way to help close the city’s budget gap.
+
+The mayor said in a statement on Wednesday that he was “heartened” by the ruling.
+
+“From Day 1, those with the most have attempted to use every legal avenue available to shield their wealth and avoid contributing more to our city,” he said.
+
+Randy Mastro, a lawyer representing the homeowners who brought the lawsuit, did not say whether he planned to appeal. But in a statement, he lamented that the tax rollout, which he called “lawless and chaotic,” would “go unremedied.” Mr. Mastro added that he believed that challenges to the constitutionality of the tax itself — the main argument in the other lawsuits, including one he brought — would ultimately prevail.
+
+The process of introducing the tax on second homes, also known as pieds-à-terre, has been turbulent.
+
+The tax was unveiled by Gov. Kathy Hochul in the spring with Mr. Mamdani’s support, and passed in the state budget. It must be paid by people who live outside New York City most of the time while also owning a high-value home in the city.
+
+Levied as a surcharge on property tax bills, the tax applies to condos and co-ops that are used as second homes and have a “market value” — a complicated metric determined by the city’s Finance Department — of at least $1 million. It also applies to one-, two- and three-family second homes with a “market value” of more than $5 million. (The tax does not apply if the home is being rented to someone, or if a relative of the owner lives there most of the time.)
+
+It is expected to raise some $500 million annually for the city.
+
+The lawsuit that led to Wednesday’s ruling did not challenge the legality of the tax. Instead, it argued that the city had sowed confusion by sending out notices to about 17,000 New Yorkers informing them that their properties might be subject to the tax, without first making sure that they were not full-time residents.
+
+The suit also took issue with the city’s publishing an online list of nearly one million “properties that may be subject to the charge” that included the owners’ names.
+
+The city has maintained that it acted in accordance with the law that established the tax.
+
+The notices asked property owners to provide proof of residency, such as a driver’s license, or a copy of a lease to show that the home was being rented out. As of Oct. 28, the city had approved around 8,800 applications from homeowners who said they were primary residents and should not be taxed.
+
+The city has said in recent days that even as that figure has grown, it remains confident that the tax will yield the anticipated $500 million in annual revenue.
+
+In a six-page decision, the appellate court said that the homeowners who sued had not demonstrated “that any bad actors have misused the information” on the published list of properties, “or that the publication itself subjected them to any crime, harassment or defined public ridicule.”
+
+The court also said that the mailed notices did not constitute harm, concluding that the homeowners lacked the standing to sue.
+
+Despite the ruling, two separate pending lawsuits are seeking to overturn the tax itself. Both of those suits argue that the law establishing the tax violates provisions of the state constitution that limit how much the city can collect in real estate taxes every year. Among other claims, they also argue that the tax is discriminatory under the U.S. Constitution because it applies only to residents of states other than New York.
+
+One of the lawsuits was brought in September by former Commerce Secretary Wilbur Ross, his wife, Hilary Geary Ross, and the casino mogul Steve Wynn, all of whom live in Florida but own second homes in New York City.
+
+The other was brought by the corporation that owns an Upper East Side co-op building known as the Montclair, as well as a handful of homeowners, including some who live in Florida and in Suffolk County on Long Island. That lawsuit is backed by the Real Estate Board of New York, an influential lobbying group.
+
+================================================================================
+abdul-el-sayed-michigan-senate.html
+Source: PreloadedData  Paragraphs: 9  Words: 765/823
+================================================================================
+
+SUMMARY
+
+Abdul El-Sayed, a charismatic populist progressive who championed Medicare for all, abolishing Immigration and Customs Enforcement and ending military aid to Israel, won the Senate race in Michigan. On paper, El-Sayed seems like an ideal Democratic candidate to defend a vulnerable seat in a swing state. El-Sayed’s lead there, by contrast, was less than three points — in a state with the nation’s second-largest population of Arab Americans, many of whom are Muslim.
+
+ARTICLE
+
+In Michigan, the Gamble Paid Off
+Abdul El-Sayed’s victory answers several questions.
+By Lydia Polgreen
+Published 2026-11-04 07:42 UTC
+https://www.nytimes.com/2026/11/04/opinion/abdul-el-sayed-michigan-senate.html
+
+The gamble paid off.
+
+Abdul El-Sayed, a charismatic populist progressive who championed Medicare for all, abolishing Immigration and Customs Enforcement and ending military aid to Israel, won the Senate race in Michigan. After defeating Mike Rogers, a former Republican congressman who had been an F.B.I. agent, he will become America’s first Muslim senator. His victory — three years after Oct. 7 and 25 after Sept. 11 — is historic. It is sure to fuel the debate over how Democrats should wield their newfound power in Congress and what kind of candidate they should nominate for the presidency in 2028.
+
+It’s too soon to say how that will shake out, and I expect his margin of victory to be interpreted endlessly. But El-Sayed’s win answers several questions. Can a Muslim American win in a statewide race? Can an out-and-out progressive succeed in a swing state? Can a Democratic candidate prevail without full-throated party backing and in the face of right-wing vitriol? Yes, yes and yes. More than anything, the result is an argument for the X factor in politics, the importance of skilled, talented candidates no matter their affiliation. Whatever else he was, El-Sayed was an exceptional package.
+
+On paper, El-Sayed seems like an ideal Democratic candidate to defend a vulnerable seat in a swing state. He has brains (a Rhodes scholarship, an Ivy League medical degree) and brawn (high school football and college lacrosse). He is deeply religious, a devoted husband and a doting father to two little girls. To a party that has struggled to attract young men, he offers sculpted biceps and a genuinely jockish affect. He is handsome and telegenic, a natural communicator who fluently expounds on complex issues without sounding professorial. He has spent his life working on one of the party’s strongest and most important issues: health care. What’s not to like?
+
+Yet for party leaders and centrist pundits, there was ample cause for reservation. El-Sayed’s policy positions were a few clicks to the left of the mainstream — encapsulated in his slogan “Money out of politics. Money in your pocket. Medicare for all.” — even if he embraced capitalism and does not identify as a socialist. Worse yet: Democrats were defending a seat they already held, crucial territory on a Senate map tilted toward Republicans. An insurgent left had won offices in deep blue states. Yet to roll the dice on an enticing but untested candidate in a crucial swing state election seemed, to many, like too big a risk.
+
+But El-Sayed was the subject of intense scrutiny not for his policies but for his religion and heritage as the son of Egyptian Muslim immigrants. Unsurprisingly, Republicans from President Trump — who called him a “jihadist Muslim Brotherhood member” and a “terrorist” — on down uncorked wildly racist attacks on him. Perhaps more surprising, some Democrats indulged in veiled versions of this ugly argument. “In my judgment, he does not represent the values of our party or our nation,” Jamie Metzl, a former foreign policy official in the Clinton administration, wrote on social media. Representative Haley Stevens, whom El-Sayed defeated in the Democratic primary, went a step further on Sunday and bizarrely endorsed her Republican opponent.
+
+It is a grim fact that Islamophobia stains American politics. A poll conducted by Michigan State University last month found that more than 38 percent of respondents said that they would be somewhat or much less likely to vote for a Muslim candidate, with the much less likely ones making up most of the total. Indeed, in that poll the Democratic candidate for governor had a 12-point lead over his Republican challenger. El-Sayed’s lead there, by contrast, was less than three points — in a state with the nation’s second-largest population of Arab Americans, many of whom are Muslim. It was a discrepancy that suggested the limits of American inclusion.
+
+And yet, he won. In this time of relentless division, El-Sayed’s victory is a reminder that politics is a business of individual men and women, with their own histories and ideas, persuading one voter after another to set aside the ways we are all different and focus on our shared dreams. It is telling that the two most successful Democratic politicians of my lifetime endorsed El-Sayed. Bill Clinton, the great triangulator, urged him to run for office after seeing him speak at his college graduation. Barack Obama, the party’s great conciliator, headlined an electric rally for him in the closing stretch. Irrespective of ideology, it’s clear that game recognizes game.
+
+El-Sayed is evidently an elite political athlete. I can’t wait to see him spike the ball on the Senate floor.
+
+The Times is committed to publishing a diversity of letters to the editor. We’d like to hear what you think about this or any of our articles. Here are some tips. And here’s our email: letters@nytimes.com.
+
+Follow the New York Times Opinion section on Facebook, Instagram, TikTok, Bluesky, WhatsApp and Threads.
+
+================================================================================
 democrats-house-senate-midterms-blue-wave.html
 Source: PreloadedData  Paragraphs: 82  Words: 5419/5635
 ================================================================================
@@ -50994,6 +51204,637 @@ The Times is committed to publishing a diversity of letters to the editor. We’
 Follow the New York Times Opinion section on Facebook, Instagram, TikTok, Bluesky, WhatsApp and Threads.
 
 ================================================================================
+ezra-klein-podcast-aaron-retica-midterm-2026.html
+Source: PreloadedData  Paragraphs: 303  Words: 8346/8555
+================================================================================
+
+SUMMARY
+
+This is an edited transcript of “The Ezra Klein Show.” Retica: So what did they do right? Klein: Aaron Retica, thank you very much.
+
+ARTICLE
+
+The Bell Tolls for Trumpism
+Ezra Klein and Aaron Retica react to the Democratic Party’s major midterm victory.
+By Ezra Klein, Rollin Hu and Jack McCordick
+Published 2026-11-05 00:44 UTC
+https://www.nytimes.com/2026/11/04/opinion/ezra-klein-podcast-aaron-retica-midterm-2026.html
+
+This is an edited transcript of “The Ezra Klein Show.” You can listen to the episode wherever you get your podcasts.
+
+The big tent is real, and the political map is fake.
+
+That is the lesson of the Democrats’ historic midterm, the blue tsunami that we saw on Tuesday.
+
+Democrats won in places nobody thought they even had any chance to compete a year ago: Kansas, Texas, Iowa, South Carolina.
+
+As I record this, it’s unclear which party is going to win Mississippi. Let me say that again: It is unclear which party is going to win a Senate seat in Mississippi. That was unimaginable three months ago.
+
+Democrats won governorships in Ohio, Texas and Iowa. This was a win that destroyed the reality of the red-blue map people had come to believe in so firmly. And so we’re entering a new era, an era when much is unsettled.
+
+The realignment may not be what we thought it was in 2024. The realignment may be a map that is entirely up for grabs from here on out.
+
+Democrats didn’t do this on their own, of course. To a very large extent, President Donald Trump did it for them. And what Trump and the Democrats both did wrong was the same thing: not listening.
+
+Trump did not listen — not to the voters, not even, at times, to himself. He was elected promising to lower costs, to end wars, to bring order to the border. Instead, he raised costs through tariffs and through new wars, and he created disorder after closing the border and sending in masked ICE agents to harass and upend settled communities.
+
+Trump at no point pivoted. He dismissed almost everything that people were angry about, and his party paid the price.
+
+At the same time, I think the Democrats’ central political failing for years has been an unwillingness to listen. They listened to themselves — not to the voters they needed to win over.
+
+This time around, they course corrected. In state after state, district after district, they found people who fit: Josh Turek in Iowa. Adam Hamilton in Kansas. James Talarico in Texas. They found seminarians. They found Paralympians. They found a whole new class of candidates who could put into play a whole new set of districts.
+
+And then in some places, like North Carolina and Georgia, they had candidates of such exceptional quality, who understood their constituents so well, that they won states that should have been purple — by 20 points for Roy Cooper, 18 points for Jon Ossoff.
+
+So there’s a tremendous amount to learn from this election and a tremendous amount that is now possible after it.
+
+To think through both the lessons that we’re seeing already and then how Democrats, and for that matter Republicans, are going to respond to them, I’m joined here by my revered editor, one of the most beloved characters in our podcast cinematic universe, Aaron Retica, who’s going to turn the tables and interview me.
+
+Ezra Klein: Aaron Retica, welcome back to the show.
+
+Aaron Retica: Thank you very much for having me. Let’s start with almost a gotcha: Do you have any idea who George McGill is?
+
+Klein: I don’t.
+
+Retica: George McGill is the last Democratic senator in Kansas before Adam Hamilton, who won last night. McGill last won in 1932.
+
+I was trying to think of all the different ways of expressing what happened last night, and that’s the best I could come up with.
+
+Klein: That’s a very good way of doing it.
+
+Retica: So everybody looking at this election, all the different constituents of the Democratic Party — they all got something. The left won some races. The center won some races. Charismatic candidates were huge. Uncharismatic candidates also did well.
+
+Klein: The Roy Cooper juggernaut.
+
+Retica: Roy Cooper plus 20. This has long been the dream. Was there a breakthrough for the big-tent Democratic Party last night?
+
+Klein: Yes, but let me hold that to the side for a minute. Donald Trump asked America to vote like he was on the ballot, and it did.
+
+Trump, of course, had, I think, the funniest possible reaction to the election.
+
+Retica: He really did.
+
+Klein: In the middle of the night, he posts on Truth Social:
+
+I wasn’t on the Ballot, and if I was, we would have won IN A LANDSLIDE! Thank you for your attention to this matter. President DONALD J. TRUMP.
+
+And people today have been remarking how he doesn’t seem very upset by the election results, and of course not. He does not mind when Republicans lose. And in fact, Republicans often lose because he intervenes in a way that is likelier to make them lose, right?
+
+Like bringing in Ken Paxton or ensuring Ken Paxton’s victory in the Texas Republican primary.
+
+Retica: And Darline Graham.
+
+Klein: Pushing for Darline Graham in South Carolina. But when Republicans lose when Trump is not on the ballot, to Trump, it shows his importance. And so he, I think, doesn’t mind this at all.
+
+It is more evidence, to him, of his essential winnerdom. What really happened here is Donald Trump has been a terrible, catastrophic president who has betrayed the mandate he was given by voters. And as he was losing — bleeding — public support, not only never changed course but never admitted what was happening at all.
+
+And so Trump led his party to defeat, or, certainly, created the conditions for the party to go to defeat. And then there’s a question of what Democrats did with that.
+
+Retica: So what did they do right?
+
+Klein: The big tent is real, and the map is fake.
+
+Democrats ran candidates who fit their states and their districts, and I think it’s just really important to center that.
+
+Last year, I did this big essay on the show about the need for a big-tent Democratic Party. Other people have been making this argument, too — that one of the problems that has emerged over time in American politics is that the parties have become tighter in their ideological and cultural positioning.
+
+Retica: And geographical, which is critical.
+
+Klein: And that has made them tighter in their geographical positioning. Because they’re not willing to run candidates who differ as much from the kind of median member of the party.
+
+What Democrats did really well here was in the way that they acted with power.
+
+Hakeem Jeffries and Chuck Schumer kept things very focused on affordability, on the Iran war. They didn’t get distracted by a lot of other things. And then, when they ran candidates, they ran people like James Talarico, who is leading an almost religious-left revival in Texas against Ken Paxton.
+
+Adam Hamilton in Kansas, as you mentioned, is a Methodist megachurch pastor. Scott Colom, who’s the candidate in Mississippi, looks very much like he may win by like 100 votes or something.
+
+Retica: Not even 100.
+
+Klein: I mean, we’ll see where it plays out, but ——
+
+Retica: Truly insane, though.
+
+Klein: Both Hamilton and Colom describe themselves as pro-life Democrats.
+
+They want to create conditions under which reproductive freedom is protected, but they ran as pro-life Democrats because of their Christian faith.
+
+Mary Peltola — what was her slogan in Alaska? “Fish, family, freedom.”
+
+So the Democrats did a very good job in this case of picking candidates who fit the state.
+
+And when I say the map is fake, one of the revelations from this election is you really should not treat states as off the table.
+
+Retica: Yeah.
+
+Klein: People were not talking about Kansas. By the way, Adam Hamilton is not a Schumer recruiting victory. Adam Hamilton decided to run.
+
+By the way, shout-out to my colleague at Vox and colleague here at The New York Times Sarah Kliff, whose bombshell story, bombshell investigative work, on Roger Marshall’s unbelievably brutal pursuit and persecution of people who are not able to pay his medical bills was a major, major, major part of that race. And that’s a story Sarah Kliff broke here at The New York Times.
+
+Shout-out to Sarah.
+
+Retica: I want to throw in a shout-out while we’re at it, and that’s Howard Dean. Because the 50-state strategy is vindicated here. This is what you’re saying.
+
+There are two reasons. One, you might actually win some of these states. But also, there are going to be talented politicians in these places who can’t necessarily win their state but who are still worth having in your coalition.
+
+Just being out there and not writing things off is critically important.
+
+Klein: Yes, and doing the work to recruit the candidates and then supporting them. So I think Democrats have sort of treated Florida as not winnable. And what you saw here, Angie Nixon is only going to fall a couple of points short.
+
+Florida is winnable if you have the right candidates in the right environment. And so you have to build that kind of party strength. You have to look for those people.
+
+Now, there’s an interesting question here. You were saying at the beginning that everybody got some of what they wanted, and that’s at least somewhat true.
+
+I think it’s going to be fascinating to see what lessons Democrats learn from Michigan, from Maine and from Florida, which is where they ran — in contested or contestable Senate elections — much more left-wing candidates.
+
+Abdul El-Sayed won. It looks like he’ll win by something in the seven range as we’re taping. Maine, it’s a little harder to say because they had the whole disaster with Graham Platner. Susan Collins is actually a quite good candidate because she has a reputation for independence, not totally well deserved, from the other side. But Troy Jackson’s win there looks closer than you would expect, given the demographics of Maine. It’s not like the Jon Ossoff plus-18 win in Georgia.
+
+And in Florida, Angie Nixon, a more direct D.S.A. candidate, lost, right? You’re not seeing in Florida what you’re seeing in South Carolina or Mississippi.
+
+Retica: OK. I want to push back on that a little bit. Because it sometimes sounds like the progressive candidates are just a hindrance to the party. But without their imagination, without their ideas, that’s very important, and they didn’t do as well as the less left candidates, but they didn’t do terribly, either.
+
+Klein: No, I don’t think they did terribly, and I agree with you that I don’t think, whether you’re an electoral overperformer is even correlated, really, with whether you are a good or important member of the House or Senate. A lot of, I think, the most creative members of Congress — and the most important members of Congress — are safe-seat players who are not operating under the constant threat of electoral wipeout.
+
+Elizabeth Warren, I think, is one of the most important senators, has been for some time, and is not an incredible electoral performer by any means. But she is creative and innovative as a policy thinker in a way that very, very few of her colleagues are.
+
+And I’ve said this on the show before, I think Abdul El-Sayed is going to be a superstar. And I agree with something that you think, which is that it’s very likely he might build margins over time. The effort to otherize him was grotesque. It’s part of why, when he was on the show, we focused a lot on his actual story.
+
+He’s an American boy who’s a Rhodes scholar and a doctor and a captain ——
+
+Retica: A football-playing doctor ——
+
+Klein: Of his football team. I mean, what they tried to do to El-Sayed — and I find El-Sayed to be a very impressive person — I thought it was reprehensible.
+
+The question of how some of these people will play out in the Senate, or in the House for that matter, is different to me than the question of: Can you extract any signal in terms of what it means for the Democratic Party to compete in places it has not competed before?
+
+And El-Sayed winning by, you know, plus seven or eight or whatever it’s going to be, in a Democratic plus-13 environment is not an electorally impressive performance. Peggy Flanagan, in Minnesota, wins by about — looks like it will be about nine or 10 right now, 10-ish. Again, Minnesota, Democratic plus 13 — it’s not a good performance, right? You shouldn’t take a lesson that that’s what you want to run right there.
+
+Angie Nixon, I think that there’s a world — and I think the Democratic Senatorial Campaign Committee bears some blame for this, but a stronger Florida Democratic Party that picked a candidate who is better suited to Florida, in the way that you saw in Kansas or Mississippi, and a Democratic Senatorial Campaign Committee that invested more in the state, I think that was a winnable seat.
+
+And so who you want to blame for that — I think both sides deserve some blame. But I don’t think there’s any reason to look at the results and say it was a brilliant strategic move to run the D.S.A. candidate in Florida. That isn’t what won in Kansas. It’s not what won in Texas. It’s not what won in Georgia. It’s not what might win in Mississippi. It’s not what seems like it will win in Alaska, or Iowa, for that matter.
+
+And so you’ve got to hold these things in tension. Sometimes people take statements about electoral performance as moral statements about the worth of a candidate, and that’s ——
+
+Retica: Or the ideas.
+
+Klein: Or the ideas. That’s crazy in my view. By the way, I do think we often end up too tight on this, like moderate to progressive to D.S.A. — or whatever it might be — scale. You can have candidates who have many views all at once.
+
+So Dr. Annie Andrews, in South Carolina, who — I mean, the moment you realize the night was really turning was when, all of a sudden, the Democrats were going to win in South Carolina. Reflects a terrible candidate in Darline Graham, as well.
+
+Retica: OK, but ——
+
+Klein: But Dr. Annie ——
+
+Retica: South Carolina. I mean, wow.
+
+Klein: I know. Dr. Annie Andrews, right? Both somebody who fits South Carolina but has, I think, if you were grading it on a scale, quite progressive views on health care, and progressive views on health care are very popular. That’s also a good issue for Abdul El-Sayed.
+
+So I think sometimes you can get into this thing where people think what you mean by “fit the district” or “fit the state” is just to be more moderate. James Talarico should correctly be understood as a fairly progressive candidate, but he moved right on oil and gas. And he also moved right on border security.
+
+But he also was a very populist candidate running against billionaires — a very pro-building candidate, right? The sort of populist abundance synthesis that I think you saw in a lot of different places.
+
+So in my view, there’s a lot to learn from a bunch of these candidates. But I do think it is notable that, if what you would like to see is Democrats building on this success, I don’t think the place you want to look for electoral lessons is Abdul El-Sayed, is Peggy Flanagan, is Angie Nixon, is Troy Jackson.
+
+Klein: I think Maine has another lesson.
+
+The Maine Second District is represented by Jared Golden. Last three elections — that is the reddest district represented by a Democrat.
+
+Golden is the most conservative, or was the most conservative, House Democrat, and he was tormented by the left for this, including facing a challenge by a more progressive challenger, Matt Dunlap. And Golden decided to retire. He was done with it. He was tired of it. Now it looks like, even in this gigantic wave election, that Dunlap is either going to win it incredibly modestly or lose the seat.
+
+Jared Golden was like a most valuable player for the Democrats. He is the kind of person you want in the party and you should protect — and there’s a lesson in that. If you want to build power — and the Democrats are excited about possibly winning Mississippi right now, excited about winning Kansas — in 2032, you’re going to need to try to keep these seats, right?
+
+You want to build a supermajority. You want to build a durable majority. That doesn’t just mean moderating, but it does mean recognizing that you need these candidates who are right for their states, right for their districts, and then you need to do everything you can to make their life easy. Not — as was done with Jared Golden — try to hound them out of office.
+
+Retica: I want to rain a little bit on the parade. Because since Trump first came down that escalator — when is that? June 2015. Everyone on the liberal side, the centrists, the Never Trumpers — everyone has been wondering: When are the scales going to fall from their eyes? What will it take?
+
+So what it took is kind of insane. It took an unpopular, unconstitutional, inconclusive war, driving up gas prices and, crucially, diesel gas prices.
+
+It took taking Latino voters for granted and attacking on immigration and shooting people in the streets. All of that is what was needed to get where we are now. It’s an obviously tremendous victory for the Democrats, but it does give me a little bit of pause that it took so much.
+
+Klein: I see it as more environmental even than you’re describing it there.
+
+I think at this point, internationally, we have enough examples of Trump-like politicians. Flavio Bolsonaro came out ahead in the first round of Brazil’s presidential election, ended up losing to Lula in the second round. But there is just no evidence that the Trumpy style, or what we think of as the Trumpy style, in America, but what you might think of as the populist right style worldwide, is a turnoff to voters.
+
+What voters don’t like is their life getting worse.
+
+Retica: Well, who likes that?
+
+Klein: Nobody. But when you’re saying it took so much, I actually think it didn’t take so much. What you’re describing is a chain of very intense events that led to real-world consequences for people.
+
+So you could have imagined a world where Trump governed much more modestly. But there was a recession ——
+
+Retica: No, no, you can’t. You can’t, actually.
+
+Klein: Or maybe a different way of putting it is, in 2008, Barack Obama won a very big victory. But the unemployment rate continued to go up, and so 2010 was a historic wipeout for the Democratic Party.
+
+And that wasn’t because Obama’s personal style was repulsive to the electorate. He won in 2012. People liked him quite a bit. It’s because, fundamentally, if people do not feel their lives are getting better — in fact, they feel they’re getting worse — and sort of another way of saying what you’re saying is people felt their lives were getting worse.
+
+And then particular groups — Hispanic Americans — saw their lives getting much worse because of the amount of state force Donald Trump and Stephen Miller, who did a lot to lose this election for Republicans, was aiming at them and aiming at their communities.
+
+Bobby Pulido winning a Texas district for the House by 25 points. He’s an amazing candidate, this very, very well-known singer, and somebody who has run a fantastic race. But I remember him getting in. That was supposed to be a safe Trump district.
+
+Klein: He won by 25 points. And that’s a guy who I think should be treated in the Democratic Party right now as a star.
+
+In the end, you cannot make people’s lives worse. But conversely, the reason Trump was able to survive in the way he was at other times was he benefited from a pretty strong economy for most of his first term, and people remembered that when he ran for his second effort at re-election.
+
+Retica: And he did better in the first than people expected, in part because he was sending people checks.
+
+Klein: Yeah. This is something that’s worth noting. Because you know what fell apart was the realignment.
+
+Retica: Oh, my God, the realignment. Can I riff for one second?
+
+Klein: I would love you to riff.
+
+Retica: I am a racial realignment skeptic, as you know. I hated it from the beginning. It seemed insane to me. It was clear that the people who had moved into the Republican column, whether that’s young men, younger Black men, Hispanic people as a whole. And I’ll say the thing we have to say, which is that there’s a million different kinds of Hispanic. I mean, duh.
+
+But yet all those groups surged toward Trump. They have all surged back in staggering numbers. The youth vote was, what, plus 30 something? I don’t know the exact number.
+
+Klein: Yeah, I’m going to pull up this number just while we’re saying this.
+
+Retica: Yeah, please do.
+
+Klein: Because I think it’s so striking.
+
+So right now I’m looking at House results at The New York Times, and this can all change a little bit on the margin as more votes get counted. But here we’re speaking on Wednesday morning. Male voters swung 17 points toward the Democrats. Voters ages 18 to 29 — this is just a crazy number — swung 32 points toward the Democrats. Thirty-two points! Hispanic voters, 28 points toward the Democrats.
+
+I will say, though, there’s something to be careful with here, which is we don’t know how much of what happened here is persuasion versus turnout.
+
+Voters who supported Trump in 2024 just didn’t like him enough or didn’t care enough to come out in 2026. You can’t really see that in the voting data.
+
+Retica: Right. No, and you also can’t see the — roughly speaking, 150 million people vote in these presidential elections. And maybe 110, 115, 120 million decide the midterms.
+
+It’s definitely not necessarily the case that this person changed his mind or her mind. It’s often these people showed up, or they didn’t. The true swing voters are the people, in some ways, who only vote sometimes.
+
+Retica: Two sets of historical examples from midterms: On one side, we have 2006, where the Democrats do extremely well. It is a harbinger of the rise of the first Black president, although very few people realized it at the time. He did. David Axelrod did. But it was not conventional wisdom in 2006.
+
+I had just started working here the year before. I would say no one was talking about Barack Obama. Very few people were talking about Barack Obama, and then two years later, he’s the president of the United States.
+
+The flip side of that, though, is in 1994, Newt Gingrich and company won the Contract With America. They do change the face of American politics quite a bit, and we’re all still paying the price.
+
+Trump is, in many ways, the fruit of that tree. [Laughs.]
+
+God, that was terrible, but you know what I’m saying. But they lose to Clinton in 1996.
+
+In 2010, as you alluded to earlier — what did Obama say? There was a “shellacking.”
+
+Klein: “Shellacking,” yeah.
+
+Retica: Then he won really pretty comfortably in 2012. Although uncharacteristically, he was a president who lost electoral votes the second time he ran, which is actually very unusual.
+
+Usually it’s more like Reagan, where you win by a little bit, and then you win by a lot.
+
+So what do you think this is?
+
+Klein: In the modern era, you have wave midterms that lead to the party that won the midterm winning the presidency and winning seats in the next election.
+
+Good examples of this are ’06, where Democrats win in the second Bush midterm. Then in ’08, they win a supermajority. It’s not just that Barack Obama wins in ’08, it’s that Democrats get 60 votes in the Senate.
+
+Retica: Yeah. Unpopular war in the Middle East, I might add.
+
+Klein: And then, ultimately, a financial crisis, which, given there’s a lot of shakiness around A.I. right now, particularly after this election and what that might mean for Texas data center construction — so the economy may not be getting better from here.
+
+Big Democratic midterm in 2018. They win in 2020. OK.
+
+But 1994: huge Republican midterm. Bill Clinton wins in 1996. Huge Republican midterm in 2010. Barack Obama wins in 2012.
+
+Midterms are not a straight line to victory in the next election. You have to be thoughtful about what you do, thoughtful about who you run, thoughtful about how you run.
+
+To what you were just saying about Obama, the ’06 midterm was this very Americana, flag and national security midterm on the Democratic side. A big star out of that midterm was Jim Webb, the Virginia tough-talking Marine. You wouldn’t necessarily have seen that going to Barack Obama, as you were saying.
+
+With Trump winning in 2016 after the 2012 Republican wipeout, one of the big things Republicans believed after 2012 was that they had to moderate on immigration. Then, of course, you end up getting the most nativist president in modern America.
+
+I’m not predicting, but the idea that this era in politics, with all the fights around Israel and antisemitism we’re having, does seem to be like, more than any other recent one, leading to possibly the first Jewish American president in Jon Ossoff, if he decides to run. The amount of energy around him ——
+
+Retica: Wow, you heard it here first.
+
+Klein: It’s not first. This is not a new point, but it is just interesting if you want to talk about a singular star coming out of this election.
+
+I’m not saying Ossoff wants to run for president. From what I hear, he doesn’t. He may not really end up having a choice on this one.
+
+Retica: Yeah, definitely may not.
+
+Klein: He crushed his opponent in Georgia.
+
+Retica: And getting back to the Trump political malpractice issue: Ossoff is a senator because of Donald Trump.
+
+Klein: He’s a senator because of Donald Trump. He’s a senator who has a demonstrated capability to win in a purple state.
+
+By the way, he has coattails. I’m not saying it’s just him. You have to look here at organizing done by Stacey Abrams and Raphael Warnock, as well. But Keisha Lance Bottoms won for governor in Georgia.
+
+We’ve been talking here about the House and Senate, but Democrats won the governorship in Texas. Rob Sand won easily in Iowa. There are a lot of big gubernatorial pickups here. I think I saw a number floating around on Twitter yesterday.
+
+Can we call X Twitter again? Is that part of the election?
+
+Retica: [Laughs.] I’m going to get to him later.
+
+Klein: I saw a number floating around on Twitter yesterday. The Democrats now control the governorships in states worth 392 electoral votes, which is just huge.
+
+Retica: Wow.
+
+Klein: But Jon Ossoff being able to navigate this moment in the way he has, being able to be as dominant in the attention economy as he has been, but maintain a highly message-disciplined approach and straddle the divide where both Hasan Piker and Matt Yglesias will talk up Jon Ossoff to you like I’ve been talking him up for a long time. The guy is just demonstrating an incredible amount of political skill.
+
+In terms of these weird ways that American politics often leads to not the person you would have expected from narrative a couple years before, there’s a lot of energy around him at the moment. I guess I’ll say that.
+
+Retica: Yeah. There were so many remarkable things about last night. It became temporarily illegal to talk about identity — and, of course, it wasn’t actually illegal, but you know what I’m saying. We weren’t supposed to talk about that.
+
+But the result of that is actually quite striking in identity terms, right? We have the first openly gay senator. We have the first Muslim senator. We’re going to have the first Black female governor. We have a man with spina bifida who’s going to be a senator. There are multiple Native American firsts.
+
+It’s like an amazing array, that the 1976 Democratic Party is like: woo-hoo! So what do you make of that contrast that people didn’t run on it, but they won with it?
+
+Klein: I don’t find that surprising. It was never the case, even though some people took this as a lesson of 2024: that candidates who are women don’t perform well, candidates who are Black don’t perform well, candidates who are Native American don’t perform well. What didn’t perform well were candidates taking very unpopular positions, some of them — though, by the way, not all of them — tied to race and gender and identity.
+
+But look at Barack Obama. Obama is by far the most popular political figure in America, has been for a long time. At the same time, people were saying: Well, this just goes to show you, a woman can’t win in the Rust Belt.
+
+You had a woman governor in Michigan. We just had Amy Klobuchar win in Minnesota last night.
+
+And so people were conflating, wrongly, the identity of candidates with identity politics. And what you see here is that it was just incorrect. And you have these candidates who are just, like, running really, really strong races.
+
+Josh Turek, the Paralympian with spina bifida, just ran a really strong race. But, by the way, one reason that there was excitement about him running was that in Iowa, in the state — I think he was a state senator — like, he ran in a district where he had to learn how to appeal to Trump voters.
+
+I would say the heuristic you often want is: Does this candidate have a record of appealing to the kind of voter they’re going to need to win?
+
+Democrats ran a bunch of people like that, and they did a really good job.
+
+Retica: We talked a lot about how they should campaign and how they succeeded in campaigning. But how should they govern? If you’re Hakeem Jeffries and Chuck Schumer — and by the way, shout-out to New York — last shout-out: New York in control of the House and the Senate. Very weird.
+
+Klein: Yeah. And by the way, Kirsten Gillibrand, a New York senator, was leading the D.S.C.C. this cycle, leading that project. And New York has the country’s most famous mayor in Zohran Mamdani. And there’s Alexandria Ocasio-Cortez. The New Yorkization ——
+
+Retica: And, of course, the president. But he wants to be from Florida. He can be from Florida.
+
+Klein: Democrats have three broad things they’re going to have to balance. One is what I would call resistance, which is fighting Trump, investigating Trump, holding Trump and the Trump administration and Trump family accountable, sending him bills that are going to lead to contrasts that the public can see.
+
+Retica: He said he was going to be Mr. Veto.
+
+Klein: Mr. Veto. And Ed Markey said they’re going to need to cut down trees for all the subpoenas that are going to be offered — which I’m not sure is the most helpful comment from one of the senators from Massachusetts, but nevertheless.
+
+Retica: And environmentally unsound. [Laughs.]
+
+Klein: Yeah, for a big environmentalist.
+
+But then there is actually getting things done. You have this big permitting bill that’s going to get voted on — I think there’s interest. And you’re hearing people talk about doing things on A.I. regulation. You can imagine things potentially on immigration, at least around the corners of it.
+
+Retica: Because now it’s hurt both parties.
+
+Klein: Now it has hurt both parties. But that doesn’t mean they’ll be able to do it. I’m just saying that there’s a bucket of: How much do you work with the other side, and even work with Donald Trump, to get things done?
+
+I mean, after 2018, there were things that got done, particularly once you got into the pandemic period. There were huge agreements between the Nancy Pelosi-led House and Donald Trump.
+
+And then there is what I would think of as power building and agenda setting, which is not so much what you pass through the House or the Senate but beginning to hammer out: What does the Democratic position look like on health care reform that they would bring into 2028 and then 2029 — first campaign, and then the governing — agenda?
+
+What is the Democratic position on A.I. regulation? How do Democrats, in general, begin to create a sense of what the center of the party — not like the centrists in the party, but the center of the party — believes?
+
+I think you’re going to see a lot of work done on Medicare, say, for more policies, which are going to unite the more moderate and the more left parts of the party. I think you’re going to see a lot on A.I., a lot beginning to be thought through on pre-K and other forms of child care.
+
+So how they balance it, and particularly how they balance the first two — confrontation and compromise — that’s going to be a lot of the work.
+
+The only other thing I’ll say, though, is that when I look at the next two years, I think a lot is going to go sideways. It’s hard to predict exactly what, but the economy looks very shaky to me given how much is built on an A.I. CapEx boom, which could very, very, very easily collapse into a market correction.
+
+You have the Iran war, which could explode into something completely different, or Israel could launch a gigantic round of new attacks. There has been talk about whether Iran would use chemical weapons. I mean, there are all kinds of ways that could go sideways, even more so than it already has.
+
+There’s Russia-Ukraine. There’s A.I. — not from the economic standpoint, but rogue swarms of A.I.s hacking into China. There’s China and Taiwan.
+
+There’s Donald Trump’s health. He’s an 80-year-old who is increasingly discursive and all over the place. There’s all the corruption around him. There is so much that is unknown.
+
+Retica: You know what it makes me think of?
+
+Klein: What?
+
+Retica: It makes me think of the first line of the Percy Bysshe Shelley poem, “England in 1819.” Let’s see if I can do it right. It’s “An old, mad, blind, despised and dying king.” That’s the beginning.
+
+“Princes, the dregs of their dull race.” I could go on. But that poem actually speaks to what we’re talking about.
+
+It goes through how horrible the Senate is, but then, at the end of it, he asks: What’s the glorious phantom that’s going to come from this? Which is what we’re talking about.
+
+And also just Trump’s personality. I don’t know what to call it because I’m not a doctor, and even if I were, I wouldn’t say it. But there’s some kind of disintegration going on, or a man not in supergreat contact with reality to begin with.
+
+Klein: You don’t feel like the reflecting pool speech was the closing argument Republicans needed?
+
+Retica: If you look at the world in a historical and literary frame, as I tend to, the anxiety is — and you just outlined it well — that this is 1912. This is 1913. This is 1914.
+
+Klein: This is ’06.
+
+Retica: And these things are all converging on us, and then the president is — let’s just say he is not adaptable.
+
+As you pointed out earlier, he doesn’t react to events. He doesn’t even seem to know they happened in the way that other people experience reality. And so that is unlikely to go superwell.
+
+Klein: Yeah, and his staffing is not going to get better in the lame-duck period of his second term.
+
+Some of these people might get shuffled out as some of them have, like the former Department of Homeland Security secretary Kristi Noem.
+
+But the people who come in are not — Trump is not going to suddenly surround himself with a team of rivals. He’s not going to suddenly begin listening to people’s advice. So what you tend to have, particularly in a second term, particularly in the back half of it, is an exhausted staff less able to challenge the boss.
+
+As you say, the boss is more erratic, more mad. He is not obsessed with Republicans winning in 2028. He does not want to lose control. And so the more Republicans try to win in 2028 ——
+
+Retica: Now, in your theory, he would like them to lose.
+
+Klein: I think he would prefer them to lose while embracing him than to win while running away from him. I don’t think there’s any doubt about that.
+
+Retica: To get to your point about investigation and corruption, there will be people who say: Let it all go. Don’t impeach him again. Don’t do this. Don’t do that. We have to govern.
+
+But here’s the problem with that. First of all, there’s the level of the corruption and incompetence and just grotesque, grotesque behavior — just staggering, amazing stuff that they did.
+
+They destroyed huge agencies, the U.S.A.I.D. and Department of Education and the Consumer Financial Protection Bureau — all of that. There’s the immigration. There are all these things.
+
+So what do you think they should do on the investigation and corruption front?
+
+Klein: I don’t think anybody in the party is saying: Don’t investigate.
+
+Retica: Don’t impeach — they are saying that.
+
+Klein: Let’s hold impeachment aside, because they’re not going to impeach right now. That’s not their first-day plan.
+
+What they’ve been planning for is investigation. And the challenge they’re going to face on investigation is actually how target-rich the environment is.
+
+The resources of Congress are significant, but the amount of corruption, malfeasance, lawbreaking, etc., in the Trump administration is so vast that in order to make anything stick, you need to focus on a couple of things people can begin to hold in their minds.
+
+It’s one reason Jon Ossoff has been better at making the corruption argument than a lot of others. He tends to focus on one small thing at a time. It allows you to conceptualize the whole and the part.
+
+The way I hope they will do it, as an organizing thread, at least at the beginning — not because it will be the most emotionally satisfying or even important, but because I think it actually reflects what the American people are interested in — is I want them to follow the money.
+
+I want to know who bought what from the Trump administration, who gave what to the Trump administration. Things like the Qatari jet. How much could we not know?
+
+Retica: Which foreign countries?
+
+Klein: How much did the Trump family get? What contracts went into the Trump family’s hands during all this?
+
+What’s going on with Jared Kushner’s investment firm? I would love to know real details on that Jared Kushner firm that has seemed to be so popular among Gulf state funders.
+
+Retica: [Laughs.] It’s surprisingly popular, yes.
+
+Klein: And on the flip, not just who bought what, but what did they get?
+
+And then where has the money been going for the Trump family and for Trump associates? As you’ve been getting hosed at the pump and in the grocery store and when you’re trying to buy a home — how many billions of dollars has he made exactly? And not just him — Don Jr., Eric, all their friends and family, Steve Witkoff’s son.
+
+What’s going on with all the crypto? There is so much money that has been moving around. To me, that is the place to start.
+
+But as you were suggesting, too, there are all these other questions about what laws were broken in different agencies. And I’m not saying they can’t do that, too, but they’re going to have to choose what to focus on first ——
+
+Retica: Well, and which things to try to put back. Do you just try to reopen the Consumer Financial Protection Bureau? What do you do there?
+
+Klein: It’s maybe worth spending a moment on what happened to the DOGE leaders, Elon Musk and Vivek Ramaswamy, who I think together — Vivek lost the Ohio governorship to Amy Acton, running one of the most grim and disreputable campaigns in history ——
+
+Retica: Oh, I thought you were going to say the ad, because that was the worst thing ever.
+
+Klein: For people who didn’t follow this, Ramaswamy had an ad on from her estranged mother, who said that Amy Acton is a liar. And what she was suggesting Amy Acton lied about was being sexually abused by her stepfather, of which there was quite good evidence.
+
+Grotesque, just reprehensible behavior. Ramaswamy was already on track to lose that election, but he’s lost it and really ——
+
+Retica: Yeah, he should be drummed out of public life, no question.
+
+Klein: And then Elon Musk — largest single donor in history in this cycle.
+
+Retica: It’s only $500 million.
+
+Klein: I mean, for him, it’s like nothing.
+
+Retica: What are you talking about? [Laughs.]
+
+Klein: But it’s not just that money didn’t do anything, or it doesn’t appear to have done very much. A huge amount of it was spent in Texas, and there is nowhere in the country that Republicans collapsed like they did in Texas.
+
+Retica: And if you do this for a living, the dream of a blue Texas has — or really what appeared to be, at first, the fantasy of a blue Texas — has been alive and well for decades. And now it’s here.
+
+Klein: Alive and unwell for decades. [Laughs.]
+
+Retica: The fantasy was alive, but ——
+
+Klein: Yeah, the fantasy was alive.
+
+Retica: But here it is.
+
+Klein: But hopes kept getting dashed.
+
+But Musk spent a tremendous amount of money — a large amount of that money, certainly a plurality of it, went into Texas, specifically.
+
+It bought him nothing. I think it ——
+
+Retica: No, it hurt.
+
+Klein: It hurt, right? People don’t like their elections being bought.
+
+Retica: There were two forms of one-man rule on the ballot: Trump’s and his, and they both got crushed.
+
+Klein: And Musk has moved himself and a lot of his corporations to Texas. So the question of Musk is going to be a very interesting one going forward.
+
+Retica: Yeah, I mean, there’s a lot to say about Musk.
+
+I hope this means that when you verge, or maybe more than verge, on white supremacy or certainly white dominance as your central idea, that you’ll fail. I hope that’s true.
+
+Klein: And replacement of human beings with robots might also not be hugely popular.
+
+Retica: And replacement of human beings with robots. [Laughs.] Also not great, right? A.I. centers are a huge electoral issue that elites are maybe not focused on as much as they should be.
+
+Klein: I mean, I think they were pretty focused on it in this election, though.
+
+Retica: They were, right.
+
+Klein: But they — I mean, the amount that Democrats ran on that. Sherrod Brown, running against Jon Husted, in Ohio, ran heavily on data centers. Gina Hinojosa, in Texas, ran aggressively on data centers. Abdul El-Sayed ran on data centers.
+
+So there were dozens of data center moratoriums on the ballot, and I think, so far, every single one of them except for one has passed.
+
+Retica: The exception that proves the rule.
+
+So a little inside baseball: You came to The New York Times the week of Jan. 6, 2021. You and I had already met, obviously.
+
+Klein: Yeah. My first week at The Times.
+
+Retica: Right, your first week at The Times was the week of Jan. 6.
+
+That was effectively the down payment on the second Trump term. It also made this even more the Trump era than it might have been.
+
+Is this finally the beginning of the end of Trumpism? It’s definitely the beginning of the end of Trump — he’s out in two years no matter what. But is it ——
+
+Klein: There’s no Trumpism. There was only ever Trump.
+
+The work that various right-wing intellectuals and pseudo-intellectuals tried to do, to create this coherence around Trump’s impulses and extract from that what he was going to try to do with the tariffs — what a highly structured tariff regime, to bring manufacturing back to America, would look like. That was a failure. Donald Trump’s tariffs were insane.
+
+Trump is an end of the neocon Middle East meddling era in foreign policy — a failure. Trump did not agree with you. That was not Trumpism.
+
+Over and over and over and over again, there have been these efforts to say what Trumpism is, but Trump himself would not hold to any of them.
+
+And so one reason all of this collapsed, and one reason I think the infighting of it on the right is ultimately going to be so vicious, is because you’re still going to have the people who say: Real Trumpism has never been tried. You already saw this happening ——
+
+Retica: It was happening last night. The MAGA people were all like ——
+
+Klein: The neocons did this to us ——
+
+Retica: The neocons brought Iran ——
+
+Klein: Who are the neocons? It was Trump.
+
+Retica: Yeah.
+
+Klein: Marco Rubio didn’t get you into Iran — it was Donald Trump himself, with Benjamin Netanyahu, who got us into Iran. That wasn’t Bill Kristol. Are you kidding me? It’s ridiculous.
+
+JD Vance is going to presumably run for president as a human sacrifice to say: This is what Trumpism could have been.
+
+Retica: Trumpism, right — without the war ——
+
+Klein: There was this whole view that JD Vance could have been the intellectual nerve center of the Trump administration. He wasn’t in the end, but maybe he’ll run as that. The problem is nobody actually thinks Vanceism, which is what that really is, is appealing.
+
+JD Vance was not an electoral juggernaut in Ohio when he ran. He underperformed terribly, and he’s not popular now.
+
+And so the movement is going to be to try to figure out what can come after. And that jockeying, particularly outside of the House and the Senate, is already going to begin.
+
+And the key thing is: Trump cares about his control. He doesn’t care about his ideology. Trump wants fealty. He doesn’t want consistency or coherence. He’s not an ideas guy. He wants to keep his family out of jail ——
+
+Retica: Amazing statement, yes.
+
+Klein: Keep their profits, right? But everybody knows it to be true. The Republican Party all knows it to be true.
+
+Retica: You don’t think he’s home reading Patrick Deneen?
+
+Klein: [Laughs.] I don’t think he’s home reading Patrick Deneen.
+
+Retica: Yeah. OK. Before we go, I want to ask you something.
+
+So I was on my way here, and I was texting with a friend of mine who’s — well, she’s a historian. And I was telling her what I was doing, and she was like: OK, but don’t — as my mother always used to say: Don’t gloat.
+
+And I don’t want to gloat. But I do want to focus on something: people whom we are very glad to see the end of — who lost last night. So I’m going to go first, and that is Susan Collins.
+
+She has the mask of the moderate, right? When things were close, she was the most likely senator to vote against Republicans. But that’s still 15, 16, 17 percent. Most of the time, she voted with them.
+
+And she was the chief enabler of the destruction of women’s right to choose because of the change in the court. And I’m very, very happy to see her go. [Laughs.]
+
+Who are you happy to see go?
+
+Klein: I think that the place where I am happiest to see politicians and political tactics fail is when they front-load unabashed cruelty. And I think that describes Ken Paxton in Texas.
+
+Retica: Definitely.
+
+Klein: And immorality. I think there’s a world where he ran a much more honorable campaign than this, but it’s not the world he ended up living in.
+
+Vivek Ramaswamy, in Ohio. I think Roger Marshall, in Kansas, in the way that he — the incredibly cruel interest he imposed upon his own patients, the 18 percent interest rates he had.
+
+Retica: [Laughs.] That’s just amazing. He’s an OB-GYN.
+
+Klein: And the flip of that — because I think more about who I’m happy who won than who I’m happy lost.
+
+The flip of that is that I am really, really interested and optimistic about this rise of a religious left, this revival of a religious left and a moralistic left. A left that is interested and able to speak in a language of virtue: James Talarico, Adam Hamilton, Abdul El-Sayed and Jon Ossoff. Ossoff is really good at speaking in a biblical cadence thick with the language of virtue.
+
+I think one of the giant opportunities in politics right now is to rebuild a politics that is explicitly moral within the moral wreckage of Donald Trump.
+
+Retica: Yeah, it’s a thermostatic response to their depravity and immorality.
+
+Klein: And so I am quite interested in the candidates who are figuring out how to do that. I particularly think the Talarico, Hamilton, El-Sayed, Ossoff group there ——
+
+Retica: Yeah, you always say ——
+
+Klein: Has that moral language in a way that relatively few of the others do.
+
+Retica: Let’s give it a name. You always like to give things a name, right? We’ll call it the Love Thy Neighbor Coalition. And we’ll call it a day.
+
+Klein: Aaron Retica, thank you very much.
+
+Retica: Thanks a lot, Ezra.
+
+You can listen to this conversation by following “The Ezra Klein Show” on the NYTimes app, Apple, Spotify, Amazon Music, YouTube, iHeartRadio or wherever you get your podcasts. View a list of book recommendations from our guests here.
+
+This episode of “The Ezra Klein Show” was produced by Rollin Hu and Jack McCordick. Fact-checking by Michelle Harris with Kate Sinclair, Mary Marge Locker, Julie Beer and Jordyn Flaherty. Our senior engineer is Jeff Geld, with additional mixing by Aman Sahota and Isaac Jones. Our recording engineer is Aman Sahota. Cinematography by Marina King. Video editing by Steph Khoury, Dani Dillon, Kristen Williamson, Julian Hackney and Jan Kobal. Our executive producer is Claire Gordon. The show’s production team also includes Marie Cascione, Annie Galvin, Kristin Lin, Emma Kehlbeck, Marina King and Jan Kobal. Original music by Pat McCusker. Audience strategy by Shannon Busta. The director of New York Times Opinion Shows is Annie-Rose Strasser. Transcript editing by Sarah Murphy, Filipa Pajevic, Kate Wilkinson and Marlaine Glicksman.
+
+The Times is committed to publishing a diversity of letters to the editor. We’d like to hear what you think about this or any of our articles. Here are some tips. And here’s our email: letters@nytimes.com.
+
+Follow the New York Times Opinion section on Facebook, Instagram, TikTok, Bluesky, WhatsApp and Threads.
+
+================================================================================
 midterms-democrats-senate-house-results.html
 Source: PreloadedData  Paragraphs: 38  Words: 1883/2006
 ================================================================================
@@ -51185,6 +52026,63 @@ The Times is committed to publishing a diversity of letters to the editor. We’
 Follow the New York Times Opinion section on Facebook, Instagram, TikTok, Bluesky, WhatsApp and Threads.
 
 ================================================================================
+trump-democrats-midterms.html
+Source: PreloadedData  Paragraphs: 17  Words: 921/984
+================================================================================
+
+SUMMARY
+
+Mr. Trump cares only about developments that affect him directly. Not that Mr. Trump has ever cared much about congressional authority. Maybe with the Trump Kool-Aid drinkers.
+
+ARTICLE
+
+Don’t Be Fooled. This Is What Trump Wanted.
+The president loves combat and chaos. He’s about to get more of it.
+By Michelle Cottle
+Published 2026-11-04 20:00 UTC
+https://www.nytimes.com/2026/11/04/opinion/trump-democrats-midterms.html
+
+Talk about a thumping. After months of struggling to overcome brutal political fundamentals, most Republicans awoke Wednesday to the fresh pain of getting kicked to the curb by the American people, along with a fat dollop of dread about what comes next.
+
+But not President Trump. I suspect he greeted the morning with a tingle of anticipation, if not outright excitement, for what lies ahead: two years of nonstop, bare-knuckle brawling with a Democratic-controlled House and Senate. In other words, Mr. Trump’s idea of heaven.
+
+Yes, the president is a sore loser, as Jan. 6 illuminated in blood and chaos. He got busy early in this election rigging the playing field in his team’s favor, then spent the final months of it pleading with followers to pretend he was on the ballot.
+
+But he wasn’t really on the ballot, meaning he can now tell himself this electoral humiliation had nothing to do with him. And he has never given two flips about the fortunes of the broader G.O.P. So, in his mind, Republicans belly flopping without him probably just confirms his singular importance.
+
+Mr. Trump cares only about developments that affect him directly. As such, he might feel a whisper of unease about his lap-dog Republicans ceding control to crusading Democrats with subpoena power and two years of pent-up rage. After all, one of his go-to campaign pitches to Republican voters this year was that, if the blue team won the midterms, Democrats would immediately revive their unfair persecution of him. Maybe even impeach him a third time!
+
+But, deep down, a Democratic win was surely what he was rooting for all along.
+
+Conflict is Mr. Trump’s jam. The nastier the better. For all his self-aggrandizing talk about building stuff, his true talents lie in combat and destruction. He long ago shattered the spine of the G.O.P., so humiliating its members now is a minor thrill at best. But facing off against Democratic majorities in both chambers still buzzing from their electoral win? Now that is something to live for.
+
+Expect Mr. Trump’s relations with Congress next year to make the partisan hostilities of his first term look like a meditation retreat. The incoming chairmen of the House Judiciary and the Oversight Committees have likely been protein loading and drawing up subpoena lists for months in preparation for their coming investigations into Trump & Company. At least, I sure hope so.
+
+Not that Mr. Trump has ever cared much about congressional authority. Which means we can look forward to rampant stonewalling of Democrats’ requests for documents and witnesses. If at least a couple of administration officials aren’t held in contempt of Congress by the end of next year, it won’t be for lack of trying.
+
+For Mr. Trump, this pandemonium is doubtless much more fun than the thankless tedium of trying to govern. The guy has never been much for policy, unless you count whipping up fear of immigrants and imposing a tariff scheme that seems to have been drawn up on the back of a napkin. And his second-term “accomplishments” thus far have been about as popular as a root canal without sedation.
+
+True to form, Mr. Trump has responded to his failures by whining about the public’s refusal to appreciate everything he has done for them. Pre-election, members of his administration pleaded with voters to just be a little patient, to allow more time for the positive results of the administration’s policies to manifest. Maybe buy their spoiled kids fewer toys in the meantime.
+
+That’s all over now. Going forward, Mr. Trump can simply redirect the blame for all of his incompetence onto Democratic lawmakers. High gas prices? A disastrous war in Iran? More expensive health care coverage? Rural hospitals shuttering? Pfft. If only the radical Communist extremist Democratic majorities would let Mr. Trump work his magic, all those problems and more would have been resolved by now.
+
+Will his blame shifting work? Maybe with the Trump Kool-Aid drinkers. But it is the natural condition of the president to be blamed for most of what goes down on his watch, and a growing portion of the electorate has grown wise to his game.
+
+There has been some speculation about whether, saddled with divided government, Mr. Trump will make an effort to cut a few bipartisan deals. Perhaps pursue populist tax changes or reduce prescription drug costs or … you know, something.
+
+It is indeed pleasant to imagine that the president cares enough about, if not the welfare of Americans, at least his own legacy to get serious about helping people other than his rich cronies and grifter family. I wouldn’t hold my breath. Mr. Trump has never displayed much interest in or patience for working out knotty bipartisan deals. Rather than waste time on policy negotiations, he seems more likely to sit around binge watching Fox News and noodling over how to annoy his Democratic nemeses with yet another monstrous monument to himself.
+
+The closing years of a presidency can be a drag. Especially if, like Mr. Trump, you have done a lousy job. The electorate is tired of you. Your congressional team is increasingly focused on the future beyond you. Worse, people expect you to own the problems you once railed against, along with the failed policies you have rammed through. Where is the joy in that?
+
+Instead, Mr. Trump can now spend his waning days in office wallowing in perpetual combat and chaos. That has always been his happy place, no matter the cost for the rest of us.
+
+Source photo by Roberto Schmidt/Getty Images.
+
+The Times is committed to publishing a diversity of letters to the editor. We’d like to hear what you think about this or any of our articles. Here are some tips. And here’s our email: letters@nytimes.com.
+
+Follow the New York Times Opinion section on Facebook, Instagram, TikTok, Bluesky, WhatsApp and Threads.
+
+================================================================================
 trump-midterms-republicans.html
 Source: PreloadedData  Paragraphs: 15  Words: 1166/1222
 ================================================================================
@@ -51234,6 +52132,136 @@ As far as honoring the idea of the presidency enshrined in the Constitution, the
 The Times is committed to publishing a diversity of letters to the editor. We’d like to hear what you think about this or any of our articles. Here are some tips. And here’s our email: letters@nytimes.com.
 
 Follow the New York Times Opinion section on Facebook, Instagram, TikTok, Bluesky, WhatsApp and Threads.
+
+================================================================================
+beverly-whipple-g-spot-dead.html
+Source: PreloadedData  Paragraphs: 24  Words: 1006/1006
+================================================================================
+
+SUMMARY
+
+Beverly Whipple, a nurse, psychologist and sex educator whose 1982 book about the G-spot encouraged a generation of women to search for their erogenous zones, died on Monday at her home in Voorhees, N.J. In 1981, on “The Phil Donahue Show,” Dr. Whipple inserted her finger into a plastic replica of female genitalia, pressing on what she said was a sensitive area. Dr. Whipple wrote several other books on female sexuality, including “Safe Encounters: How Women Can Say Yes to Pleasure and No to Unsafe Sex” (1989), written with Gina Ogden; “The Science of Orgasm” (2006), written with Dr. Komisaruk and Carlos Beyer-Flores; and “The Orgasm Answer Guide” (2009), written with Dr. Komisaruk, Dr. Beyer-Flores and Sara Nasserzadeh.
+
+ARTICLE
+
+Beverly Whipple Has Died. She Introduced the G-Spot to the Mainstream.
+Dr. Whipple studied the female erogenous zone and, with collaborators, wrote a best seller about women’s sexuality. She was 85.
+By Randi Hutter Epstein
+Published 2026-11-04 23:03 UTC
+https://www.nytimes.com/2026/11/04/science/beverly-whipple-g-spot-dead.html
+
+Beverly Whipple, a nurse, psychologist and sex educator whose 1982 book about the G-spot encouraged a generation of women to search for their erogenous zones, died on Monday at her home in Voorhees, N.J. She was 85.
+
+Her husband, Jim Whipple, said her death was from complications of an illness consistent with Alzheimer’s disease.
+
+Dr. Whipple’s book “The G Spot: And Other Recent Discoveries About Human Sexuality,” which she wrote with Alice K. Ladas and John D. Perry, was a New York Times best seller. It examined the concept of female sexual pleasure, and specifically the idea of the G-spot, a sensitive area on the upper vaginal wall. The book has been translated into 19 languages and has sold more than a million copies.
+
+Dr. Whipple’s plain language and accepting attitude about sexual tastes and orientations informed, amused and shocked global audiences.
+
+In 1981, on “The Phil Donahue Show,” Dr. Whipple inserted her finger into a plastic replica of female genitalia, pressing on what she said was a sensitive area. “It’s not easy to find on yourself, but a partner can find it quite easily,” she said.
+
+Spectators in the studio giggled. Dr. Whipple appeared unfazed.
+
+Later in the show, Mr. Donahue asked an older audience member if she had ever expected to discuss this subject on television. “No, I didn’t,” the woman replied. “If my mother was alive, she’d drop dead.”
+
+Dr. Whipple’s study of female eroticism began in the 1970s, while she was teaching nursing students and providing counseling to women in New Jersey. Several of her clients confided that they worried about occasionally urinating during intercourse. Seeking answers in the medical literature, Dr. Whipple unearthed a 1950 article by Ernst Gräfenberg, a German doctor, documenting women’s ability to ejaculate. The same article mentioned an especially sensitive area in the vagina.
+
+Seeking to confirm his findings, Dr. Whipple, along with Dr. Perry, a sexologist and psychologist, recruited 400 women from New Jersey and Vermont for a study. At a 1980 meeting of the American Association of Sexuality Educators, Counselors and Therapists, Dr. Whipple reported that all of the volunteers seemed to have an erogenous area on their vaginal walls somewhere between “11 o’clock and 1 o’clock.” Many of the participants, she added, had released a fluid that was not urine; it was similar to male ejaculate.
+
+A colleague suggested that she call the area the Whipple Tickle. She refused because at the time there was a fictional Mr. Whipple who featured in a popular television advertisement for Charmin toilet paper.
+
+Instead, Dr. Whipple and Dr. Perry called it the Gräfenberg spot, after the earlier researcher. That moniker was later shortened to G-spot. (Dr. Gräfenberg wasn’t the first person to study the area; Regnier de Graaf, a 17th-century Dutch anatomist, wrote about the same vaginal erogenous zone.)
+
+After the “The G Spot” was published, Dr. Whipple appeared on more than 300 television and radio programs, podcasts and videos, and gave more than 800 talks in the United States and abroad. She also wrote more than 100 scientific articles and book chapters. In 2013, Cosmopolitan included her on its list of “10 Sexual Revolutionaries You Should Know.”
+
+While the book propelled her and her collaborators into the public eye, not all the reviews were positive. The Washington Post wrote that “instead of defending this astounding revelation with hard-core scientific data, they chose an inordinate number of soft-core testimonials.”
+
+In later years, Dr. Whipple downplayed the term G-spot, opting instead to use the phrase “clitourethrovaginal complex.” Along with most experts, she no longer talked about a “spot,” but instead promoted the idea that erogenous areas may vary among women and could include the clitoris, urethra and vagina.
+
+Beverly Hoehne was born on June 30, 1941, in Jersey City, N.J., and grew up in nearby Secaucus. Her father, Howard Hoehne, was a vice president of Bankers Trust. Her mother, Beatrice (Bodei) Hoehne, was a nurse.
+
+Beverly attended Weehawken High School and earned a bachelor’s degree in nursing from Wagner College on Staten Island.
+
+After she graduated, in 1962, she married Mr. Whipple. In addition to him, she is survived by two children, Allen and Susan Whipple; five grandchildren; and one great-grandchild.
+
+Her first job after graduation was teaching nursing at West Jersey Hospital in Camden, N.J. In 1975, when administrators refused to let her include lessons on sexuality, she quit and started a sex education course at Gloucester County College (now Rowan College of South Jersey) in Sewell, N.J.
+
+That experience piqued her interest in female sexuality. She went on to earn three degrees from Rutgers University: a master’s degree in counseling, a master’s in nursing and a doctorate in psychobiology.
+
+Her doctoral research, under the direction of Barry Komisaruk, a psychology professor and sex researcher, investigated the neurophysiology of female orgasms, focusing on the way sexual stimulation can dull pain response. The research showed that some women with severe spinal cord injuries are capable of experiencing orgasm, demonstrating that sensations could bypass the spinal cord and travel along the vagus nerve, which runs from the genitalia to the brain.
+
+“Her interest in being able to research sex and make it a legitimate place for scientific study legitimized pleasure as a healthy force for wellness and for research,” Nan Wise, a Rutgers University neuroscientist and sex therapist who trained under Dr. Whipple, said in an interview.
+
+Dr. Whipple wrote several other books on female sexuality, including “Safe Encounters: How Women Can Say Yes to Pleasure and No to Unsafe Sex” (1989), written with Gina Ogden; “The Science of Orgasm” (2006), written with Dr. Komisaruk and Carlos Beyer-Flores; and “The Orgasm Answer Guide” (2009), written with Dr. Komisaruk, Dr. Beyer-Flores and Sara Nasserzadeh.
+
+Reflecting on her career, Dr. Whipple said she never intended to make women anxious about finding their G-spots.
+
+“When you are searching for something as a goal,” she said in a 2018 episode of the Netflix documentary series “Explained” focusing on the female orgasm, “you are going to miss a lot of pleasure on the way.”
+
+================================================================================
+alito-trump-supreme-court-not-retiring.html
+Source: PreloadedData  Paragraphs: 23  Words: 951/953
+================================================================================
+
+SUMMARY
+
+Justice Samuel A. Alito Jr. has told people close to him that he does not intend to retire immediately from the Supreme Court, despite Democrats’ commanding win in Senate contests on Tuesday, which means Republicans will hold the chamber for only a short time longer. As a result, Republicans may have missed the window for President Trump to name a fourth or even a fifth justice to the Supreme Court in the final two years of his presidency. As recently as last month, Justice Alito, a forceful conservative and reliable vote in favor of Mr. Trump’s policies, had rejected the idea that he would step down if Democrats took control of the Senate.
+
+ARTICLE
+
+Justice Alito Will Not Retire Immediately, Despite Election Outcome
+The conservative justice has told friends he does not plan to step down before the end of the court’s term, even as Democrats are set to seize the Senate in January.
+By Ann E. Marimow
+Published 2026-11-04 23:37 UTC
+https://www.nytimes.com/2026/11/04/us/politics/alito-trump-supreme-court-not-retiring.html
+
+Justice Samuel A. Alito Jr. has told people close to him that he does not intend to retire immediately from the Supreme Court, despite Democrats’ commanding win in Senate contests on Tuesday, which means Republicans will hold the chamber for only a short time longer.
+
+As a result, Republicans may have missed the window for President Trump to name a fourth or even a fifth justice to the Supreme Court in the final two years of his presidency.
+
+Justice Alito shared his plans with friends after the election results were clear this week, according to two people close to the justice who spoke on the condition of anonymity.
+
+As recently as last month, Justice Alito, a forceful conservative and reliable vote in favor of Mr. Trump’s policies, had rejected the idea that he would step down if Democrats took control of the Senate.
+
+“I intend to stick around through this term,” he told Bloomberg News, in an interview published in early October.
+
+But the state of the electoral map after Tuesday’s election generated speculation that he or Justice Clarence Thomas — the court’s two oldest justices — could quickly announce their retirements and give the president a brief window to push through a successor during the Senate’s lame-duck session.
+
+Over the years, Justice Thomas has ruled out retiring, suggesting he would serve for decades more. With 35 years on the bench, if Justice Thomas were to stay through May 2028, he would set the record as the longest-serving justice in Supreme Court history.
+
+Justice Thomas, who is 78, and Justice Alito, who is 76, did not respond to requests for comment about their plans.
+
+Despite the public conversation, legal experts were largely agreed on Wednesday that a speedy retirement would be a potentially dicey and problematic proposition that was not guaranteed to secure a seat.
+
+A nominee would have faced the newfound independence of departing Republican senators such as John Cornyn of Texas and Bill Cassidy of Louisiana, who were defeated in primaries by Trump-backed challengers, in addition to Susan Collins of Maine, a moderate who lost on Tuesday. The group may have had little appetite to help Mr. Trump ram through a nominee of his choice.
+
+After Mr. Trump won re-election in 2024, the conservative legal analyst Ed Whelan said that he expected Justice Alito to announce his retirement the next spring and predicted that Justice Thomas would step down in 2026. The moves, he had believed, would allow Mr. Trump to replace the justices with younger jurists who might secure the court’s conservative supermajority for a generation.
+
+Of course, an unexpected vacancy due to health concerns, for instance, could arise at any time during the remainder of Mr. Trump’s tenure. But after Tuesday’s election, in which the scale of the Democrats’ win in Congress was larger than expected, Mr. Whelan said the two conservative justices now may not be able to retire before 2033 if they want to be succeeded by a nominee with a similar judicial philosophy.
+
+“No justice is going to announce in the next few days that he will be stepping down,” Mr. Whelan wrote, adding, “Justices don’t make snap decisions about retiring.”
+
+Robert Luther III, a professor at Antonin Scalia Law School who helped choose Mr. Trump’s judicial nominees during his first term, agreed.
+
+“I don’t anticipate any retirements before January, and frankly, I wouldn’t advise it,” he said.
+
+Both justices were on the bench when Justice Ruth Bader Ginsburg decided not to retire before the 2016 election, a decision many court observers consider a cautionary tale. Instead of allowing President Barack Obama to pick her successor, Justice Ginsburg died while in office in 2020, creating an opening for Mr. Trump to replace the liberal icon with a conservative, Justice Amy Coney Barrett.
+
+But now, conservatives fret that both men may be in danger of following Justice Ginsburg’s example. If a Democrat were elected to succeed Mr. Trump as president in 2028, both Justices Alito and Thomas would be in their 80s before a Republican could regain the White House and be in position to nominate a successor. Forecasts for when the G.O.P. might regain control of the Senate are even cloudier.
+
+At the end of the Supreme Court’s last term in June, speculation had intensified about Justice Alito’s future and whether Mr. Trump would have an opening to continue to remake a Supreme Court that already includes three of his first-term nominees.
+
+Because of Justice Thomas’s previous statements, attention centered on Justice Alito. It reached a fever pitch on the last day of the term when NPR erroneously reported, and then retracted, his retirement.
+
+In a series of interviews published in October, Justice Alito acknowledged that he had “thought about” retiring at the end of the term, but said he had ruled it out, thinking he could still make a “valuable contribution,” as he told CBS News.
+
+Meanwhile, a newly empowered Democratic Congress will have other implications for the Supreme Court beyond vacancies and nominations. Democrats unhappy with rulings from the conservative bench have repeatedly called for changing the structure of the court. Recent polls show bipartisan support for enacting an enforcement mechanism for the ethics code the justices adopted in 2023, and for eliminating life tenure for justices.
+
+Gabe Roth of Fix the Court, which advocates judicial accountability, predicted on Wednesday that House and Senate committees overseeing the courts would also revive judicial ethics investigations that were largely paused two years ago.
+
+Justice Thomas, for one, could face renewed questions surrounding gifts he accepted, but initially did not report, from his friend Harlan Crow, a Texas billionaire and Republican donor. The justice has said he was not required to report such gifts at the time.
+
+Abbie VanSickle and Michael Gold contributed reporting.
 
 ================================================================================
 democratic-midterms-wipeout.html
@@ -51515,6 +52543,374 @@ At the same time, Democrats will debate how to interpret their victory. Their ma
 James Blanchard, who was first elected to Congress in the post-Watergate Democratic sweep of 1974 and later served as governor of Michigan, said this year’s election felt similar to that historic year. But he said that does not mean that American politics will return to the way they were before Mr. Trump. “We can never go back, unfortunately,” he said. “We’re going to have to go forward.”
 
 “It’s the end of Trump,” he added, “even though he’s still going to be there."
+
+================================================================================
+trump-midterms-losses-republicans.html
+Source: PreloadedData  Paragraphs: 127  Words: 3961/3962
+================================================================================
+
+SUMMARY
+
+Six days before the election, more than two dozen of President Trump’s top strategists logged onto a private video call. To win control of the Senate, Democrats needed to hold all of their seats and flip at least four, including in states that Mr. Trump won handily in 2024. In the House, where Democrats had fallen three seats short in 2024, recruiters went hunting in districts Mr. Trump had carried by 10 points or more, betting early that the emboldened president would overreach.
+
+ARTICLE
+
+‘I Have Seen the Enemy, and It Is Us’: Inside Team Trump’s Historic Collapse
+How an unpopular president and an unpopular war provided an opening for Democrats to make sweeping gains in the midterms.
+By Shane Goldmacher, Jonathan Swan and Maggie Haberman
+Published 2026-11-05 01:28 UTC
+https://www.nytimes.com/2026/11/04/us/politics/trump-midterms-losses-republicans.html
+
+Six days before the election, more than two dozen of President Trump’s top strategists logged onto a private video call.
+
+The mood was grim. The discussion began with talk of cyanide.
+
+“Do you want the white pill first, or the black pill first?” asked Tony Fabrizio, the president’s chief pollster.
+
+Tim Saler, one of the Republican Party’s top data consultants, laid out two scenarios. In the first, the $400 million MAGA Inc. super PAC was reaching the voters that it had wanted and expected to vote. “That’s the optimistic scenario,” he said.
+
+The other was a wipeout.
+
+“I’m getting my affairs in order,” James Blair, who left the White House to oversee the president’s midterm strategy, said to laughter, according to four people on the call. “I suggest everybody else do the same.”
+
+For roughly 30 minutes, the call ran on gallows humor: funeral arrangements, prison food, presidential pardons, even a brief riff on fleeing the country.
+
+“At least Bibi won. He’ll protect us,” Mr. Blair said sarcastically of the Israeli prime minister, Benjamin Netanyahu, whose country had voted the day before. (Mr. Netanyahu’s bloc fell short of a majority, and his party soon claimed the election had been stolen.)
+
+“Maybe we could get asylum in Israel,” Mr. Fabrizio said.
+
+Collapse at the Polls
+
+The scope of the Republican wreckage would become clear a week later.
+
+Democrats stormed to a huge House majority and won control of the Senate, a remarkable feat powered by victories in Republican strongholds — Kansas, South Carolina, Texas — that few could have imagined a year ago.
+
+This account of the Republican Party’s collapse is based on interviews with more than 70 people — among them lawmakers, political strategists, party leaders, pollsters, White House officials and congressional aides — who were directly involved in the midterm elections, many of whom were granted anonymity to describe private conversations and decisions.
+
+The scale of the defeat was far from inevitable.
+
+Republicans had record fund-raising, the world’s richest man, a favorable Supreme Court ruling on campaign finance and a demoralized, unpopular opposition.
+
+In the Senate, they had a map that required Democrats to compete in states they hadn’t won in decades.
+
+And in the House, the Trump team demolished the tradition of redrawing congressional lines only once a decade in order to carve up new districts to help the G.O.P. bolster its narrow majority.
+
+What Republicans could not overcome was a president who lost the public’s trust on the economy and so much more. And what they had not counted on was an unpopular war in the Middle East — one that would close the Strait of Hormuz and push gas prices past $4 a gallon — that would rage all the way through the election.
+
+And Democrats were ready, this time, to seize on the G.O.P. stumbles.
+
+A Stark Warning on the Iran War
+
+The slide deck that Mr. Blair had circulated over the summer to officials in the West Wing was stark.
+
+One slide linked Republicans’ polling numbers to an Iran war timeline.
+
+It showed how the Democratic advantage had ballooned during active hostilities, shrunk during talks over a “memorandum of understanding” and then spiked again when the cease-fire collapsed.
+
+By the end of July, Democrats had a 10-point edge on the congressional ballot.
+
+The “bottom line” was hard to miss. It was in highlighter yellow: Republicans could still conceivably win the House if Democrats had only a four-point edge. “But that won’t happen without an extended cease-fire, Hormuz open & gas prices falling,” the slide warned.
+
+“A final result approaching D+10 would likely cost us the Senate.”
+
+The results on Tuesday were even worse: Mr. Trump’s party is on track to lose the national popular congressional vote by about 13 points, according to estimates by The New York Times. It is shaping up to be the worst loss in a half-century, since the aftermath of the Watergate scandal.
+
+Even before the polls had closed, Mr. Trump had begun to ruminate on what might have been.
+
+“If we never went into Iran, what do you think would happen in the midterms?” the president had asked privately, according to a person who spoke to him.
+
+An Unchecked Second Term
+
+What made the war such a potent force is that it told a simple story for voters.
+
+As a candidate, Mr. Trump had promised no new wars. He started a new war.
+
+He promised lower prices. Gas prices soared and inflation rose.
+
+The story of the G.O.P. midterm implosion was not only a story of broken promises; it was also a story of radical overreach. After Mr. Trump came back from pariah status after Jan. 6, 2021, some advisers believed he had convinced himself that the rules of politics had been suspended for him alone. That illusion was obliterated on Tuesday night.
+
+Over nearly two years, hubris had become the governing philosophy of Mr. Trump’s second presidency.
+
+There was a seemingly endless string of investigative pieces revealing that Mr. Trump, his family and their close associates had used the presidency to enrich themselves brazenly. Those reports began to resonate with voters; an early October poll from Fox News showed corruption as the top voter concern. (Anna Kelly, a White House spokeswoman, said: “The President only acts in the best interest of the American people. There are no conflicts of interest.”)
+
+In 2025, Mr. Trump began a trade war with the entire world — the pain of which was still being felt more than a year later on farms all over the suddenly competitive states of Kansas, Texas and Iowa.
+
+Throughout it all, the president flashed indifference to the struggles of Americans that his policies had exacerbated.
+
+Soaring gas prices? “A small price to pay,” Mr. Trump insisted.
+
+Some members of his team grew exasperated as Mr. Trump spoke seemingly more about his new ballroom than the border, golf courses than grocery prices, interior decorations than inflation.
+
+On the eve of the midterms, he focused his closing pitch on his refurbishment of the Reflecting Pool on the National Mall, joking that he was considering renaming it for himself rather than Abraham Lincoln.
+
+Unlike in the past, Democrats mostly ignored the daily Trump distractions and sought to connect corruption to costs. They also told a story of a government focused on elites while average people struggled — from Jeffrey Epstein’s protected associates to the president’s $2.2 billion in personal profits.
+
+In the House, Democrats quickly and unexpectedly countered Mr. Trump’s redistricting push and pursued strong candidates deep into red territory to spread the map. In the Senate, they found a series of blue-chip recruits who put once unthinkable states into play. In the final, frenzied weeks of the campaign, Republicans were redirecting cash from the usual swing states of North Carolina and Georgia to try to shore up traditional strongholds in South Carolina and even Mississippi.
+
+The war in Iran, said Representative Hakeem Jeffries of New York, the Democratic leader and now the speaker-in-waiting, helped “supercharge” the contrast between the two parties.
+
+Republicans had tried to frame the midterms as a choice between “common sense and crazy,” relentlessly attacking the rising democratic socialist wing of the left.
+
+Yet Mr. Trump’s own pollster’s final survey, taken two weeks before the election, showed that while both the MAGA Republican brand and democratic socialists were unpopular with voters, MAGA carried more baggage. When Republicans who were not planning to cast ballots were asked what it would take to earn back their vote, their top two answers were ending the war and addressing inflation.
+
+On that final call before Election Day, Mr. Trump’s advisers were both clear-eyed and cynical about the state of the race, referring at one point to a Trump ally who ran for governor of Minnesota and demanded a recount in his primary despite losing in a landslide.
+
+“Look, it’s fine,” Mr. Blair told the group sarcastically. “I think we’ll just pull a Mike Lindell and demand a recount regardless of how many points we’re down.”
+
+Alex Pfeiffer, a spokesman for the MAGA Inc. super PAC, said that the group’s “sober and clear-eyed view of the political environment,” led to investing in House races Republicans are leading in, in Maine, Florida, Tennessee, New York and Texas.
+
+“The people peddling these made up quotes and false gossip not only demean and belittle the historic and generous investment by the president into the party’s midterm effort, but they also slander the hard work of the many who contributed to this effort,” he said in a statement. “They are cowards and losers.”
+
+A White House official, who declined to speak on the record, said in response to the reporting for this article: “President Trump was not on the ballot, and it’s proven that Trump voters show up when he is on the ballot. Candidate quality matters, and President Trump did a better job promoting many of the candidates on the ballot than the candidates did themselves.”
+
+The official repeated that the president, who acknowledged earlier on Wednesday that the war affected the midterms, had over and over again said Iran can’t procure a nuclear weapon.
+
+The Anti-Recruiter
+
+While Senator Chuck Schumer of New York, the Democratic leader, painstakingly recruited top-tier Senate candidates, Mr. Trump took a series of steps that endangered the Republican majority.
+
+After Senator Joni Ernst of Iowa flirted with opposing Mr. Trump’s most controversial nominees and Senator Thom Tillis of North Carolina voted against his signature tax-and-spending bill, Mr. Trump’s allies threatened to end their careers. Both decided to retire, creating vulnerable open seats that had been held by Republicans.
+
+In North Carolina, Mr. Trump cleared the field for Michael Whatley, a former lobbyist and Republican National Committee chairman, who proved a lackluster candidate and lost to Roy Cooper, the state’s popular Democratic former governor.
+
+After Senator Lindsey Graham of South Carolina died in July, Mr. Trump supported tapping his sister, Darline, to not just replace him temporarily but also to run for a full six-year term. In doing so, he elevated an inexperienced candidate with no fund-raising base, and she went on to lose in a state that had not elected a Democrat to the Senate since 1998.
+
+But no candidate proved more costly to the party than Ken Paxton, the scandal-ridden Texas attorney general. Mr. Trump endorsed him over Senator John Cornyn, the Republican incumbent, ignoring a year of warnings that Mr. Paxton would put the seat in jeopardy. Republicans were ultimately forced to spend close to $300 million in Texas — money that could have gone to shore up candidates in other states. Mr. Paxton lost by 12 points.
+
+On another recent call, the Trump team mocked the haplessness of some of the Republicans they were trying to elect.
+
+“I have seen the enemy,” Mr. Blair told the group a week earlier. “And it is us.”
+
+Mr. Fabrizio replied: “In many places.”
+
+The Democrats’ Playbook
+
+In May 2025, Mr. Schumer arrived at Wildflower Farms, an upscale resort in New York’s Hudson Valley, for a secretive retreat with donors and party officials. He desperately needed to expand the Senate map.
+
+To win control of the Senate, Democrats needed to hold all of their seats and flip at least four, including in states that Mr. Trump won handily in 2024.
+
+Mr. Schumer spent months wooing Mr. Cooper and took at least three trips to Ohio to coax former Senator Sherrod Brown, who had lost in 2024 but had a populist brand that matched the country’s mood.
+
+“If you retire and we lose the majority by one vote, you won’t enjoy your retirement,” Mr. Schumer recalled telling Mr. Brown, 73.
+
+Both ran and won.
+
+In the House, where Democrats had fallen three seats short in 2024, recruiters went hunting in districts Mr. Trump had carried by 10 points or more, betting early that the emboldened president would overreach.
+
+An election post-mortem by the Democratic House Majority PAC circulated in April 2025 found two factors stood out among the party’s stronger 2024 candidates: being “perceived as moderate” and focusing on the economy.
+
+“If we wanted to compete deeper in red districts, we needed to find candidates who are not immediately off-putting,” said Mike Smith, the PAC’s president.
+
+They set about recruiting candidates with distinctive biographies: military veterans, doctors, farmers, a smokejumper, a Tejano music star — just about anyone who didn’t scream professional politician.
+
+Redistricting Wars
+
+Mr. Trump, meanwhile, was trying to redraw the House battlefield itself.
+
+In the spring of 2025, Mr. Blair, then his deputy chief of staff, brought the president a plan to redraw congressional maps mid-decade to make seats safer for Republicans. The gerrymandering push started in Texas and soon spread to other Republican-led states.
+
+When Mr. Jeffries first heard about the Texas gambit, he turned to his advisers in disbelief and declared, “You’ve got to be fucking kidding me.” He flew to Texas to urge state legislators to take a stand, and many Democrats fled the state to slow down the legislative process.
+
+But the Trump-inspired play went through and Republicans carved themselves out five new seats that Mr. Trump would have carried by double digits in 2024 — seemingly enough to withstand even a dip in support in the midterms.
+
+Democrats fought back. California voters approved Gov. Gavin Newsom’s plan to create five new seats favoring Democrats, and Virginia voters approved a map creating another four, though the Supreme Court later struck it down.
+
+From the start, Mr. Blair was cocksure about his redistricting plan, and he and the president dismissed Republicans who worried about the maneuver backfiring.
+
+But by April 2026, Democrats had good reason to believe that they had neutralized the threat by redrawing districts in several blue states. Mr. Jeffries held a celebratory news conference featuring a poster with the faces of Mr. Trump and Mr. Blair and an anonymous quote that had appeared in an article about redistricting in The Times: “Maximum warfare everywhere all the time.”
+
+When Mr. Blair saw the poster, he texted one of Mr. Jeffries’s top aides, Gideon Bragin: “Can you send a copy of this to my office?”
+
+Instead, it remained inside House Democratic headquarters through Election Day, when a blue tidal wave washed over even many of the districts drawn to favor Republicans.
+
+The Unforced Errors
+
+As 2026 began, the administration’s immigration enforcement surge turned violent in Minneapolis when two protesters were shot and killed by federal agents. Both killings were captured on video.
+
+Mr. Trump told advisers he didn’t like how the videos looked.
+
+Susie Wiles, the White House chief of staff, had spent months privately trying to steer him away from the hard-line immigration approach favored by Stephen Miller, the president’s top policy adviser.
+
+Soon after Minneapolis, Democrats’ internal polls showed the party taking the edge on immigration for the first time. What had been one of Mr. Trump’s perennial strengths was for a period his top liability, according to one of the president’s senior strategists.
+
+Then, about five weeks after the second shooting, Mr. Trump took the country to war in Iran.
+
+Mr. Blair at first shared his boss’s optimism that the war would be a quick success. He reassured skeptical colleagues that the conflict would not be the political disaster some feared because some Defense Department officials had assured the White House it would be resolved rapidly.
+
+But the president’s four-to-six-week timeline stretched into months.
+
+In public, Mr. Trump crowed about a decisive military triumph. In private, advisers briefed him on the closure of the Strait of Hormuz, spiking prices of gas and fertilizer and an alarming depletion of American weaponry.
+
+Mr. Fabrizio’s focus groups in March, about two weeks into the conflict, showed that voters did not understand why the president had started the war. They saw a broken promise that was making life more expensive.
+
+Former allies on the antiwar right, including Tucker Carlson and the former Georgia congresswoman Marjorie Taylor Greene, were now in open rebellion.
+
+Mr. Trump knew the war was draining his support, according to advisers, but for a brief moment it seemed that he had found himself a way out of the mess. By mid-June, Vice President JD Vance had negotiated a memorandum of understanding with Iran, and the Trump political team exhaled. Mr. Fabrizio’s first poll of the proposal found that voters aware of the deal favored it by 41 percentage points, and 67 percent thought it would bring down gas prices.
+
+But G.O.P. Iran hawks, including Senator Ted Cruz of Texas, pressed Mr. Trump to keep the pressure on Tehran. The deal fell apart and the war dragged on.
+
+‘My Money’
+
+Mr. Trump never stopped raising money after the 2024 election, assembling a roughly $400 million war chest that he made clear to advisers he saw as “my money.”
+
+By August, with the election less than 100 days away, Republican Senate strategists still had no clarity on where Team Trump would spend. One described being “shocked at how ill-prepared they were.”
+
+A Trump adviser said a plan existed but could not be shared because the president had not approved it.
+
+Some days, Mr. Trump told advisers privately: “We’ve gotta win. Anything we gotta do.” On others, he sounded as if he couldn’t care less. “It says something very nice about me that they just can’t win without me,” he told aides.
+
+Mr. Blair and others had to make the case to the president to sign off on the spending. Mr. Trump withheld his approval until the end of the summer.
+
+The delay was costly: Ad prices soar as elections near.
+
+One week in mid-October on a single station in Anchorage, the Trump super PAC paid nearly four times as much money as the leading Democratic super PAC did to air roughly 70 percent fewer commercials because it had not reserved the time well in advance.
+
+The Democratic group paid $2,700 for a commercial on the local evening news; Mr. Trump’s super PAC paid $30,000 for the same slot.
+
+Typically, endangered lawmakers distance themselves from an unpopular president in midterm elections. Team Trump wanted to do the opposite.
+
+“We have taken that old construct and flipped it on its head,” said Chris LaCivita, the co-manager of Mr. Trump’s 2024 campaign.
+
+Thus, the first modern midterm convention was born, a two-day celebration of the president in Dallas in September that few members of his party had wanted.
+
+During his convention speech, Mr. Trump rolled out a splashy new proposal to send $5,000 to every American adult — but only if Republicans won.
+
+Almost no one knew it was coming, including his senior political advisers, the speaker and the Senate majority leader.
+
+The idea had not even been polled before Mr. Trump said it. And when a similar proposal was tested, Mr. Trump’s team found it did little to move voters toward Republicans. Some of the president’s own advisers cringed at the giveaway, with one describing it as a naked effort to “bribe” people for their votes.
+
+The convention did bring one piece of good news: money. On the first day, Elon Musk sent $75 million to the Senate Leadership Fund, the super PAC led by allies of the Senate majority leader, John Thune of South Dakota. It was one of the largest single contributions in American history.
+
+At the convention, Mr. Paxton made his way into the fund’s suite, where Alex Latcham, the super PAC’s executive director, made a somewhat cryptic remark to him.
+
+“You’re going to be happy tomorrow.”
+
+The ads were about to begin.
+
+Mr. Musk would spend more than $450 million to aid Republicans in the midterms, much of it in Texas to try to save Mr. Paxton. The super PAC he funded spent tens of millions on ads attacking the Democratic nominee, James Talarico, for his support of transgender rights, mirroring a line of attack that the Trump team had used effectively in 2024.
+
+In other races, the focus on transgender ads became a point of disagreement between officials at the Senate Leadership Fund and Mr. Trump’s operation, which argued that the 2026 election was fundamentally about the economy and that running ads on other topics would be less effective. Senate G.O.P. strategists saw economic messages falling flat in the current political environment in some states.
+
+The fight to save the Senate was hampered by party leadership that could barely work together. Mr. Trump and Senate G.O.P. leaders, Mr. Thune among them, never grew close. The president endorsed Mr. Paxton over their objections. And when Trump advisers met with officials from the top Republican super PAC at Camp David in March 2026 to plan for the midterms, no one from the National Republican Senatorial Committee was invited.
+
+The Collapse
+
+In late August, Julie Merz, the top strategist at the Democratic Congressional Campaign Committee, gathered her team and pulled up a slide estimating a 35 percent chance of a “blue wave.”
+
+“It’s our job,” she recalled saying, “to hand out as many surfboards as possible.”
+
+Committee officials made the party’s most vulnerable incumbents an unusual offer: Instead of spending millions defending them, the party would move the money into deeper red territory and poll their seats to see if they needed the resources back. Most agreed, freeing up around $10 million to expand the map.
+
+Not long after the Republican convention in Dallas, diesel prices hit all-time highs.
+
+In the Senate, it got so bad for the G.O.P. that by early October Republicans were ordering up polls in seemingly unthinkable states, like South Dakota and Idaho.
+
+A month before the election, the Senate Leadership Fund pulled ads from North Carolina, ceding the state to redirect money to Kansas, then South Carolina and eventually Mississippi — a state Mr. Trump had carried by nearly 23 points two years ago.
+
+“Battleground Mississippi,” Mr. Trump’s advisers called it mockingly on a call.
+
+In the House, the deterioration was perhaps worse.
+
+At one point, top officials with the Congressional Leadership Fund and Mr. Trump’s super PACs had decided to give up trying to flip Representative Henry Cuellar’s South Texas seat — only to realize that Speaker Mike Johnson was set to be in the district the day the ads were going to come off the air. They delayed the announcement for a day to spare Mr. Johnson an embarrassing episode.
+
+Mr. Cuellar won re-election in a landslide.
+
+In the end, the map shifted so far left that House Republicans — who polled more than 100 seats — could not keep up. It surprised even some leading Democrats.
+
+At a September dinner, Rahm Emanuel, who ran the House Democrats’ campaign arm in the 2006 wave, asked the party’s top recruits how much Mr. Trump had won their districts by. When Zach Dembo, a military veteran and former federal prosecutor running in Kentucky’s Sixth District, said 15 points, Mr. Emanuel looked at him in disbelief.
+
+Mr. Dembo won.
+
+The last Sunday before Election Day, Mr. Jeffries arranged for a symbolic final stop to a battleground district.
+
+He went to Alabama, where Republicans had redrawn Representative Shomari Figures’s district to favor their party after a Supreme Court decision weakened the Voting Rights Act. It was important to go there, Mr. Jeffries said, because “he was facing a renewed effort to subject the African American community to Jim Crow-like tactics.”
+
+“It’s fair to say that Shomari and I both felt the weight of history given the fact that the civil rights movement led by Dr. King, Rosa Parks, and so many others began in the very place where we were ending this all important 2026 campaign,” Mr. Jeffries said.
+
+Mr. Figures won his race on Tuesday.
+
+On the way to the airport, Mr. Jeffries made an unpublicized stop at the Freedom Monument Sculpture Park that remembers the history of enslaved people in America.
+
+In January, Mr. Jeffries is now set to become the first Black speaker in American history.
+
+================================================================================
+trump-new-role-lame-duck.html
+Source: PreloadedData  Paragraphs: 30  Words: 1308/1312
+================================================================================
+
+SUMMARY
+
+Over the course of his life, Donald J. Trump has readily embraced many identities: A hotel developer. Once back in the White House, Mr. Trump had no use for compromise. A hushed conversation of what comes next for Mr. Trump’s presidency and those around him played out on Tuesday night inside the White House, where Mr. Trump gathered aides and cabinet members in the East Room for what turned into a morose watch party.
+
+ARTICLE
+
+Trump Wrestles With New Reality: A Lame Duck With Two Years Left to Fight
+After a decade at the center of American politics, President Trump is politically wounded, with diminished power. Those who know him say the next two years will be unpredictable.
+By Katie Rogers
+Published 2026-11-04 23:02 UTC
+https://www.nytimes.com/2026/11/04/us/politics/trump-new-role-lame-duck.html
+
+Over the course of his life, Donald J. Trump has readily embraced many identities: A hotel developer. A reality television star. A president. A firebrand.
+
+Now, at 80 years old, he is confronting one he would rather not: a lame duck.
+
+In the hours after voters put a check on the expansive power he has flexed in his second term, giving Democrats control of both the House and the Senate, Mr. Trump seemed to be cycling through the stages of grief. He denied that a blue wave across the country had been his fault, or a direct result of his decision to go to war with Iran. (The vice president explicitly said otherwise.) He accepted the election results. And, as he absorbed the waning power he will have in his final two years in office, he bargained, saying he’d work with Democrats while clinging to his veto Sharpie.
+
+“I’ll get along probably with the Democrats, unless they want to be destructive,” Mr. Trump told reporters on Wednesday, standing in front of a steel beam that was being put into place as part of his cherished White House ballroom project.
+
+He noted that he had “the power to veto,” before turning to a topic he seemed much more eager to discuss: his renovation projects.
+
+Whether Mr. Trump adopts a pragmatic deal-making posture remains to be seen — one ally described the president as “dazed” after the rout on Tuesday.
+
+After his loss in the 2020 presidential race, the last major political setback Mr. Trump confronted, he retreated to Mar-a-Lago, where he nursed his anger and then planned a defiant return. Once back in the White House, Mr. Trump had no use for compromise.
+
+After a period spent as a political pariah and criminal defendant, Mr. Trump liked to say that he had gone from hunted to hunter. In his second term, his administration has tracked down his political enemies, unleashed a violent immigration crackdown and started a war that has made life more expensive for Americans. He didn’t need Congress to do any of it.
+
+But on Tuesday, that dynamic flipped again. Democrats are vowing to investigate government abuses, alleged corruption by the president’s associates and the heavy-handed tactics of Immigration and Customs Enforcement. House lawmakers plan to scrutinize top officials involved in the administration’s immigration agenda, including the White House deputy chief of staff Stephen Miller; Tom Homan, Mr. Trump’s border czar; and the homeland security secretary, Markwayne Mullin, according to a person with knowledge of the discussions.
+
+“LAWYER UP,” Representative Robert Garcia, the California Democrat poised to lead the House Oversight Committee, wrote on social media.
+
+The political pressure could make for an unpredictable two years for both Mr. Trump and the country, according to people who have observed firsthand his volatile personality and his refusal to acknowledge mistakes.
+
+“When you look at things like his ability to do executive orders and grant pardons and all of these things, he’s going to still be doing enormous damage,” said Sarah Matthews, a former White House deputy press secretary who resigned after the attack on the Capitol on Jan. 6, 2021. “And it’s just going to get even more chaotic and dangerous in these next two years.”
+
+Political rivals believe that Mr. Trump, who has asserted his dominance over the Republican Party for the better part of the last decade, will also do everything to maintain his grip on a party that he effectively reshaped in his image.
+
+“Donald Trump needs attention like most people need oxygen,” said former Gov. Chris Christie of New Jersey, a Republican who is considering another presidential run in 2028. “He can’t do without it, and he’s now going to experience for the first time in his political career being a lame duck. So what he’ll need to do is to act out even more than he normally does in order to divert you from the 2028 race.”
+
+Mr. Trump has so far been vague about how he wants to spend the next two years, telling the podcaster and former top F.B.I. official Dan Bongino in an interview on Tuesday that he has “many, many things in the hopper.”
+
+He did not elaborate and instead pivoted into a standard part of his stump speech: “You know, right now we have more factories and plants being built in the United States than at any time ever before, and that means the Roaring Twenties, that means every — there’s never been anything like it.” (Manufacturing has actually slowed since 2024, according to the National Association of Manufacturers.)
+
+He suggested in interviews that he might seek to join forces with his political opponents on the debt ceiling and immigration enforcement — two thorny policy issues that have bedeviled past administrations.
+
+And he repeatedly invoked his ability to veto legislation, implicitly underscoring how much he will be on defense in his last two years in office.
+
+In his first public appearance after Election Day, Mr. Trump stood before reporters at the White House on Wednesday and talked not about any lessons learned, or the path forward for the Republican Party. Instead, he mused about his ballroom project and his own future, particularly the subject of impeachment.
+
+“I think it would destroy the Democrat Party if they did that — impeachment for no reason,” Mr. Trump said. “What, for having a successful country? Our country is more successful now than at any time in history.”
+
+He paused, turning his focus back on the ballroom construction.
+
+“Watch the beam go up,” he said. “Now envision chandeliers all over.”
+
+Several top aides had already been planning for what Mr. Trump could accomplish through executive power alone if Republicans lost one or both chambers of Congress. Those involved include Mr. Miller; Russell T. Vought, the White House budget director; and members of the White House legislative affairs staff, according to a White House official, who spoke on the condition of anonymity to describe internal discussions. The president would receive a “menu of options” soon, the person said.
+
+A hushed conversation of what comes next for Mr. Trump’s presidency and those around him played out on Tuesday night inside the White House, where Mr. Trump gathered aides and cabinet members in the East Room for what turned into a morose watch party. As the president watched the returns and fielded phone calls, some of the people around him quietly discussed whether Mr. Trump would keep in place members of his cabinet or his chief of staff, Susie Wiles, according to two people who attended.
+
+The White House did not respond to a request for comment.
+
+Administration officials and Mr. Trump’s allies said the president and his staff were girding themselves for both congressional investigations and high turnover for the remainder of his time in office.
+
+Some expressed anxiety that there had been little guidance for staff about what to do if they got pulled into investigations, other than a briefing earlier this year advising them generally how to respond to congressional oversight.
+
+As the political conversation turns to the next cycle, Mr. Trump indicated that he was not ready to name a political heir or back a candidate to succeed him in 2028. Asked by Martha MacCallum of Fox News late Tuesday evening whether he wanted a Republican primary to determine the 2028 presidential nominee, the president said, “I think it’s going to end up being somewhat of that.”
+
+By Wednesday morning, Vice President JD Vance had posted a lengthy message on social media placing blame for Republican losses on the decision to go to war with Iran, an apparent effort to separate himself from Mr. Trump.
+
+Several people close to the president say they believe that he is unlikely to endorse Mr. Vance — or anyone else — anytime soon. Mr. Trump is an entertainer above all, they say, and he will want to stay in the spotlight.
+
+Zolan Kanno-Youngs contributed reporting from Washington.
 
 ================================================================================
 trump-republicans-blame-midterms.html
@@ -51861,6 +53257,121 @@ It is telling that the curse has largely been confined to the country’s public
 “I think the KFC curse is a projection of fear,” he said. “We need a scapegoat.”
 
 Phuriphat Dejsuphong contributed reporting.
+
+================================================================================
+chinese-restaurant-edinburgh-viral-social-media.html
+Source: PreloadedData  Paragraphs: 46  Words: 1449/1449
+================================================================================
+
+SUMMARY
+
+Sophie Li wiped the tables and swept the floors every day at China Star, even though few customers came through the door. For nearly 20 years, Mrs. Li’s Chinese restaurant in Edinburgh has been both her life’s work and her cross to bear. “My mum’s Chinese restaurant is dying,” Ms. He, 29, said in a video on Instagram in April.
+
+ARTICLE
+
+Could a Viral Video Save Her Mom’s Chinese Restaurant?
+Millions viewed Lisa He’s post about her mother’s struggling business in Edinburgh. But internet fame created its own complications — and obscured bigger questions.
+By Isabella Kwai
+Published 2026-11-04 09:52 UTC
+https://www.nytimes.com/2026/11/04/world/europe/chinese-restaurant-edinburgh-viral-social-media.html
+
+Sophie Li wiped the tables and swept the floors every day at China Star, even though few customers came through the door.
+
+For nearly 20 years, Mrs. Li’s Chinese restaurant in Edinburgh has been both her life’s work and her cross to bear. In better times, business was steady enough to support her and her two daughters and help send them to universities.
+
+But early this year, the restaurant was almost always empty. Still, Mrs. Li, approaching 70, scrimped and toiled seven days a week to keep China Star open.
+
+“I am a person who can endure hardship better than humiliation,” she said.
+
+Down in London, her younger daughter, Lisa He, worried about the toll on her mother’s health. She traveled up to Scotland and posted a plea on social media.
+
+“My mum’s Chinese restaurant is dying,” Ms. He, 29, said in a video on Instagram in April. She had decided to put aside several months to try to save it.
+
+“Follow the journey and let’s see if I can turn this around,” she said.
+
+Within days, the post had been viewed millions of times. Influencers and sympathetic locals suddenly flocked to China Star, overwhelming the modest 13-table restaurant.
+
+Neither Ms. He nor her mother had been ready for internet stardom. She wondered whether she had made a mistake.
+
+“It was absolutely awful,” Ms. He said. Going viral “doesn’t help when your restaurant’s already broken.”
+
+An Immigrant’s Ambition
+
+Sitting in China Star’s dining room can feel like taking a trip back in time.
+
+An aquarium filled with shy fish welcomes diners, and lucky cat figurines sit in the window. Decorations from a long-ago wedding still hang on the back wall. Dishes are washed by hand.
+
+Mrs. Li was born Wei Li but took the name Sophie after emigrating to Edinburgh in 1993 from mainland China with her husband, a doctoral candidate at the University of Edinburgh. She liked the regal sound of her new name, and hoped to live up to it. To support the family, she worked as a dishwasher and waited tables.
+
+But she didn’t feel at ease in her new home. She worried that Lisa and her older sister, Emma, would not assimilate. In 1997, with loans from relatives and friends, she opened a restaurant, then a decade later moved to her current location, on busy West Maitland Street, beneath a large red sign with “China Star” in gold letters.
+
+“I felt like my standing wasn’t as high when I first came,” she said. She wanted her children “to hold their head high.”
+
+Her chefs were from Hong Kong and southern China, and they cooked a version of Chinese food that had been shaped in postwar Britain into a cuisine of its own: salt-and-pepper stir-fries, sweet and sour chicken, fried noodles and curries. Mrs. Li eventually kept two menus: one for Chinese visitors and one for locals.
+
+She worked 15-hour days, sleeping only a few hours per night. Mornings were for cleaning and ingredient prep. Then came lunch service. She waited tables and delivered takeout orders herself, keeping the restaurant open until midnight, even on Christmas.
+
+Time passed. Her husband returned to China. Her daughters moved to London. Mrs. Li paid off the mortgage on China Star.
+
+But as newer Chinese restaurants opened in Edinburgh and competition grew, the restaurant began to feel more like a burden. Foot traffic ebbed, and more of her business shifted to internet orders, whose commissions ate into their margins. Online ratings for the restaurant dropped.
+
+Mrs. Li does not consider herself tech-savvy, so she didn’t see the customer reviews that complained about small portion sizes or bland fried rice. Arthritis was slowing her down. And she felt lonely.
+
+“I didn’t think there was much hope,” she said. “But I had to keep going. There’s no other road to walk.”
+
+Going Viral
+
+In London, Ms. He, who was making a living as an actress and paralegal, kept tabs on China Star by logging into its CCTV camera. She saw how tired her mother looked. Early this year, she booked a trip home, hoping to give her a break.
+
+“I came back out of a desperation to save my mom, rather than save the restaurant,” she said.
+
+Ms. He has complicated feelings about restaurant life. When she was a baby, her mother brought her to work, putting her in a makeshift crib in a side room. After school, she felt guilty watching her work so hard.
+
+“I often felt like I had to give up my social life to help out at the restaurant,” she said.
+
+Before April, Ms. He’s social media account consisted mostly of images of her dancing or in film rehearsals.
+
+But in this video, she turned the camera on her mother and China Star and gave her own, raw assessment of something many businesses may prefer to hide: what wasn’t working, from the uninviting facade to the outdated menu. And she invited people to follow her own journey as she tried to turn their fortunes around.
+
+Perhaps it was Ms. He’s candor, or the video’s documentary style. Or perhaps it was the feeling, for watchers online, that they could still stave off the loss of yet another family-run business in a world of corporations and chains.
+
+Ms. He’s comments lit up with offers of help, from improving the design to revamping the menu. Diners promised to visit. Restaurant owners encouraged them to rethink the business. “Don’t give up,” one said. “It isn’t over until it’s over.”
+
+Ms. He posted the video on a Sunday. On Tuesday, she found herself back in the kitchen, trying to manage a situation for which they were entirely unprepared.
+
+Food bloggers and new diners filled the restaurant in the days after that viral post. Mrs. Li, who learned of her daughter’s post only after it blew up, was shocked.
+
+Suddenly, daughter and mother were racing up and down stairs to take orders as their two cooks, used to a scattering of orders each day, suddenly had to pump out dishes.
+
+Tensions boiled over when one frustrated chef walked out in protest during lunch as a full house waited for meals. Overwhelmed, the mother and daughter decided to shutter the restaurant temporarily.
+
+Food and Filial Devotion
+
+People following China Star’s struggles online replied to Ms. He with thoughts about what the restaurant needed to survive, and she decided to act on some of the advice.
+
+She convinced her mother to slim down the menu and add Chinese wines, hired more servers and installed an electronic system for orders. They reopened after about a week with earlier hours and they closed on Mondays.
+
+She shared updates on Instagram, where more than 200,000 accounts are now following her.
+
+Five months after going viral, Ms. He was still working in the dining room, taking orders and mixing drinks. On a Thursday this September, the tables were filled with people who had seen her videos, drawn as much by the story of filial devotion and small-business survival as by the food.
+
+“Usually the second generation — they don’t want to do the restaurant work,” said Wing Cheong, a visitor from Canada. “I think she is a good daughter.”
+
+Mrs. Li, energized, could not imagine giving up China Star, and was hopeful that her daughter would take it over one day. Revenues this summer more than tripled from the year before, and the online attention has led to sponsorships.
+
+But Ms. He wasn’t sure.
+
+She was struggling to balance it all — the social media posts, the long days, the physical labor. There was a leak in the storeroom; a bathroom toilet seat needed fixing.
+
+Beneath it lay a familiar generational dilemma: She had put her own career, and her ambitions to act and dance, on hold to keep her mother’s business afloat.
+
+In one post this summer, she asked whether going viral had made their lives better, or just busier. In her mind, maybe it was time to let China Star go, for her mother to retire and for her to go back to London.
+
+Her video had succeeded. But it had also revealed how differently mother and daughter imagined what should come next.
+
+“If I’m tiring myself and my mom to death every day,” she said at the restaurant, in a quiet moment before lunch, “I don’t really see that as a success.”
+
+For now, decisions on the future would have to wait. For the first time in a long time, the restaurant had large bookings for the holidays in December, and there was plenty of work to do: folding napkins, sorting prawn crackers and washing glasses. They would be back the next day to do it all again.
 
 ================================================================================
 palestine-action-ban-uk-supreme-court.html
