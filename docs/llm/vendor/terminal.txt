@@ -1,16 +1,90 @@
+kushal@fedora:~/Videos/dl/2026-11-08$ cd /home/kushal/src/dotnet/HelloXUnit; git status; time bash export.sh; time dotnet list package; time dotnet list package --outdated; time dotnet run --project CSharpConsoleApp/CSharpConsoleApp.csproj > /home/kushal/src/dotnet/HelloXUnit/docs/llm/vendor/nytimes.txt
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+Starting project export...
+Project Path: /home/kushal/src/dotnet/HelloXUnit
+Output File:  /home/kushal/src/dotnet/HelloXUnit/docs/llm/dump.txt
+Listing files via git...
+Found 19 files to export
+Processing (1/19): .config/dotnet-tools.json
+Processing (2/19): .editorconfig
+Processing (3/19): .gitignore
+Processing (4/19): CSharpClassLibrary/ArticleExtraction.cs
+Processing (5/19): CSharpClassLibrary/CSharpClassLibrary.csproj
+Processing (6/19): CSharpClassLibrary/FilenameString.cs
+Processing (7/19): CSharpConsoleApp/CSharpConsoleApp.csproj
+Processing (8/19): CSharpConsoleApp/Program.cs
+Processing (9/19): CSharpUnitTests/ArticleExtractionTests.cs
+Processing (10/19): CSharpUnitTests/CSharpUnitTests.csproj
+Processing (11/19): CSharpUnitTests/FilenameStringTests.cs
+Processing (12/19): CSharpUnitTests/stryker-config.json
+Processing (13/19): Directory.Build.props
+Processing (14/19): Directory.Packages.props
+Processing (15/19): HelloXUnit.slnx
+Processing (16/19): README.md
+Processing (17/19): export.sh
+Processing (18/19): global.json
+Processing (19/19): mutate.sh
+
+Export completed successfully!
+Output file: /home/kushal/src/dotnet/HelloXUnit/docs/llm/dump.txt
+Total source size: 0.17 MB across 19 files
+
+real	0m0.601s
+user	0m0.276s
+sys	0m0.267s
+Restore complete (0.8s)
+
+Build succeeded in 0.9s
+Project 'CSharpClassLibrary' has the following package references
+   [net10.0]: No packages were found for this framework.
+Project 'CSharpConsoleApp' has the following package references
+   [net10.0]: No packages were found for this framework.
+Project 'CSharpUnitTests' has the following package references
+   [net10.0]: 
+   Top-level Package                Requested   Resolved
+   > Microsoft.NET.Test.Sdk         18.11.0     18.11.0 
+   > xunit.runner.visualstudio      4.0.1       4.0.1   
+   > xunit.v3                       4.0.2       4.0.2   
+
+
+real	0m2.159s
+user	0m2.368s
+sys	0m0.526s
+Restore complete (0.5s)
+
+Build succeeded in 0.6s
+
+The following sources were used:
+   https://api.nuget.org/v3/index.json
+
+The given project `CSharpClassLibrary` has no updates given the current sources.
+The given project `CSharpConsoleApp` has no updates given the current sources.
+The given project `CSharpUnitTests` has no updates given the current sources.
+
+real	0m4.216s
+user	0m1.782s
+sys	0m0.419s
+
+real	0m7.029s
+user	0m14.732s
+sys	0m1.589s
 kushal@fedora:~/src/dotnet/HelloXUnit$ cd /home/kushal/src/dotnet/chaos-velixir-run; time bash scripts/run-all.sh
 
 ==> Restore
-Restore complete (0.7s)
+Restore complete (0.6s)
 
-Build succeeded in 0.8s
+Build succeeded in 0.7s
 
 ==> Build (Release, warnings are errors)
-  Chaos.E2E net10.0 succeeded (0.6s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
-  Chaos.Web net10.0 succeeded (3.3s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
-  Chaos.Web.Tests net10.0 succeeded (0.7s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
+  Chaos.E2E net10.0 succeeded (3.0s) → tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll
+  Chaos.Web net10.0 succeeded (5.1s) → src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
+  Chaos.Web.Tests net10.0 succeeded (0.6s) → tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll
 
-Build succeeded in 4.4s
+Build succeeded in 6.0s
 Restore complete (0.5s)
 
 Build succeeded in 0.6s
@@ -46,7 +120,7 @@ The given project `Chaos.Web.Tests` has no updates given the current sources.
 
 ==> Unit and integration tests
 Running tests from tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64)
-tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 575ms)
+tests/Chaos.Web.Tests/bin/Release/net10.0/Chaos.Web.Tests.dll (net10.0|x64) passed (1s 713ms)
 
   In process file artifacts produced:
     - artifacts/test-results/unit/coverage.cobertura.xml
@@ -56,29 +130,29 @@ Test run summary: Passed!
   failed: 0
   succeeded: 313
   skipped: 0
-  duration: 2s 560ms
+  duration: 2s 779ms
 .NET line coverage: 72.5%
 
 ==> JavaScript unit tests
 
-added 47 packages in 549ms
+added 47 packages in 562ms
 
  RUN  v5.0.5 /home/kushal/src/dotnet/chaos-velixir-run/tests/js
       Coverage enabled with v8
 
  ✓ status.test.js (9 tests) 5ms
- ✓ app.test.js (13 tests) 7ms
+ ✓ board.test.js (23 tests) 29ms
  ✓ canvas.test.js (21 tests) 8ms
  ✓ postcard.test.js (15 tests) 8ms
- ✓ latency.test.js (33 tests) 11ms
- ✓ read.test.js (14 tests) 9ms
- ✓ board.test.js (23 tests) 41ms
- ✓ slots.test.js (49 tests) 22ms
+ ✓ latency.test.js (33 tests) 10ms
+ ✓ app.test.js (13 tests) 6ms
+ ✓ read.test.js (14 tests) 7ms
+ ✓ slots.test.js (49 tests) 25ms
 
  Test Files  8 passed (8)
       Tests  177 passed (177)
-   Start at  15:10:21
-   Duration  370ms (transform 58%, import 17%, worker 14%, tests 11%)
+   Start at  18:49:05
+   Duration  476ms (transform 60%, import 16%, worker 15%, tests 9%)
 
  % Coverage report from v8
 --------------------------|---------|----------|---------|---------|-------------------------------------------
@@ -101,18 +175,18 @@ All files                 |   21.75 |    29.36 |   28.04 |   21.84 |
 
 ==> End-to-end tests in mcr.microsoft.com/playwright/dotnet:v1.64.1-noble
   Determining projects to restore...
-  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 291 ms).
+  Restored /work/src/Chaos.Web/Chaos.Web.csproj (in 294 ms).
   Chaos.Web -> /work/src/Chaos.Web/bin/Release/net10.0/Chaos.Web.dll
   Chaos.Web -> /tmp/app/
 Running tests from /work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64)
-/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) passed (39s 818ms)
+/work/tests/Chaos.E2E/bin/Release/net10.0/Chaos.E2E.dll (net10.0|x64) passed (42s 956ms)
 
 Test run summary: Passed!
   total: 32
   failed: 0
   succeeded: 32
   skipped: 0
-  duration: 39s 966ms
+  duration: 43s 125ms
 Starting project export...
 Project Path: /home/kushal/src/dotnet/chaos-velixir-run
 Output File:  /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
@@ -338,7 +412,7 @@ Total source size: 0.68 MB across 213 files
 
 ==> All steps passed
 
-real	1m12.372s
-user	0m14.250s
-sys	0m4.456s
+real	1m21.071s
+user	0m14.970s
+sys	0m5.391s
 kushal@fedora:~/src/dotnet/chaos-velixir-run$ 
