@@ -1,8 +1,8 @@
 ===============================================================================
 PROJECT EXPORT
-Generated (UTC): 2026-11-09 13:53:23
+Generated (UTC): 2026-11-09 13:55:38
 Project Path:    /home/kushal/src/dotnet/chaos-velixir-run
-Git Commit:      e5cc13da268496da4f27f0bbff457a3186cc6132
+Git Commit:      0e0e496383c2617a12cf67138e32e74af225e509
 Git Branch:      main
 Git Dirty:       no
 .NET SDK:        10.0.113
@@ -480,8 +480,8 @@ MODIFIED: 2026-10-16 10:24:45 (UTC)
 FILE:     Directory.Packages.props
 SIZE:     0.46 KB (470 bytes)
 LINES:    14
-SHA256:   fd9d84037abff14ce712df7149aa265aecf8d34949efe1c3be252026d49ba259
-MODIFIED: 2026-10-31 02:50:52 (UTC)
+SHA256:   e653be59a595e3dcf42bdfbf88452c1d86c4a52842bed1a6b9f6eaf476b8a7b6
+MODIFIED: 2026-11-09 13:53:58 (UTC)
 ================================================================================
 
 <Project>
@@ -494,7 +494,7 @@ MODIFIED: 2026-10-31 02:50:52 (UTC)
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.14" />
     <PackageVersion Include="Microsoft.Playwright" Version="1.64.1" />
     <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.12.0" />
-    <PackageVersion Include="xunit.v3" Version="4.0.2" />
+    <PackageVersion Include="xunit.v3" Version="4.0.3" />
   </ItemGroup>
 
 </Project>
@@ -22669,9 +22669,9 @@ export default defineConfig({
 
 
 ===============================================================================
-EXPORT COMPLETED (UTC): 2026-11-09 13:53:26
+EXPORT COMPLETED (UTC): 2026-11-09 13:55:41
 Total Files Exported:   213
 Total Source Size:      0.68 MB (709023 bytes)
 Output File:            /home/kushal/src/dotnet/chaos-velixir-run/docs/llm/dump.txt
 ===============================================================================
-DUMP SHA256 (of all lines above this one): cb4dcc904f1c0d904e3b5b5847f3a7634ed45f4f2c2af45a584e7e62a10aa444
+DUMP SHA256 (of all lines above this one): 11293fda73c8395fcd36e8b4978cf372aeda14a271fb0bac7b489920d9ca5d1d
